@@ -1,0 +1,390 @@
+/* ===============================
+   GLOBAL BRAND COLORS
+================================ */
+:root {
+    --gold: #d4af37;
+    --gold-dark: #b8962e;
+    --dark-bg: #0b0b0b;
+    --dark-bg-2: #111;
+    --white: #ffffff;
+}
+
+/* ===============================
+   BODY + SECTIONS
+================================ */
+body {
+    background-color: var(--dark-bg);
+    color: var(--white);
+}
+
+.bg-color,
+.services-area,
+.counter-area,
+.choose-us-area,
+.about-us-area,
+.testimonials-area,
+.footer-area {
+    background-color: var(--dark-bg) !important;
+}
+
+/* ===============================
+   HEADINGS
+================================ */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--gold) !important;
+}
+
+.section-title span,
+.top-title {
+    color: #0a0c0d!important;
+    font-weight: bold!important;
+    /*color: var(--gold) !important;*/
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+.default-btn {
+    background: var(--gold) !important;
+    color: #000 !important;
+    border: none;
+}
+
+.default-btn:hover {
+    background: var(--gold-dark) !important;
+    color: #000 !important;
+}
+
+.default-btn.active {
+    background: transparent !important;
+    color: var(--gold) !important;
+    border: 1px solid var(--gold);
+}
+
+/* ===============================
+   ICONS
+================================ */
+i,
+.flaticon,
+.bx,
+.fas {
+    color: var(--gold) !important;
+}
+
+/* ===============================
+   SERVICES BOX
+================================ */
+.single-services-box {
+    background-color: #111 !important;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.single-services-box h3 {
+    color: var(--gold) !important;
+}
+
+.single-services-box:hover {
+    border-color: var(--gold);
+}
+
+/* ===============================
+   PROCESS BOX
+================================ */
+.single-choose-us-box {
+    background-color: #111 !important;
+    /*border: 1px solid rgba(212, 175, 55, 0.3);*/
+}
+
+.single-choose-us-box span {
+    color: var(--gold) !important;
+}
+
+/* ===============================
+   COUNTERS
+================================ */
+.single-counter {
+    background: #111 !important;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.single-counter h2,
+.single-counter p {
+    color: var(--gold) !important;
+}
+
+/* ===============================
+   TESTIMONIALS
+================================ */
+.single-testimonials {
+    background: #111 !important;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.single-testimonials h3,
+.single-testimonials h4 {
+    color: var(--gold) !important;
+}
+
+/* ===============================
+   FOOTER
+================================ */
+.footer-area,
+.footer-top-area {
+    background-color: #000 !important;
+}
+
+.footer-area a,
+.footer-area p,
+.footer-area li {
+    color: #ccc !important;
+}
+
+.footer-area a:hover {
+    color: var(--gold) !important;
+}
+
+/* ===============================
+   CHAT BUTTON (LIVE CHAT)
+================================ */
+#chat_with_us,
+.live-chat-btn {
+    background: var(--gold) !important;
+    color: #000 !important;
+}
+
+#chat_with_us:hover {
+    background: var(--gold-dark) !important;
+}
+
+/* ===============================
+   NAVBAR
+================================ */
+.navbar-area {
+    background: #000 !important;
+}
+
+.navbar-nav .nav-item a {
+    color: var(--white) !important;
+}
+
+.navbar-nav .nav-item a:hover,
+.navbar-nav .nav-item.active a {
+    color: var(--gold) !important;
+}
+/* ===============================
+   REMOVE THEME BLUE TRANSITIONS
+================================ */
+button,
+a,
+input,
+select,
+textarea {
+    transition: all 0.3s ease !important;
+}
+
+/* Kill any blue gradient animation */
+[class*="btn"]::before,
+[class*="btn"]::after {
+    background: #d4af37 !important;
+}
+/* =====================================
+   REMOVE BLUE BORDER ANIMATION (SPAN)
+===================================== */
+
+.default-btn span::before,
+.default-btn span::after {
+    background: linear-gradient(
+        to bottom,
+        #d4af37,
+        transparent
+    ) !important;
+}
+
+/* Hover darker gold */
+.default-btn:hover span::before,
+.default-btn:hover span::after {
+    background: linear-gradient(
+        to bottom,
+        #b8962e,
+        transparent
+    ) !important;
+}
+.shipment-content .shipment-btn .default-btn.active {
+    margin-left: 30px;
+    background-color: transparent;
+    border: 1px solid #d4af37;   /* ✅ GOLD */
+    color: #d4af37;              /* ✅ GOLD */
+}
+.banner-content .banner-btn .default-btn.active {
+    margin-left: 30px;
+    background-color: transparent;
+    border-color: #d4af37 !important;
+    color: #d4af37 !important;
+}
+.single-footer-widget .social-icon li a i {
+    width: 30px;
+    height: 30px;
+    line-height: 28px;
+    border: 1px solid #d4af37;   /* ✅ GOLD */
+    color: #d4af37;              /* ✅ GOLD ICON */
+    text-align: center;
+    transition: all ease 0.5s;
+}
+
+.single-footer-widget .social-icon li a:hover {
+    transform: translateY(-2px);
+}
+
+.single-footer-widget .social-icon li a:hover i {
+    background-color: #d4af37 !important;  /* ✅ GOLD */
+    color: #000 !important;              /* ✅ BLACK ICON ON HOVER */
+}
+.single-footer-widget .import-link li::before {
+    content: "";
+    position: absolute;
+    top: 7px;
+    left: 0;
+    width: 11px;
+    height: 11px;
+    background-color: #b8962e;
+    -webkit-transition: all ease 0.5s;
+    transition: all ease 0.5s;
+}
+.about-content ul li i {
+    position: absolute;
+    top: -1px;
+    left: 0;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    border-radius: 50%;
+    background-color: #d4af37;
+    text-align: center;
+    color: #000000;
+}
+/* ==============================
+   REMOVE BLUE FROM SELECT BOX
+============================== */
+
+/* Select box text */
+.main-contact-area select {
+    color: #ffffff !important;
+    background-color: transparent !important;
+}
+
+/* Selected value */
+.main-contact-area select option:checked,
+.main-contact-area select option:selected {
+    color: #ffffff !important;
+    background-color: #000000 !important;
+}
+
+/* Hover option */
+.main-contact-area select option:hover {
+    color: #ffffff !important;
+    background-color: #111111 !important;
+}
+
+/* Nice Select (theme ka plugin) */
+.main-contact-area .nice-select {
+    background: transparent !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255,255,255,0.4);
+}
+
+.main-contact-area .nice-select .current {
+    color: #ffffff !important;
+}
+
+/* Nice select dropdown */
+.main-contact-area .nice-select .list {
+    background: #000000 !important;
+}
+
+.main-contact-area .nice-select .option {
+    color: #ffffff !important;
+}
+
+.main-contact-area .nice-select .option.selected,
+.main-contact-area .nice-select .option:hover {
+    background: #d4af37 !important; /* gold hover */
+    color: #ffffff !important;
+}
+
+/* Remove blue focus ring */
+.main-contact-area select:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+.select2-container {
+    width: 100% !important;
+}
+
+.select2-container--default .select2-selection--multiple {
+    min-height: 56px!important;
+    background-color: #000 !important;
+    border: 1px solid #666 !important;
+    min-height: 52px;
+    padding: 6px 10px;
+}
+
+
+.select2-container--default
+.select2-selection--multiple .select2-search__field {
+    color: #fff !important;
+
+}
+
+.select2-container--default .select2-selection__choice {
+    background: #d4af37 !important;
+    color: #000 !important;
+    border: none !important;
+}
+
+.select2-dropdown {
+    background: #111 !important;
+    border: 1px solid #444 !important;
+}
+
+.select2-results__option {
+    color: #fff !important;
+}
+
+.select2-results__option--highlighted {
+    background: #d4af37 !important;
+    color: #000 !important;
+}
+/* Freight Calculator Modal Fix */
+#freightClassModalNew .form-control,
+#freightClassModalNew .form-select {
+    height: 48px;
+    background-color: #1e2327;
+    color: #fff;
+    border: 1px solid #3a3f44;
+    border-radius: 6px;
+}
+
+/* Placeholder color */
+#freightClassModalNew .form-control::placeholder {
+    color: #9aa0a6;
+}
+
+/* Select arrow white */
+#freightClassModalNew .form-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='white' d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592c.86 0 1.32 1.013.753 1.658L8.753 11.14a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-size: 16px 12px;
+}
+
+/* Focus */
+#freightClassModalNew .form-control:focus,
+#freightClassModalNew .form-select:focus {
+    border-color: #f0c14b;
+    box-shadow: none;
+}
+
+.freight-select{
+    display: block!important;
+}

@@ -1,0 +1,240 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
+class FrontendController extends Controller
+{
+    public function home()
+    {
+        return view('main.frontend.home');
+    }
+
+    public function aboutUs()
+    {
+        return view('main.frontend.about-us');
+    }
+
+    public function faq()
+    {
+        return view('main.frontend.faq');
+    }
+
+    public function terms()
+    {
+        return view('main.frontend.terms-conditions');
+    }
+
+    public function contactUs()
+    {
+        return view('main.frontend.contact-us');
+    }
+
+    public function testimonials()
+    {
+        return view('main.frontend.testimonials');
+    }
+
+    public function privacy()
+    {
+        return view('main.frontend.privacy-policy');
+    }
+
+    /**
+     * Show the quote request form.
+     * Reads ?type= from query string (Car, Heavy Equipment, Dryvan, Motorcycle, ATV/UTV, Golf Cart).
+     */
+    public function quoteRequest(Request $request)
+    {
+        $allowed = ['Car', 'Heavy Equipment', 'Dryvan', 'Motorcycle', 'ATV/UTV', 'Golf Cart'];
+        $type = in_array($request->query('type'), $allowed)
+            ? $request->query('type')
+            : 'Car';
+
+        return view('main.frontend.get-qoute', compact('type'));
+    }
+
+    /**
+     * Handle quote form submission — saves to ShipaQuery so it appears in /view_query.
+     */
+    public function submitQuoteRequest(Request $request)
+    {
+        $request->validate([
+            'Custo_Name'   => 'required|string|max:100',
+            'Custo_Phone'  => 'required|string|max:30',
+            'Custo_Email'  => 'required|email|max:150',
+            'From_ZipCode' => 'required|string|max:100',
+            'To_ZipCode'   => 'required|string|max:100',
+        ]);
+
+        // Parse origin: "City, State, Zip" or "City,State,Zip" or just a zip
+        $origin      = $request->From_ZipCode;
+        $destination = $request->To_ZipCode;
+
+        $originParts      = array_map('trim', explode(',', $origin));
+        $destinationParts = array_map('trim', explode(',', $destination));
+
+        $origincity       = $originParts[0] ?? '';
+        $originstate      = $originParts[1] ?? '';
+        $originzip        = $originParts[2] ?? $originParts[0] ?? '';
+        $originzsc        = trim("{$origincity},{$originstate},{$originzip}", ',');
+
+        $destinationcity  = $destinationParts[0] ?? '';
+        $destinationstate = $destinationParts[1] ?? '';
+        $destinationzip   = $destinationParts[2] ?? $destinationParts[0] ?? '';
+        $destinationzsc   = trim("{$destinationcity},{$destinationstate},{$destinationzip}", ',');
+
+        $year  = $request->Car_Year ?? null;
+        $make  = $request->Car_Make ?? ($request->Year_Make_Model ?? null);
+        $model = $request->Car_Model ?? null;
+
+        // ymk = "Year Make Model" combined (same as how the internal form stores it)
+        $ymk = trim("{$year} {$make} {$model}");
+
+        try {
+            \App\ShipaQuery::create([
+                // Customer
+                'oname'            => $request->Custo_Name,
+                'oemail'           => $request->Custo_Email,
+                'ophone'           => $request->Custo_Phone,
+                'main_ph'          => $request->Custo_Phone,
+
+                // Origin
+                'origincity'       => $origincity,
+                'originstate'      => $originstate,
+                'originzip'        => $originzip,
+                'originzsc'        => $originzsc,
+                'oterminal'        => 0,
+
+                // Destination
+                'destinationcity'  => $destinationcity,
+                'destinationstate' => $destinationstate,
+                'destinationzip'   => $destinationzip,
+                'destinationzsc'   => $destinationzsc,
+                'dterminal'        => 0,
+
+                // Vehicle
+                'ymk'              => $ymk,
+                'year'             => $year,
+                'make'             => $make,
+                'model'            => $model,
+                'type'             => $request->Select_Vehicle ?? 'Car',
+                'condition'        => $request->Carrier_Condition ?? null,
+                'transport'        => $request->Carrier_Type ?? null,
+                'vehicle_opt'      => 'make',
+
+                // Dimensions (Heavy Equipment)
+                'length_ft'        => $request->Vehicle_Length ?? null,
+                'width_ft'         => $request->Vehicle_Width ?? null,
+                'height_ft'        => $request->Vehicle_Height ?? null,
+                'weight'           => $request->Vehicle_Weight ?? null,
+
+                // Meta
+                'paneltype'        => 2,
+                'pstatus'          => 0,
+                'source'           => 'Website',
+                'car_type'         => 1,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('FrontendController submitQuoteRequest: ' . $e->getMessage());
+        }
+
+        return redirect()->route('Frontend.qoute.confirmation');
+    }
+
+    /**
+     * Handle contact form submission — saves as ShipaQuery lead.
+     */
+    public function submitContactLead(Request $request)
+    {
+        $request->validate([
+            'Lead_Name'  => 'required|string|max:100',
+            'Lead_Email' => 'required|email|max:150',
+            'Lead_Phone' => 'required|string|max:30',
+        ]);
+
+        try {
+            \App\ShipaQuery::create([
+                'oname'      => $request->Lead_Name,
+                'oemail'     => $request->Lead_Email,
+                'ophone'     => $request->Lead_Phone,
+                'add_info'   => ($request->Lead_Subject ? $request->Lead_Subject . ': ' : '') . ($request->Lead_Message ?? ''),
+                'paneltype'  => 2,
+                'pstatus'    => 0,
+                'source'     => 'Website',
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('FrontendController submitContactLead: ' . $e->getMessage());
+        }
+
+        return back()->with('success', 'Your message has been sent! We will get back to you shortly.');
+    }
+
+    /**
+     * Autocomplete endpoint for zip/city typeahead on the quote form.
+     */
+    public function autocomplete(Request $request)
+    {
+        $query = $request->query('query', '');
+
+        if (strlen($query) < 2) {
+            return response()->json([]);
+        }
+
+        try {
+            $results = \App\zipcodes::where('city', 'like', $query . '%')
+                ->orWhere('zipcode', 'like', $query . '%')
+                ->limit(10)
+                ->get(['city', 'state', 'zipcode'])
+                ->map(fn($z) => "{$z->city}, {$z->state}, {$z->zipcode}")
+                ->values()
+                ->toArray();
+        } catch (\Throwable $e) {
+            $results = [];
+        }
+
+        return response()->json($results);
+    }
+
+    public function quoteConfirmation()
+    {
+        return view('main.frontend.quote-confirmation');
+    }
+
+    public function isItForMe()
+    {
+        return view('main.frontend.about-us');
+    }
+
+    public function carriers()
+    {
+        return view('main.frontend.about-us');
+    }
+
+    public function brokers()
+    {
+        return view('main.frontend.about-us');
+    }
+
+    public function shippers()
+    {
+        return view('main.frontend.about-us');
+    }
+
+    public function dispatchPage()
+    {
+        return view('main.frontend.about-us');
+    }
+
+    public function loadboard()
+    {
+        return view('main.frontend.about-us');
+    }
+
+    public function packages()
+    {
+        return view('main.frontend.about-us');
+    }
+}
