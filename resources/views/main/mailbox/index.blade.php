@@ -49,6 +49,11 @@
 
     .ck.ck-editor__main > .ck-editor__editable { min-height:220px !important; }
 
+    /* Compose modal sizing */
+    #composeModal .modal-dialog { max-width:92% !important; width:92% !important; }
+    #composeModal .modal-content { max-height:90vh; overflow-y:auto; }
+    #composeModal .modal-body { overflow-y:auto; }
+
     @media (max-width:1100px) {
         .mailbox-wrap { flex-direction:column; }
         .mailbox-left, .mailbox-mid, .mailbox-right { width:100%; }
@@ -144,7 +149,7 @@
 
 {{-- COMPOSE MODAL --}}
 <div class="modal fade" id="composeModal" tabindex="-1">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog" style="max-width:92%;width:92%;margin:1.5rem auto;">
         <form method="POST" action="{{ route('mailbox.send') }}" enctype="multipart/form-data" id="composeForm">
             @csrf
             <div class="modal-content">
@@ -181,7 +186,8 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="font-weight-bold">Message</label>
-                                <textarea class="form-control" name="body_plain" id="mail_body" rows="8" required></textarea>
+                                {{-- CKEditor replaces this textarea — no required attribute --}}
+                                <textarea class="form-control" name="body_plain" id="mail_body" rows="10"></textarea>
                                 <input type="hidden" name="body" id="mail_body_html">
                             </div>
                         </div>
@@ -241,8 +247,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Form submit ───────────────────────────────────────────────────────
     document.getElementById('composeForm').addEventListener('submit', function (e) {
+        // Sync CKEditor content to hidden field
         const editorHtml = mailEditor ? mailEditor.getData() : document.getElementById('mail_body').value;
+
+        // Validate body not empty
+        if (!editorHtml || editorHtml.trim() === '' || editorHtml.trim() === '<p>&nbsp;</p>') {
+            e.preventDefault();
+            alert('Please enter a message body.');
+            return;
+        }
+
         document.getElementById('mail_body_html').value = buildReplyHtml(editorHtml);
+
+        // Also sync to textarea so server gets body_plain
+        if (mailEditor) {
+            document.getElementById('mail_body').value = editorHtml;
+        }
+
         const btn = document.getElementById('sendMailBtn');
         if (btn) { btn.disabled = true; btn.innerText = 'Sending...'; }
     });

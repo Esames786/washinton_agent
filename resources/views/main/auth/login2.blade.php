@@ -5,8 +5,6 @@
 @endsection
 
 @section('content')
-<script src="https://www.google.com/recaptcha/api.js" 
-async defer></script>
     <div class="box">
         <div></div>
         <div></div>
@@ -56,33 +54,16 @@ async defer></script>
                                                     <input id="password" type="password" class="form-control"
                                                            name="password" required>
                                                 </div>
-                                                <div class="col-sm-12 mb-2 p-0">
-                                                    <div class="g-recaptcha" id="feedback-recaptcha" 
-                                                         data-sitekey="6LeoLjknAAAAAMG7lg4VsHVuD17VTKVAt0rNElXa">
-                                                    </div>
-                                                </div>
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <button type="submit" id="loginBtn"
                                                                 class="btn  btn-secondary btn-block px-4">
                                                             Login
                                                         </button>
-                                                      
                                                     </div>
-                                                    {{--<div class="col-12 text-center">--}}
-                                                        {{--<a href="/password/reset"--}}
-                                                           {{--class="btn btn-link box-shadow-0 px-0 text-white-80">Forgot--}}
-                                                            {{--password?</a>--}}
-                                                    {{--</div>--}}
                                                 </div>
                                             </div>
                                         </div>
-                                        {{--<div class="text-center pt-4">--}}
-                                            {{--<div class="font-weight-normal fs-16">You Don't have an account <a--}}
-                                                    {{--class="btn-link font-weight-normal text-white-80" href="#">Register--}}
-                                                    {{--Here</a>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
                                         <div class="text-center pt-4">
                                             <div class="font-weight-normal fs-16" style="color:#b0c4c8;">
                                                 New agent or carrier?
@@ -111,41 +92,22 @@ async defer></script>
 <script src="{{ url('assets/js/jquery-3.5.1.min.js')}}"></script>
 <script src="{{ url('assets/js/jquery-ui-1.12.1/jquery-ui.min.js')}}"></script>
 <script>
-    
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-    
+
     $(document).ready(function(){
         $.ajax({
            url:"{{ url('/logoutAllAccounts') }}",
            type:"GET",
            dataType:"json",
-           success:function(res)
-           {
+           success:function(res){
                console.log(res);
            }
         });
     });
-</script>
-
-<script type="text/javascript">
-     var onloadCallback = function() {
-       grecaptcha.render('feedback-recaptcha', {
-         'sitekey' : '6LeoLjknAAAAAE1OyJALGEBVvZB3xZXX-CqaqLvK'
-       });
-     };
-     $("#loginBtn").click(function(e){
-        var response = grecaptcha.getResponse();
-        $("#feedback-recaptcha").parent('.col-sm-12').siblings('.text-danger').remove();
-        if(response.length == 0) 
-        { 
-            e.preventDefault();
-            $("#feedback-recaptcha").parent('.col-sm-12').after('<div class="text-danger col-sm-12 p-0 mb-2">Please check recaptcha, if you are not a robot!</div>');
-        }
-     })
 </script>
 @endsection
 
