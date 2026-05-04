@@ -31,7 +31,7 @@ class Kernel extends ConsoleKernel
 
         // Sync all active mailboxes every 30 minutes
         $schedule->command('mailbox:sync')
-            ->everyThirtyMinutes()
+            ->everyFiveMinutes()
             ->runInBackground()
             ->withoutOverlapping()
             ->timezone('America/New_York');
