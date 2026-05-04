@@ -10,29 +10,35 @@ class Kernel extends ConsoleKernel
 {
     /**
      * The Artisan commands provided by your application.
-     *
-     * @var array
      */
     protected $commands = [
         Commands\SessionCron::class,
+        Commands\SyncMailboxes::class,
     ];
 
     /**
      * Define the application's command schedule.
-     *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
-     * @return void
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('session:cron')->dailyAt('18:00')->timezone('America/New_York');
-        $schedule->command('app:send-template-email')->everyFifteenMinutes()->timezone('America/New_York');
+        $schedule->command('session:cron')
+            ->dailyAt('18:00')
+            ->timezone('America/New_York');
+
+        $schedule->command('app:send-template-email')
+            ->everyFifteenMinutes()
+            ->timezone('America/New_York');
+
+        // Sync all active mailboxes every 30 minutes
+        $schedule->command('mailbox:sync')
+            ->everyThirtyMinutes()
+            ->runInBackground()
+            ->withoutOverlapping()
+            ->timezone('America/New_York');
     }
 
     /**
      * Register the commands for the application.
-     *
-     * @return void
      */
     protected function commands()
     {
