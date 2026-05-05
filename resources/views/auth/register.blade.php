@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register — ShawnTransport</title>
+    <title>Register — DayDispatch</title>
     <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <style>
@@ -58,7 +58,7 @@
 <div class="register-card">
     <div class="register-header">
         <h4>Create Your Account</h4>
-        <p>ShawnTransport Portal — Request access as an Agent or Carrier</p>
+        <p>DayDispatch Portal — Request access as an Agent or Carrier</p>
     </div>
     <div class="register-body">
 
@@ -105,11 +105,31 @@
 
             {{-- Full Name --}}
             <div class="form-group">
-                <label>Full Name <span class="text-danger">*</span></label>
+                <label>First Name <span class="text-danger">*</span></label>
                 <input type="text" name="name" value="{{ old('name') }}"
                        class="form-control @error('name') is-invalid @enderror"
-                       placeholder="Enter your full name" required>
+                       placeholder="Enter your first name" required>
                 @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+
+            {{-- Last Name --}}
+            <div class="form-group">
+                <label>Last Name <span class="text-danger">*</span></label>
+                <input type="text" name="last_name" value="{{ old('last_name') }}"
+                       class="form-control @error('last_name') is-invalid @enderror"
+                       placeholder="Enter your last name" required>
+                @error('last_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+
+            {{-- Slug / Display Name --}}
+            <div class="form-group">
+                <label>Display Name / Slug <span class="text-danger">*</span>
+                    <small class="text-muted font-weight-normal">(shown in system, e.g. john.doe)</small>
+                </label>
+                <input type="text" name="slug" value="{{ old('slug') }}"
+                       class="form-control @error('slug') is-invalid @enderror"
+                       placeholder="e.g. john.doe or JohnD" required>
+                @error('slug') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
 
             {{-- Email --}}

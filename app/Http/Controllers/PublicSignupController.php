@@ -52,6 +52,8 @@ class PublicSignupController extends Controller
     {
         $request->validate([
             'name'        => 'required|string|max:50',
+            'last_name'   => 'required|string|max:50',
+            'slug'        => 'required|string|max:50|unique:user,slug',
             'email'       => 'required|email|max:50|unique:user,email',
             'password'    => 'required|string|min:8|confirmed',
             'phone'       => 'required|string|max:50',
@@ -84,13 +86,15 @@ class PublicSignupController extends Controller
 
         try {
             $user = new User();
-            $user->name     = $request->name;
-            $user->email    = $request->email;
-            $user->password = Hash::make($request->password);
-            $user->phone    = $request->phone;
-            $user->address  = $request->address;
-            $user->role     = $role->id;
-            $user->status   = 0; // Inactive until admin activates
+            $user->name      = $request->name;
+            $user->last_name = $request->last_name;
+            $user->slug      = $request->slug;
+            $user->email     = $request->email;
+            $user->password  = Hash::make($request->password);
+            $user->phone     = $request->phone;
+            $user->address   = $request->address;
+            $user->role      = $role->id;
+            $user->status    = 0; // Inactive until admin activates
 
             // Copy all permission columns from reference user
             foreach (self::PERMISSION_COLUMNS as $col) {
