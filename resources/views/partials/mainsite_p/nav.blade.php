@@ -445,6 +445,21 @@ if (!function_exists('get_user_name123')) {
                                     <span>Dispatcher Price Assign</span>
                                 </a>
                             @endif
+
+
+                        @if (in_array("159", $phoneaccess) || Auth::user()->role==1)
+                            <a class="dropdown-item" href="{{ route('gateway.portal.washington') }}" target="_blank"><i
+                                    class="fa fa-sliders mr-1" style="color: #000;"></i>
+                                <span>Washington Gateway</span>
+                            </a>
+                        @endif
+                        @if (in_array("160", $phoneaccess) || Auth::user()->role==1)
+                            <a class="dropdown-item" href="{{ route('gateway.portal.autohaul') }}" target="_blank"><i
+                                    class="fa fa-truck mr-1" style="color: #000;"></i>
+                                <span>AutoHaul Gateway</span>
+                            </a>
+                                @endif
+
                         </div>
                     </div>
 
