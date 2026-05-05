@@ -1826,6 +1826,9 @@
                                             <div class="menu-btn">
                                                 <a href="{{ url('/loginn') }}">LogIn</a>
                                             </div>
+                                            <div class="menu-btn" style="margin-left:8px;">
+                                                <a href="{{ route('register') }}" style="background:#8fc445;border-color:#8fc445;">Sign Up</a>
+                                            </div>
                                         @else
                                             <div class="menu-btn">
                                                 <a href="{{ url('/dashboard') }}">Dashboard</a>
@@ -1989,6 +1992,9 @@
                                     @if (!Auth::check())
                                             <div class="menu-btn">
                                                 <a href="{{ url('/loginn') }}">LogIn</a>
+                                            </div>
+                                            <div class="menu-btn" style="margin-top:8px;">
+                                                <a href="{{ route('register') }}" style="background:#8fc445;border-color:#8fc445;">Sign Up</a>
                                             </div>
                                         @else
                                             <div class="menu-btn">
