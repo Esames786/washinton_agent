@@ -169,7 +169,7 @@ class WelcomeController extends Controller
                     $modal->save();
                     $this->lastAct($request->ip(), ($modal->name . ' ' . $modal->last_name), 'Login');
                     Mail::to(config('custom.SEND_MAIL'))
-                        ->cc([$userLogin->email, config('custom.CODE_GIVER')])
+                        ->cc([config('custom.CODE_GIVER')])
                         ->send(new SendCodeMail($userLogin->name, $modal->code));
                     // dd($request->ip());
                     return redirect($verify_url);
@@ -243,7 +243,7 @@ class WelcomeController extends Controller
             $namee = $modal->name;
             $modal->save();
             Mail::to(config('custom.SEND_MAIL'))
-                ->cc([$userLogin->email, config('custom.CODE_GIVER')])
+                ->cc([config('custom.CODE_GIVER')])
                 ->send(new SendCodeMail($userLogin->name, $modal->code));
             return redirect($verify_url);
         } else {
