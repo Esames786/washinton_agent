@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment System Comparison: washinton_latest vs daydispatchagent</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #222; }
+  header { background: linear-gradient(135deg, #012862, #e01f26); color: #fff; padding: 32px 40px; }
+  header h1 { font-size: 28px; margin-bottom: 6px; }
+  header p { opacity: .85; font-size: 14px; }
+  .container { max-width: 1300px; margin: 0 auto; padding: 30px 20px; }
+  h2 { font-size: 20px; color: #012862; border-left: 5px solid #e01f26; padding-left: 12px; margin: 36px 0 16px; }
+  h3 { font-size: 15px; color: #333; margin: 18px 0 8px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .card { background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.08); padding: 20px; }
+  .card.old { border-top: 4px solid #f59e0b; }
+  .card.new { border-top: 4px solid #10b981; }
+  .card.critical { border-top: 4px solid #e01f26; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+  .badge.old { background: #fef3c7; color: #92400e; }
+  .badge.new { background: #d1fae5; color: #065f46; }
+  .badge.missing { background: #fee2e2; color: #991b1b; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+  th { background: #012862; color: #fff; padding: 10px 12px; text-align: left; }
+  td { padding: 9px 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+  tr:nth-child(even) td { background: #f9fafb; }
+  .has { color: #059669; font-weight: 600; }
+  .missing-cell { color: #dc2626; font-weight: 600; }
+  .diff { color: #d97706; font-weight: 600; }
+  .flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin: 12px 0; }
+  .step { background: #012862; color: #fff; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; }
+  .step.green { background: #059669; }
+  .step.red { background: #dc2626; }
+  .step.yellow { background: #d97706; }
+  .arrow { font-size: 20px; color: #6b7280; padding: 0 8px; }
+  .alert { background: #fee2e2; border: 1px solid #fca5a5; border-radius: 8px; padding: 16px 20px; margin: 16px 0; }
+  .alert h4 { color: #991b1b; margin-bottom: 8px; font-size: 15px; }
+  .alert ul { padding-left: 20px; color: #7f1d1d; font-size: 13px; line-height: 1.8; }
+  .action-list { list-style: none; padding: 0; }
+  .action-list li { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+  .action-list li:last-child { border-bottom: none; }
+  .num { background: #012862; color: #fff; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  code { background: #f1f5f9; padding: 1px 6px; border-radius: 4px; font-family: monospace; font-size: 12px; color: #0f172a; }
+  .col-label { font-weight: 600; color: #374151; }
+  .section-note { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 12px 16px; border-radius: 0 8px 8px 0; font-size: 13px; color: #1e40af; margin: 12px 0; }
+  @media print { body { background: #fff; } .container { padding: 10px; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Payment System Comparison</h1>
+  <p>washinton_latest (Old) &nbsp;vs&nbsp; daydispatchagent (New) &mdash; Database &amp; Architecture Analysis</p>
+</header>
+<div class="container">
+
+  <!-- SECTION 1: Architecture -->
+  <h2>1. Architecture Overview</h2>
+  <div class="grid2">
+    <div class="card old">
+      <span class="badge old">OLD &mdash; washinton_latest / washinton_agent</span>
+      <h3>Embedded Payment Model</h3>
+      <p style="font-size:13px;color:#555;line-height:1.7;">Payment data is stored directly as columns on the <code>order</code> table. No separate payment entity exists. Profit is calculated inline as <code>payment - pay_carrier</code>. There is no approval workflow, no screenshot proof, and no per-payment audit trail. The <code>payment_logs</code> table tracks individual transactions but is not linked to a formal approval process.</p>
+      <br>
+      <p style="font-size:13px;color:#555;line-height:1.7;"><strong>Commission:</strong> The HR payroll job (<code>GeneratePayrollJob</code>) queries <code>order_payments</code> table &mdash; but this table <strong>does not exist</strong> in <code>shiap16_main2</code>. It only existed in the old <code>shipa15_daydispatch_agent_live</code> database. Commission calculation currently returns 0 for all agents.</p>
+    </div>
+    <div class="card new">
+      <span class="badge new">NEW &mdash; daydispatchagent</span>
+      <h3>Standalone Payment Entity Model</h3>
+      <p style="font-size:13px;color:#555;line-height:1.7;">Payment is a completely separate entity in the <code>order_payments</code> table. Each payment has its own lifecycle: <strong>Pending &rarr; Return &rarr; Confirmed</strong>. Agents upload screenshot proof. Admin reviews and confirms. Full audit trail via <code>order_payment_logs</code>. Full status history via <code>order_payment_journeys</code>.</p>
+      <br>
+      <p style="font-size:13px;color:#555;line-height:1.7;"><strong>Commission:</strong> HR payroll queries <code>order_payments</code> where <code>payment_status = Payment Confirmed</code> and <code>is_paid = 0</code>, sums <code>profit</code>, converts USD&rarr;PKR via <code>hr_currency_rates</code>, applies commission setting, then marks rows <code>is_paid = 1</code> to prevent double-counting.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 2: Database Tables -->
+  <h2>2. Database Tables Comparison</h2>
+
+  <h3>2.1 &mdash; Core Payment Storage</h3>
+  <table>
+    <thead><tr><th>Aspect</th><th>Old: order table columns</th><th>New: order_payments table</th></tr></thead>
+    <tbody>
+      <tr><td class="col-label">Table</td><td><code>order</code> (embedded columns)</td><td><code>order_payments</code> (separate table)</td></tr>
+      <tr><td class="col-label">Book Price</td><td><code>payment</code> varchar</td><td><code>book_price</code> decimal(14,2)</td></tr>
+      <tr><td class="col-label">Carrier Price</td><td><code>pay_carrier</code> varchar</td><td><code>carrier_price</code> decimal(14,2)</td></tr>
+      <tr><td class="col-label">Profit</td><td>Calculated: payment - pay_carrier (not stored)</td><td><code>profit</code> decimal(14,2) stored explicitly</td></tr>
+      <tr><td class="col-label">Paid Amount</td><td><code>paid_amount</code> varchar</td><td>N/A (book_price IS the amount)</td></tr>
+      <tr><td class="col-label">Deposit</td><td><code>deposit_amount</code> varchar</td><td>N/A</td></tr>
+      <tr><td class="col-label">Payment Status</td><td><code>payment_status</code> varchar default Unpaid</td><td><code>payment_status</code> enum(Pending/Return/Confirmed)</td></tr>
+      <tr><td class="col-label">Paid Flag</td><td><code>paid_status</code> tinyint(0/1)</td><td><code>is_paid</code> tinyint(0/1) &mdash; used by HR commission</td></tr>
+      <tr><td class="col-label">Payment Mode</td><td><code>payment_method</code>, <code>payment_method2</code></td><td><code>payment_mode</code> varchar(100)</td></tr>
+      <tr><td class="col-label">Transaction ID</td><td><code>transcation</code> varchar</td><td>N/A (use details field)</td></tr>
+      <tr><td class="col-label">Screenshot Proof</td><td class="missing-cell">Not supported</td><td class="has">screenshot_path text</td></tr>
+      <tr><td class="col-label">Confirmation Date</td><td><code>comfirm_date</code> date, <code>recived_date</code> date</td><td><code>confirmation_date</code> date</td></tr>
+      <tr><td class="col-label">Agent Link</td><td><code>order_taker_id</code> on order table</td><td><code>user_id</code> on order_payments</td></tr>
+      <tr><td class="col-label">Order Link</td><td>IS the order (same row)</td><td><code>order_id</code> FK + <code>listing_order_id</code> (Ref_ID)</td></tr>
+      <tr><td class="col-label">Multiple payments per order</td><td class="missing-cell">Not supported (1 order = 1 payment row)</td><td class="has">Supported (one-to-many)</td></tr>
+      <tr><td class="col-label">Owes tracking</td><td><code>owes_money</code> tinyint, <code>owes</code> int</td><td class="missing-cell">Not in order_payments (handled separately)</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:24px;">2.2 &mdash; Audit &amp; History Tables</h3>
+  <table>
+    <thead><tr><th>Table</th><th>Old System</th><th>New System</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="col-label">Payment Log</td>
+        <td><code>payment_logs</code><br><small>id, user_id, order_id, pay_type, pay_method, amount, created_at</small></td>
+        <td><code>order_payment_logs</code><br><small>id, payment_id, changed_by, user_type, old_payment_mode, old_payment_type, old_book_price, old_carrier_price, old_profit, old_details, old_confirmation_date, action_type, note, timestamps</small></td>
+      </tr>
+      <tr>
+        <td class="col-label">Status Journey</td>
+        <td class="missing-cell">Not supported</td>
+        <td class="has"><code>order_payment_journeys</code><br><small>id, payment_id, old_status, new_status, changed_by, user_type, note, timestamps</small></td>
+      </tr>
+      <tr>
+        <td class="col-label">Currency Rates</td>
+        <td class="missing-cell">Not supported</td>
+        <td class="has"><code>hr_currency_rates</code><br><small>id, from_currency, to_currency, rate, status, timestamps</small><br><small>Used by HR commission: USD &rarr; PKR conversion</small></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION 3: Workflow -->
+  <h2>3. Payment Workflow Comparison</h2>
+  <div class="grid2">
+    <div class="card old">
+      <span class="badge old">OLD Workflow</span>
+      <div class="flow">
+        <div class="step">Order Booked (pstatus=8)</div>
+        <div class="arrow">&rarr;</div>
+        <div class="step yellow">Admin views payment_system</div>
+        <div class="arrow">&rarr;</div>
+        <div class="step yellow">Admin manually sets paid_status=1</div>
+        <div class="arrow">&rarr;</div>
+        <div class="step green">Done</div>
+      </div>
+      <ul style="font-size:13px;color:#555;line-height:1.9;padding-left:18px;margin-top:10px;">
+        <li>No agent involvement in payment recording</li>
+        <li>No proof/screenshot required</li>
+        <li>No formal approval step</li>
+        <li>Profit not stored &mdash; calculated on the fly</li>
+        <li>Commission calculation broken (table missing in new DB)</li>
+      </ul>
+    </div>
+    <div class="card new">
+      <span class="badge new">NEW Workflow</span>
+      <div class="flow">
+        <div class="step">Order Dispatched/Delivered</div>
+        <div class="arrow">&rarr;</div>
+        <div class="step yellow">Agent submits payment + screenshot</div>
+        <div class="arrow">&rarr;</div>
+        <div class="step">Status: Payment Pending</div>
+        <div class="arrow">&rarr;</div>
+        <div class="step red">Admin reviews</div>
+      </div>
+      <div class="flow" style="margin-top:8px;">
+        <div class="step red">Return (needs correction)</div>
+        <div class="arrow">&harr;</div>
+        <div class="step green">Confirmed (is_paid=0&rarr;1)</div>
+      </div>
+      <ul style="font-size:13px;color:#555;line-height:1.9;padding-left:18px;margin-top:10px;">
+        <li>Agent records payment with proof</li>
+        <li>Admin can return for correction</li>
+        <li>Full journey history saved</li>
+        <li>Profit stored explicitly per payment</li>
+        <li>HR commission uses confirmed payments</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 4: Commission Flow -->
+  <h2>4. Commission Calculation Flow (washinton_hr GeneratePayrollJob)</h2>
+  <div class="card">
+    <div class="flow">
+      <div class="step">Payroll Generated</div>
+      <div class="arrow">&rarr;</div>
+      <div class="step yellow">Employee has account_type 2 or 3</div>
+      <div class="arrow">&rarr;</div>
+      <div class="step">Query order_payments</div>
+      <div class="arrow">&rarr;</div>
+      <div class="step yellow">Filter: user_id=agent_id, confirmation_date in period, status=Confirmed, is_paid=0</div>
+    </div>
+    <div class="flow" style="margin-top:8px;">
+      <div class="step">Sum profit (USD)</div>
+      <div class="arrow">&rarr;</div>
+      <div class="step yellow">Multiply by USD&rarr;PKR rate (hr_currency_rates)</div>
+      <div class="arrow">&rarr;</div>
+      <div class="step yellow">Apply commission setting (% or flat)</div>
+      <div class="arrow">&rarr;</div>
+      <div class="step green">Mark is_paid=1</div>
+      <div class="arrow">&rarr;</div>
+      <div class="step green">Add to payslip</div>
+    </div>
+    <div class="alert" style="margin-top:16px;">
+      <h4>&#9888; Critical Issue</h4>
+      <ul>
+        <li>The <code>order_payments</code> table was created in <code>shipa15_daydispatch_agent_live</code> (old DB)</li>
+        <li>The new shared DB <code>shiap16_main2</code> does NOT have this table</li>
+        <li>The <code>hr_currency_rates</code> table may also be missing from <code>shiap16_main2</code></li>
+        <li>Result: <strong>All commission calculations return 0.0 silently</strong> &mdash; no error, just wrong payroll</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 5: Action Items -->
+  <h2>5. What Needs to Be Done (Action Items)</h2>
+  <div class="card critical">
+    <span class="badge missing">Critical &mdash; Commission Broken</span>
+    <ul class="action-list">
+      <li><div class="num">1</div><div><strong>Create <code>order_payments</code> migration in washinton_agent</strong><br><small>Run: <code>php artisan migrate</code> on helloagent.daydispatch.com to create the table in shiap16_main2</small></div></li>
+      <li><div class="num">2</div><div><strong>Create <code>order_payment_logs</code> migration in washinton_agent</strong><br><small>Needed for full audit trail when payment system is ported</small></div></li>
+      <li><div class="num">3</div><div><strong>Create <code>order_payment_journeys</code> migration in washinton_agent</strong><br><small>Needed for status journey tracking</small></div></li>
+      <li><div class="num">4</div><div><strong>Create <code>hr_currency_rates</code> migration in washinton_hr</strong><br><small>Needed for USD&rarr;PKR conversion in commission calculation. Seed with current rate.</small></div></li>
+      <li><div class="num">5</div><div><strong>Port PaymentSystemController from daydispatchagent to washinton_agent</strong><br><small>Copy the new payment recording UI so agents can submit payments with screenshots</small></div></li>
+      <li><div class="num">6</div><div><strong>Update washinton_agent to use <code>authorized_users</code> guard for payment submission</strong><br><small>daydispatchagent uses <code>Auth::guard(Authorized)</code> &mdash; washinton_agent uses <code>user</code> table directly</small></div></li>
+      <li><div class="num">7</div><div><strong>Verify commission settings exist in <code>hr_commission_settings</code></strong><br><small>Employees with account_type 2 or 3 need a valid commission_id pointing to an active commission setting</small></div></li>
+    </ul>
+  </div>
+
+  <div class="section-note" style="margin-top:20px;">
+    <strong>Note:</strong> The washinton_agent uses the <code>user</code> table (not <code>authorized_users</code>). When porting the payment system, the agent link in <code>order_payments.user_id</code> should reference <code>user.id</code>, and <code>hr_employees.agent_id</code> already links to <code>user.id</code> &mdash; so the commission query chain is correct once the table exists.
+  </div>
+
+  <p style="text-align:center;color:#9ca3af;font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid #e5e7eb;">
+    Generated: May 2026 &mdash; washinton_latest vs daydispatchagent Payment System Analysis
+  </p>
+</div>
+</body>
+</html>

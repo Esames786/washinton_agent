@@ -601,6 +601,26 @@
                             </a>
                         </li>
                     @endif
+
+                    {{-- ── New Payment System ─────────────────────────────────── --}}
+                    @if (Auth::user()->role == 1 || in_array('164', $phoneaccess))
+                        <li>
+                            <a class="side-menu__item" href="{{ route('admin.payments.index') }}"
+                               style="background: #2dd1ba8c">
+                                <span class="js-search-result-thumbnail responsive-img img_border fa fa-credit-card"></span>
+                                <span class="side-menu__label">Admin Payments</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if (Auth::user()->role == 1 || in_array('165', $phoneaccess))
+                        <li>
+                            <a class="side-menu__item" href="{{ route('agent.payments.index') }}"
+                               style="background: #2dd1ba8c">
+                                <span class="js-search-result-thumbnail responsive-img img_border fa fa-dollar"></span>
+                                <span class="side-menu__label">My Payments</span>
+                            </a>
+                        </li>
+                    @endif
                     @if (in_array('47', $phoneaccess))
                         <li>
                             <a class="side-menu__item" href="{{ url('coupons') }}">
@@ -789,13 +809,14 @@
                     @endif
 
                     @if (in_array('31', $phoneaccess))
-                        <li>
+                        {{-- OLD Payment System hidden — replaced by new payment system (permissions 164 & 165) --}}
+                        {{-- <li>
                             <a style="background: #2dd1ba8c" class="side-menu__item"
                                 href="{{ url('payment_system2') }}">
                                 <span class="js-search-result-thumbnail responsive-img img_border fa fa-money"></span>
                                 <span class="side-menu__label">Payment System</span>
                             </a>
-                        </li>
+                        </li> --}}
                     @endif
                     @if (in_array('32', $phoneaccess))
                         <li>

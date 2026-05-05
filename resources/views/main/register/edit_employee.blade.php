@@ -503,6 +503,8 @@
                             161=>'Commission Report<span class="badge badge-warning">New</span>',
                             162=>'cPanel Email Management<span class="badge badge-danger">cPanel</span>',
                             163=>'View Mailbox<span class="badge badge-danger">cPanel</span>',
+                            164=>'Admin Payment System<span class="badge badge-success">Payments</span>',
+                            165=>'Agent Payment System<span class="badge badge-success">Payments</span>',
                             ];
 
 

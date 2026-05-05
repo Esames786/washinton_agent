@@ -1206,6 +1206,24 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('pricing/check', [OrderPricingController::class, 'check'])->name('orders.pricing.check');
         Route::get('pricing/history', [OrderPricingController::class, 'history'])->name('orders.pricing.history');
     });
+
+    // ── New Payment System (permission 164 = Admin, 165 = Agent) ─────────────
+
+    // Admin Payment System (permission 164 or role=1)
+    Route::get('/admin-payments', 'NewPaymentSystemController@index')->name('admin.payments.index');
+    Route::get('/admin-payments/{id}', 'NewPaymentSystemController@show')->name('admin.payments.show');
+    Route::post('/admin-payments/{id}/confirm', 'NewPaymentSystemController@confirm')->name('admin.payments.confirm');
+    Route::post('/admin-payments/{id}/return', 'NewPaymentSystemController@returnPayment')->name('admin.payments.return');
+    Route::get('/admin-payments/{id}/journey', 'NewPaymentSystemController@journey')->name('admin.payments.journey');
+
+    // Agent Payment System (permission 165 or role=1)
+    Route::get('/my-payments', 'AgentPaymentController@index')->name('agent.payments.index');
+    Route::get('/my-payments/create', 'AgentPaymentController@create')->name('agent.payments.create');
+    Route::post('/my-payments', 'AgentPaymentController@store')->name('agent.payments.store');
+    Route::get('/my-payments/{id}/edit', 'AgentPaymentController@edit')->name('agent.payments.edit');
+    Route::post('/my-payments/{id}', 'AgentPaymentController@update')->name('agent.payments.update');
+    Route::get('/my-payments/{id}/journey', 'AgentPaymentController@journey')->name('agent.payments.journey');
+    Route::get('/my-payments/fetch-order', 'AgentPaymentController@fetchOrderInfo')->name('agent.payments.fetch_order');
 });
 
 // ============================================================
