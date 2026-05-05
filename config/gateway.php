@@ -28,7 +28,7 @@ return [
     | Client portal URLs (iframe embed)
     |--------------------------------------------------------------------------
     */
-    'portal_url_washington' => env('GATEWAY_PORTAL_HELLO', ''),
+    'portal_url_hello' => env('GATEWAY_PORTAL_HELLO', ''),
     'portal_url_autohaul'   => env('GATEWAY_PORTAL_AUTOHAUL', ''),
 
 ];

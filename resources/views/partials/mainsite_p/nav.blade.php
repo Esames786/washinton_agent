@@ -448,7 +448,7 @@ if (!function_exists('get_user_name123')) {
 
 
                         @if (in_array("159", $phoneaccess) || Auth::user()->role==1)
-                            <a class="dropdown-item" href="{{ route('gateway.portal.washington') }}" target="_blank"><i
+                            <a class="dropdown-item" href="{{ route('gateway.portal.hello') }}" target="_blank"><i
                                     class="fa fa-sliders mr-1" style="color: #000;"></i>
                                 <span>Washington Gateway</span>
                             </a>

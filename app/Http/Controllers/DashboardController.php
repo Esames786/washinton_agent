@@ -2808,13 +2808,13 @@ class DashboardController extends Controller
      * Central Gateway portal — Washington slabs
      * Permission: 155
      */
-    public function gatewayPortalWashington()
+    public function gatewayPortalHello()
     {
-        $url = config('gateway.portal_url_washington');
+        $url = config('gateway.portal_url_hello');
         return view('main.gateway.portal', [
-            'title'      => 'Washington Gateway Portal',
+            'title'      => 'Hello Gateway Portal',
             'portalUrl'  => $url,
-            'portalType' => 'washington',
+            'portalType' => 'hello',
         ]);
     }
 
