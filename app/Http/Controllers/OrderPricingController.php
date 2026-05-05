@@ -35,7 +35,7 @@ class OrderPricingController extends Controller
         }
 
         $payload = [
-            'platform_code' => 'washington',
+            'platform_code' => 'hello_transport',
             'stops' => [
                 array_filter(['stopNumber' => 1, 'zipCode' => $originZip, 'state' => $originState, 'city' => $originCity], fn($v) => $v !== '' && $v !== null),
                 array_filter(['stopNumber' => 2, 'zipCode' => $destZip, 'state' => $destState, 'city' => $destCity], fn($v) => $v !== '' && $v !== null),

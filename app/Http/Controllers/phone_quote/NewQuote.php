@@ -2491,7 +2491,7 @@ class NewQuote extends Controller
         try {
             // Resolve platform credentials based on lead source
             if ($requestHauling === 1) {
-                $platformCode = config('gateway.autohaul.platform', 'washington-autohaul');
+                $platformCode = config('gateway.autohaul.platform', 'hello-autohaul');
                 $apiKey       = config('gateway.autohaul.api_key');
                 $apiSecret    = config('gateway.autohaul.secret');
             } else {
