@@ -184,7 +184,7 @@
 
                     {{-- ── LEFT PANEL ── --}}
                     <div class="col-md-5 signup-left">
-                        <img src="{{ asset('frontend/img/logo/hello_transport.png') }}"
+                        <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}"
                              alt="Hello Transport" class="brand-logo">
 
                         <h2>Join Our <span>Network</span></h2>

@@ -113,7 +113,7 @@
 
                     <h3 class="c_name">ShipA1-Transportation Company</h3>
 
-                    {{--<img src="/assets/images/brand/ship_logo.png" style="margin-left: 45%;" alt="Admintro logo"--}}
+                    {{--<img src="/frontend/img/logo/hello_transport.svg" style="margin-left: 45%;" alt="Admintro logo"--}}
                          {{--style="cursor: default;">--}}
                     <h3 class="float_right " style="color: #ff0048;height: 36px;float: right;width: 66%;top: 17px;position: relative;" >ORDER# {{$data->id}}</h3>
                 </div>

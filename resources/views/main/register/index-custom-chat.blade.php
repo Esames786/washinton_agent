@@ -623,9 +623,9 @@
                         <div class="container-fluid">
                             <div class="d-flex" style="align-items:center;">
                                 <a class="header-brand d-block" href="/dashboard">
-                                    <img src="{{ url('assets/images/brand/ship_logo.png') }}"
+                                    <img src="{{ url('frontend/img/logo/hello_transport.svg') }}"
                                         class="header-brand-img desktop-lgo" alt="Admintro logo">
-                                    <img src="{{ url('assets/images/brand/ship_logo.png') }}"
+                                    <img src="{{ url('frontend/img/logo/hello_transport.svg') }}"
                                         class="header-brand-img dark-logo" alt="Admintro logo">
                                     <img src="{{ url('assets/images/brand/favicon.png') }}"
                                         class="header-brand-img mobile-logo" alt="Admintro logo">

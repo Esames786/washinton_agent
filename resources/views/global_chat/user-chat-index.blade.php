@@ -8,7 +8,7 @@
 
     <head>
         <title>Chat</title>
-        <link rel="icon" href="https://washington.shawntransport.com/assets/images/brand/ship_logo.png" type="image/png">
+        <link rel="icon" href="https://washington.shawntransport.com/frontend/img/logo/hello_transport.svg" type="image/png">
     </head>
     <style>
         .message-feed.media .media-body,
@@ -382,7 +382,7 @@
 
     <head>
         <title>User Support</title>
-        <link rel="icon" href="{{ asset('assets/images/brand/ship_logo.png') }}" type="image/png">
+        <link rel="icon" href="{{ asset('frontend/img/logo/hello_transport.svg') }}" type="image/png">
     </head>
     <style>
         .message-feed.media .media-body,

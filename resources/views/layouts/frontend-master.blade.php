@@ -9,7 +9,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="google-site-verification" content="dwlNH_KoCtphxr8_X75_OXA-nxdZWfmnrCrJssvnPO4" />
         <!-- Place favicon.ico in the root directory -->
-        <link rel="shortcut icon" type="image/x-icon" href="{{ asset('frontend/img/logo/smalllogo.png') }}">
+        <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('frontend/img/logo/hello_transport.svg') }}">
         <!-- CSS here -->
         <link rel="stylesheet" href="{{ asset('frontend/css/preloader.css') }}">
         <link rel="stylesheet" href="{{ asset('frontend/css/bootstrap.min.css') }}">
@@ -43,6 +43,22 @@
             align-items: center;
             padding: 0px 8px;
             width: 100%;
+        }
+
+        /* ── Logo size control ── */
+        .logo img,
+        .logo-transform img,
+        .sidebar__logo img {
+            /* max-width: 60px !important;
+            max-height: 60px !important; */
+            width: 150px !important;
+            height: 100px !important;
+        }
+        .sidebar__logo img {
+            max-width: 70px !important;
+            max-height: 70px !important;
+            width: 70px !important;
+            height: 70px !important;
         }
 
         .btn-font {
@@ -1677,14 +1693,14 @@
                                 <div class="col-xl-2 col-lg-2 col-md-2 col-3">
                                     <div class="logo logo-transform">
                                         <a href="{{ route('Frontend.index') }}"><img
-                                                src="{{ asset('frontend/img/logo/hello_transport.png') }}"  width="120" height="100" alt="Logo"></a>
+                                                src="{{ asset('frontend/img/logo/hello_transport.svg') }}" width="55" height="55" alt="Logo"></a>
                                     </div>
                                 </div>
                                 <div class="col-xl-10 col-lg-10 col-md-10 col-9">
                                     <div class="text-end d-xl-none">
                                         <div class="header__toggle-btn sidebar-toggle-btn">
                                             <div class="header__bar">
-                                                <span></span>
+                                                <span></span>   
                                                 <span></span>
                                                 <span></span>
                                             </div>
@@ -1757,7 +1773,7 @@
                                 <div class="col-xl-2 col-lg-2">
                                     <div class="logo d-none">
                                         <a href="{{ route('Frontend.index') }}"><img
-                                                src="{{ asset('frontend/img/logo/smalllogo.png') }}" alt="Logo"></a>
+                                                src="{{ asset('frontend/img/logo/hello_transport.svg') }}" width="55" height="55" alt="Logo"></a>
                                     </div>
                                 </div>
                                 <div class="col-xl-10 col-lg-10">
@@ -1848,7 +1864,7 @@
                         <div class="col-xl-2 col-lg-2 col-3">
                             <div class="logo">
                                 <a href="{{ route('Frontend.index') }}"><img
-                                        src="{{ asset('frontend/img/logo/smalllogo.png') }}" alt="Logo"></a>
+                                        src="{{ asset('frontend/img/logo/hello_transport.svg') }}" width="55" height="55" alt="Logo"></a>
                             </div>
                         </div>
                         <div class="col-xl-10 col-lg-10 col-9">
@@ -1944,7 +1960,7 @@
                     <div class="sidebar__content">
                         <div class="sidebar__logo mb-40">
                             <a href="{{ route('Frontend.index') }}">
-                                <img src="{{ asset('frontend/img/logo/smalllogo.png') }}" alt="logo.png">
+                                <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" width="70" height="70" alt="logo">
                             </a>
                         </div>
                         <div class="sidebar__search mb-25">

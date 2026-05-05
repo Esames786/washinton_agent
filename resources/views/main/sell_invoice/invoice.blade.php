@@ -65,7 +65,7 @@
                 <div class="col-sm-12">
                     <div class="row">
                         <div class="col-sm-5 my-auto">
-                            <img src="{{ url('assets/images/brand/SHIPA1logo.webp')}}" class="w-50" alt="Ship A1" />
+                            <img src="{{ url('frontend/img/logo/hello_transport.svg')}}" class="w-50" alt="Ship A1" />
                         </div>
                         <div class="col-sm-7">
                             <div class="bg-muted py-3">

@@ -92,13 +92,13 @@
 <aside class="app-sidebar">
     <div class="app-sidebar__logo">
         <a class="header-brand" href="{{ url('dashboard') }}">
-            <img src="{{ url('frontend/img/logo/hello_transport.png') }}" class="header-brand-img desktop-lgo"
+            <img src="{{ url('frontend/img/logo/hello_transport.svg') }}" class="header-brand-img desktop-lgo"
                 alt="DayDispatch logo">
-            <img src="{{ url('frontend/img/logo/hello_transport.png') }}" class="header-brand-img dark-logo"
+            <img src="{{ url('frontend/img/logo/hello_transport.svg') }}" class="header-brand-img dark-logo"
                 alt="DayDispatch logo">
-            <img src="{{ url('frontend/img/logo/hello_transport.png') }}" class="header-brand-img mobile-logo"
+            <img src="{{ url('frontend/img/logo/hello_transport.svg') }}" class="header-brand-img mobile-logo"
                 alt="DayDispatch logo" style="border: 1px solid deepskyblue; border-radius: 100px;">
-            <img src="{{ url('frontend/img/logo/hello_transport.png') }}" class="header-brand-img darkmobile-logo"
+            <img src="{{ url('frontend/img/logo/hello_transport.svg') }}" class="header-brand-img darkmobile-logo"
                 alt="DayDispatch logo" style="border: 1px solid deepskyblue; border-radius: 100px;">
             <audio controls style="display: none;" id="noti">
                 <source src="{{ url('audio/notification.mp3') }}" type="audio/mpeg">

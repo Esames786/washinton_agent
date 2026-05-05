@@ -125,7 +125,7 @@
                                                             style="background-color: #007bff ; border-radius: 10px; gap: 5px;">
                                                             <div class="avatar"
                                                                 style="width: 45px; height: 45px; overflow: hidden; border-radius: 100%; position: relative; display: flex; justify-content: center; align-items: center;">
-                                                                <img src="{{ asset('frontend/img/logo/smalllogo.png') }}"
+                                                                <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}"
                                                                     class="" alt="Admin"
                                                                     style="width: 45px; height: 45px; border-radius: 100%; object-fit: cover;">
                                                                 <span class="status-online"></span>

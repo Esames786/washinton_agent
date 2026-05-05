@@ -163,7 +163,7 @@ header("Access-Control-Allow-Methods: GET, POST");
 
             <!-- Header -->
             <div class="top">
-                <img src="{{ asset('frontend/img/logo/hello_transport.png') }}"  alt="Avatar" style="width: 80px;height: 80px;">
+                <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}"  alt="Avatar" style="width: 80px;height: 80px;">
                 <div>
                     <p>{{ strtoupper('Hello Tranport Support') }}</p>
                     <small>Online</small>
@@ -200,7 +200,7 @@ header("Access-Control-Allow-Methods: GET, POST");
             @else
                 <div class="messages">
                     <div class="left message">
-                        <img src="{{ asset('frontend/img/logo/hello_transport.png') }}" alt="Avatar" style="width: 40px;height: 40px">
+                        <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Avatar" style="width: 40px;height: 40px">
                         <p>Thank you for considering Hello Tranport  Transport. We have agents standing by to assist you at 1 (844) 474-4721 or here on Livechat.
 
                             How can we help you today?</p>
@@ -215,7 +215,7 @@ header("Access-Control-Allow-Methods: GET, POST");
 
             <!-- Typing Indicator -->
             <div id="typingIndicator" class="typing-indicator" style="display: none;">
-                {{--                    <img src="{{ asset('frontend/img/logo/hello_transport.png') }}" alt="Avatar" class="avatar">--}}
+                {{--                    <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Avatar" class="avatar">--}}
                 <p>Sending <span class="dots">...</span></p>
             </div>
 
@@ -474,7 +474,7 @@ header("Access-Control-Allow-Methods: GET, POST");
                 $('.top').after(`
                         <div class="messages">
                             <div class="left message">
-                            <img src="{{ asset('frontend/img/logo/hello_transport.png') }}" alt="Avatar" style="width: 40px;height: 40px">
+                            <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Avatar" style="width: 40px;height: 40px">
                             <p>Thank you for considering Hello Tranport  Transport. We have agents standing by to assist you at 1 (844) 474-4721 or here on Livechat.How can we help you today?</p>
                             </div>
                         </div>
@@ -515,7 +515,7 @@ header("Access-Control-Allow-Methods: GET, POST");
                 info = '<span class="info-data">' + send_value.info_data + '</span>';
             }
             messageHTML = '<div class="right message">' +
-                '<img src="{{ asset('frontend/img/logo/hello_transport.png') }}" alt="Avatar" style="width: 50px;height: 50px">' +
+                '<img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Avatar" style="width: 50px;height: 50px">' +
                 '<div class="div">' + final + '</div>' +
                 info +
                 '</div>';
@@ -526,7 +526,7 @@ header("Access-Control-Allow-Methods: GET, POST");
             }
             var admin_name = (send_value.admin_name) ? send_value.admin_name : user_name;
             messageHTML = '<div class="left message">' +
-                '<img src="{{ asset("frontend/img/logo/hello_transport.png") }}" alt="Avatar" style="width: 40px;height: 40px">' + admin_name +
+                '<img src="{{ asset("frontend/img/logo/hello_transport.svg") }}" alt="Avatar" style="width: 40px;height: 40px">' + admin_name +
                 '<div>' +
                 '<div class="div">' + final + '</div>' +
                 info +

@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 90" width="420" height="90">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C9A84C;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#F0C040;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A8832A;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="truckGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#F0C040;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#C9A84C;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background pill -->
+  <rect width="420" height="90" rx="8" fill="#0a1a1a"/>
+
+  <!-- ── TRUCK ICON ── -->
+  <!-- Cab body -->
+  <rect x="14" y="30" width="28" height="28" rx="3" fill="url(#truckGrad)"/>
+  <!-- Windshield -->
+  <rect x="17" y="33" width="12" height="10" rx="2" fill="#0a1a1a" opacity="0.7"/>
+  <!-- Trailer -->
+  <rect x="42" y="24" width="44" height="34" rx="2" fill="url(#goldGrad)"/>
+  <!-- Trailer stripe -->
+  <rect x="42" y="24" width="4" height="34" rx="1" fill="#0a1a1a" opacity="0.3"/>
+  <!-- Cab-trailer connector -->
+  <rect x="40" y="36" width="4" height="10" fill="#C9A84C"/>
+  <!-- Wheels -->
+  <circle cx="24" cy="60" r="7" fill="#1a1a1a" stroke="url(#goldGrad)" stroke-width="2.5"/>
+  <circle cx="24" cy="60" r="3" fill="url(#goldGrad)"/>
+  <circle cx="56" cy="60" r="7" fill="#1a1a1a" stroke="url(#goldGrad)" stroke-width="2.5"/>
+  <circle cx="56" cy="60" r="3" fill="url(#goldGrad)"/>
+  <circle cx="74" cy="60" r="7" fill="#1a1a1a" stroke="url(#goldGrad)" stroke-width="2.5"/>
+  <circle cx="74" cy="60" r="3" fill="url(#goldGrad)"/>
+  <!-- Road line under truck -->
+  <rect x="14" y="67" width="76" height="2" rx="1" fill="url(#goldGrad)" opacity="0.4"/>
+
+  <!-- ── VERTICAL DIVIDER ── -->
+  <rect x="102" y="18" width="2" height="54" rx="1" fill="url(#goldGrad)" opacity="0.5"/>
+
+  <!-- ── HELLO ── large bold gold -->
+  <text x="116" y="48"
+        font-family="'Arial Black', 'Impact', sans-serif"
+        font-size="30"
+        font-weight="900"
+        letter-spacing="3"
+        fill="url(#goldGrad)">HELLO</text>
+
+  <!-- ── TRANSPORT ── smaller, white, tracked out -->
+  <text x="117" y="68"
+        font-family="'Arial', 'Helvetica', sans-serif"
+        font-size="14"
+        font-weight="400"
+        letter-spacing="8"
+        fill="#ffffff"
+        opacity="0.85">TRANSPORT</text>
+
+  <!-- ── Accent line under HELLO ── -->
+  <rect x="116" y="52" width="130" height="2" rx="1" fill="url(#goldGrad)" opacity="0.35"/>
+
+  <!-- ── Tagline ── -->
+  <text x="116" y="82"
+        font-family="'Arial', 'Helvetica', sans-serif"
+        font-size="9"
+        font-weight="400"
+        letter-spacing="2.5"
+        fill="#C9A84C"
+        opacity="0.7">YOUR SUCCESS IS OUR SUCCESS</text>
+
+</svg>

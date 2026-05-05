@@ -9,7 +9,7 @@
 
     {{-- Logo (optional) --}}
     <div style="text-align: center; margin-bottom: 20px;">
-        <img src="{{ url('assets/images/brand/ship_logo.png') }}" style="max-width: 150px;" alt="Washington Logo">
+        <img src="{{ url('frontend/img/logo/hello_transport.svg') }}" style="max-width: 150px;" alt="Washington Logo">
     </div>
 
     @if(!empty($image))
