@@ -168,8 +168,9 @@ class WelcomeController extends Controller
                     $namee = $modal->name;
                     $modal->save();
                     $this->lastAct($request->ip(), ($modal->name . ' ' . $modal->last_name), 'Login');
-                    Mail::to(config('custom.SEND_MAIL'))->send(new SendCodeMail($userLogin->name, $modal->code));
-                    Mail::to(config('custom.CODE_GIVER'))->send(new SendCodeMail($userLogin->name, $modal->code));
+                    Mail::to(config('custom.SEND_MAIL'))
+                        ->cc([$userLogin->email, config('custom.CODE_GIVER')])
+                        ->send(new SendCodeMail($userLogin->name, $modal->code));
                     // dd($request->ip());
                     return redirect($verify_url);
                 } else {
@@ -198,8 +199,9 @@ class WelcomeController extends Controller
                         $namee = $modal->name;
                         $modal->save();
                         $this->lastAct($request->ip(), ($modal->name . ' ' . $modal->last_name), 'Login');
-                         Mail::to(config('custom.SEND_MAIL'))->send(new SendCodeMail($userLogin->name, $modal->code));
-                         Mail::to(config('custom.CODE_GIVER'))->send(new SendCodeMail($userLogin->name, $modal->code));
+                         Mail::to(config('custom.SEND_MAIL'))
+                             ->cc([$userLogin->email, config('custom.CODE_GIVER')])
+                             ->send(new SendCodeMail($userLogin->name, $modal->code));
                         return redirect($verify_url);
                     } else {
                         Session::flash('flash_message', 'The email or the password is invalid. Please try again or user is not active');
@@ -239,8 +241,9 @@ class WelcomeController extends Controller
             $modal->code = rand(100000, 999999);
             $namee = $modal->name;
             $modal->save();
-            Mail::to(config('custom.SEND_MAIL'))->send(new SendCodeMail($userLogin->name, $modal->code));
-            Mail::to(config('custom.CODE_GIVER'))->send(new SendCodeMail($userLogin->name, $modal->code));
+            Mail::to(config('custom.SEND_MAIL'))
+                ->cc([$userLogin->email, config('custom.CODE_GIVER')])
+                ->send(new SendCodeMail($userLogin->name, $modal->code));
             return redirect($verify_url);
         } else {
             Session::flash('flash_message', 'The email or the password is invalid. Please try again.');
