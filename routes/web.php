@@ -380,7 +380,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/price_request_assign_dispatcher', 'phone_quote\neworder\NewOrder@price_request_assign_dispatcher')->name('price_request_assign_dispatcher');
 
         // Central Gateway portal iframes
-        Route::get('/gateway-portal/hello', 'DashboardController@gatewayPortalHello')->name('gateway.portal.washington');
+        Route::get('/gateway-portal/hello', 'DashboardController@gatewayPortalHello')->name('gateway.portal.hello');
         Route::get('/gateway-portal/autohaul', 'DashboardController@gatewayPortalAutohaul')->name('gateway.portal.autohaul');
 
         Route::patch('/price-check/dispatchers/{user}/allow', 'phone_quote\neworder\NewOrder@togglePriceCheck')
