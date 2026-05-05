@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\AutoOrder;
-use App\OrderPayment;
-use App\OrderPaymentJourney;
-use App\OrderPaymentLog;
+use App\AgentOrderPayment;
+use App\AgentOrderPaymentJourney;
+use App\AgentOrderPaymentLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -57,7 +57,7 @@ class AgentPaymentController extends Controller
 
         $user = Auth::user();
 
-        $query = OrderPayment::with(['order'])
+        $query = AgentOrderPayment::with(['order'])
             ->where('user_id', $user->id)
             ->orderByDesc('id');
 
@@ -74,10 +74,10 @@ class AgentPaymentController extends Controller
         $payments = $query->paginate(20)->withQueryString();
 
         $totals = [
-            'pending'   => OrderPayment::where('user_id', $user->id)->where('payment_status', 'Payment Pending')->count(),
-            'confirmed' => OrderPayment::where('user_id', $user->id)->where('payment_status', 'Payment Confirmed')->count(),
-            'returned'  => OrderPayment::where('user_id', $user->id)->where('payment_status', 'Payment Return')->count(),
-            'profit'    => OrderPayment::where('user_id', $user->id)->where('payment_status', 'Payment Confirmed')->sum('profit'),
+            'pending'   => AgentOrderPayment::where('user_id', $user->id)->where('payment_status', 'Payment Pending')->count(),
+            'confirmed' => AgentOrderPayment::where('user_id', $user->id)->where('payment_status', 'Payment Confirmed')->count(),
+            'returned'  => AgentOrderPayment::where('user_id', $user->id)->where('payment_status', 'Payment Return')->count(),
+            'profit'    => AgentOrderPayment::where('user_id', $user->id)->where('payment_status', 'Payment Confirmed')->sum('profit'),
         ];
 
         return view('main.new_payment_system.agent.index', compact('payments', 'totals'));
@@ -132,7 +132,7 @@ class AgentPaymentController extends Controller
         try {
             $profit = (float)$request->book_price - (float)$request->carrier_price;
 
-            $payment = new OrderPayment();
+            $payment = new AgentOrderPayment();
             $payment->order_id          = $order ? $order->id : null;
             $payment->listing_order_id  = $request->order_ref;
             $payment->user_id           = Auth::id();
@@ -160,7 +160,7 @@ class AgentPaymentController extends Controller
             }
 
             // Initial journey entry
-            OrderPaymentJourney::create([
+            AgentOrderPaymentJourney::create([
                 'payment_id' => $payment->id,
                 'old_status' => null,
                 'new_status' => 'Payment Pending',
@@ -170,7 +170,7 @@ class AgentPaymentController extends Controller
             ]);
 
             // Log
-            OrderPaymentLog::create([
+            AgentOrderPaymentLog::create([
                 'payment_id'  => $payment->id,
                 'changed_by'  => Auth::id(),
                 'user_type'   => 'user',
@@ -198,7 +198,7 @@ class AgentPaymentController extends Controller
             return redirect('/dashboard')->with('error', 'Access denied.');
         }
 
-        $payment = OrderPayment::where('user_id', Auth::id())->findOrFail($id);
+        $payment = AgentOrderPayment::where('user_id', Auth::id())->findOrFail($id);
 
         if ($payment->payment_status === 'Payment Confirmed') {
             return back()->with('error', 'Confirmed payments cannot be edited.');
@@ -216,7 +216,7 @@ class AgentPaymentController extends Controller
             return redirect('/dashboard')->with('error', 'Access denied.');
         }
 
-        $payment = OrderPayment::where('user_id', Auth::id())->findOrFail($id);
+        $payment = AgentOrderPayment::where('user_id', Auth::id())->findOrFail($id);
 
         if ($payment->payment_status === 'Payment Confirmed') {
             return back()->with('error', 'Confirmed payments cannot be edited.');
@@ -280,10 +280,10 @@ class AgentPaymentController extends Controller
             $payment->save();
 
             // Log old values
-            OrderPaymentLog::create($logData);
+            AgentOrderPaymentLog::create($logData);
 
             // Journey entry
-            OrderPaymentJourney::create([
+            AgentOrderPaymentJourney::create([
                 'payment_id' => $payment->id,
                 'old_status' => $logData['old_payment_status'],
                 'new_status' => 'Payment Pending',
@@ -308,9 +308,9 @@ class AgentPaymentController extends Controller
     // ─────────────────────────────────────────────────────────────────────────
     public function journey($id)
     {
-        $payment = OrderPayment::where('user_id', Auth::id())->findOrFail($id);
+        $payment = AgentOrderPayment::where('user_id', Auth::id())->findOrFail($id);
 
-        $journeys = OrderPaymentJourney::with('changedBy')
+        $journeys = AgentOrderPaymentJourney::with('changedBy')
             ->where('payment_id', $payment->id)
             ->orderByDesc('created_at')
             ->get();
@@ -335,7 +335,7 @@ class AgentPaymentController extends Controller
         }
 
         // Check if payment already exists for this order by this agent
-        $existing = OrderPayment::where('order_id', $orderId)
+        $existing = AgentOrderPayment::where('order_id', $orderId)
             ->where('user_id', Auth::id())
             ->whereNotIn('payment_status', ['Payment Return'])
             ->first();

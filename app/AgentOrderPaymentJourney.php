@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class OrderPaymentJourney extends Model
+class AgentOrderPaymentJourney extends Model
 {
     protected $table = 'order_payment_journeys';
 
@@ -15,7 +15,7 @@ class OrderPaymentJourney extends Model
 
     public function payment()
     {
-        return $this->belongsTo(OrderPayment::class, 'payment_id');
+        return $this->belongsTo(AgentOrderPayment::class, 'payment_id');
     }
 
     public function changedBy()

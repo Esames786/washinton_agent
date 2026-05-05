@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\AutoOrder;
-use App\OrderPayment;
-use App\OrderPaymentJourney;
-use App\OrderPaymentLog;
+use App\AgentOrderPayment;
+use App\AgentOrderPaymentJourney;
+use App\AgentOrderPaymentLog;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -55,7 +55,7 @@ class NewPaymentSystemController extends Controller
             return redirect('/dashboard')->with('error', 'Access denied.');
         }
 
-        $query = OrderPayment::with(['agent', 'order'])
+        $query = AgentOrderPayment::with(['agent', 'order'])
             ->orderByDesc('id');
 
         // Filters
@@ -100,7 +100,7 @@ class NewPaymentSystemController extends Controller
             return redirect('/dashboard')->with('error', 'Access denied.');
         }
 
-        $payment = OrderPayment::with(['agent', 'order', 'journeys.changedBy', 'logs.changedBy'])
+        $payment = AgentOrderPayment::with(['agent', 'order', 'journeys.changedBy', 'logs.changedBy'])
             ->findOrFail($id);
 
         return view('main.new_payment_system.admin.show', compact('payment'));
@@ -115,7 +115,7 @@ class NewPaymentSystemController extends Controller
             return response()->json(['success' => false, 'message' => 'Access denied.'], 403);
         }
 
-        $payment = OrderPayment::findOrFail($id);
+        $payment = AgentOrderPayment::findOrFail($id);
 
         if ($payment->payment_status === 'Payment Confirmed') {
             return response()->json(['success' => false, 'message' => 'Already confirmed.'], 409);
@@ -132,7 +132,7 @@ class NewPaymentSystemController extends Controller
             $payment->save();
 
             // Journey
-            OrderPaymentJourney::create([
+            AgentOrderPaymentJourney::create([
                 'payment_id'  => $payment->id,
                 'old_status'  => $oldStatus,
                 'new_status'  => 'Payment Confirmed',
@@ -142,7 +142,7 @@ class NewPaymentSystemController extends Controller
             ]);
 
             // Log
-            OrderPaymentLog::create([
+            AgentOrderPaymentLog::create([
                 'payment_id'         => $payment->id,
                 'changed_by'         => Auth::id(),
                 'user_type'          => 'admin',
@@ -172,7 +172,7 @@ class NewPaymentSystemController extends Controller
 
         $request->validate(['remarks' => 'required|string|max:500']);
 
-        $payment = OrderPayment::findOrFail($id);
+        $payment = AgentOrderPayment::findOrFail($id);
 
         if ($payment->payment_status === 'Payment Confirmed') {
             return response()->json(['success' => false, 'message' => 'Cannot return a confirmed payment.'], 409);
@@ -187,7 +187,7 @@ class NewPaymentSystemController extends Controller
             $payment->admin_remarks  = $request->remarks;
             $payment->save();
 
-            OrderPaymentJourney::create([
+            AgentOrderPaymentJourney::create([
                 'payment_id' => $payment->id,
                 'old_status' => $oldStatus,
                 'new_status' => 'Payment Return',
@@ -196,7 +196,7 @@ class NewPaymentSystemController extends Controller
                 'note'       => $request->remarks,
             ]);
 
-            OrderPaymentLog::create([
+            AgentOrderPaymentLog::create([
                 'payment_id'         => $payment->id,
                 'changed_by'         => Auth::id(),
                 'user_type'          => 'admin',
@@ -224,7 +224,7 @@ class NewPaymentSystemController extends Controller
             return response()->json(['success' => false], 403);
         }
 
-        $journeys = OrderPaymentJourney::with('changedBy')
+        $journeys = AgentOrderPaymentJourney::with('changedBy')
             ->where('payment_id', $id)
             ->orderByDesc('created_at')
             ->get();
