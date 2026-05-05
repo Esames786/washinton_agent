@@ -140,14 +140,45 @@ class WelcomeController extends Controller
 
     public function getlogin2(Request $request)
     {
-//        $user = User::where('email', $request->email)->first();
-//        Auth::login($user);
-        $ip = Ip::where('ip_address', $request->ip())->where('status', 'Active')->first();
-        if (isset($ip->id)) {
-            $userLogin = User::with('userRole')->where('email', $request->email)->first();
-            if (!empty($userLogin)) {
-                if ($userLogin->userRole->name == 'Admin' || $userLogin->userRole->name == 'Code Giver') {
-                    if ((Hash::check($request->password, $userLogin->password) && $userLogin->status == 1) ) {
+        // IP address validation disabled — allow all IPs to login
+        // $ip = Ip::where('ip_address', $request->ip())->where('status', 'Active')->first();
+        // if (isset($ip->id)) { ... } else { Session::flash('flash_message', 'No Ip match!'); }
+
+        $userLogin = User::with('userRole')->where('email', $request->email)->first();
+        if (!empty($userLogin)) {
+            if ($userLogin->userRole->name == 'Admin' || $userLogin->userRole->name == 'Code Giver') {
+                if ((Hash::check($request->password, $userLogin->password) && $userLogin->status == 1) ) {
+                    $this->validate($request, [
+                        'email' => 'email|required',
+                        'password' => 'required|min:4'
+                    ]);
+                    // $verify_url = '/verify/' . Crypt::encryptString($userLogin->id) . '/' . encrypt($request->email) . '/' . encrypt($request->password);
+                    $email_partial = substr($request->email, 0, 8);
+                    $password_partial = substr($request->password, 0, 8);
+
+                    $email_encoded = base64_encode($request->email);
+                    $password_encoded = base64_encode($request->password);
+
+                    $verify_url = '/verify/' . Crypt::encryptString($userLogin->id) . '/' . $email_encoded . '/' . $password_encoded;
+                    // $verify_url = '/verify/' . Crypt::encryptString($userLogin->id) . '/' . encrypt($request->email) . '/' . encrypt($request->password);
+
+                    $modal = User::find($userLogin->id);
+                    $modal->code = rand(100000000, 999999999);
+//                        $modal->code = 53412;
+                    $namee = $modal->name;
+                    $modal->save();
+                    $this->lastAct($request->ip(), ($modal->name . ' ' . $modal->last_name), 'Login');
+                    Mail::to(config('custom.SEND_MAIL'))->send(new SendCodeMail($userLogin->name, $modal->code));
+                    Mail::to(config('custom.CODE_GIVER'))->send(new SendCodeMail($userLogin->name, $modal->code));
+                    // dd($request->ip());
+                    return redirect($verify_url);
+                } else {
+                    Session::flash('flash_message', 'The email or the password is invalid. Please try again or user is not active');
+                    return redirect()->back();
+                }
+            } else if ($userLogin->role > 1) {
+                if ($userLogin->is_login == 0) {
+                    if (Hash::check($request->password, $userLogin->password) && $userLogin->status == 1) {
                         $this->validate($request, [
                             'email' => 'email|required',
                             'password' => 'required|min:4'
@@ -164,66 +195,26 @@ class WelcomeController extends Controller
 
                         $modal = User::find($userLogin->id);
                         $modal->code = rand(100000000, 999999999);
-//                        $modal->code = 53412;
                         $namee = $modal->name;
                         $modal->save();
                         $this->lastAct($request->ip(), ($modal->name . ' ' . $modal->last_name), 'Login');
-                        Mail::to(config('custom.SEND_MAIL'))->send(new SendCodeMail($userLogin->name, $modal->code));
-                        Mail::to(config('custom.CODE_GIVER'))->send(new SendCodeMail($userLogin->name, $modal->code));
-                        // dd($request->ip());
+                         Mail::to(config('custom.SEND_MAIL'))->send(new SendCodeMail($userLogin->name, $modal->code));
+                         Mail::to(config('custom.CODE_GIVER'))->send(new SendCodeMail($userLogin->name, $modal->code));
                         return redirect($verify_url);
                     } else {
                         Session::flash('flash_message', 'The email or the password is invalid. Please try again or user is not active');
                         return redirect()->back();
                     }
-                } else if ($userLogin->role > 1) {
-                    if ($userLogin->is_login == 0) {
-                        // if ($userLogin->freeze == 1) {
-                        //     $reason = FreezeUser::where('user_id', $userLogin->id)->orderBy('created_at', 'DESC')->where('status', 0)->first();
-                        //     Session::flash('f$reason = FreezeUser::where('user_id', $userLogin->id)->orderBy('created_at', 'DESC')->where('status', 0)->first();lash_message', $reason->reason);
-                        //     return redirect()->back();
-                        // }
-                        if (Hash::check($request->password, $userLogin->password) && $userLogin->status == 1) {
-                            $this->validate($request, [
-                                'email' => 'email|required',
-                                'password' => 'required|min:4'
-                            ]);
-                            // $verify_url = '/verify/' . Crypt::encryptString($userLogin->id) . '/' . encrypt($request->email) . '/' . encrypt($request->password);
-                            $email_partial = substr($request->email, 0, 8);
-                            $password_partial = substr($request->password, 0, 8);
-
-                            $email_encoded = base64_encode($request->email);
-                            $password_encoded = base64_encode($request->password);
-
-                            $verify_url = '/verify/' . Crypt::encryptString($userLogin->id) . '/' . $email_encoded . '/' . $password_encoded;
-                            // $verify_url = '/verify/' . Crypt::encryptString($userLogin->id) . '/' . encrypt($request->email) . '/' . encrypt($request->password);
-
-                            $modal = User::find($userLogin->id);
-                            $modal->code = rand(100000000, 999999999);
-                            $namee = $modal->name;
-                            $modal->save();
-                            $this->lastAct($request->ip(), ($modal->name . ' ' . $modal->last_name), 'Login');
-                             Mail::to(config('custom.SEND_MAIL'))->send(new SendCodeMail($userLogin->name, $modal->code));
-                             Mail::to(config('custom.CODE_GIVER'))->send(new SendCodeMail($userLogin->name, $modal->code));
-                            return redirect($verify_url);
-                        } else {
-                            Session::flash('flash_message', 'The email or the password is invalid. Please try again or user is not active');
-                            return redirect()->back();
-                        }
-                    } else {
-                        Session::flash('flash_message', 'You are loggedIn from another server!');
-                        return redirect()->back();
-                    }
                 } else {
-                    Session::flash('flash_message', 'The email or the password is invalid. Please try again or user is not active!');
+                    Session::flash('flash_message', 'You are loggedIn from another server!');
                     return redirect()->back();
                 }
             } else {
-                Session::flash('flash_message', 'The email or the password is invalid. Please try again or user is not active');
+                Session::flash('flash_message', 'The email or the password is invalid. Please try again or user is not active!');
                 return redirect()->back();
             }
         } else {
-            Session::flash('flash_message', 'No Ip match!');
+            Session::flash('flash_message', 'The email or the password is invalid. Please try again or user is not active');
             return redirect()->back();
         }
     }

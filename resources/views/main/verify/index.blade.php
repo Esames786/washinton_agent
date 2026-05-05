@@ -5,8 +5,6 @@
 @endsection
 
 @section('content')
-<script src="https://www.google.com/recaptcha/api.js" 
-async defer></script>
     <div class="box">
         <div></div>
         <div></div>
@@ -49,16 +47,6 @@ async defer></script>
                                                     <input class="form-control" name="verified"
                                                            placeholder="Verification code" type="text">
                                                 </div>
-                                                <!--<div class="form-group">-->
-                                                <!--    <label class="custom-control custom-checkbox">-->
-                                                <!--        <input type="checkbox" class="custom-control-input"/>-->
-                                                <!--    </label>-->
-                                                <!--</div>-->
-                                                <div class="col-sm-12 mb-2 p-0">
-                                                    <div class="g-recaptcha" id="feedback-recaptcha" 
-                                                         data-sitekey="6LeoLjknAAAAAMG7lg4VsHVuD17VTKVAt0rNElXa">
-                                                    </div>
-                                                </div>
                                                 <button type="submit" class="btn btn-warning btn-block px-4" id="loginBtn"><i
                                                         class="fe fe-send"></i> Verify
                                                 </button>
@@ -93,21 +81,8 @@ async defer></script>
 @endsection
 
 @section('extraScript')
-<script type="text/javascript">
-     var onloadCallback = function() {
-       grecaptcha.render('feedback-recaptcha', {
-         'sitekey' : '6LeoLjknAAAAAE1OyJALGEBVvZB3xZXX-CqaqLvK'
-       });
-     };
-     $("#loginBtn").click(function(e){
-        var response = grecaptcha.getResponse();
-        $("#feedback-recaptcha").parent('.col-sm-12').siblings('.text-danger').remove();
-        if(response.length == 0) 
-        { 
-            e.preventDefault();
-            $("#feedback-recaptcha").parent('.col-sm-12').after('<div class="text-danger col-sm-12 p-0 mb-2">Please check recaptcha, if you are not a robot!</div>');
-        }
-     })
+<script>
+    // Recaptcha removed
 </script>
 @endsection
 
