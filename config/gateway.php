@@ -18,7 +18,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'autohaul' => [
-        'platform' => env('AUTOHAUL_PLATFORM', 'washington-autohaul'),
+        'platform' => env('AUTOHAUL_PLATFORM', 'hello-autohaul'),
         'api_key'  => env('AUTOHAUL_API_KEY', ''),
         'secret'   => env('AUTOHAUL_API_SECRET', ''),
     ],
@@ -28,7 +28,7 @@ return [
     | Client portal URLs (iframe embed)
     |--------------------------------------------------------------------------
     */
-    'portal_url_washington' => env('GATEWAY_PORTAL_WASHINGTON', ''),
+    'portal_url_washington' => env('GATEWAY_PORTAL_HELLO', ''),
     'portal_url_autohaul'   => env('GATEWAY_PORTAL_AUTOHAUL', ''),
 
 ];
