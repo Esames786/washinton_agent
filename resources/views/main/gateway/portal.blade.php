@@ -92,7 +92,7 @@
     <div class="gp-header">
         <div class="gp-header-left">
             <span class="gp-badge {{ $portalType === 'autohaul' ? 'autohaul' : '' }}">
-                {{ $portalType === 'autohaul' ? 'AutoHaul' : 'Washington' }}
+                {{ $portalType === 'autohaul' ? 'AutoHaul' : 'Hello' }}
             </span>
             <span class="gp-title">{{ $title }}</span>
         </div>
