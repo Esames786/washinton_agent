@@ -1651,8 +1651,8 @@ Agent: Thank you for your cooperation. We appreciate your attention to these det
             <div class="container">
                 <div class="row align-items-center flex-row-reverse">
                     <div class="col-md-12 col-sm-12 text-center">
-                        Copyright © {{ date('Y') }} <a href="{{ url('/dashboard') }}">SHIPA1</a>. Designed By <a
-                            href="{{ url('/dashboard') }}">SHIPA1
+                        Copyright © {{ date('Y') }} <a href="{{ url('/dashboard') }}">DayDispatch</a>. Designed By <a
+                            href="{{ url('/dashboard') }}">DayDispatch
                             Frontend Team </a> All Rights Reserved ®.
 
                     </div>

@@ -132,14 +132,14 @@ if (!function_exists('get_user_name123')) {
     <div class="container-fluid">
         <div class="d-flex" style="align-items:center;">
             <a class="header-brand" href="/dashboard">
-                <img src="{{ url('assets/images/brand/ship_logo.png')}}" class="header-brand-img desktop-lgo"
-                     alt="Admintro logo">
-                <img src="{{ url('assets/images/brand/ship_logo.png')}}" class="header-brand-img dark-logo"
-                     alt="Admintro logo">
+                <img src="{{ url('frontend/img/logo/hello_transport.png')}}" class="header-brand-img desktop-lgo"
+                     alt="DayDispatch logo">
+                <img src="{{ url('frontend/img/logo/hello_transport.png')}}" class="header-brand-img dark-logo"
+                     alt="DayDispatch logo">
                 <img src="{{ url('assets/images/brand/favicon.png')}}" class="header-brand-img mobile-logo"
-                     alt="Admintro logo">
+                     alt="DayDispatch logo">
                 <img src="{{ url('assets/images/brand/favicon1.png')}}" class="header-brand-img darkmobile-logo"
-                     alt="Admintro logo">
+                     alt="DayDispatch logo">
             </a>
 
 
