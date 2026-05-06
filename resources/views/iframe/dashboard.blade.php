@@ -2,349 +2,549 @@
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST");
 ?>
-    <!-- JavaScript -->
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-<!-- End JavaScript -->
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-<!-- CSS -->
-<link rel="stylesheet" href="{{ asset('frontend/style.css') }}?id=5">
-<!-- End CSS -->
+<link rel="stylesheet" href="{{ asset('frontend/style.css') }}?id=6">
 
 <style>
-    body {
-        font-family: 'Arial', sans-serif;
-        /*background-color: #f4f4f4;*/
-        margin: 0;
-        padding: 0;
-        background: transparent;
-    }
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Arial', sans-serif;
+    background: transparent;
+    height: 100vh;
+    overflow: hidden;
+}
 
-    .bottom {
-        display: flex;
-        align-items: center;
-        padding: 15px;
-        background-color: #f4f4f4;
-    }
+/* ── Main chat wrapper ── */
+.chat-widget {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: #0a1520;
+    color: #fff;
+}
 
-    form {
-        flex: 1;
-        display: flex;
-        align-items: center;
-    }
+/* ── Header ── */
+.chat-header {
+    background: linear-gradient(135deg, #0d1f2d 0%, #071520 100%);
+    border-bottom: 2px solid #C9A84C;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+.chat-header img {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 2px solid #C9A84C;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+.chat-header-info .name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #FFD700;
+    letter-spacing: 0.5px;
+    font-family: 'Arial Black', sans-serif;
+    text-transform: uppercase;
+}
+.chat-header-info .status {
+    font-size: 11px;
+    color: #4ade80;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+}
+.chat-header-info .status::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    background: #4ade80;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
 
-    input {
-        flex: 1;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        margin-right: 10px;
-    }
+/* ── History sidebar ── */
+.chat-history-panel {
+    background: #071015;
+    border-right: 1px solid rgba(201,168,76,0.2);
+    padding: 10px;
+    overflow-y: auto;
+    min-width: 140px;
+    max-width: 140px;
+}
+.chat-history-panel strong {
+    font-size: 11px;
+    color: #C9A84C;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+}
+.chat-history-panel ul { list-style: none; padding: 0; }
+.chat-history-panel ul li { margin-bottom: 4px; }
+.chat-history-panel ul li button {
+    width: 100%;
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.15);
+    color: rgba(255,255,255,0.7);
+    font-size: 10px;
+    padding: 5px 7px;
+    border-radius: 6px;
+    text-align: left;
+    cursor: pointer;
+    transition: all .15s;
+}
+.chat-history-panel ul li button:hover,
+.chat-history-panel ul li button.active {
+    background: rgba(201,168,76,0.2);
+    border-color: #C9A84C;
+    color: #FFD700;
+}
 
-    select {
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        margin-right: 10px;
-    }
+/* ── Body row ── */
+.chat-body-row {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
 
-    button {
-        background-color: #3f51b5;
-        color: #fff;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
+/* ── Messages area ── */
+.messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #0a1520;
+}
+.messages::-webkit-scrollbar { width: 4px; }
+.messages::-webkit-scrollbar-track { background: transparent; }
+.messages::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 2px; }
 
-    button:disabled {
-        background-color: #ccc;
-        cursor: not-allowed;
-    }
+/* ── Message bubbles ── */
+.message {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    max-width: 85%;
+}
+.message img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid #C9A84C;
+    flex-shrink: 0;
+    object-fit: cover;
+}
+.message .bubble {
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    max-width: 100%;
+    word-break: break-word;
+}
+/* Left = agent/support */
+.message.left {
+    align-self: flex-start;
+}
+.message.left .bubble {
+    background: rgba(201,168,76,0.12);
+    border: 1px solid rgba(201,168,76,0.2);
+    color: rgba(255,255,255,0.9);
+    border-bottom-left-radius: 4px;
+}
+/* Right = customer */
+.message.right {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+.message.right .bubble {
+    background: linear-gradient(135deg, #C9A84C, #8B6914);
+    color: #000;
+    font-weight: 600;
+    border-bottom-right-radius: 4px;
+}
+.message .agent-name {
+    font-size: 10px;
+    color: #C9A84C;
+    margin-bottom: 3px;
+    font-weight: 600;
+}
+.info-data {
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    display: block;
+    margin-top: 3px;
+    text-align: right;
+}
 
+/* ── User details form ── */
+.user-details-form {
+    background: rgba(201,168,76,0.06);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 14px;
+    padding: 20px;
+    margin: 8px 0;
+}
+.user-details-form h5 {
+    color: #FFD700;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.user-details-form label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    display: block;
+}
+.user-details-form input {
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(201,168,76,0.2);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 13px;
+    color: #fff;
+    width: 100%;
+    margin-bottom: 10px;
+    transition: border-color .2s;
+}
+.user-details-form input:focus {
+    border-color: #C9A84C;
+    outline: none;
+    background: rgba(255,255,255,0.07);
+}
+.user-details-form input::placeholder { color: rgba(255,255,255,0.25); }
+.btn-start-chat {
+    background: linear-gradient(135deg, #FFD700, #C9A84C);
+    border: none;
+    color: #000;
+    font-weight: 700;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all .2s;
+    width: 100%;
+    margin-top: 4px;
+}
+.btn-start-chat:hover {
+    background: linear-gradient(135deg, #FFE44D, #D4A830);
+    transform: translateY(-1px);
+}
 
+/* ── Typing indicator ── */
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    padding: 8px 12px;
+    background: rgba(201,168,76,0.06);
+    border-radius: 10px;
+    width: fit-content;
+}
+.typing-indicator .dots::after {
+    content: '...';
+    animation: typing-dots 1.2s infinite steps(3, start);
+}
+@keyframes typing-dots {
+    0% { content: ''; }
+    33% { content: '.'; }
+    66% { content: '..'; }
+    100% { content: '...'; }
+}
 
+/* ── Footer / input area ── */
+.chat-footer {
+    background: #071015;
+    border-top: 1px solid rgba(201,168,76,0.2);
+    padding: 10px 14px;
+    flex-shrink: 0;
+}
+.chat-footer form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.chat-footer input[type="text"] {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(201,168,76,0.2);
+    border-radius: 24px;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: #fff;
+    transition: border-color .2s;
+}
+.chat-footer input[type="text"]:focus {
+    border-color: #C9A84C;
+    outline: none;
+    background: rgba(255,255,255,0.07);
+}
+.chat-footer input[type="text"]::placeholder { color: rgba(255,255,255,0.3); }
+.chat-footer .emoji-btn {
+    font-size: 22px;
+    cursor: pointer;
+    text-decoration: none;
+    flex-shrink: 0;
+    line-height: 1;
+}
+.chat-footer .send-btn {
+    background: linear-gradient(135deg, #FFD700, #C9A84C);
+    border: none;
+    color: #000;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all .2s;
+    font-size: 14px;
+}
+.chat-footer .send-btn:hover {
+    background: linear-gradient(135deg, #FFE44D, #D4A830);
+    transform: scale(1.05);
+}
+.chat-footer .send-btn:disabled {
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.3);
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ── Emoji popup ── */
+#emoji-popup {
+    position: absolute;
+    bottom: 60px;
+    left: 14px;
+    right: 14px;
+    background: #0d1f2d;
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 12px;
+    padding: 10px;
+    display: none;
+    flex-wrap: wrap;
+    gap: 4px;
+    z-index: 100;
+    max-height: 160px;
+    overflow-y: auto;
+}
+#emoji-popup .emoji {
+    font-size: 20px;
+    cursor: pointer;
+    padding: 3px;
+    border-radius: 4px;
+    transition: background .1s;
+}
+#emoji-popup .emoji:hover { background: rgba(201,168,76,0.15); }
+
+/* ── Search input ── */
+#keyword {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: #fff;
+    width: 100%;
+    margin-bottom: 8px;
+}
+#keyword::placeholder { color: rgba(255,255,255,0.3); }
 </style>
 
-<style>
-    .typing-indicator {
-        display: flex;
-        align-items: center;
-        font-family: Arial, sans-serif;
-        font-size: 14px;
-        color: #555;
-        padding: 10px;
-        background-color: #f5f5f5;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        max-width: 250px;
-    }
-
-    .typing-indicator .avatar {
-        width: 20px;
-        height: 20px;
-        margin-right: 10px;
-        border-radius: 50%;
-        object-fit: cover;
-    }
-
-    .typing-indicator .dots {
-        display: inline-block;
-    }
-
-    .typing-indicator .dots::after {
-        content: '...';
-        animation: typing-dots 1.2s infinite steps(3, start);
-    }
-
-    @keyframes typing-dots {
-        0% {
-            content: '';
-        }
-        33% {
-            content: '.';
-        }
-        66% {
-            content: '..';
-        }
-        100% {
-            content: '...';
-        }
-    }
-
-</style>
-
-<style>
-    #show_history ul li {
-        padding: 3px;
-        cursor: pointer;
-    }
-    #show_history ul li.active {
-        background-color: green;
-        color: white;
-    }
-</style>
-<style>
-    .info-data {
-        font-size: 10px;
-        color: #777; /* Optional: You can use a light gray color for better readability */
-        display: block; /* Ensures it appears on a new line */
-        margin-top: 5px; /* Adds a little space between the message and the info */
-    }
-
-</style>
 <audio id="audio_success" autostart="false">
-    <source src="{{asset('success_sound.mp3')}}" type="audio/ogg">
-    <source src="{{asset('success_sound.mp3')}}" type="audio/mpeg">
-    Your browser does not support the audio element.
+    <source src="{{ asset('success_sound.mp3') }}" type="audio/mpeg">
 </audio>
-<div class="chat">
-    <div class="row">
-        <div class="col-md-2" style="border: groove;display: {{ ($user_id != 0) ? 'block' : 'none' }}" id="show_history">
-            <strong><u>History </u></strong>
-            <ul>
 
-            </ul>
+<div class="chat-widget">
+
+    {{-- HEADER --}}
+    <div class="chat-header">
+        <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Logo">
+        <div class="chat-header-info">
+            <div class="name">Hello Transport Support</div>
+            <div class="status">Online</div>
         </div>
-        <div class="col-md-10" style="border: groove" id="chat_box">
-            <input
-                type="text"
-                onkeyup="handleSearch(this)"
-                name="keyword"
-                id="keyword"
-                style="float: right;border-radius: 10px;display: none"
-                placeholder="Search Chat">
+    </div>
+
+    {{-- BODY ROW --}}
+    <div class="chat-body-row" style="flex:1;overflow:hidden;">
+
+        {{-- HISTORY SIDEBAR (admin only) --}}
+        <div class="chat-history-panel" style="display: {{ ($user_id != 0) ? 'flex' : 'none' }}; flex-direction:column;" id="show_history">
+            <strong>History</strong>
+            @if($user_id != 0)
+                <input type="text" onkeyup="handleSearch(this)" name="keyword" id="keyword" placeholder="🔍 Search...">
+            @endif
+            <ul></ul>
+        </div>
+
+        {{-- MAIN CHAT COLUMN --}}
+        <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;" id="chat_box">
             <input type="hidden" id="thread_id_send">
 
-            <!-- Header -->
-            <div class="top">
-                <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}"  alt="Avatar" style="width: 80px;height: 80px;">
-                <div>
-                    <p>{{ strtoupper('Hello Tranport Support') }}</p>
-                    <small>Online</small>
-                    {{--                        <p>Thank you for considering Hello Tranport  Transport. We have agents standing by to assist you at 1 (844) 474-4721 or here on Livechat.</p>--}}
-
-                </div>
-            </div>
+            {{-- Messages --}}
             @if(!$admin)
                 <div class="messages">
-                    <div class="left message">
-                        <div id="user-details-form" class="container mt-4" >
-                            <h4 class="mb-3">Enter Your Details to Start the Chat</h4>
-                            <form id="details-form">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <label for="user_name" class="form-label">Name:</label>
-                                        <input type="text" id="user_name" name="user_name" class="form-control" placeholder="Enter your name" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="user_email" class="form-label">Email:</label>
-                                        <input type="email" id="user_email" name="user_email" class="form-control" placeholder="Enter your email" required>
-                                    </div>
-
-                                    <div class="col-md-3">
-                                        <br>
-                                        <button type="submit" class="btn btn-primary w-100">Start Chat</button>
-                                    </div>
-                                </div>
-
-                            </form>
+                    <div class="message left">
+                        <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Support">
+                        <div>
+                            <div class="bubble">
+                                Thank you for contacting Hello Transport! We have agents standing by to assist you at <strong style="color:#FFD700;">1 (844) 474-4721</strong> or here on Live Chat. How can we help you today?
+                            </div>
                         </div>
+                    </div>
+                    <div id="user-details-form" class="user-details-form">
+                        <h5><i class="fas fa-user-circle me-2"></i> Enter Your Details</h5>
+                        <form id="details-form">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label>Name</label>
+                                    <input type="text" id="user_name" placeholder="Your name" required>
+                                </div>
+                                <div class="col-6">
+                                    <label>Email</label>
+                                    <input type="email" id="user_email" placeholder="your@email.com" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-start-chat">
+                                <i class="fas fa-comments me-2"></i> Start Chat
+                            </button>
+                        </form>
                     </div>
                 </div>
             @else
                 <div class="messages">
-                    <div class="left message">
-                        <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Avatar" style="width: 40px;height: 40px">
-                        <p>Thank you for considering Hello Tranport  Transport. We have agents standing by to assist you at 1 (844) 474-4721 or here on Livechat.
-
-                            How can we help you today?</p>
+                    <div class="message left">
+                        <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Support">
+                        <div>
+                            <div class="bubble">
+                                Thank you for contacting Hello Transport! We have agents standing by to assist you at <strong style="color:#FFD700;">1 (844) 474-4721</strong> or here on Live Chat. How can we help you today?
+                            </div>
+                        </div>
                     </div>
                 </div>
             @endif
-            <!-- End Header -->
 
-            <!-- Chat -->
-
-            <!-- End Chat -->
-
-            <!-- Typing Indicator -->
-            <div id="typingIndicator" class="typing-indicator" style="display: none;">
-                {{--                    <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Avatar" class="avatar">--}}
-                <p>Sending <span class="dots">...</span></p>
+            {{-- Typing indicator --}}
+            <div id="typingIndicator" class="typing-indicator" style="display:none;margin:0 16px 8px;">
+                <i class="fas fa-circle-notch fa-spin" style="color:#C9A84C;font-size:12px;"></i>
+                <span>Sending<span class="dots"></span></span>
             </div>
 
-            <!-- Footer -->
-            <div class="bottom">
-                <form style="padding: 10px;display: none" id="form_submit_chat">
+            {{-- Footer --}}
+            <div class="chat-footer">
+                <div id="emoji-popup"></div>
+                <form style="display:none;" id="form_submit_chat">
                     <input type="text" id="message" name="message" placeholder="Enter message..." autocomplete="off">
-                    <a id="emoji-btn" href="#" style="margin-left: 5px;font-size: 30px">😊</a>
-                    <div id="emoji-popup" style="display: none; position: absolute; border: 1px solid #ccc; background: #f9f9f9; padding: 10px; border-radius: 5px; max-width: 450px; flex-wrap: wrap;margin-top:-300px">
-                        <!-- Emoji list goes here -->
-                    </div>
-                    <button type="submit">
+                    <a id="emoji-btn" href="#" class="emoji-btn">😊</a>
+                    <button type="submit" class="send-btn">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </form>
             </div>
-
-            <!-- End Footer -->
-
         </div>
     </div>
 </div>
 
 <script>
-    // Check for device ID in localStorage or URL, or generate new
     let deviceId = localStorage.getItem('device_id_chat');
-
     if (!deviceId) {
-        // Try to get from URL
         const urlParams = new URLSearchParams(window.location.search);
         deviceId = urlParams.get('device_id');
-
-        // If still missing, generate new
         if (!deviceId) {
             deviceId = self.crypto?.randomUUID?.() || Math.random().toString(36).substring(2);
         }
-
-        // Store in localStorage for future use
         localStorage.setItem('device_id_chat', deviceId);
     }
-
-    // Send deviceId to server (example: put in a hidden form field or global JS var)
     window.deviceIdChat = deviceId;
 </script>
 
-
 <script>
-
     $("body").delegate("#show_history ul li button", "click", function () {
-        $("#show_history ul li button").removeClass("active"); // Remove active class from all <li>
-        $(this).addClass("active"); // Add active class to the clicked <li>
+        $("#show_history ul li button").removeClass("active");
+        $(this).addClass("active");
     });
+
     $(document).ready(function () {
-
-        const emojis = ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
-            '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
-            '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔',
-            '🤐', '😷', '🤒', '🤕', '🤢', '🤮', '😵', '🤯', '😎', '🤓',
-            '🧐', '😕', '😟', '🙁', '😮', '😯', '😲', '🥺', '😭', '😱'];
-
-        // Append emojis to the popup
-        emojis.forEach(function (emoji) {
-            $('#emoji-popup').append(`<span class="emoji" style="cursor: pointer; font-size: 24px; margin: 5px;">${emoji}</span>`);
+        const emojis = ['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🤐','😷','🤒','🤕','🤢','🤮','😵','🤯','😎','🤓','🧐','😕','😟','🙁','😮','😯','😲','🥺','😭','😱'];
+        emojis.forEach(function(emoji) {
+            $('#emoji-popup').append(`<span class="emoji">${emoji}</span>`);
         });
-
-        // Show/hide emoji popup when emoji button is clicked
-        $('#emoji-btn').on('click', function (e) {
-            e.stopPropagation(); // Prevent event propagation to body
+        $('#emoji-btn').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             $('#emoji-popup').toggle();
         });
-
-        // Insert emoji into the message input field when clicked
-        $(document).on('click', '.emoji', function () {
-            const emoji = $(this).text();
-            $('#message').val($('#message').val() + emoji);
+        $(document).on('click', '.emoji', function() {
+            $('#message').val($('#message').val() + $(this).text());
             $('#emoji-popup').hide();
             $('#message').focus();
         });
-
-        // Hide the emoji popup when clicking outside
-        $(document).on('click', function () {
-            $('#emoji-popup').hide();
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('#emoji-btn, #emoji-popup').length) {
+                $('#emoji-popup').hide();
+            }
         });
     });
 
     var name = '';
     var email = '';
-    $('#details-form').on('submit', function (e) {
+    $('#details-form').on('submit', function(e) {
         e.preventDefault();
         name = $('#user_name').val().trim();
         email = $('#user_email').val().trim();
-
         if (name && email) {
-
-            // Hide the details form and show the chat
             $('#user-details-form').hide();
             $('#form_submit_chat').show();
-
-            // Create the initial message data
             var initial_data = `Name: ${name} <br> Email Address: ${email}`;
-
-            // Set the initial data to the message input field
             $("form #message").val(initial_data);
-
             $('#form_submit_chat').submit();
         } else {
-            // If name or email is empty, alert the user
             alert('Please fill in both fields.');
         }
     });
-
 </script>
+
 <script>
     let searchTimeout;
-
     function handleSearch(inputElement) {
-        // Clear any previously set timeout to avoid multiple triggers
         clearTimeout(searchTimeout);
-
         const keyword = inputElement.value;
-
-        // Only trigger the search if the keyword length is more than 2 characters
-
         searchTimeout = setTimeout(() => {
             get_history('{{ date('Y-m-d') }}', '{{ $deviceId }}', null, $('#thread_id_send').val(), keyword);
-        }, 100); // 1 second delay
-
+        }, 100);
     }
 </script>
+
 <script>
     var date_created = "{{ date('Y-m-d') }}";
     var ip_address = "{{ $deviceId }}";
@@ -352,261 +552,183 @@ header("Access-Control-Allow-Methods: GET, POST");
     var user_name = "{{ $user_name }}";
     var c_thread_id = null;
     var admin = {{ ($admin) ? '1' : '0' }};
+
     @if($admin)
-    $('#keyword').show();
+        $('#keyword').show();
     @else
-    get_history(date_created,ip_address);
+        get_history(date_created, ip_address);
     @endif
     show_his();
+
     var ring = 0;
     var set_interval2;
+
     function show_his() {
         $.ajax({
             url: "{{ url('/chat/show-history') }}",
             method: 'GET',
             data: { date_created }
-        }).done(function (res) {
+        }).done(function(res) {
             if (res) {
-
                 var lis = "";
-                var ring = 0;
-                var total_unread = parseInt(0);
-                var total_unread_c = parseInt(0);
-                var seperate_count = parseInt(0);
+                var total_unread = 0;
+                var total_unread_c = 0;
+                var seperate_count = 0;
+                ring = 0;
 
-                $.each(res, function (index, value) {
+                $.each(res, function(index, value) {
                     var text = (value.name && value.name.trim() !== '')
-                        ? (value.name.length > 20 ? value.name.substring(0, 15) + '...' : value.name)
+                        ? (value.name.length > 18 ? value.name.substring(0, 14) + '...' : value.name)
                         : `Thread: ${value.thread_id}`;
-                    lis += `<li >
-                    <button type="button" style="font-size: 10px!important;" id="li_${value.thread_id}" onclick="get_history('${value.date_created}', '${value.ip_address}', 'admin', '${value.thread_id}',null,1)"
-                    class="btn btn-outline-info btn-sm">${text}
-
-                        ${(value.replied == 0 && value.tc > 0) ? `<span class="badge badge-danger badge-sm">(${value.tc})</span>` : ''}
-                    </button>
-                </li>`;
-                    total_unread+= parseInt(value.tc);
-                    total_unread_c+= parseInt(value.tc_c);
-                    if (value.replied == 0 && admin == 1 && !$('#chat_box').is(':visible') && value.tc > 0) {
-                        ring = 1;
+                    lis += `<li>
+                        <button type="button" id="li_${value.thread_id}"
+                            onclick="get_history('${value.date_created}','${value.ip_address}','admin','${value.thread_id}',null,1)">
+                            ${text}
+                            ${(value.replied == 0 && value.tc > 0) ? `<span class="badge badge-danger badge-sm">(${value.tc})</span>` : ''}
+                        </button>
+                    </li>`;
+                    total_unread += parseInt(value.tc);
+                    total_unread_c += parseInt(value.tc_c);
+                    if (value.replied == 0 && admin == 1 && !$('#chat_box').is(':visible') && value.tc > 0) ring = 1;
+                    if (ip_address == value.ip_address) {
+                        c_thread_id = value.thread_id;
+                        seperate_count += parseInt(value.tc_c);
                     }
-                    if(ip_address == value.ip_address){
-                        c_thread_id =value.thread_id;
-                        seperate_count+= parseInt(value.tc_c);
-                    }
-                    if (value.replied == 1 && admin == 0 && !$('#chat_box').is(':visible') && seperate_count > 0 && value.thread_id == c_thread_id) {
-                        ring = 1;
-                    }
+                    if (value.replied == 1 && admin == 0 && !$('#chat_box').is(':visible') && seperate_count > 0 && value.thread_id == c_thread_id) ring = 1;
                 });
 
-                if (ring == 1) {
-                    playNotificationSound();
-                }
+                if (ring == 1) playNotificationSound();
 
-                var message = {
-                    type: 'iframeMessage',
-                    payload: total_unread
-                };
-                var message2 = {
-                    type: 'iframeMessage2',
-                    payload: seperate_count
-                };
+                window.parent.postMessage({ type: 'iframeMessage', payload: total_unread }, '*');
+                window.parent.postMessage({ type: 'iframeMessage2', payload: seperate_count }, '*');
 
-                window.parent.postMessage(message, '*');
-                window.parent.postMessage(message2, '*');
-
-                if (set_interval2) {
-                    clearInterval(set_interval2);
-                }
-                set_interval2 = setInterval(function() {
-                    show_his();
-                }, 10000);
+                if (set_interval2) clearInterval(set_interval2);
+                set_interval2 = setInterval(show_his, 10000);
                 $('#show_history ul').html(lis);
             }
         });
     }
 
-    // Function to play notification sound
     function playNotificationSound() {
-        var sound = document.getElementById("audio_success");
-        sound.play();
+        document.getElementById("audio_success").play();
     }
 
-
     var set_interval;
-    var message_scroll = $('.messages')[0].scrollTop;
-    function get_history(date_created = null,ip_address = null,admin = null,thread_id = null,keyword = null,launch = 0){
+    var message_scroll = 0;
+
+    function get_history(date_created=null, ip_address=null, admin=null, thread_id=null, keyword=null, launch=0) {
         c_thread_id = thread_id;
         $("#show_history ul li button").removeClass("active");
         $(`#li_${thread_id}`).addClass("active");
-        if (set_interval) {
-            clearInterval(set_interval);
-        }
+        if (set_interval) clearInterval(set_interval);
 
         var typeValue = (admin == 'admin') ? 1 : 0;
-
         if ($('#chat_box').is(':visible')) {
-            $.ajax({
-                url: "{{ url('/chat/update-read') }}",
-                method: 'GET',
-                data: {
-                    thread_id: c_thread_id,
-                    type: typeValue
-                }
-            }).done(function (res) {
-                // Handle response if needed
-            });
+            $.ajax({ url: "{{ url('/chat/update-read') }}", method: 'GET', data: { thread_id: c_thread_id, type: typeValue } });
         }
 
         set_interval = setInterval(function() {
             get_history(date_created, ip_address, admin, thread_id);
         }, 5000);
+
         $.ajax({
             url: "{{ url('/chat/history') }}",
             method: 'GET',
-            data: {date_created,ip_address,thread_id :c_thread_id,keyword: keyword}
-        }).done(function (res) {
-            if(res.status == 1) {
+            data: { date_created, ip_address, thread_id: c_thread_id, keyword }
+        }).done(function(res) {
+            if (res.status == 1) {
                 $('#user-details-form').hide();
                 $('#form_submit_chat').show();
                 message_scroll = $('.messages')[0].scrollTop;
                 $('.messages').remove();
-                $('.top').after(`
-                        <div class="messages">
-                            <div class="left message">
-                            <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Avatar" style="width: 40px;height: 40px">
-                            <p>Thank you for considering Hello Tranport  Transport. We have agents standing by to assist you at 1 (844) 474-4721 or here on Livechat.How can we help you today?</p>
-                            </div>
+                $('#chat_box').prepend(`
+                    <div class="messages">
+                        <div class="message left">
+                            <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Support">
+                            <div><div class="bubble">Thank you for contacting Hello Transport! We have agents standing by at <strong style="color:#FFD700;">1 (844) 474-4721</strong>. How can we help you today?</div></div>
                         </div>
-                        `);
-                if(res.data.length > 0) {
-
-                    $.each(res.data, function (index, value) {
-                        if (value.receive_message) {
-                            make_response(value,1);
-                        } else {
-                            make_response(value,0);
-                        }
-                    })
-                    if(message_scroll > 0) {
-
-                        $('.messages')[0].scrollTop = message_scroll;
-                    }
+                    </div>
+                `);
+                if (res.data.length > 0) {
+                    $.each(res.data, function(index, value) {
+                        make_response(value, value.receive_message ? 1 : 0);
+                    });
+                    if (message_scroll > 0) $('.messages')[0].scrollTop = message_scroll;
                 }
             }
         });
 
-        if(launch){
-            searchTimeout = setTimeout(() => {
-                $('.messages')[0].scrollTop = $('.messages')[0].scrollHeight;
-            }, 500); // 1 second delay
+        if (launch) {
+            setTimeout(() => { $('.messages')[0].scrollTop = $('.messages')[0].scrollHeight; }, 500);
         }
     }
 
     function make_response(send_value, res) {
-        var info = '';
         $("#typingIndicator").hide();
         $('#thread_id_send').val(send_value.thread_id);
-
+        var info = '';
+        if (admin == 1 && send_value.info_data) {
+            info = `<span class="info-data">${send_value.info_data}</span>`;
+        }
         var messageHTML = '';
         if (res == 0) {
-            var final = send_value.send_message;
-            if (admin == 1 && send_value.info_data) {
-                info = '<span class="info-data">' + send_value.info_data + '</span>';
-            }
-            messageHTML = '<div class="right message">' +
-                '<img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Avatar" style="width: 50px;height: 50px">' +
-                '<div class="div">' + final + '</div>' +
-                info +
-                '</div>';
+            messageHTML = `<div class="message right">
+                <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="You">
+                <div><div class="bubble">${send_value.send_message}</div>${info}</div>
+            </div>`;
         } else {
-            var final = send_value.receive_message;
-            if (admin == 1 && send_value.info_data) {
-                info = '<span class="info-data">' + send_value.info_data + '</span>';
-            }
-            var admin_name = (send_value.admin_name) ? send_value.admin_name : user_name;
-            messageHTML = '<div class="left message">' +
-                '<img src="{{ asset("frontend/img/logo/hello_transport.svg") }}" alt="Avatar" style="width: 40px;height: 40px">' + admin_name +
-                '<div>' +
-                '<div class="div">' + final + '</div>' +
-                info +
-                '</div>' +
-                '</div>';
+            var agent_name = send_value.admin_name || user_name;
+            messageHTML = `<div class="message left">
+                <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Support">
+                <div>
+                    <div class="agent-name">${agent_name}</div>
+                    <div class="bubble">${send_value.receive_message}</div>
+                    ${info}
+                </div>
+            </div>`;
         }
-
         $(".messages").append(messageHTML);
     }
 
-
-
-
-    //Broadcast messages
-
-    $("#form_submit_chat").submit(function (event) {
+    $("#form_submit_chat").submit(function(event) {
         event.preventDefault();
-
         var message = $("#message").val().trim();
-
-        // Regular expression to detect URLs
         var urlRegex = /(https?:\/\/[^\s]+)/g;
+        if (urlRegex.test(message)) { alert("Links are not allowed!"); return false; }
+        if (!message) return;
 
-        if (urlRegex.test(message)) {
-            alert("Links are not allowed in the message!");
-            event.preventDefault(); // Prevent form submission
-            return false;
-        }
-        //Stop empty messages
-        if ($("#form_submit_chat #message").val().trim() === '') {
-            return;
-        }
-
-        //Disable form
         $("#form_submit_chat #message").prop('disabled', true);
         $("#form_submit_chat button").prop('disabled', true);
-        $("#form_submit_chat #responseType").prop('disabled', true);
-
         $("#typingIndicator").show();
 
         $.ajax({
             url: "{{ url('/chat/send') }}",
             method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': "{{csrf_token()}}"
-            },
+            headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
             data: {
-                "model": "gpt-3.5-turbo",
-                "content": $("#form_submit_chat #message").val(),
-                "personality": $("#form_submit_chat #responseType").val(),
-                "ip_address": ip_address,
-                "user_id": user_id,
-                "user_name": user_name,
-                "thread_id": c_thread_id,
-                "name": name,
-                "email": email,
-                "device_id": deviceId,
-                "reference_domain": "{{$domain}}",
-                "admin": '{{ ($admin) ? '1' : 0 }}',
+                model: "gpt-3.5-turbo",
+                content: $("#form_submit_chat #message").val(),
+                personality: $("#form_submit_chat #responseType").val(),
+                ip_address: ip_address,
+                user_id: user_id,
+                user_name: user_name,
+                thread_id: c_thread_id,
+                name: name,
+                email: email,
+                device_id: deviceId,
+                reference_domain: "{{ $domain }}",
+                admin: '{{ ($admin) ? '1' : 0 }}',
             }
-        }).done(function (res) {
-            var send_value = $("#form_submit_chat #message").val();
+        }).done(function(res) {
             @if($admin)
-            get_history(res.data.date_created,res.data.ip_address,'admin',res.data.thread_id)
+                get_history(res.data.date_created, res.data.ip_address, 'admin', res.data.thread_id);
             @else
-            get_history(res.data.date_created,res.data.ip_address,null,res.data.thread_id)
+                get_history(res.data.date_created, res.data.ip_address, null, res.data.thread_id);
             @endif
-
             $("#form_submit_chat #message").val('');
-            $(document).scrollTop($(document).height());
-
-
-            searchTimeout = setTimeout(() => {
-                $('.messages')[0].scrollTop = $('.messages')[0].scrollHeight;
-            }, 500); // 1 second delay
-
+            setTimeout(() => { $('.messages')[0].scrollTop = $('.messages')[0].scrollHeight; }, 500);
             $("#form_submit_chat #message").prop('disabled', false);
             $("#form_submit_chat button").prop('disabled', false);
         });
     });
-
 </script>
-
