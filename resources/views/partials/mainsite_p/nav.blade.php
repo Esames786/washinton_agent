@@ -876,6 +876,19 @@ if (!function_exists('get_user_name123')) {
                                 </a>
                             @endif
 
+                            {{-- HR Portal SSO Link — only for users linked to HR --}}
+                            @php
+                                $hrLinked = \Illuminate\Support\Facades\DB::table('hr_employees')
+                                    ->where('agent_id', Auth::id())
+                                    ->exists();
+                            @endphp
+                            @if($hrLinked)
+                                <a class="dropdown-item d-flex" href="{{ route('hr.portal.redirect') }}"
+                                   style="color:#b8860b;font-weight:600;">
+                                    <i class="fa fa-building pr-2 mt-1 ml-1" style="color:#b8860b;"></i>
+                                    <div class="">HR Portal</div>
+                                </a>
+                            @endif
                             <a class="dropdown-item d-flex" href="{{ route('logout_questions_answers.create') }}">
                                 <i class="fa fa-book pr-2 mt-1 ml-1"></i>
                                 <div class="">Logout</div>

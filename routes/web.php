@@ -1227,6 +1227,12 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 // ============================================================
+// HR Portal SSO Redirect — logged-in agent → HR portal via bridge
+// ============================================================
+Route::middleware(['auth'])->get('/hr-portal/redirect', 'HrPortalRedirectController@redirect')
+    ->name('hr.portal.redirect');
+
+// ============================================================
 // Washington Bridge Endpoints — key-authenticated, no session
 // Called by washinton_hr to pull commission data and user status
 // ============================================================
