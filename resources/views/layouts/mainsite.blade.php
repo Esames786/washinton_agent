@@ -454,6 +454,7 @@
                     <!--nav header-->
                     @include('partials.mainsite_p.nav')
                     <!--/nav header-->
+                    @include('partials.document_warning_bar')
                     <br>
                     <div id="session_msg">
                         @if (Session::has('msg'))

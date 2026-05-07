@@ -43,6 +43,23 @@ class HrPortalBridgeService
     }
 
     /**
+     * Create / mirror an employee on the HR portal after signup.
+     *
+     * @param  array  $data  Must include: name, email, password, agent_id, user_type
+     *                       Optional: phone, address, country, shift_type_id, account_type_id
+     * @return array
+     * @throws RuntimeException
+     */
+    public function createEmployee(array $data): array
+    {
+        return $this->post(
+            (string) config('bridge.hrportal.create_employee_endpoint', '/bridge/employee/create'),
+            $data,
+            'Unable to create employee on HR portal.'
+        );
+    }
+
+    /**
      * Shared HTTP POST logic for all HR portal bridge calls.
      */
     protected function post(string $endpoint, array $payload, string $fallbackMessage): array

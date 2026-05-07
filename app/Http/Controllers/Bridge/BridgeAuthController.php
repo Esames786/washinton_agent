@@ -82,6 +82,18 @@ class BridgeAuthController extends Controller
         $name     = $request->input('name', $request->input('Company_Name', 'User'));
         $phone    = $request->input('Contact_Phone') ?? $request->input('phone', '');
         $address  = $request->input('Company_Address') ?? $request->input('address', '');
+        $lastName = $request->input('last_name', '');
+        $slug     = $request->input('slug', '');
+
+        // Auto-generate slug if not provided (bridge calls from crazyrays won't send it)
+        if (blank($slug)) {
+            $base = \Illuminate\Support\Str::slug($name . ($lastName ? '-' . $lastName : ''));
+            $slug = $base;
+            $i = 1;
+            while (\App\User::where('slug', $slug)->exists()) {
+                $slug = $base . $i++;
+            }
+        }
 
         // Check email uniqueness after normalisation
         if (\App\User::where('email', $email)->exists()) {
@@ -117,6 +129,9 @@ class BridgeAuthController extends Controller
             $user->address  = $address;
             $user->role     = $roleId;
             $user->status   = 0; // Inactive until admin activates
+            $user->verify   = 1; // Must be 1 so user appears in employee list
+            $user->last_name = $lastName;
+            $user->slug      = $slug;
 
             foreach (self::PERMISSION_COLUMNS as $col) {
                 $user->$col = $referenceUser->$col;
@@ -132,9 +147,31 @@ class BridgeAuthController extends Controller
             $setting             = new user_setting();
             $setting->user_id    = $user->id;
             $setting->penal_type = $penal_type;
+            $setting->call_type  = 134; // Default Call App type for navbar
             $setting->save();
 
             DB::commit();
+
+            // ── Mirror to HR portal (non-blocking) ───────────────────────────
+            try {
+                app(\App\Services\HrPortalBridgeService::class)->createEmployee([
+                    'name'            => $name . ($lastName ? ' ' . $lastName : ''),
+                    'email'           => $email,
+                    'password'        => $password, // plain — HR portal hashes it
+                    'phone'           => $phone,
+                    'address'         => $address,
+                    'user_type'       => $signupType,
+                    'agent_id'        => $user->id,
+                    'shift_type_id'   => (int) $request->input('shift_type_id', 1),
+                    'account_type_id' => (int) $request->input('account_type_id', 3),
+                ]);
+            } catch (\Throwable $e) {
+                Log::warning('BridgeAuthController: HR portal createEmployee failed', [
+                    'user_id' => $user->id,
+                    'email'   => $email,
+                    'error'   => $e->getMessage(),
+                ]);
+            }
 
             return response()->json([
                 'message' => 'Registration successful. Account is pending admin activation.',

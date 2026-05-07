@@ -429,6 +429,7 @@
                         @endif
                     @endif
                     <!--/nav header-->
+                    @include('partials.document_warning_bar')
 
                     <!--/content-->
                     <br>

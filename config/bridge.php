@@ -10,10 +10,11 @@ return [
     | HRPORTAL_SHARED_KEY must match HR_BRIDGE_SHARED_KEY in washinton_hr/.env
     */
     'hrportal' => [
-        'base_url'               => env('HRPORTAL_BASE_URL', ''),
-        'shared_key'             => env('HRPORTAL_SHARED_KEY', ''),
-        'agent_login_endpoint'   => env('HRPORTAL_AGENT_LOGIN_ENDPOINT', '/bridge/agent/login'),
-        'agent_status_endpoint'  => env('HRPORTAL_AGENT_STATUS_ENDPOINT', '/bridge/agent/status'),
+        'base_url'                    => env('HRPORTAL_BASE_URL', ''),
+        'shared_key'                  => env('HRPORTAL_SHARED_KEY', ''),
+        'agent_login_endpoint'        => env('HRPORTAL_AGENT_LOGIN_ENDPOINT', '/bridge/agent/login'),
+        'agent_status_endpoint'       => env('HRPORTAL_AGENT_STATUS_ENDPOINT', '/bridge/agent/status'),
+        'create_employee_endpoint'    => env('HRPORTAL_CREATE_EMPLOYEE_ENDPOINT', '/bridge/employee/create'),
     ],
 
     /*
