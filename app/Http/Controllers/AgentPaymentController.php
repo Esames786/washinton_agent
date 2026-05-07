@@ -27,12 +27,25 @@ class AgentPaymentController extends Controller
     // ─────────────────────────────────────────────────────────────────────────
     // Permission check helper
     // ─────────────────────────────────────────────────────────────────────────
+    private function getPanelType(): int
+    {
+        $setting = \App\general_setting::first();
+        $ptype   = 1;
+        $query   = \App\user_setting::where('user_id', Auth::id())
+            ->when($setting, fn($q) => $q->where('created_at', '>=', now()->subDays($setting->no_days)))
+            ->first();
+        if (!empty($query)) {
+            $ptype = $query['penal_type'];
+        }
+        return $ptype;
+    }
+
     private function hasAgentPermission(): bool
     {
         $user = Auth::user();
         if ($user->role == 1) return true;
 
-        $check_panel = check_panel();
+        $check_panel = $this->getPanelType();
         $access = match ($check_panel) {
             1 => $user->emp_access_phone,
             2 => $user->emp_access_web,
