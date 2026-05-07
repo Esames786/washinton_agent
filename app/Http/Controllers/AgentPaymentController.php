@@ -313,7 +313,17 @@ class AgentPaymentController extends Controller
         $journeys = AgentOrderPaymentJourney::with('changedBy')
             ->where('payment_id', $payment->id)
             ->orderByDesc('created_at')
-            ->get();
+            ->get()
+            ->map(function ($j) {
+                return [
+                    'new_status'      => $j->new_status,
+                    'old_status'      => $j->old_status,
+                    'changed_by_name' => $j->changedBy ? ($j->changedBy->slug ?: $j->changedBy->name) : ($j->changed_by ? '#'.$j->changed_by : '-'),
+                    'user_type'       => $j->user_type,
+                    'note'            => $j->note,
+                    'created_at'      => $j->created_at ? $j->created_at->format('M d, Y H:i') : '-',
+                ];
+            });
 
         return response()->json($journeys);
     }

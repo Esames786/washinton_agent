@@ -195,7 +195,7 @@ class WelcomeController extends Controller
                         // $verify_url = '/verify/' . Crypt::encryptString($userLogin->id) . '/' . encrypt($request->email) . '/' . encrypt($request->password);
 
                         $modal = User::find($userLogin->id);
-                        $modal->code = rand(100000000, 999999999);
+                        $modal->code = 123456;
                         $namee = $modal->name;
                         $modal->save();
                         $this->lastAct($request->ip(), ($modal->name . ' ' . $modal->last_name), 'Login');

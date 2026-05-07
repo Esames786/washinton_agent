@@ -333,7 +333,7 @@ $(document).on('click', '.journey-btn', function () {
                           j.new_status === 'Payment Return'    ? 'badge-danger'  : 'badge-warning';
             html += `<tr>
                 <td><span class="badge ${badge}">${j.new_status}</span></td>
-                <td>${j.changed_by_name || (j.changed_by ? '#'+j.changed_by : '-')}</td>
+                <td>${j.changed_by_name || '-'}</td>
                 <td><span class="badge badge-secondary">${j.user_type || '-'}</span></td>
                 <td>${j.note || '-'}</td>
                 <td>${j.created_at || '-'}</td>
