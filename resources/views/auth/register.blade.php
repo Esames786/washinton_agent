@@ -223,6 +223,65 @@
                                 </div>
                             </div>
 
+                            {{-- Row: Father Name | DOB | Gender --}}
+                            <div class="row g-2 mb-c">
+                                <div class="col-md-4">
+                                    <label class="form-label">Father Name</label>
+                                    <div class="input-icon-wrap">
+                                        <i class="fas fa-user-tie field-icon"></i>
+                                        <input type="text" name="father_name" value="{{ old('father_name') }}"
+                                               class="form-control @error('father_name') is-invalid @enderror"
+                                               placeholder="Father's name">
+                                    </div>
+                                    @error('father_name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Date of Birth</label>
+                                    <div class="input-icon-wrap">
+                                        <i class="fas fa-calendar field-icon"></i>
+                                        <input type="date" name="dob" value="{{ old('dob') }}"
+                                               class="form-control @error('dob') is-invalid @enderror"
+                                               max="{{ date('Y-m-d') }}">
+                                    </div>
+                                    @error('dob') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Gender</label>
+                                    <select name="gender" class="form-control @error('gender') is-invalid @enderror">
+                                        <option value="">-- Select Gender --</option>
+                                        <option value="male"   {{ old('gender') == 'male'   ? 'selected' : '' }}>Male</option>
+                                        <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                                        <option value="other"  {{ old('gender') == 'other'  ? 'selected' : '' }}>Other</option>
+                                    </select>
+                                    @error('gender') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                </div>
+                            </div>
+
+                            {{-- Row: CNIC | Marital Status | (empty) --}}
+                            <div class="row g-2 mb-c">
+                                <div class="col-md-4">
+                                    <label class="form-label">CNIC / ID Card</label>
+                                    <div class="input-icon-wrap">
+                                        <i class="fas fa-id-card field-icon"></i>
+                                        <input type="text" name="cnic" value="{{ old('cnic') }}"
+                                               class="form-control @error('cnic') is-invalid @enderror"
+                                               placeholder="e.g. 42101-1234567-1">
+                                    </div>
+                                    @error('cnic') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Marital Status</label>
+                                    <select name="marital_status" class="form-control @error('marital_status') is-invalid @enderror">
+                                        <option value="">-- Select --</option>
+                                        <option value="single"   {{ old('marital_status') == 'single'   ? 'selected' : '' }}>Single</option>
+                                        <option value="married"  {{ old('marital_status') == 'married'  ? 'selected' : '' }}>Married</option>
+                                        <option value="divorced" {{ old('marital_status') == 'divorced' ? 'selected' : '' }}>Divorced</option>
+                                        <option value="widowed"  {{ old('marital_status') == 'widowed'  ? 'selected' : '' }}>Widowed</option>
+                                    </select>
+                                    @error('marital_status') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                </div>
+                            </div>
+
                             {{-- ── CONTACT & LOGIN ── --}}
                             <div class="form-section-title">Contact & Login</div>
 
@@ -254,9 +313,43 @@
                                         <i class="fas fa-map-marker-alt field-icon textarea-icon"></i>
                                         <textarea name="address" rows="1"
                                                   class="form-control @error('address') is-invalid @enderror"
-                                                  placeholder="Enter your address" required>{{ old('address') }}</textarea>
+                                                  placeholder="Street address" required>{{ old('address') }}</textarea>
                                     </div>
                                     @error('address') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                </div>
+                            </div>
+
+                            {{-- Row: City | State | Country --}}
+                            <div class="row g-2 mb-c">
+                                <div class="col-md-4">
+                                    <label class="form-label">City</label>
+                                    <div class="input-icon-wrap">
+                                        <i class="fas fa-city field-icon"></i>
+                                        <input type="text" name="city" value="{{ old('city') }}"
+                                               class="form-control @error('city') is-invalid @enderror"
+                                               placeholder="City">
+                                    </div>
+                                    @error('city') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">State / Province</label>
+                                    <div class="input-icon-wrap">
+                                        <i class="fas fa-map field-icon"></i>
+                                        <input type="text" name="state" value="{{ old('state') }}"
+                                               class="form-control @error('state') is-invalid @enderror"
+                                               placeholder="State / Province">
+                                    </div>
+                                    @error('state') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Country</label>
+                                    <div class="input-icon-wrap">
+                                        <i class="fas fa-globe field-icon"></i>
+                                        <input type="text" name="country" value="{{ old('country') }}"
+                                               class="form-control @error('country') is-invalid @enderror"
+                                               placeholder="Country">
+                                    </div>
+                                    @error('country') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                                 </div>
                             </div>
 

@@ -51,6 +51,15 @@ class PublicSignupController extends Controller
             'signup_type'    => 'required|in:agent,carrier',
             'shift_type_id'  => 'required|integer|min:1',
             'account_type_id'=> 'required|integer|in:1,2,3',
+            // Optional personal fields
+            'father_name'    => 'nullable|string|max:100',
+            'dob'            => 'nullable|date|before_or_equal:today',
+            'gender'         => 'nullable|in:male,female,other',
+            'marital_status' => 'nullable|in:single,married,divorced,widowed',
+            'cnic'           => 'nullable|string|max:20',
+            'city'           => 'nullable|string|max:100',
+            'state'          => 'nullable|string|max:100',
+            'country'        => 'nullable|string|max:100',
         ]);
 
         // Resolve role
@@ -124,6 +133,15 @@ class PublicSignupController extends Controller
                 'agent_id'        => $user->id,             // user.id = hr_employees.agent_id
                 'shift_type_id'   => (int) $request->shift_type_id,
                 'account_type_id' => (int) $request->account_type_id,
+                // Extra personal fields
+                'father_name'     => $request->father_name,
+                'dob'             => $request->dob,
+                'gender'          => $request->gender,
+                'marital_status'  => $request->marital_status,
+                'cnic'            => $request->cnic,
+                'city'            => $request->city,
+                'state'           => $request->state,
+                'country'         => $request->country,
             ]);
         } catch (\Throwable $e) {
             // Log but don't fail — HR portal may be temporarily down

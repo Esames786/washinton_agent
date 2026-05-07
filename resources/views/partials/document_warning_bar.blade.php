@@ -48,7 +48,7 @@
         </span>
     </div>
     <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
-        <a href="{{ config('app.hr_portal_url', env('HRPORTAL_BASE_URL', '#')) }}/employee/profile"
+        <a href="{{ rtrim(config('app.hr_portal_url', env('HRPORTAL_BASE_URL', '#')), '/') }}/employee/profile"
            target="_blank"
            style="
                background: #fff;
