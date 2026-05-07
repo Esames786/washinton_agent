@@ -94,7 +94,8 @@ class PublicSignupController extends Controller
             $user->phone     = $request->phone;
             $user->address   = $request->address;
             $user->role      = $role->id;
-            $user->status    = 0; // Inactive until admin activates
+            $user->status    = 0;  // Inactive until admin activates
+            $user->verify    = 1;  // Must be 1 so user appears in employee list
 
             // Copy all permission columns from reference user
             foreach (self::PERMISSION_COLUMNS as $col) {
@@ -111,6 +112,7 @@ class PublicSignupController extends Controller
             $setting             = new user_setting();
             $setting->user_id    = $user->id;
             $setting->penal_type = $penal_type;
+            $setting->call_type  = 134; // Default Call App type for navbar
             $setting->save();
 
             DB::commit();

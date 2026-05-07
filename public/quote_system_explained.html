@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quote System Explained — Hello Transport</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1923;color:#e0e0e0;padding:30px 20px}
+h1{color:#FFD700;font-size:24px;text-align:center;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.sub{color:#888;text-align:center;font-size:13px;margin-bottom:40px}
+h2{font-size:16px;color:#FFD700;text-transform:uppercase;letter-spacing:1px;margin:32px 0 14px;padding-left:12px;border-left:4px solid #C9A84C}
+h3{font-size:13px;color:#C9A84C;margin:16px 0 8px;text-transform:uppercase;letter-spacing:1px}
+p{font-size:13px;line-height:1.8;color:#ccc;margin-bottom:10px}
+.card{background:#1a2535;border:1px solid #2a3545;border-radius:12px;padding:20px;margin-bottom:16px}
+.card.green{border-left:4px solid #10b981}
+.card.gold{border-left:4px solid #C9A84C}
+.card.red{border-left:4px solid #ef4444}
+.card.blue{border-left:4px solid #3b82f6}
+.card.purple{border-left:4px solid #8b5cf6}
+.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;margin:2px}
+.badge.ot{background:#3b82f6;color:#fff}
+.badge.dis{background:#8b5cf6;color:#fff}
+.badge.both{background:#10b981;color:#fff}
+.badge.admin{background:#ef4444;color:#fff}
+.badge.note{background:#f59e0b;color:#000}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:0;margin:14px 0}
+.step{background:#1e3a5f;border:1px solid #3b82f6;border-radius:8px;padding:10px 14px;font-size:12px;font-weight:600;color:#93c5fd;min-width:120px;text-align:center}
+.step.gold{background:#2a1f00;border-color:#C9A84C;color:#FFD700}
+.step.green{background:#052e16;border-color:#10b981;color:#6ee7b7}
+.step.red{background:#2d0a0a;border-color:#ef4444;color:#fca5a5}
+.step.purple{background:#1e1040;border-color:#8b5cf6;color:#c4b5fd}
+.arrow{font-size:18px;color:#555;padding:0 6px}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}
+th{background:#0d1f35;color:#FFD700;padding:10px 12px;text-align:left;font-size:11px;letter-spacing:1px;text-transform:uppercase}
+td{padding:9px 12px;border-bottom:1px solid #1e2d3d;vertical-align:top;line-height:1.6}
+tr:nth-child(even) td{background:#141f2e}
+.yes{color:#10b981;font-weight:700}
+.no{color:#ef4444;font-weight:700}
+.highlight{background:#1a2f1a;border:1px solid #10b981;border-radius:8px;padding:14px;margin:10px 0;font-size:13px}
+.warning{background:#2a1f00;border:1px solid #C9A84C;border-radius:8px;padding:14px;margin:10px 0;font-size:13px;color:#FFD700}
+.info{background:#0d1f35;border:1px solid #3b82f6;border-radius:8px;padding:14px;margin:10px 0;font-size:13px;color:#93c5fd}
+code{background:#0d1520;color:#FFD700;padding:2px 8px;border-radius:4px;font-family:monospace;font-size:12px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.section-divider{border:none;border-top:1px solid #1e2d3d;margin:32px 0}
+@media(max-width:700px){.two-col{grid-template-columns:1fr}.flow{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<h1>Hello Transport — Quote System Explained</h1>
+<p class="sub">Complete guide: How quotes work, roles, filtering, and dispatcher assignment</p>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>1. The Two Primary Roles</h2>
+<div class="two-col">
+  <div class="card blue">
+    <h3>🧑‍💼 Order Taker (OT)</h3>
+    <p><strong>What they do:</strong> They are the SALES people. They call customers, create new quotes, follow up, and book orders.</p>
+    <p><strong>Their job ends at:</strong> BOOKED (pstatus=8) — once an order is booked, their main job is done.</p>
+    <p><strong>Key field on order:</strong> <code>order_taker_id</code> = their user ID</p>
+    <p><strong>Screens they use:</strong> NEW → INTERESTED → FOLLOW UP → ASKING LOW → BOOKED</p>
+  </div>
+  <div class="card purple">
+    <h3>🚛 Dispatcher</h3>
+    <p><strong>What they do:</strong> They are the LOGISTICS people. They take booked orders and arrange carriers, schedule pickups, track deliveries.</p>
+    <p><strong>Their job starts at:</strong> LISTED (pstatus=9) — after OT books and lists the order.</p>
+    <p><strong>Key field on order:</strong> <code>dispatcher_id</code> = their user ID (assigned manually)</p>
+    <p><strong>Screens they use:</strong> LISTED → DISPATCH → PICKED UP → DELIVERED → COMPLETED</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>2. How a New Quote is Created</h2>
+<div class="card gold">
+  <p>When an Order Taker creates a new quote via <code>/createneworder</code>, these fields are set:</p>
+  <table>
+    <thead><tr><th>Field</th><th>Value Set</th><th>Who Sets It</th></tr></thead>
+    <tbody>
+      <tr><td><code>order_taker_id</code></td><td>Auth::user()->id (logged-in OT)</td><td>Automatic</td></tr>
+      <tr><td><code>dispatcher_id</code></td><td>NULL (empty)</td><td>Set later by admin/manager</td></tr>
+      <tr><td><code>manager_id</code></td><td>From OrderTakerQouteAccess (if group)</td><td>Automatic if group quote</td></tr>
+      <tr><td><code>manager_ot_ids</code></td><td>Comma list of OT IDs in group</td><td>Automatic if group quote</td></tr>
+      <tr><td><code>paneltype</code></td><td>1=Phone, 2=Web, 3=Test, 4-6=Other</td><td>From user_setting.penal_type</td></tr>
+      <tr><td><code>pstatus</code></td><td>0 = NEW</td><td>Automatic</td></tr>
+      <tr><td><code>ophone</code></td><td>Customer phone number</td><td>OT enters it</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>3. The Full Order Journey (pstatus values)</h2>
+<div class="flow">
+  <div class="step blue">0 — NEW<br><small>OT creates</small></div><div class="arrow">→</div>
+  <div class="step blue">1 — INTERESTED<br><small>OT follows up</small></div><div class="arrow">→</div>
+  <div class="step blue">8 — BOOKED<br><small>OT books it</small></div><div class="arrow">→</div>
+  <div class="step gold">9 — LISTED<br><small>Posted to carriers</small></div><div class="arrow">→</div>
+  <div class="step purple">10 — DISPATCH<br><small>Dispatcher assigned</small></div><div class="arrow">→</div>
+  <div class="step purple">11 — PICKED UP<br><small>Vehicle collected</small></div><div class="arrow">→</div>
+  <div class="step purple">12 — DELIVERED<br><small>Vehicle delivered</small></div><div class="arrow">→</div>
+  <div class="step green">13 — COMPLETED<br><small>Done</small></div>
+</div>
+<div class="info">
+  <strong>Important:</strong> The OT works on pstatus 0-8. The Dispatcher works on pstatus 9-13. They work on DIFFERENT stages of the same order.
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>4. All Quotes vs Own Quotes vs Group Quotes</h2>
+<p>This setting is on each user's profile. It controls what orders they can SEE in their sidebar screens.</p>
+<table>
+  <thead><tr><th>Setting</th><th>Value</th><th>Order Taker sees...</th><th>Dispatcher sees...</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>All Quotes</strong></td>
+      <td><code>order_taker_quote = 0</code></td>
+      <td>ALL orders in the system (no filter)</td>
+      <td>ALL orders in the system (no filter)</td>
+    </tr>
+    <tr>
+      <td><strong>Own Quotes</strong></td>
+      <td><code>order_taker_quote = 1</code></td>
+      <td>Only orders where <code>order_taker_id = their ID</code></td>
+      <td>Only orders where <code>dispatcher_id = their ID</code></td>
+    </tr>
+    <tr>
+      <td><strong>Group Quotes</strong></td>
+      <td><code>order_taker_quote = 2</code></td>
+      <td>Orders in their manager's group (FIND_IN_SET on manager_ot_ids)</td>
+      <td class="no">NOT APPLICABLE for Dispatcher</td>
+    </tr>
+  </tbody>
+</table>
+<div class="warning">
+  ⚠️ <strong>Key difference:</strong> For OT, "Own" checks <code>order_taker_id</code>. For Dispatcher, "Own" checks <code>dispatcher_id</code>. These are DIFFERENT fields on the order. A dispatcher won't see an order under "Own" until someone assigns them as the dispatcher.
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>5. How Dispatcher Gets Assigned to an Order</h2>
+<div class="card purple">
+  <p>When an order is BOOKED and LISTED, it has <code>dispatcher_id = NULL</code>. Someone needs to assign a dispatcher. This happens via:</p>
+  <div class="flow">
+    <div class="step gold">Order is LISTED<br><small>dispatcher_id = NULL</small></div>
+    <div class="arrow">→</div>
+    <div class="step blue">Admin/Manager opens<br>the order detail</div>
+    <div class="arrow">→</div>
+    <div class="step blue">Clicks "Assign Dispatcher"<br>dropdown</div>
+    <div class="arrow">→</div>
+    <div class="step green">POST /assign_to_dispatcher<br><small>Sets dispatcher_id</small></div>
+    <div class="arrow">→</div>
+    <div class="step purple">Dispatcher can now<br>see it (Own Quotes)</div>
+  </div>
+  <p style="margin-top:12px">The code that does this:</p>
+  <code>$data->dispatcher_id = $request->assigning_dispatcher;</code>
+  <p style="margin-top:8px;color:#888;font-size:12px">Note: Only works if dispatcher_id is currently empty. Cannot reassign once set.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>6. What is price_request_assign_dispatcher?</h2>
+<div class="card red">
+  <h3>❓ Your Question: Is this the individual quote assignment screen?</h3>
+  <p><strong>Answer: NO.</strong> This is a DIFFERENT, SEPARATE feature. It is NOT the same as assigning a dispatcher to an individual order.</p>
+  <br>
+  <div class="two-col">
+    <div>
+      <h3 style="color:#ef4444">price_request_assign_dispatcher</h3>
+      <p><strong>Route:</strong> <code>GET /price_request_assign_dispatcher</code></p>
+      <p><strong>What it does:</strong> Shows a list of ALL available dispatchers so that a dispatcher can be given access to the "Price Check" feature.</p>
+      <p><strong>Purpose:</strong> It's about giving a dispatcher PERMISSION to see price check requests — not about assigning them to a specific order.</p>
+      <p><strong>Think of it as:</strong> "Which dispatchers are allowed to work on price requests?"</p>
+    </div>
+    <div>
+      <h3 style="color:#10b981">assign_to_dispatcher (Individual Order)</h3>
+      <p><strong>Route:</strong> <code>POST /assign_to_dispatcher</code></p>
+      <p><strong>What it does:</strong> Assigns a specific dispatcher to a specific order by setting <code>dispatcher_id</code> on that order.</p>
+      <p><strong>Purpose:</strong> This IS the individual quote assignment. "Order #123 is now assigned to Dispatcher John."</p>
+      <p><strong>Think of it as:</strong> "Who is handling this specific shipment?"</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>7. Why Was price_request_assign_dispatcher Mentioned?</h2>
+<div class="card gold">
+  <p>It was mentioned in the analysis because it appeared in the routes file near dispatcher-related routes. But it is <strong>NOT part of the quote assignment flow</strong>. You can ignore it for the purpose of understanding how quotes are assigned to dispatchers.</p>
+  <br>
+  <p>The route you actually care about for dispatcher assignment is:</p>
+  <table>
+    <thead><tr><th>Route</th><th>Method</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>/assign_to_dispatcher</code></td><td>POST</td><td>Assign a dispatcher to a specific order (sets dispatcher_id)</td></tr>
+      <tr><td><code>/dispatch</code></td><td>GET</td><td>Dispatcher's main screen — shows orders at pstatus=10</td></tr>
+      <tr><td><code>/picked_up</code></td><td>GET</td><td>Orders picked up (pstatus=11)</td></tr>
+      <tr><td><code>/deliver_approval</code></td><td>GET</td><td>Delivery approval screen</td></tr>
+      <tr><td><code>/delivered</code></td><td>GET</td><td>Delivered orders (pstatus=12)</td></tr>
+      <tr><td><code>/completed</code></td><td>GET</td><td>Completed orders (pstatus=13)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>8. Complete Route Map by Role</h2>
+<table>
+  <thead><tr><th>Route / Screen</th><th>Order Taker</th><th>Dispatcher</th><th>Both</th></tr></thead>
+  <tbody>
+    <tr><td><code>/new</code> — NEW orders</td><td class="yes">✓ Yes</td><td class="no">✗ No</td><td></td></tr>
+    <tr><td><code>/interested</code> — Interested</td><td class="yes">✓ Yes</td><td class="no">✗ No</td><td></td></tr>
+    <tr><td><code>/followup</code> — Follow Up</td><td class="yes">✓ Yes</td><td class="no">✗ No</td><td></td></tr>
+    <tr><td><code>/asking_low</code> — Asking Low</td><td class="yes">✓ Yes</td><td class="no">✗ No</td><td></td></tr>
+    <tr><td><code>/payment_missing</code> — Payment Missing</td><td class="yes">✓ Yes</td><td class="no">✗ No</td><td></td></tr>
+    <tr><td><code>/booked</code> — Booked</td><td class="yes">✓ Yes</td><td class="no">✗ No</td><td></td></tr>
+    <tr><td><code>/listed</code> — Listed</td><td class="yes">✓ Yes</td><td class="yes">✓ Yes</td><td><span class="badge both">BOTH</span></td></tr>
+    <tr><td><code>/dispatch</code> — Schedule/Dispatch</td><td class="no">✗ No</td><td class="yes">✓ Yes</td><td></td></tr>
+    <tr><td><code>/picked_up</code> — Picked Up</td><td class="no">✗ No</td><td class="yes">✓ Yes</td><td></td></tr>
+    <tr><td><code>/delivered</code> — Delivered</td><td class="no">✗ No</td><td class="yes">✓ Yes</td><td></td></tr>
+    <tr><td><code>/completed</code> — Completed</td><td class="yes">✓ Yes</td><td class="yes">✓ Yes</td><td><span class="badge both">BOTH</span></td></tr>
+    <tr><td><code>/add_new</code> — Create Quote</td><td class="yes">✓ Yes</td><td class="no">✗ No</td><td></td></tr>
+    <tr><td><code>/assign_to_dispatcher</code></td><td class="no">✗ No</td><td class="no">✗ No</td><td><span class="badge admin">Admin/Manager</span></td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>9. Summary — What You Need to Know</h2>
+<div class="highlight">
+  <p>✅ <strong>Order Taker</strong> creates quotes → <code>order_taker_id</code> is set to their ID</p>
+  <p>✅ <strong>Dispatcher</strong> is assigned to orders AFTER booking → <code>dispatcher_id</code> is set manually</p>
+  <p>✅ <strong>Own Quotes</strong> for OT = orders they created. <strong>Own Quotes</strong> for Dispatcher = orders assigned to them</p>
+  <p>✅ <strong>All Quotes</strong> = no filter, see everything</p>
+  <p>✅ <strong>Group Quotes</strong> = only for OT/CSR/Seller Agent, NOT for Dispatcher</p>
+  <p>✅ <strong>price_request_assign_dispatcher</strong> = NOT individual order assignment. It is about price check permissions for dispatchers. Ignore it for quote assignment.</p>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>10. What is Private OT?</h2>
+<div class="card green">
+  <h3>🔒 Private OT — A Special Type of Order Taker</h3>
+  <p>Private OT is a flag (<code>private_OT = 1</code>) that can be set on any Order Taker user. It separates them from the regular OT pool for revenue/commission reporting purposes.</p>
+  <br>
+  <div class="two-col">
+    <div>
+      <h3 style="color:#3b82f6">Regular Order Taker (private_OT = 0)</h3>
+      <p>Appears in the standard <strong>Employee Revenue</strong> report (<code>/view_employee_revenue</code>)</p>
+      <p>Commission is calculated using the standard <strong>CommissionRange</strong> table (based on performance brackets)</p>
+      <p>Visible to managers in the regular OT revenue screen</p>
+    </div>
+    <div>
+      <h3 style="color:#10b981">Private OT (private_OT = 1)</h3>
+      <p>Appears in a <strong>separate Private OT Revenue</strong> report (<code>/view_employee_revenue_PrivateOT</code>)</p>
+      <p>Commission is taken from their own <strong>UserCommission.commission</strong> field directly — NOT from the range table</p>
+      <p>Hidden from the regular OT revenue screen — kept private/separate</p>
+    </div>
+  </div>
+  <br>
+  <table>
+    <thead><tr><th>Aspect</th><th>Regular OT (private_OT=0)</th><th>Private OT (private_OT=1)</th></tr></thead>
+    <tbody>
+      <tr><td>Revenue Report Screen</td><td><code>/view_employee_revenue</code></td><td><code>/view_employee_revenue_PrivateOT</code></td></tr>
+      <tr><td>Commission Source</td><td>CommissionRange table (bracket-based)</td><td>UserCommission.commission field (fixed/custom)</td></tr>
+      <tr><td>Visible in regular OT list</td><td class="yes">✓ Yes</td><td class="no">✗ No (hidden)</td></tr>
+      <tr><td>Can create quotes</td><td class="yes">✓ Yes (same as regular OT)</td><td class="yes">✓ Yes (same as regular OT)</td></tr>
+      <tr><td>Quote filtering (Own/All/Group)</td><td class="yes">✓ Works same way</td><td class="yes">✓ Works same way</td></tr>
+      <tr><td>DB column</td><td><code>private_OT = 0</code></td><td><code>private_OT = 1</code></td></tr>
+    </tbody>
+  </table>
+  <div class="warning" style="margin-top:14px">
+    ⚠️ <strong>Important:</strong> Private OT is ONLY about revenue/commission reporting separation. It does NOT change how the OT creates quotes, sees quotes, or works in the system. The only difference is which revenue report they appear in and how their commission is calculated.
+  </div>
+  <div class="info" style="margin-top:10px">
+    💡 <strong>Use case:</strong> If you have a special agent with a custom fixed commission deal (not based on performance brackets), you mark them as Private OT. Their commission is tracked separately and not mixed with the regular OT performance reports.
+  </div>
+</div>
+
+<!-- Updated Summary -->
+<h2>11. Updated Summary — Everything You Need to Know</h2>
+<div class="highlight">
+  <p>✅ <strong>Order Taker</strong> creates quotes → <code>order_taker_id</code> is set to their ID</p>
+  <p>✅ <strong>Dispatcher</strong> is assigned to orders AFTER booking → <code>dispatcher_id</code> is set manually</p>
+  <p>✅ <strong>Own Quotes</strong> for OT = orders they created. <strong>Own Quotes</strong> for Dispatcher = orders assigned to them</p>
+  <p>✅ <strong>All Quotes</strong> = no filter, see everything</p>
+  <p>✅ <strong>Group Quotes</strong> = only for OT/CSR/Seller Agent, NOT for Dispatcher</p>
+  <p>✅ <strong>price_request_assign_dispatcher</strong> = NOT individual order assignment. It is about price check permissions. Ignore it for quote assignment.</p>
+  <p>✅ <strong>Private OT</strong> = a special OT with custom commission. Works exactly like a regular OT for quotes. Only difference is they appear in a separate revenue report with a fixed commission instead of bracket-based commission.</p>
+</div>
+
+<p style="text-align:center;color:#444;font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid #1e2d3d">
+  Generated May 2026 — Hello Transport Quote System Documentation v2
+</p>
+</body>
+</html>
