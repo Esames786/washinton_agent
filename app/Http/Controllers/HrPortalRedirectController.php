@@ -16,12 +16,18 @@ class HrPortalRedirectController extends Controller
 
     /**
      * SSO redirect: logged-in agent → HR portal.
-     * Uses the current user's ID as agent_id.
-     * No cookies are shared — HR portal issues its own signed URL.
+     *
+     * Optional query param: ?to=profile  → lands on employee profile page
+     * Default:             ?to=dashboard → lands on employee dashboard
+     *
+     * Usage in views:
+     *   route('hr.portal.redirect')              → dashboard
+     *   route('hr.portal.redirect') . '?to=profile' → profile page
      */
     public function redirect(Request $request): RedirectResponse
     {
-        $userId = Auth::id();
+        $userId     = Auth::id();
+        $redirectTo = $request->query('to', 'dashboard');
 
         // Check if this user is linked to an HR employee record
         $hrEmployee = \Illuminate\Support\Facades\DB::table('hr_employees')
@@ -33,14 +39,12 @@ class HrPortalRedirectController extends Controller
         }
 
         try {
-            $response = $this->bridge->login($userId);
+            $response = $this->bridge->login($userId, $redirectTo);
         } catch (RuntimeException $e) {
             return back()->with('error', 'HR portal is not reachable right now. Please try again later.');
         }
 
         if (!empty($response['redirect_url'])) {
-            // redirect()->away() opens the HR portal in the same tab
-            // The HR portal session is completely separate — no cookie conflict
             return redirect()->away($response['redirect_url']);
         }
 

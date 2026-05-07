@@ -13,15 +13,16 @@ class HrPortalBridgeService
      * Request SSO login redirect URL for a Washington user.
      * Passes user.id as agent_id to the HR portal.
      *
-     * @param  int  $userId  Washington user.id (stored as hr_employees.agent_id)
+     * @param  int     $userId      Washington user.id
+     * @param  string  $redirectTo  'dashboard' or 'profile'
      * @return array  ['redirect_url' => '...']
      * @throws RuntimeException
      */
-    public function login(int $userId): array
+    public function login(int $userId, string $redirectTo = 'dashboard'): array
     {
         return $this->post(
             (string) config('bridge.hrportal.agent_login_endpoint', '/bridge/agent/login'),
-            ['agent_id' => $userId],
+            ['agent_id' => $userId, 'redirect_to' => $redirectTo],
             'Unable to get HR portal login URL.'
         );
     }

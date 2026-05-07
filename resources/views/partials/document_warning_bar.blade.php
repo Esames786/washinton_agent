@@ -56,7 +56,7 @@
             <span>Your HR profile is incomplete — required documents are missing. Please upload your documents to complete your account setup.</span>
         </div>
         <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
-            <a href="{{ route('hr.portal.redirect') }}"
+            <a href="{{ route('hr.portal.redirect') }}?to=profile"
                style="background:#fff;color:#b8860b;font-weight:700;padding:6px 16px;border-radius:6px;text-decoration:none;font-size:12px;white-space:nowrap;border:2px solid #fff;">
                 📄 Upload Documents
             </a>
@@ -82,7 +82,7 @@
             <span>Your documents have been submitted and are <strong>pending HR verification</strong>. Your account will be activated once reviewed.</span>
         </div>
         <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
-            <a href="{{ route('hr.portal.redirect') }}"
+            <a href="{{ route('hr.portal.redirect') }}?to=profile"
                style="background:#fff;color:#1565c0;font-weight:700;padding:6px 16px;border-radius:6px;text-decoration:none;font-size:12px;white-space:nowrap;border:2px solid #fff;">
                 👁 View Profile
             </a>
