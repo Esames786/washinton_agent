@@ -138,6 +138,8 @@
                                                 <th class="border-bottom-0">HR STATUS</th>
                                                 <th class="border-bottom-0">CODE</th>
                                                 <th class="border-bottom-0">EDIT</th>
+                                                <th class="border-bottom-0">HR PORTAL</th>
+                                                <th class="border-bottom-0">SCOPE</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -205,13 +207,6 @@
                                                                                 <a class="dropdown-item"
                                                                                     href="{{ url('user_deactive_new' . '/' . $val->id) }}">Deactivate</a>
                                                                             @endif
-                                                                            {{-- @if ($val->freeze == 1)
-                                                                                <a class="dropdown-item"
-                                                                                    href="{{ url('freeze-unfreeze-new' . '/' . $val->id) }}">Unfreeze</a>
-                                                                            @else
-                                                                                <a class="dropdown-item"
-                                                                                    href="{{ url('freeze-unfreeze-new' . '/' . $val->id) }}">Freeze</a>
-                                                                            @endif --}}
                                                                             @if ($val->freeze == 1)
                                                                                 <a class="dropdown-item freeze-unfreeze-btn"
                                                                                     data-id="{{ $val->id }}"
@@ -231,19 +226,6 @@
                                                                             <a class="dropdown-item"
                                                                                 href="{{ url('screen_shots' . '/' . $val->id) }}"
                                                                                 target="_blank">Screen Shots</a>
-                                                                            @if($hrEmp)
-                                                                                <div class="dropdown-divider"></div>
-                                                                                <a class="dropdown-item text-primary"
-                                                                                    href="{{ route('hr.admin.employee', $val->id) }}"
-                                                                                    target="_blank">
-                                                                                    <i class="fe fe-external-link mr-1"></i>View in HR Portal
-                                                                                </a>
-                                                                            @endif
-                                                                            <div class="dropdown-divider"></div>
-                                                                            <a class="dropdown-item text-warning font-weight-bold"
-                                                                                href="{{ route('scope.enter', $val->id) }}">
-                                                                                <i class="fe fe-eye mr-1"></i>Scope Account
-                                                                            </a>
                                                                         </div>
                                                                     </div>
                                                                 @endif
@@ -265,13 +247,6 @@
                                                                                 <a class="dropdown-item"
                                                                                     href="{{ url('user_deactive_new' . '/' . $val->id) }}">Deactivate</a>
                                                                             @endif
-                                                                            {{-- @if ($val->freeze == 1)
-                                                                                <a class="dropdown-item"
-                                                                                    href="{{ url('freeze-unfreeze-new' . '/' . $val->id) }}">Unfreeze</a>
-                                                                            @else
-                                                                                <a class="dropdown-item"
-                                                                                    href="{{ url('freeze-unfreeze-new' . '/' . $val->id) }}">Freeze</a>
-                                                                            @endif --}}
                                                                             @if ($val->freeze == 1)
                                                                                 <a class="dropdown-item freeze-unfreeze-btn"
                                                                                     data-id="{{ $val->id }}"
@@ -291,24 +266,32 @@
                                                                             <a class="dropdown-item"
                                                                                 href="{{ url('screen_shots' . '/' . $val->id) }}"
                                                                                 target="_blank">Screen Shots</a>
-                                                                            @if($hrEmp)
-                                                                                <div class="dropdown-divider"></div>
-                                                                                <a class="dropdown-item text-primary"
-                                                                                    href="{{ route('hr.admin.employee', $val->id) }}"
-                                                                                    target="_blank">
-                                                                                    <i class="fe fe-external-link mr-1"></i>View in HR Portal
-                                                                                </a>
-                                                                            @endif
-                                                                            @if($val->id !== Auth::id())
-                                                                                <div class="dropdown-divider"></div>
-                                                                                <a class="dropdown-item text-warning font-weight-bold"
-                                                                                    href="{{ route('scope.enter', $val->id) }}">
-                                                                                    <i class="fe fe-eye mr-1"></i>Scope Account
-                                                                                </a>
-                                                                            @endif
                                                                         </div>
                                                                     </div>
                                                                 @endif
+                                                            @endif
+                                                        </td>
+                                                        {{-- HR PORTAL column --}}
+                                                        <td>
+                                                            @if($hrEmp)
+                                                                <a href="{{ route('hr.admin.employee', $val->id) }}"
+                                                                   target="_blank"
+                                                                   class="btn btn-sm btn-primary">
+                                                                    <i class="fe fe-external-link mr-1"></i>HR Portal
+                                                                </a>
+                                                            @else
+                                                                <span class="text-muted">—</span>
+                                                            @endif
+                                                        </td>
+                                                        {{-- SCOPE column --}}
+                                                        <td>
+                                                            @if($val->id !== Auth::id())
+                                                                <a href="{{ route('scope.enter', $val->id) }}"
+                                                                   class="btn btn-sm btn-warning text-dark font-weight-bold">
+                                                                    <i class="fe fe-eye mr-1"></i>Scope
+                                                                </a>
+                                                            @else
+                                                                <span class="text-muted">—</span>
                                                             @endif
                                                         </td>
                                                     </tr>
