@@ -54,7 +54,7 @@
                                         <span class="badge badge-secondary ml-1" style="font-size:14px;">{{ $data2->id }}</span>
                                         <small class="text-muted ml-2">— Use this as <strong>Agent ID</strong> when linking in the HR portal (<code>hr_employees.agent_id</code>)</small>
                                     </div>
-                                    <a href="{{ url('/hr-portal/' . $data2->id) }}"
+                                    <a href="{{ route('hr.admin.employee', $data2->id) }}"
                                        target="_blank"
                                        class="btn btn-sm btn-success ml-3"
                                        style="white-space:nowrap;">
