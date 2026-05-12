@@ -61,6 +61,22 @@ class HrPortalBridgeService
     }
 
     /**
+     * Get a one-time admin SSO URL to view an HR employee profile.
+     *
+     * @param  int  $hrEmployeeId  The hr_employees.id
+     * @return array  ['redirect_url' => '...']
+     * @throws RuntimeException
+     */
+    public function adminEmployeeView(int $hrEmployeeId): array
+    {
+        return $this->post(
+            '/bridge/admin/employee-view',
+            ['employee_id' => $hrEmployeeId],
+            'Unable to get HR admin view URL.'
+        );
+    }
+
+    /**
      * Shared HTTP POST logic for all HR portal bridge calls.
      */
     protected function post(string $endpoint, array $payload, string $fallbackMessage): array

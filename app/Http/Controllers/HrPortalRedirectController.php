@@ -15,6 +15,33 @@ class HrPortalRedirectController extends Controller
     ) {}
 
     /**
+     * Admin SSO: washinton_agent admin → HR portal admin view of a user's employee profile.
+     * URL: /hr-portal/admin/employee/{userId}
+     */
+    public function adminRedirect(Request $request, int $userId): RedirectResponse
+    {
+        $hrEmployee = \Illuminate\Support\Facades\DB::table('hr_employees')
+            ->where('agent_id', $userId)
+            ->first();
+
+        if (!$hrEmployee) {
+            return back()->with('error', 'This user is not linked to the HR portal yet.');
+        }
+
+        try {
+            $response = $this->bridge->adminEmployeeView((int) $hrEmployee->id);
+        } catch (RuntimeException $e) {
+            return back()->with('error', 'HR portal is not reachable right now. Please try again later.');
+        }
+
+        if (!empty($response['redirect_url'])) {
+            return redirect()->away($response['redirect_url']);
+        }
+
+        return back()->with('error', 'HR portal returned an invalid response. Please try again.');
+    }
+
+    /**
      * SSO redirect: logged-in agent → HR portal.
      *
      * Optional query param: ?to=profile  → lands on employee profile page

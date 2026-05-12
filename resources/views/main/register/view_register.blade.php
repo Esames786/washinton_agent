@@ -135,6 +135,7 @@
                                                 <th class="border-bottom-0">ROLE</th>
                                                 <th class="border-bottom-0">PHONE</th>
                                                 <th class="border-bottom-0">STATUS</th>
+                                                <th class="border-bottom-0">HR STATUS</th>
                                                 <th class="border-bottom-0">CODE</th>
                                                 <th class="border-bottom-0">EDIT</th>
                                             </tr>
@@ -170,6 +171,18 @@
                                                                     <br>
                                                                     {{ $val->freeze_reason }}
                                                                 @endif
+                                                            @endif
+                                                        </td>
+                                                        @php
+                                                            $hrEmp = $hrEmployees[$val->id] ?? null;
+                                                            $hrStatusColors = [1=>'success',2=>'secondary',3=>'danger',4=>'warning',5=>'info',6=>'primary',7=>'warning',8=>'secondary',9=>'info',10=>'primary'];
+                                                            $hrColor = $hrEmp ? ($hrStatusColors[$hrEmp->hr_status_id] ?? 'secondary') : 'light';
+                                                        @endphp
+                                                        <td>
+                                                            @if($hrEmp)
+                                                                <span class="badge badge-{{ $hrColor }} text-light">{{ $hrEmp->hr_status }}</span>
+                                                            @else
+                                                                <span class="badge badge-light text-muted">Not Linked</span>
                                                             @endif
                                                         </td>
                                                         <td>{{ $val->code }}</td>
@@ -218,6 +231,19 @@
                                                                             <a class="dropdown-item"
                                                                                 href="{{ url('screen_shots' . '/' . $val->id) }}"
                                                                                 target="_blank">Screen Shots</a>
+                                                                            @if($hrEmp)
+                                                                                <div class="dropdown-divider"></div>
+                                                                                <a class="dropdown-item text-primary"
+                                                                                    href="{{ route('hr.admin.employee', $val->id) }}"
+                                                                                    target="_blank">
+                                                                                    <i class="fe fe-external-link mr-1"></i>View in HR Portal
+                                                                                </a>
+                                                                            @endif
+                                                                            <div class="dropdown-divider"></div>
+                                                                            <a class="dropdown-item text-warning font-weight-bold"
+                                                                                href="{{ route('scope.enter', $val->id) }}">
+                                                                                <i class="fe fe-eye mr-1"></i>Scope Account
+                                                                            </a>
                                                                         </div>
                                                                     </div>
                                                                 @endif
@@ -265,6 +291,21 @@
                                                                             <a class="dropdown-item"
                                                                                 href="{{ url('screen_shots' . '/' . $val->id) }}"
                                                                                 target="_blank">Screen Shots</a>
+                                                                            @if($hrEmp)
+                                                                                <div class="dropdown-divider"></div>
+                                                                                <a class="dropdown-item text-primary"
+                                                                                    href="{{ route('hr.admin.employee', $val->id) }}"
+                                                                                    target="_blank">
+                                                                                    <i class="fe fe-external-link mr-1"></i>View in HR Portal
+                                                                                </a>
+                                                                            @endif
+                                                                            @if($val->id !== Auth::id())
+                                                                                <div class="dropdown-divider"></div>
+                                                                                <a class="dropdown-item text-warning font-weight-bold"
+                                                                                    href="{{ route('scope.enter', $val->id) }}">
+                                                                                    <i class="fe fe-eye mr-1"></i>Scope Account
+                                                                                </a>
+                                                                            @endif
                                                                         </div>
                                                                     </div>
                                                                 @endif

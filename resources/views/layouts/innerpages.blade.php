@@ -375,6 +375,7 @@
 </head>
 
 <body class="app sidebar-mini">
+    @include('partials.scope_warning_bar')
     @if (Auth::check())
         @if (Auth::user()->freeze == 1)
             @php

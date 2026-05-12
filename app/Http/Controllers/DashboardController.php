@@ -481,8 +481,17 @@ class DashboardController extends Controller
             ->where('level', 1)
             ->get();
         $deleted = User::where('deleted', 1)->orderBy('is_login', 'DESC')->get();
+
+        // Fetch HR employee status for all linked users (shared DB)
+        $hrEmployees = \Illuminate\Support\Facades\DB::table('hr_employees as e')
+            ->join('hr_employee_statuses as s', 'e.employee_status_id', '=', 's.id')
+            ->select('e.id as hr_id', 'e.agent_id', 's.name as hr_status', 'e.employee_status_id as hr_status_id')
+            ->whereNotNull('e.agent_id')
+            ->get()
+            ->keyBy('agent_id');
+
         if (Auth::check()) {
-            return view('main.register.view_register', compact('roles', 'deleted'));
+            return view('main.register.view_register', compact('roles', 'deleted', 'hrEmployees'));
         } else {
             return redirect('/loginn/');
         }

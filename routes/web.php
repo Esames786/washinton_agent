@@ -150,6 +150,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/edit_employee/{id}', 'DashboardController@edit_employee');
     Route::post('/update_employee', 'DashboardController@update_employee')->name('update_employee');
     Route::get('/hr-portal/{userId}', 'HrPortalRedirectController@redirect')->name('hr.portal.redirect');
+    Route::get('/hr-portal/admin/employee/{userId}', 'HrPortalRedirectController@adminRedirect')->name('hr.admin.employee');
+
+    // Scope (account impersonation — admin only)
+    Route::get('/scope/enter/{userId}', 'ScopeController@enter')->name('scope.enter');
+    Route::get('/scope/exit', 'ScopeController@exit')->name('scope.exit');
 
     // Commission screen
     Route::get('/commission', 'CommissionController@index')->name('commission.index');
