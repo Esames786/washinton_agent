@@ -51,9 +51,9 @@ class HrPortalRedirectController extends Controller
      *   route('hr.portal.redirect')              → dashboard
      *   route('hr.portal.redirect') . '?to=profile' → profile page
      */
-    public function redirect(Request $request): RedirectResponse
+    public function redirect(Request $request, $userId = null): RedirectResponse
     {
-        $userId     = Auth::id();
+        $userId     = (is_numeric($userId)) ? (int) $userId : Auth::id();
         $redirectTo = $request->query('to', 'dashboard');
 
         // Check if this user is linked to an HR employee record
