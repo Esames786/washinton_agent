@@ -28,17 +28,19 @@ class HrPortalRedirectController extends Controller
             return back()->with('error', 'This user is not linked to the HR portal yet.');
         }
 
-        try {
-            $response = $this->bridge->adminEmployeeView((int) $hrEmployee->id);
-        } catch (RuntimeException $e) {
-            return back()->with('error', 'HR portal is not reachable right now. Please try again later.');
-        }
+        $payload = base64_encode(json_encode([
+            'employee_id'   => $hrEmployee->id,
+            'redirect_path' => '/admin/employees/show/' . $hrEmployee->id,
+            'expires_at'    => now()->addMinutes(3)->timestamp,
+        ]));
 
-        if (!empty($response['redirect_url'])) {
-            return redirect()->away($response['redirect_url']);
-        }
+        $sig = hash_hmac('sha256', $payload, (string) config('bridge.hrportal.shared_key'));
 
-        return back()->with('error', 'HR portal returned an invalid response. Please try again.');
+        $ssoUrl = rtrim((string) config('bridge.hrportal.base_url'), '/')
+            . '/admin/sso/consume?payload=' . urlencode($payload)
+            . '&sig=' . $sig;
+
+        return redirect()->away($ssoUrl);
     }
 
     /**
