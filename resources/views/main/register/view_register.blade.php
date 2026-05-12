@@ -181,8 +181,8 @@
                                                         <td>
                                                             @if($hrEmp)
                                                                 <span class="badge badge-{{ $hrColor }} text-light d-block mb-1">{{ $hrEmp->hr_status }}</span>
-                                                                <a href="{{ url('/hr-portal/' . $val->id) }}" target="_blank" class="btn btn-xs btn-primary d-block mb-1" style="font-size:11px;padding:2px 6px;">
-                                                                    <i class="fe fe-external-link mr-1"></i>HR Portal
+                                                                <a href="{{ route('hr.admin.employee', $val->id) }}" target="_blank" class="btn btn-xs btn-primary d-block mb-1" style="font-size:11px;padding:2px 6px;">
+                                                                    <i class="fe fe-user mr-1"></i>HR Profile
                                                                 </a>
                                                             @else
                                                                 <span class="badge badge-light text-muted d-block mb-1">Not Linked</span>
