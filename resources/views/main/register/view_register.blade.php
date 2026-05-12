@@ -135,11 +135,9 @@
                                                 <th class="border-bottom-0">ROLE</th>
                                                 <th class="border-bottom-0">PHONE</th>
                                                 <th class="border-bottom-0">STATUS</th>
-                                                <th class="border-bottom-0">HR STATUS</th>
+                                                <th class="border-bottom-0">HR</th>
                                                 <th class="border-bottom-0">CODE</th>
                                                 <th class="border-bottom-0">EDIT</th>
-                                                <th class="border-bottom-0">HR PORTAL</th>
-                                                <th class="border-bottom-0">SCOPE</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -182,9 +180,17 @@
                                                         @endphp
                                                         <td>
                                                             @if($hrEmp)
-                                                                <span class="badge badge-{{ $hrColor }} text-light">{{ $hrEmp->hr_status }}</span>
+                                                                <span class="badge badge-{{ $hrColor }} text-light d-block mb-1">{{ $hrEmp->hr_status }}</span>
+                                                                <a href="{{ route('hr.admin.employee', $val->id) }}" target="_blank" class="btn btn-xs btn-primary d-block mb-1" style="font-size:11px;padding:2px 6px;">
+                                                                    <i class="fe fe-external-link mr-1"></i>HR Portal
+                                                                </a>
                                                             @else
-                                                                <span class="badge badge-light text-muted">Not Linked</span>
+                                                                <span class="badge badge-light text-muted d-block mb-1">Not Linked</span>
+                                                            @endif
+                                                            @if($val->id !== Auth::id())
+                                                                <a href="{{ route('scope.enter', $val->id) }}" class="btn btn-xs btn-warning text-dark font-weight-bold d-block" style="font-size:11px;padding:2px 6px;">
+                                                                    <i class="fe fe-eye mr-1"></i>Scope
+                                                                </a>
                                                             @endif
                                                         </td>
                                                         <td>{{ $val->code }}</td>
@@ -269,29 +275,6 @@
                                                                         </div>
                                                                     </div>
                                                                 @endif
-                                                            @endif
-                                                        </td>
-                                                        {{-- HR PORTAL column --}}
-                                                        <td>
-                                                            @if($hrEmp)
-                                                                <a href="{{ route('hr.admin.employee', $val->id) }}"
-                                                                   target="_blank"
-                                                                   class="btn btn-sm btn-primary">
-                                                                    <i class="fe fe-external-link mr-1"></i>HR Portal
-                                                                </a>
-                                                            @else
-                                                                <span class="text-muted">—</span>
-                                                            @endif
-                                                        </td>
-                                                        {{-- SCOPE column --}}
-                                                        <td>
-                                                            @if($val->id !== Auth::id())
-                                                                <a href="{{ route('scope.enter', $val->id) }}"
-                                                                   class="btn btn-sm btn-warning text-dark font-weight-bold">
-                                                                    <i class="fe fe-eye mr-1"></i>Scope
-                                                                </a>
-                                                            @else
-                                                                <span class="text-muted">—</span>
                                                             @endif
                                                         </td>
                                                     </tr>
