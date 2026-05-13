@@ -152,6 +152,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/hr-portal/{userId}', 'HrPortalRedirectController@redirect')->name('hr.portal.redirect');
     Route::get('/hr-portal/admin/employee/{userId}', 'HrPortalRedirectController@adminRedirect')->name('hr.admin.employee');
 
+    // Employee Review Modal
+    Route::get('/employee-review/data/{userId}', 'EmployeeReviewController@data')->name('employee.review.data');
+    Route::post('/employee-review/agent-status', 'EmployeeReviewController@changeAgentStatus')->name('employee.review.agent_status');
+    Route::post('/employee-review/hr-status', 'EmployeeReviewController@changeHrStatus')->name('employee.review.hr_status');
+
     // Scope (account impersonation — admin only)
     Route::get('/scope/enter/{userId}', 'ScopeController@enter')->name('scope.enter');
     Route::get('/scope/exit', 'ScopeController@exit')->name('scope.exit');
