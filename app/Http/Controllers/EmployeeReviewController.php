@@ -76,10 +76,11 @@ class EmployeeReviewController extends Controller
                 'phone'  => $agentUser->phone,
                 'status' => (int) $agentUser->status,
             ],
-            'hr_employee' => $hrEmp,
-            'documents'   => $documents,
-            'leave_quotas'=> $leaveQuotas,
-            'hr_statuses' => $hrStatuses,
+            'hr_employee'  => $hrEmp,
+            'documents'    => $documents,
+            'leave_quotas' => $leaveQuotas,
+            'hr_statuses'  => $hrStatuses,
+            'hr_base_url'  => rtrim((string) config('bridge.hrportal.base_url'), '/'),
         ]);
     }
 

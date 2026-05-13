@@ -755,11 +755,12 @@
             $('#employeeReviewModal').modal('show');
 
             $.getJSON('/employee-review/data/' + _reviewUserId, function (data) {
-                var agent    = data.agent       || {};
-                var hr       = data.hr_employee || null;
-                var docs     = data.documents   || [];
-                var leaves   = data.leave_quotas|| [];
-                var statuses = data.hr_statuses || [];
+                var agent      = data.agent        || {};
+                var hr         = data.hr_employee  || null;
+                var docs       = data.documents    || [];
+                var leaves     = data.leave_quotas || [];
+                var statuses   = data.hr_statuses  || [];
+                var hrBaseUrl  = data.hr_base_url  || '';
 
                 // HR Profile button
                 if (hr) {
@@ -770,7 +771,7 @@
 
                 // Profile header
                 var profileSrc = (hr && hr.profile_path)
-                    ? '/' + hr.profile_path
+                    ? hrBaseUrl + '/' + hr.profile_path
                     : '/assets/images/default_images/profile_image.png';
                 $('#rev_profile_img').attr('src', profileSrc);
                 $('#rev_full_name').text(hr ? (hr.full_name || agent.name) : agent.name);
@@ -882,27 +883,37 @@
                 if (docs.length > 0) {
                     docs.forEach(function (doc) {
                         var ext = doc.file_path ? doc.file_path.split('.').pop().toLowerCase() : '';
+                        var fullUrl = doc.file_path ? hrBaseUrl + '/' + doc.file_path : '';
                         var thumb = '';
                         if (['jpg','jpeg','png','gif','bmp','webp'].indexOf(ext) !== -1) {
-                            thumb = '<a href="/' + doc.file_path + '" target="_blank">'
-                                  + '<img src="/' + doc.file_path + '" class="img-fluid rounded mb-1" style="width:100%;height:90px;object-fit:cover;">'
+                            // Image: show thumbnail with onerror fallback to icon
+                            thumb = '<a href="' + fullUrl + '" target="_blank">'
+                                  + '<img src="' + fullUrl + '" class="img-fluid rounded mb-1"'
+                                  + ' style="width:100%;height:90px;object-fit:cover;"'
+                                  + ' onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';">'
+                                  + '<i class="fe fe-image text-secondary d-none mb-1" style="font-size:48px;"></i>'
                                   + '</a>';
                         } else if (ext === 'pdf') {
-                            thumb = '<a href="/' + doc.file_path + '" target="_blank">'
+                            thumb = '<a href="' + fullUrl + '" target="_blank">'
                                   + '<i class="fe fe-file-text text-danger d-block mb-1" style="font-size:48px;"></i></a>';
                         } else {
-                            thumb = '<a href="/' + doc.file_path + '" target="_blank">'
-                                  + '<i class="fe fe-paperclip text-primary d-block mb-1" style="font-size:48px;"></i></a>';
+                            thumb = fullUrl
+                                ? '<a href="' + fullUrl + '" target="_blank"><i class="fe fe-paperclip text-primary d-block mb-1" style="font-size:48px;"></i></a>'
+                                : '<i class="fe fe-paperclip text-muted d-block mb-1" style="font-size:48px;"></i>';
                         }
                         var statusBadge = doc.status == 1
                             ? '<span class="badge badge-success mb-1">Verified</span>'
                             : '<span class="badge badge-warning mb-1">Pending</span>';
+                        var viewLink = fullUrl
+                            ? '<a href="' + fullUrl + '" target="_blank" class="btn btn-xs btn-outline-primary mt-1" style="font-size:10px;">View</a>'
+                            : '';
                         var docHtml = '<div class="col-sm-6 col-md-3 col-lg-2 mb-2 text-center">'
                             + '<div class="border rounded p-2 h-100">'
                             + thumb
                             + '<p class="small font-weight-bold mb-1" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;">'
                             + (doc.doc_type || doc.file_name) + '</p>'
                             + statusBadge
+                            + viewLink
                             + '</div></div>';
                         $('#rev_documents_row').append(docHtml);
                     });
