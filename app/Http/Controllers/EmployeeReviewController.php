@@ -92,33 +92,31 @@ class EmployeeReviewController extends Controller
         $request->validate(['user_id' => 'required|integer', 'status' => 'required|in:0,1']);
 
         $user = User::findOrFail($request->user_id);
-        $wasInactive = (int) $user->status === 0;
         $user->status = $request->status;
         $user->save();
 
-        // Send activation email only when transitioning inactive → active
-        if ($wasInactive && (int) $request->status === 1) {
+        $emailNote = null;
+        if ((int) $request->status === 1) {
             try {
                 Mail::to($user->email)->send(new AgentActivatedEmail($user->name, $user->email));
+                $emailNote = 'Activation email sent to ' . $user->email;
             } catch (\Throwable $e) {
                 Log::warning('changeAgentStatus: activation email failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+                $emailNote = 'Email failed: ' . $e->getMessage();
             }
         }
 
-        return response()->json(['success' => true, 'status' => (int) $user->status]);
+        return response()->json(['success' => true, 'status' => (int) $user->status, 'email_note' => $emailNote]);
     }
 
     public function changeHrStatus(Request $request): JsonResponse
     {
         $request->validate(['user_id' => 'required|integer', 'hr_status_id' => 'required|integer']);
 
-        // Fetch current status before updating to detect active transition
         $hrEmployee = DB::table('hr_employees')->where('agent_id', $request->user_id)->first();
         if (!$hrEmployee) {
             return response()->json(['error' => 'HR employee not found.'], 404);
         }
-
-        $wasNotActive = (int) $hrEmployee->employee_status_id !== 1;
 
         $updated = DB::table('hr_employees')
             ->where('agent_id', $request->user_id)
@@ -130,8 +128,7 @@ class EmployeeReviewController extends Controller
 
         $statusName = DB::table('hr_employee_statuses')->where('id', $request->hr_status_id)->value('name');
 
-        // Send HR activation email when transitioning to Active (status 1)
-        if ($wasNotActive && (int) $request->hr_status_id === 1) {
+        if ((int) $request->hr_status_id === 1) {
             try {
                 $agentUser = User::find($request->user_id);
                 $emailTo   = $hrEmployee->email ?: ($agentUser ? $agentUser->email : null);

@@ -10,14 +10,19 @@ class WelcomeEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(
-        public string $userName,
-        public string $userEmail
-    ) {}
+    public $userName;
+    public $userEmail;
 
-    public function build(): static
+    public function __construct($userName, $userEmail)
+    {
+        $this->userName  = $userName;
+        $this->userEmail = $userEmail;
+    }
+
+    public function build()
     {
         return $this
+            ->from(config('mail.from.address', 'noreply@hellotransport.com'), 'Hello Transport')
             ->subject('Welcome to Hello Transport — Account Pending Approval')
             ->view('emails.welcome');
     }

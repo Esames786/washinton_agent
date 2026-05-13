@@ -943,7 +943,9 @@
                         '<button class="btn btn-sm btn-danger btn-block" id="rev_deactivate_btn"><i class="fe fe-user-x mr-1"></i>Deactivate Agent</button>'
                         + '<p class="text-success small mt-1 mb-0"><i class="fe fe-check-circle mr-1"></i>Currently Active — can log in</p>'
                     );
-                    $('#rev_agent_status_msg').text('Agent activated successfully.').show();
+                    var msg = 'Agent activated successfully.';
+                    if (res.email_note) msg += ' | ' + res.email_note;
+                    $('#rev_agent_status_msg').text(msg).show();
                 }
             });
         });
