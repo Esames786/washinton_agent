@@ -480,102 +480,159 @@
 
     <!-- Employee Review Modal -->
     <div class="modal fade" id="employeeReviewModal" tabindex="-1" aria-labelledby="employeeReviewModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-dialog modal-dialog-scrollable" style="max-width:95%;width:95%;margin:1.5rem auto;">
             <div class="modal-content">
-                <div class="modal-header bg-dark text-white">
-                    <h5 class="modal-title" id="employeeReviewModalLabel"><i class="fe fe-user mr-2"></i>Employee Review</h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                <div class="modal-header bg-dark text-white py-2">
+                    <h5 class="modal-title mb-0" id="employeeReviewModalLabel">
+                        <i class="fe fe-user mr-2"></i>Employee Review
+                    </h5>
+                    <div class="d-flex align-items-center">
+                        <a id="rev_hr_profile_btn" href="#" target="_blank"
+                           class="btn btn-sm btn-primary mr-2" style="display:none!important;">
+                            <i class="fe fe-external-link mr-1"></i>Edit HR Profile
+                        </a>
+                        <button type="button" class="close text-white mb-0" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
                 </div>
                 <div class="modal-body p-0">
                     <!-- Warning Banner -->
-                    <div class="alert alert-warning rounded-0 mb-0 border-0 border-bottom">
-                        <strong><i class="fe fe-alert-triangle mr-1"></i>Before changing status, review the employee details below.</strong>
-                        <ul class="mb-0 mt-1 small">
-                            <li>Setting <strong>Agent Portal Active</strong> will allow the user to log in to the agent portal.</li>
-                            <li>If the employee's <strong>HR Status is "Document Verification"</strong> or pending, the user will be redirected to the HR portal to upload documents before they can use the agent portal.</li>
+                    <div class="alert alert-warning rounded-0 mb-0 border-0 border-bottom py-2 px-3">
+                        <strong><i class="fe fe-alert-triangle mr-1"></i>Review before changing status</strong>
+                        <ul class="mb-0 mt-1 small pl-3">
+                            <li>Setting <strong>Agent Portal Active</strong> allows this user to log in to the agent portal.</li>
+                            <li>If HR Status is <strong>"Document Verification"</strong> or <strong>"Pending Contract"</strong>, the user will be redirected to the HR portal to complete their profile first.</li>
                             <li>Verify all documents and HR status before activating.</li>
                         </ul>
                     </div>
 
                     <!-- Loading Spinner -->
                     <div id="reviewModalLoader" class="text-center py-5">
-                        <div class="spinner-border text-primary" role="status"></div>
-                        <p class="mt-2 text-muted">Loading employee details...</p>
+                        <div class="spinner-border text-primary" role="status" style="width:3rem;height:3rem;"></div>
+                        <p class="mt-3 text-muted">Loading employee details...</p>
                     </div>
 
                     <!-- Content (hidden until loaded) -->
                     <div id="reviewModalContent" style="display:none;" class="p-3">
 
                         <!-- Profile Header -->
-                        <div class="d-flex align-items-center gap-3 mb-3 p-3 bg-light rounded">
+                        <div class="d-flex align-items-center mb-3 p-3 bg-light rounded border">
                             <img id="rev_profile_img" src="" alt="Profile"
-                                 class="rounded-circle border border-primary"
-                                 style="width:80px;height:80px;object-fit:cover;">
-                            <div>
-                                <h5 class="mb-0 fw-bold" id="rev_full_name">—</h5>
-                                <div class="text-muted small" id="rev_designation_dept">—</div>
-                                <div class="small mt-1">
+                                 class="rounded-circle border border-primary mr-3 flex-shrink-0"
+                                 style="width:90px;height:90px;object-fit:cover;">
+                            <div class="flex-grow-1">
+                                <h5 class="mb-1 font-weight-bold" id="rev_full_name">—</h5>
+                                <div class="text-muted small mb-1" id="rev_designation_dept">—</div>
+                                <div>
                                     <span id="rev_agent_badge" class="badge mr-1"></span>
-                                    <span id="rev_hr_badge" class="badge"></span>
+                                    <span id="rev_hr_badge" class="badge mr-1"></span>
+                                    <span id="rev_employment_badge" class="badge badge-light border"></span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="row g-3">
-                            <!-- Left: Profile Info -->
-                            <div class="col-md-6">
+                        <!-- Row 1: Profile Info + Status Controls -->
+                        <div class="row">
+                            <!-- Profile Info -->
+                            <div class="col-md-4">
                                 <div class="card border shadow-sm h-100">
-                                    <div class="card-header bg-light fw-bold small py-2">Profile Info</div>
+                                    <div class="card-header bg-light font-weight-bold small py-2">👤 Profile Info</div>
                                     <div class="card-body p-2">
                                         <table class="table table-sm table-borderless small mb-0">
                                             <tbody>
-                                            <tr><td class="fw-bold text-muted" style="width:45%">Employee Code</td><td id="rev_employee_code">—</td></tr>
-                                            <tr><td class="fw-bold text-muted">Email</td><td id="rev_email">—</td></tr>
-                                            <tr><td class="fw-bold text-muted">Phone</td><td id="rev_phone">—</td></tr>
-                                            <tr><td class="fw-bold text-muted">CNIC</td><td id="rev_cnic">—</td></tr>
-                                            <tr><td class="fw-bold text-muted">Father Name</td><td id="rev_father_name">—</td></tr>
-                                            <tr><td class="fw-bold text-muted">DOB</td><td id="rev_dob">—</td></tr>
-                                            <tr><td class="fw-bold text-muted">Gender</td><td id="rev_gender">—</td></tr>
-                                            <tr><td class="fw-bold text-muted">Marital Status</td><td id="rev_marital_status">—</td></tr>
-                                            <tr><td class="fw-bold text-muted">Joining Date</td><td id="rev_joining_date">—</td></tr>
-                                            <tr><td class="fw-bold text-muted">Basic Salary</td><td id="rev_basic_salary">—</td></tr>
-                                            <tr><td class="fw-bold text-muted">Shift</td><td id="rev_shift">—</td></tr>
-                                            <tr><td class="fw-bold text-muted">Address</td><td id="rev_address">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted" style="width:45%;white-space:nowrap;">Code</td><td id="rev_employee_code">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">Email</td><td id="rev_email" style="word-break:break-all;">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">Phone</td><td id="rev_phone">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">Phone 2</td><td id="rev_phone2">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">CNIC</td><td id="rev_cnic">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">Father</td><td id="rev_father_name">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">Mother</td><td id="rev_mother_name">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">DOB</td><td id="rev_dob">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">Gender</td><td id="rev_gender">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">Marital</td><td id="rev_marital_status">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">Emergency</td><td id="rev_emergency_contact">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">Address</td><td id="rev_address">—</td></tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Right: Status Controls -->
-                            <div class="col-md-6">
+                            <!-- Job Info -->
+                            <div class="col-md-4">
                                 <div class="card border shadow-sm mb-3">
-                                    <div class="card-header bg-light fw-bold small py-2">Agent Portal Status</div>
-                                    <div class="card-body p-3">
-                                        <p class="small text-muted mb-2">Controls whether this user can log in to the agent portal.</p>
-                                        <div id="rev_agent_status_btns" class="d-flex gap-2"></div>
-                                        <div id="rev_agent_status_msg" class="mt-2 small text-success" style="display:none;"></div>
+                                    <div class="card-header bg-light font-weight-bold small py-2">💼 Job Details</div>
+                                    <div class="card-body p-2">
+                                        <table class="table table-sm table-borderless small mb-0">
+                                            <tbody>
+                                            <tr><td class="font-weight-bold text-muted" style="width:45%;white-space:nowrap;">Joining Date</td><td id="rev_joining_date">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">Department</td><td id="rev_department">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">Designation</td><td id="rev_designation">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">Emp. Type</td><td id="rev_employment_type">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">Basic Salary</td><td id="rev_basic_salary">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">Shift</td><td id="rev_shift">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">Shift Hours</td><td id="rev_shift_hours">—</td></tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
-                                <div class="card border shadow-sm">
-                                    <div class="card-header bg-light fw-bold small py-2">HR Status</div>
-                                    <div class="card-body p-3">
-                                        <p class="small text-muted mb-2">The employee's current status in the HR portal.</p>
-                                        <select id="rev_hr_status_select" class="form-control form-control-sm mb-2"></select>
-                                        <button id="rev_save_hr_status" class="btn btn-sm btn-primary">Save HR Status</button>
-                                        <div id="rev_hr_status_msg" class="mt-2 small text-success" style="display:none;"></div>
+                                <div class="card border shadow-sm" id="rev_commission_card">
+                                    <div class="card-header bg-light font-weight-bold small py-2">💰 Commission</div>
+                                    <div class="card-body p-2">
+                                        <table class="table table-sm table-borderless small mb-0">
+                                            <tbody>
+                                            <tr><td class="font-weight-bold text-muted" style="width:45%">Plan</td><td id="rev_commission_title">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">Type</td><td id="rev_commission_type">—</td></tr>
+                                            <tr><td class="font-weight-bold text-muted">Value</td><td id="rev_commission_value">—</td></tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Documents -->
+                            <!-- Status Controls -->
+                            <div class="col-md-4">
+                                <div class="card border shadow-sm mb-3">
+                                    <div class="card-header bg-light font-weight-bold small py-2">🔑 Agent Portal Status</div>
+                                    <div class="card-body p-3">
+                                        <p class="small text-muted mb-2">Controls whether this user can log in to the agent portal.</p>
+                                        <div id="rev_agent_status_btns"></div>
+                                        <div id="rev_agent_status_msg" class="mt-2 small text-success" style="display:none;"></div>
+                                    </div>
+                                </div>
+                                <div class="card border shadow-sm">
+                                    <div class="card-header bg-light font-weight-bold small py-2">📋 HR Status</div>
+                                    <div class="card-body p-3">
+                                        <p class="small text-muted mb-2">Employee's current HR portal status.</p>
+                                        <select id="rev_hr_status_select" class="form-control form-control-sm mb-2"></select>
+                                        <button id="rev_save_hr_status" class="btn btn-sm btn-primary btn-block">Save HR Status</button>
+                                        <div id="rev_hr_status_msg" class="mt-2 small text-success" style="display:none;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Leave Quotas -->
+                        <div class="row mt-3">
                             <div class="col-12">
                                 <div class="card border shadow-sm">
-                                    <div class="card-header bg-light fw-bold small py-2">Documents</div>
-                                    <div class="card-body p-3">
-                                        <div id="rev_documents_row" class="row g-2"></div>
+                                    <div class="card-header bg-light font-weight-bold small py-2">📅 Leave Quotas (Active)</div>
+                                    <div class="card-body p-2">
+                                        <div id="rev_leave_quotas_row" class="row"></div>
+                                        <p id="rev_no_leave_quotas" class="text-muted small mb-0" style="display:none;">No active leave quotas assigned.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Documents -->
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="card border shadow-sm">
+                                    <div class="card-header bg-light font-weight-bold small py-2">📄 Documents</div>
+                                    <div class="card-body p-2">
+                                        <div id="rev_documents_row" class="row"></div>
                                         <p id="rev_no_documents" class="text-muted small mb-0" style="display:none;">No documents uploaded.</p>
                                     </div>
                                 </div>
@@ -583,7 +640,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer py-2">
+                    <a id="rev_hr_profile_btn_footer" href="#" target="_blank"
+                       class="btn btn-sm btn-outline-primary" style="display:none;">
+                        <i class="fe fe-external-link mr-1"></i>Edit HR Profile
+                    </a>
                     <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -676,74 +737,145 @@
         // ── Employee Review Modal ──────────────────────────────────────────────
         var _reviewUserId = null;
 
+        function capitalise(str) {
+            return str ? str.charAt(0).toUpperCase() + str.slice(1) : '—';
+        }
+
         $(document).on('click', '.review-employee-btn', function (e) {
             e.preventDefault();
             _reviewUserId = $(this).data('user-id');
+
+            // Reset state
             $('#reviewModalLoader').show();
             $('#reviewModalContent').hide();
             $('#rev_agent_status_msg').hide();
             $('#rev_hr_status_msg').hide();
+            $('#rev_hr_profile_btn').hide().attr('href', '#');
+            $('#rev_hr_profile_btn_footer').hide().attr('href', '#');
             $('#employeeReviewModal').modal('show');
 
             $.getJSON('/employee-review/data/' + _reviewUserId, function (data) {
-                var agent = data.agent || {};
-                var hr    = data.hr_employee || null;
-                var docs  = data.documents || [];
+                var agent    = data.agent       || {};
+                var hr       = data.hr_employee || null;
+                var docs     = data.documents   || [];
+                var leaves   = data.leave_quotas|| [];
                 var statuses = data.hr_statuses || [];
 
+                // HR Profile button
+                if (hr) {
+                    var hrProfileUrl = '{{ route("hr.admin.employee", "__ID__") }}'.replace('__ID__', agent.id);
+                    $('#rev_hr_profile_btn').attr('href', hrProfileUrl).css('display', 'inline-block');
+                    $('#rev_hr_profile_btn_footer').attr('href', hrProfileUrl).css('display', 'inline-block');
+                }
+
                 // Profile header
-                var profileSrc = hr && hr.profile_path
+                var profileSrc = (hr && hr.profile_path)
                     ? '/' + hr.profile_path
                     : '/assets/images/default_images/profile_image.png';
                 $('#rev_profile_img').attr('src', profileSrc);
                 $('#rev_full_name').text(hr ? (hr.full_name || agent.name) : agent.name);
                 $('#rev_designation_dept').text(
                     [hr ? hr.designation_name : null, hr ? hr.department_name : null]
-                        .filter(Boolean).join(' | ') || '—'
+                        .filter(Boolean).join(' | ') || agent.email
                 );
 
                 // Status badges
-                var agentStatusText = agent.status == 1 ? 'Agent: Active' : 'Agent: Inactive';
-                var agentBadgeClass = agent.status == 1 ? 'badge-success' : 'badge-danger';
-                $('#rev_agent_badge').text(agentStatusText).attr('class', 'badge ' + agentBadgeClass);
+                $('#rev_agent_badge')
+                    .text(agent.status == 1 ? 'Agent: Active' : 'Agent: Inactive')
+                    .attr('class', 'badge ' + (agent.status == 1 ? 'badge-success' : 'badge-danger'));
+                $('#rev_hr_badge')
+                    .text('HR: ' + (hr ? (hr.hr_status_name || 'Linked') : 'Not Linked'))
+                    .attr('class', 'badge badge-info');
+                $('#rev_employment_badge')
+                    .text(hr && hr.employment_type_name ? hr.employment_type_name : '')
+                    .toggle(!!(hr && hr.employment_type_name));
 
-                var hrStatusText  = hr ? (hr.hr_status_name || 'Not Linked') : 'Not Linked';
-                $('#rev_hr_badge').text('HR: ' + hrStatusText).attr('class', 'badge badge-info');
-
-                // Profile fields
+                // Profile Info
                 $('#rev_employee_code').text(hr ? (hr.employee_code || '—') : '—');
-                $('#rev_email').text(hr ? (hr.email || agent.email || '—') : agent.email);
-                $('#rev_phone').text(hr ? (hr.phone || agent.phone || '—') : agent.phone);
+                $('#rev_email').text(hr ? (hr.email || agent.email || '—') : (agent.email || '—'));
+                $('#rev_phone').text(hr ? (hr.phone || agent.phone || '—') : (agent.phone || '—'));
+                $('#rev_phone2').text(hr ? (hr.phone2 || '—') : '—');
                 $('#rev_cnic').text(hr ? (hr.cnic || '—') : '—');
                 $('#rev_father_name').text(hr ? (hr.father_name || '—') : '—');
+                $('#rev_mother_name').text(hr ? (hr.mother_name || '—') : '—');
                 $('#rev_dob').text(hr ? (hr.dob || '—') : '—');
-                $('#rev_gender').text(hr ? (hr.gender ? hr.gender.charAt(0).toUpperCase() + hr.gender.slice(1) : '—') : '—');
-                $('#rev_marital_status').text(hr ? (hr.marital_status || '—') : '—');
+                $('#rev_gender').text(hr ? capitalise(hr.gender) : '—');
+                $('#rev_marital_status').text(hr ? capitalise(hr.marital_status) : '—');
+                $('#rev_emergency_contact').text(hr ? (hr.emergency_contact || '—') : '—');
+                $('#rev_address').text(hr ? [hr.address, hr.city, hr.state, hr.country].filter(Boolean).join(', ') || '—' : '—');
+
+                // Job Details
                 $('#rev_joining_date').text(hr ? (hr.joining_date || '—') : '—');
-                $('#rev_basic_salary').text(hr ? (hr.basic_salary ? parseInt(hr.basic_salary).toLocaleString() : '—') : '—');
+                $('#rev_department').text(hr ? (hr.department_name || '—') : '—');
+                $('#rev_designation').text(hr ? (hr.designation_name || '—') : '—');
+                $('#rev_employment_type').text(hr ? (hr.employment_type_name || '—') : '—');
+                $('#rev_basic_salary').text(hr && hr.basic_salary ? 'PKR ' + parseInt(hr.basic_salary).toLocaleString() : '—');
                 $('#rev_shift').text(hr ? (hr.shift_name || '—') : '—');
-                $('#rev_address').text(hr ? [hr.address, hr.city, hr.state, hr.country].filter(Boolean).join(', ') : '—');
+                if (hr && hr.shift_start && hr.shift_end) {
+                    $('#rev_shift_hours').text(hr.shift_start.substring(0,5) + ' – ' + hr.shift_end.substring(0,5));
+                } else {
+                    $('#rev_shift_hours').text('—');
+                }
+
+                // Commission
+                if (hr && hr.commission_title) {
+                    $('#rev_commission_title').text(hr.commission_title);
+                    $('#rev_commission_type').text(hr.commission_type_name || '—');
+                    var commVal = hr.commission_type_name && hr.commission_type_name.toLowerCase() === 'percentage'
+                        ? hr.commission_value + '%'
+                        : 'PKR ' + parseFloat(hr.commission_value || 0).toLocaleString();
+                    $('#rev_commission_value').text(commVal);
+                    $('#rev_commission_card').show();
+                } else {
+                    $('#rev_commission_title').text('—');
+                    $('#rev_commission_type').text('—');
+                    $('#rev_commission_value').text('—');
+                }
 
                 // Agent status buttons
-                var btnHtml = '';
                 if (agent.status == 1) {
-                    btnHtml = '<button class="btn btn-sm btn-danger" id="rev_deactivate_btn">Deactivate Agent</button>'
-                            + '<span class="text-success small ml-2"><i class="fe fe-check-circle mr-1"></i>Currently Active</span>';
+                    $('#rev_agent_status_btns').html(
+                        '<button class="btn btn-sm btn-danger btn-block" id="rev_deactivate_btn"><i class="fe fe-user-x mr-1"></i>Deactivate Agent</button>'
+                        + '<p class="text-success small mt-1 mb-0"><i class="fe fe-check-circle mr-1"></i>Currently Active — can log in</p>'
+                    );
                 } else {
-                    btnHtml = '<button class="btn btn-sm btn-success" id="rev_activate_btn">Activate Agent</button>'
-                            + '<span class="text-danger small ml-2"><i class="fe fe-x-circle mr-1"></i>Currently Inactive</span>';
+                    $('#rev_agent_status_btns').html(
+                        '<button class="btn btn-sm btn-success btn-block" id="rev_activate_btn"><i class="fe fe-user-check mr-1"></i>Activate Agent</button>'
+                        + '<p class="text-danger small mt-1 mb-0"><i class="fe fe-x-circle mr-1"></i>Currently Inactive — cannot log in</p>'
+                    );
                 }
-                $('#rev_agent_status_btns').html(btnHtml);
 
                 // HR status dropdown
-                var selectHtml = '<option value="">-- No HR Record --</option>';
+                var selectHtml = hr ? '' : '<option value="">-- No HR Record --</option>';
                 if (hr) {
                     statuses.forEach(function (s) {
-                        var sel = s.id == hr.employee_status_id ? ' selected' : '';
-                        selectHtml += '<option value="' + s.id + '"' + sel + '>' + s.name + '</option>';
+                        selectHtml += '<option value="' + s.id + '"' + (s.id == hr.employee_status_id ? ' selected' : '') + '>' + s.name + '</option>';
                     });
                 }
                 $('#rev_hr_status_select').html(selectHtml).prop('disabled', !hr);
+
+                // Leave Quotas
+                $('#rev_leave_quotas_row').empty();
+                if (leaves.length > 0) {
+                    leaves.forEach(function (lv) {
+                        var remaining = lv.assigned_quota - lv.used_quota;
+                        var pct = lv.assigned_quota > 0 ? Math.round((lv.used_quota / lv.assigned_quota) * 100) : 0;
+                        var barColor = pct >= 80 ? 'bg-danger' : (pct >= 50 ? 'bg-warning' : 'bg-success');
+                        var lvHtml = '<div class="col-sm-6 col-md-4 col-lg-3 mb-2">'
+                            + '<div class="border rounded p-2 text-center">'
+                            + '<div class="font-weight-bold small mb-1">' + (lv.leave_type || 'Leave') + '</div>'
+                            + '<div class="small text-muted">Assigned: <strong>' + lv.assigned_quota + '</strong> &nbsp; Used: <strong class="text-danger">' + lv.used_quota + '</strong></div>'
+                            + '<div class="small text-success mb-1">Remaining: <strong>' + remaining + '</strong></div>'
+                            + '<div class="progress rounded-pill mb-1" style="height:6px;">'
+                            + '<div class="progress-bar ' + barColor + '" style="width:' + pct + '%;"></div></div>'
+                            + '<small class="text-muted d-block">' + (lv.valid_from || '') + ' → ' + (lv.valid_to || '') + '</small>'
+                            + '</div></div>';
+                        $('#rev_leave_quotas_row').append(lvHtml);
+                    });
+                    $('#rev_no_leave_quotas').hide();
+                } else {
+                    $('#rev_no_leave_quotas').show();
+                }
 
                 // Documents
                 $('#rev_documents_row').empty();
@@ -752,21 +884,25 @@
                         var ext = doc.file_path ? doc.file_path.split('.').pop().toLowerCase() : '';
                         var thumb = '';
                         if (['jpg','jpeg','png','gif','bmp','webp'].indexOf(ext) !== -1) {
-                            thumb = '<img src="/' + doc.file_path + '" class="img-fluid rounded mb-1" style="width:100px;height:80px;object-fit:cover;">';
+                            thumb = '<a href="/' + doc.file_path + '" target="_blank">'
+                                  + '<img src="/' + doc.file_path + '" class="img-fluid rounded mb-1" style="width:100%;height:90px;object-fit:cover;">'
+                                  + '</a>';
                         } else if (ext === 'pdf') {
-                            thumb = '<i class="fe fe-file-text text-danger" style="font-size:48px;"></i>';
+                            thumb = '<a href="/' + doc.file_path + '" target="_blank">'
+                                  + '<i class="fe fe-file-text text-danger d-block mb-1" style="font-size:48px;"></i></a>';
                         } else {
-                            thumb = '<i class="fe fe-paperclip text-primary" style="font-size:48px;"></i>';
+                            thumb = '<a href="/' + doc.file_path + '" target="_blank">'
+                                  + '<i class="fe fe-paperclip text-primary d-block mb-1" style="font-size:48px;"></i></a>';
                         }
                         var statusBadge = doc.status == 1
-                            ? '<span class="badge badge-success d-block mb-1">Verified</span>'
-                            : '<span class="badge badge-warning d-block mb-1">Pending</span>';
-                        var docHtml = '<div class="col-sm-6 col-md-4 col-lg-3 text-center">'
+                            ? '<span class="badge badge-success mb-1">Verified</span>'
+                            : '<span class="badge badge-warning mb-1">Pending</span>';
+                        var docHtml = '<div class="col-sm-6 col-md-3 col-lg-2 mb-2 text-center">'
                             + '<div class="border rounded p-2 h-100">'
                             + thumb
-                            + '<p class="small fw-bold mb-1 text-truncate" style="max-width:120px;margin:0 auto;">' + (doc.doc_type || doc.file_name) + '</p>'
+                            + '<p class="small font-weight-bold mb-1" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;">'
+                            + (doc.doc_type || doc.file_name) + '</p>'
                             + statusBadge
-                            + '<a href="/' + doc.file_path + '" target="_blank" class="btn btn-xs btn-outline-primary">View</a>'
                             + '</div></div>';
                         $('#rev_documents_row').append(docHtml);
                     });
@@ -778,7 +914,7 @@
                 $('#reviewModalLoader').hide();
                 $('#reviewModalContent').show();
             }).fail(function () {
-                $('#reviewModalLoader').html('<p class="text-danger">Failed to load employee data.</p>');
+                $('#reviewModalLoader').html('<p class="text-danger p-3">Failed to load employee data. Please try again.</p>');
             });
         });
 
@@ -788,14 +924,13 @@
             $(this).prop('disabled', true).text('Saving...');
             $.post('/employee-review/agent-status', {
                 _token: $('meta[name="csrf-token"]').attr('content'),
-                user_id: _reviewUserId,
-                status: 1
+                user_id: _reviewUserId, status: 1
             }, function (res) {
                 if (res.success) {
                     $('#rev_agent_badge').text('Agent: Active').attr('class', 'badge badge-success');
                     $('#rev_agent_status_btns').html(
-                        '<button class="btn btn-sm btn-danger" id="rev_deactivate_btn">Deactivate Agent</button>'
-                        + '<span class="text-success small ml-2"><i class="fe fe-check-circle mr-1"></i>Currently Active</span>'
+                        '<button class="btn btn-sm btn-danger btn-block" id="rev_deactivate_btn"><i class="fe fe-user-x mr-1"></i>Deactivate Agent</button>'
+                        + '<p class="text-success small mt-1 mb-0"><i class="fe fe-check-circle mr-1"></i>Currently Active — can log in</p>'
                     );
                     $('#rev_agent_status_msg').text('Agent activated successfully.').show();
                 }
@@ -804,19 +939,17 @@
 
         // Deactivate agent
         $(document).on('click', '#rev_deactivate_btn', function () {
-            if (!_reviewUserId) return;
-            if (!confirm('Deactivate this user from the agent portal?')) return;
+            if (!_reviewUserId || !confirm('Deactivate this user from the agent portal?')) return;
             $(this).prop('disabled', true).text('Saving...');
             $.post('/employee-review/agent-status', {
                 _token: $('meta[name="csrf-token"]').attr('content'),
-                user_id: _reviewUserId,
-                status: 0
+                user_id: _reviewUserId, status: 0
             }, function (res) {
                 if (res.success) {
                     $('#rev_agent_badge').text('Agent: Inactive').attr('class', 'badge badge-danger');
                     $('#rev_agent_status_btns').html(
-                        '<button class="btn btn-sm btn-success" id="rev_activate_btn">Activate Agent</button>'
-                        + '<span class="text-danger small ml-2"><i class="fe fe-x-circle mr-1"></i>Currently Inactive</span>'
+                        '<button class="btn btn-sm btn-success btn-block" id="rev_activate_btn"><i class="fe fe-user-check mr-1"></i>Activate Agent</button>'
+                        + '<p class="text-danger small mt-1 mb-0"><i class="fe fe-x-circle mr-1"></i>Currently Inactive — cannot log in</p>'
                     );
                     $('#rev_agent_status_msg').text('Agent deactivated successfully.').show();
                 }
@@ -824,23 +957,23 @@
         });
 
         // Save HR status
-        $('#rev_save_hr_status').on('click', function () {
+        $(document).on('click', '#rev_save_hr_status', function () {
             if (!_reviewUserId) return;
             var hrStatusId = $('#rev_hr_status_select').val();
             if (!hrStatusId) return;
-            $(this).prop('disabled', true).text('Saving...');
             var self = this;
+            $(self).prop('disabled', true).text('Saving...');
             $.post('/employee-review/hr-status', {
                 _token: $('meta[name="csrf-token"]').attr('content'),
-                user_id: _reviewUserId,
-                hr_status_id: hrStatusId
+                user_id: _reviewUserId, hr_status_id: hrStatusId
             }, function (res) {
                 $(self).prop('disabled', false).text('Save HR Status');
                 if (res.success) {
                     $('#rev_hr_badge').text('HR: ' + res.hr_status_name);
                     $('#rev_hr_status_msg').text('HR status updated to "' + res.hr_status_name + '".').show();
                 } else {
-                    $('#rev_hr_status_msg').text(res.error || 'Update failed.').removeClass('text-success').addClass('text-danger').show();
+                    $('#rev_hr_status_msg').text(res.error || 'Update failed.')
+                        .removeClass('text-success').addClass('text-danger').show();
                 }
             });
         });

@@ -18,26 +18,34 @@ class EmployeeReviewController extends Controller
         }
 
         $hrEmp = DB::table('hr_employees as e')
-            ->leftJoin('hr_employee_statuses as s', 'e.employee_status_id', '=', 's.id')
-            ->leftJoin('hr_shift_types as sh', 'e.shift_id', '=', 'sh.id')
-            ->leftJoin('hr_departments as d', 'e.department_id', '=', 'd.id')
-            ->leftJoin('hr_designations as dg', 'e.designation_id', '=', 'dg.id')
+            ->leftJoin('hr_employee_statuses as s',  'e.employee_status_id', '=', 's.id')
+            ->leftJoin('hr_shift_types as sh',        'e.shift_id',           '=', 'sh.id')
+            ->leftJoin('hr_departments as d',          'e.department_id',      '=', 'd.id')
+            ->leftJoin('hr_designations as dg',        'e.designation_id',     '=', 'dg.id')
+            ->leftJoin('hr_employment_types as et',    'e.employment_type_id', '=', 'et.id')
+            ->leftJoin('hr_commission_settings as cs', 'e.commission_id',      '=', 'cs.id')
+            ->leftJoin('hr_commission_types as ct',    'cs.commission_type_id','=', 'ct.id')
             ->select(
                 'e.id as hr_id',
                 'e.full_name', 'e.email', 'e.phone', 'e.cnic', 'e.address',
                 'e.profile_path', 'e.joining_date', 'e.basic_salary',
                 'e.employee_code', 'e.gender', 'e.dob', 'e.city', 'e.state', 'e.country',
                 'e.employee_status_id', 'e.father_name', 'e.marital_status',
+                'e.skills', 'e.mother_name', 'e.phone2', 'e.emergency_contact',
                 's.name as hr_status_name',
-                'sh.name as shift_name',
+                'sh.name as shift_name', 'sh.shift_start', 'sh.shift_end',
                 'd.name as department_name',
-                'dg.name as designation_name'
+                'dg.name as designation_name',
+                'et.name as employment_type_name',
+                'cs.title as commission_title', 'cs.value as commission_value', 'cs.description as commission_desc',
+                'ct.name as commission_type_name'
             )
             ->where('e.agent_id', $userId)
             ->first();
 
-        $documents = [];
-        $hrStatuses = DB::table('hr_employee_statuses')->select('id', 'name')->get();
+        $documents   = [];
+        $leaveQuotas = [];
+        $hrStatuses  = DB::table('hr_employee_statuses')->select('id', 'name')->get();
 
         if ($hrEmp) {
             $documents = DB::table('hr_employee_documents as doc')
@@ -45,10 +53,22 @@ class EmployeeReviewController extends Controller
                 ->select('doc.id', 'doc.file_path', 'doc.file_name', 'doc.mime_type', 'doc.status', 'ds.title as doc_type')
                 ->where('doc.employee_id', $hrEmp->hr_id)
                 ->get();
+
+            $leaveQuotas = DB::table('hr_employee_assign_leaves as al')
+                ->leftJoin('hr_leave_types as lt', 'al.leave_type_id', '=', 'lt.id')
+                ->select(
+                    'lt.name as leave_type',
+                    'al.assigned_quota', 'al.used_quota',
+                    'al.valid_from', 'al.valid_to', 'al.status'
+                )
+                ->where('al.employee_id', $hrEmp->hr_id)
+                ->where('al.status', 1)
+                ->orderBy('lt.name')
+                ->get();
         }
 
         return response()->json([
-            'agent'      => [
+            'agent'       => [
                 'id'     => $agentUser->id,
                 'name'   => $agentUser->name,
                 'slug'   => $agentUser->slug,
@@ -58,6 +78,7 @@ class EmployeeReviewController extends Controller
             ],
             'hr_employee' => $hrEmp,
             'documents'   => $documents,
+            'leave_quotas'=> $leaveQuotas,
             'hr_statuses' => $hrStatuses,
         ]);
     }
