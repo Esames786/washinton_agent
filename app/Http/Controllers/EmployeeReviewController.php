@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AgentActivatedEmail;
 use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class EmployeeReviewController extends Controller
 {
@@ -89,8 +92,18 @@ class EmployeeReviewController extends Controller
         $request->validate(['user_id' => 'required|integer', 'status' => 'required|in:0,1']);
 
         $user = User::findOrFail($request->user_id);
+        $wasInactive = (int) $user->status === 0;
         $user->status = $request->status;
         $user->save();
+
+        // Send activation email only when transitioning inactive → active
+        if ($wasInactive && (int) $request->status === 1) {
+            try {
+                Mail::to($user->email)->send(new AgentActivatedEmail($user->name, $user->email));
+            } catch (\Throwable $e) {
+                Log::warning('changeAgentStatus: activation email failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+            }
+        }
 
         return response()->json(['success' => true, 'status' => (int) $user->status]);
     }
@@ -98,6 +111,14 @@ class EmployeeReviewController extends Controller
     public function changeHrStatus(Request $request): JsonResponse
     {
         $request->validate(['user_id' => 'required|integer', 'hr_status_id' => 'required|integer']);
+
+        // Fetch current status before updating to detect active transition
+        $hrEmployee = DB::table('hr_employees')->where('agent_id', $request->user_id)->first();
+        if (!$hrEmployee) {
+            return response()->json(['error' => 'HR employee not found.'], 404);
+        }
+
+        $wasNotActive = (int) $hrEmployee->employee_status_id !== 1;
 
         $updated = DB::table('hr_employees')
             ->where('agent_id', $request->user_id)
@@ -108,6 +129,23 @@ class EmployeeReviewController extends Controller
         }
 
         $statusName = DB::table('hr_employee_statuses')->where('id', $request->hr_status_id)->value('name');
+
+        // Send HR activation email when transitioning to Active (status 1)
+        if ($wasNotActive && (int) $request->hr_status_id === 1) {
+            try {
+                $agentUser = User::find($request->user_id);
+                $emailTo   = $hrEmployee->email ?: ($agentUser ? $agentUser->email : null);
+                $nameTo    = $hrEmployee->full_name ?: ($agentUser ? $agentUser->name : 'Employee');
+                if ($emailTo) {
+                    // Use the HR portal's mail class via a direct view since we share the DB
+                    Mail::send('emails.hr_activated_agent', ['employeeName' => $nameTo, 'employeeEmail' => $emailTo], function ($m) use ($emailTo, $nameTo) {
+                        $m->to($emailTo)->subject('Your Hello Transport HR Account is Now Active!');
+                    });
+                }
+            } catch (\Throwable $e) {
+                Log::warning('changeHrStatus: HR activation email failed', ['user_id' => $request->user_id, 'error' => $e->getMessage()]);
+            }
+        }
 
         return response()->json(['success' => true, 'hr_status_name' => $statusName]);
     }

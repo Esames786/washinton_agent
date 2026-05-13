@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\AutoOrder;
+use App\Mail\AgentActivatedEmail;
 use App\Mail\SendCodeMail;
 use App\ShipaQueryPhone;
 use App\ShipaQueryHistories;
@@ -614,6 +615,13 @@ class DashboardController extends Controller
             $modal = User::find($id);
             $modal->status = 1;
             $modal->save();
+
+            try {
+                Mail::to($modal->email)->send(new AgentActivatedEmail($modal->name, $modal->email));
+            } catch (\Throwable $e) {
+                \Log::warning('user_active: activation email failed', ['user_id' => $id, 'error' => $e->getMessage()]);
+            }
+
             Session::flash('flash_message', 'Employee Data Successfully Saved');
             return redirect('/view_employee/');
         } else {
