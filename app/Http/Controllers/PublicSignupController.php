@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\WelcomeEmail;
 use App\role;
 use App\User;
 use App\user_setting;
 use App\Services\HrPortalBridgeService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class PublicSignupController extends Controller
@@ -38,9 +42,9 @@ class PublicSignupController extends Controller
         return view('auth.register');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name'           => 'required|string|max:50',
             'last_name'      => 'required|string|max:50',
             'slug'           => 'required|string|max:50|unique:user,slug',
@@ -51,7 +55,6 @@ class PublicSignupController extends Controller
             'signup_type'    => 'required|in:agent,carrier',
             'shift_type_id'  => 'required|integer|min:1',
             'account_type_id'=> 'required|integer|in:1,2,3',
-            // Optional personal fields
             'father_name'    => 'nullable|string|max:100',
             'dob'            => 'nullable|date|before_or_equal:today',
             'gender'         => 'nullable|in:male,female,other',
@@ -62,13 +65,17 @@ class PublicSignupController extends Controller
             'country'        => 'nullable|string|max:100',
         ]);
 
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
         // Resolve role
         $roleName = $request->signup_type === 'agent' ? 'Order Taker' : 'Dispatcher';
         $role     = role::where('name', $roleName)->first();
 
         if (!$role) {
             Log::error("PublicSignupController: role '{$roleName}' not found.");
-            return back()->withInput()->with('error', 'Registration is temporarily unavailable. Please contact support.');
+            return response()->json(['message' => 'Registration is temporarily unavailable. Please contact support.'], 500);
         }
 
         $referenceUserId = $request->signup_type === 'agent'
@@ -79,7 +86,7 @@ class PublicSignupController extends Controller
 
         if (!$referenceUser) {
             Log::error("PublicSignupController: reference user id={$referenceUserId} not found.");
-            return back()->withInput()->with('error', 'Registration is temporarily unavailable. Please contact support.');
+            return response()->json(['message' => 'Registration is temporarily unavailable. Please contact support.'], 500);
         }
 
         DB::beginTransaction();
@@ -93,8 +100,8 @@ class PublicSignupController extends Controller
             $user->phone     = $request->phone;
             $user->address   = $request->address;
             $user->role      = $role->id;
-            $user->status    = 0;  // Inactive until admin activates
-            $user->verify    = 1;  // Must be 1 so user appears in employee list
+            $user->status    = 0;
+            $user->verify    = 1;
 
             foreach (self::PERMISSION_COLUMNS as $col) {
                 $user->$col = $referenceUser->$col;
@@ -102,7 +109,6 @@ class PublicSignupController extends Controller
 
             $user->save();
 
-            // user_settings
             $penal_type = $request->signup_type === 'agent'
                 ? 1
                 : ($this->getReferenceUserPanelType($referenceUserId) ?? 1);
@@ -118,22 +124,28 @@ class PublicSignupController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('PublicSignupController store failed: ' . $e->getMessage());
-            return back()->withInput()->with('error', 'Registration failed. Please try again.');
+            return response()->json(['message' => 'Registration failed. Please try again.'], 500);
         }
 
-        // ── Mirror to HR portal (non-blocking — failure does NOT stop signup) ──
+        // ── Welcome email (non-blocking) ──
+        try {
+            Mail::to($user->email)->send(new WelcomeEmail($user->name, $user->email));
+        } catch (\Throwable $e) {
+            Log::warning('PublicSignupController: welcome email failed', ['error' => $e->getMessage()]);
+        }
+
+        // ── Mirror to HR portal (non-blocking) ──
         try {
             $this->hrBridge->createEmployee([
                 'name'            => $request->name . ' ' . $request->last_name,
                 'email'           => $request->email,
-                'password'        => $request->password,  // plain — HR portal hashes it
+                'password'        => $request->password,
                 'phone'           => $request->phone,
                 'address'         => $request->address,
-                'user_type'       => $request->signup_type, // 'agent' or 'carrier'
-                'agent_id'        => $user->id,             // user.id = hr_employees.agent_id
+                'user_type'       => $request->signup_type,
+                'agent_id'        => $user->id,
                 'shift_type_id'   => (int) $request->shift_type_id,
                 'account_type_id' => (int) $request->account_type_id,
-                // Extra personal fields
                 'father_name'     => $request->father_name,
                 'dob'             => $request->dob,
                 'gender'          => $request->gender,
@@ -144,18 +156,16 @@ class PublicSignupController extends Controller
                 'country'         => $request->country,
             ]);
         } catch (\Throwable $e) {
-            // Log but don't fail — HR portal may be temporarily down
             Log::warning('PublicSignupController: HR portal createEmployee failed', [
                 'user_id' => $user->id,
-                'email'   => $request->email,
                 'error'   => $e->getMessage(),
             ]);
         }
 
-        return redirect('/loginn')->with(
-            'success',
-            'Account created successfully. Your account is pending admin activation. You will be notified once activated.'
-        );
+        return response()->json([
+            'success' => true,
+            'message' => 'Account created successfully! Your account is pending admin approval. A welcome email has been sent to ' . $user->email . '.',
+        ]);
     }
 
     private function getReferenceUserPanelType(int $userId): ?int
