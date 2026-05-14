@@ -423,7 +423,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/print_summary/{id}', 'phone_quote\NewQuote@print_summary')->name('print_summary');
         Route::get('/print_report/{id}', 'phone_quote\NewQuote@print_report')->name('print_report');
         Route::get('/old_shipa1_summary/{id}', 'phone_quote\NewQuote@old_shipa1_summary')->name('old_shipa1_summary');
-        Route::get('/get_zip', 'phone_quote\NewQuote@get_zip');
         Route::get('/check_phone', 'phone_quote\NewQuote@check_phone');
         Route::get('/getvin', 'phone_quote\NewQuote@getvin');
         Route::get('/guides', 'phone_quote\management\ManagementController@guides');
