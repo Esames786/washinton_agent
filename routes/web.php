@@ -118,7 +118,13 @@ Route::get('/email_order/{id}/{userid}', 'phone_quote\NewQuote@email_order')->na
 Route::get('/email_order/{id}/{userid}/{token}', 'phone_quote\NewQuote@email_order')->name('email_order.token');
 Route::get('/demand_order/{id}/{userid}', 'DemandController@demand_order')->name('demand_order');
 Route::post('/order_payment', 'phone_quote\NewQuote@order_payment')->name('order_payment');
+Route::get('/order_payment', function () {
+    return redirect('/')->with('error', 'This page cannot be accessed directly. Please use the link sent to your email.');
+});
 Route::post('/order_payment_card', 'phone_quote\NewQuote@order_payment_card')->name('order_payment_card');
+Route::get('/order_payment_card', function () {
+    return redirect('/')->with('error', 'This page cannot be accessed directly. Please use the link sent to your email.');
+});
 Route::get('/order_payment_card_us/{id}', 'phone_quote\NewQuote@order_payment_card_us')->name('order_payment_card_us');
 
 Route::get('/order-payment-success', function () {

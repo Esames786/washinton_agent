@@ -2641,33 +2641,29 @@ class NewQuote extends Controller
                 $depositAmount = (float) ($autoorder->deposit_amount ?? $autoorder->deposit ?? 0);
 
 
-                $paymentData = [
-                    'order_id' => $autoorder->id,
-                    'card_number' => preg_replace('/\D/', '', $request->card_number),
-                    'cardexpirydate' => $request->cardexpirydate,
-                    'csvno' => $request->csvno,
-                    'amount' => $depositAmount,
-                ];
+                // $paymentData = [
+                //     'order_id' => $autoorder->id,
+                //     'card_number' => preg_replace('/\D/', '', $request->card_number),
+                //     'cardexpirydate' => $request->cardexpirydate,
+                //     'csvno' => $request->csvno,
+                //     'amount' => $depositAmount,
+                // ];
 
-                try {
-                    $client = new Client(['timeout' => 30]);
-
-                    $response = $client->post('https://blog.shipa1.daydispatch.com/public/api/process-payment', [
-                        'json' => $paymentData,
-                    ]);
-
-                    $responseData = json_decode($response->getBody(), true);
-
-                    if (!isset($responseData['success']) || !$responseData['success']) {
-                        $message = $responseData['message'] ?? 'Payment failed';
-//                        throw new \Exception($message);
-                    }
-                } catch (\Exception $e) {
-                    Log::error('Payment API error: ' . $e->getMessage(), [
-                        'order_id' => $autoorder->id,
-                    ]);
-//                    throw $e;
-                }
+                // blog.shipa1.daydispatch.com is decommissioned — payment API call disabled
+                // try {
+                //     $client = new Client(['timeout' => 30]);
+                //     $response = $client->post('https://blog.shipa1.daydispatch.com/public/api/process-payment', [
+                //         'json' => $paymentData,
+                //     ]);
+                //     $responseData = json_decode($response->getBody(), true);
+                //     if (!isset($responseData['success']) || !$responseData['success']) {
+                //         $message = $responseData['message'] ?? 'Payment failed';
+                //         // throw new \Exception($message);
+                //     }
+                // } catch (\Exception $e) {
+                //     Log::error('Payment API error: ' . $e->getMessage(), ['order_id' => $autoorder->id]);
+                //     // throw $e;
+                // }
 
                 $last_status = $this->get_pstatuss($autoorder->pstatus);
 
@@ -2811,7 +2807,10 @@ class NewQuote extends Controller
                 'file' => $e->getFile(),
             ]);
 
-            return back()->withInput()->with('error', $e->getMessage());
+            return response()->json([
+                'status'  => false,
+                'message' => 'Payment processing failed. Please try again or contact support.',
+            ], 422);
         }
     }
 
