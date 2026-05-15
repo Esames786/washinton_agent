@@ -290,6 +290,15 @@ if (isset($_GET['titlee'])) {
                             <input hidden type="text" class="Company-Name" value="{{ $val->oname }}">
                         </button>
                     @endif
+
+                    @if ((int) Auth::user()->role === 1)
+                        <button type="button" class="btn btn-warning btn-sm mt-1 assign-ot-btn"
+                                data-query-id="{{ $val->id }}"
+                                data-query-label="Query #{{ $val->id }} — {{ $val->oname }}"
+                                data-toggle="modal" data-target="#assignOtModal">
+                            <i class="fa fa-user-plus"></i> Assign OT
+                        </button>
+                    @endif
                 </td>
             </tr>
         @endforeach
@@ -1097,6 +1106,104 @@ if (isset($_GET['titlee'])) {
             }
         });
     });
+</script>
+
+{{-- Assign OT Modal --}}
+<div class="modal fade" id="assignOtModal" tabindex="-1" role="dialog" aria-labelledby="assignOtModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title" id="assignOtModalLabel">Assign Order Taker</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-2" id="assignOtQueryLabel"></p>
+                <input type="hidden" id="assignOtQueryId">
+                <div class="form-group">
+                    <label>Search User</label>
+                    <input type="text" id="assignOtSearch" class="form-control" placeholder="Type name or email…">
+                </div>
+                <ul id="assignOtList" class="list-group mt-2" style="max-height:220px;overflow-y:auto;"></ul>
+                <div id="assignOtResult" class="mt-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var _assignOtQueryId = null;
+    var _assignOtDebounce = null;
+
+    // When button clicked — set query id and label on modal
+    $(document).on('click', '.assign-ot-btn', function () {
+        _assignOtQueryId = $(this).data('query-id');
+        $('#assignOtQueryId').val(_assignOtQueryId);
+        $('#assignOtQueryLabel').text($(this).data('query-label'));
+        $('#assignOtSearch').val('');
+        $('#assignOtList').empty();
+        $('#assignOtResult').html('');
+    });
+
+    // Debounced search as user types
+    $(document).on('input', '#assignOtSearch', function () {
+        clearTimeout(_assignOtDebounce);
+        var q = $(this).val().trim();
+        var $list = $('#assignOtList');
+        if (q.length < 1) { $list.empty(); return; }
+        _assignOtDebounce = setTimeout(function () {
+            $.get('{{ route("shipa1_query.search_order_takers") }}', { q: q }, function (users) {
+                $list.empty();
+                if (!users.length) {
+                    $list.append('<li class="list-group-item text-muted">No users found</li>');
+                    return;
+                }
+                $.each(users, function (i, u) {
+                    $list.append(
+                        '<li class="list-group-item list-group-item-action ot-select-item" ' +
+                        'data-user-id="' + u.id + '" data-user-name="' + $('<span>').text(u.name).html() + '" ' +
+                        'style="cursor:pointer">' +
+                        '<strong>' + $('<span>').text(u.name).html() + '</strong> ' +
+                        '<small class="text-muted">' + $('<span>').text(u.email).html() + '</small>' +
+                        '</li>'
+                    );
+                });
+            });
+        }, 300);
+    });
+
+    // When a user row is clicked — assign
+    $(document).on('click', '.ot-select-item', function () {
+        var userId   = $(this).data('user-id');
+        var userName = $(this).data('user-name');
+        var queryId  = $('#assignOtQueryId').val();
+        var $result  = $('#assignOtResult');
+
+        $result.html('<span class="text-muted">Assigning…</span>');
+
+        $.ajax({
+            url: '{{ route("shipa1_query.assign_direct") }}',
+            type: 'POST',
+            data: { query_id: queryId, user_id: userId, _token: '{{ csrf_token() }}' },
+            success: function (res) {
+                if (res.success) {
+                    $result.html('<div class="alert alert-success py-1 mb-0">Assigned to <strong>' +
+                        $('<span>').text(res.assigned_to).html() + '</strong></div>');
+                    $('#assignOtList').empty();
+                    $('#assignOtSearch').val('');
+                    setTimeout(function () { $('#assignOtModal').modal('hide'); location.reload(); }, 1200);
+                } else {
+                    $result.html('<div class="alert alert-danger py-1 mb-0">Failed to assign.</div>');
+                }
+            },
+            error: function () {
+                $result.html('<div class="alert alert-danger py-1 mb-0">Server error. Please try again.</div>');
+            }
+        });
+    });
+}());
 </script>
 
 

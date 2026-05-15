@@ -308,6 +308,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/shipa1_query_reporting', 'DashboardController@shipa1_query_reporting')->name('shipa1_query.reporting');
     Route::get('/shipa1_query/filter', 'DashboardController@filterAssignedQuery')->name('filter.shipa1_query');
+    Route::get('/shipa1_query/search_order_takers', 'DashboardController@shipa1_querySearchOrderTakers')->name('shipa1_query.search_order_takers');
+    Route::post('/shipa1_query/assign_direct', 'DashboardController@shipa1_queryAssignDirect')->name('shipa1_query.assign_direct');
 
 
 

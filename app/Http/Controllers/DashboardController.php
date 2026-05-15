@@ -2848,4 +2848,29 @@ class DashboardController extends Controller
             'portalType' => 'autohaul',
         ]);
     }
+
+    public function shipa1_querySearchOrderTakers(Request $request)
+    {
+        $q = trim($request->get('q', ''));
+        $users = \App\User::whereIn('role', [1, 2, 3, 8, 9, 14, 17, 18])
+            ->where('deleted', 0)
+            ->where(function ($query) use ($q) {
+                $query->where('name', 'like', "%{$q}%")
+                      ->orWhere('email', 'like', "%{$q}%");
+            })
+            ->select('id', 'name', 'email', 'slug')
+            ->limit(20)
+            ->get();
+        return response()->json($users);
+    }
+
+    public function shipa1_queryAssignDirect(Request $request)
+    {
+        $request->validate(['query_id' => 'required|integer', 'user_id' => 'required|integer']);
+        \Illuminate\Support\Facades\DB::table('shipa_query')
+            ->where('id', $request->query_id)
+            ->update(['user_id' => $request->user_id]);
+        $user = \App\User::find($request->user_id);
+        return response()->json(['success' => true, 'assigned_to' => $user ? $user->name : 'Unknown']);
+    }
 }
