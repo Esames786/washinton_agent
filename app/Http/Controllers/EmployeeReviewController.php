@@ -41,7 +41,8 @@ class EmployeeReviewController extends Controller
                 'dg.name as designation_name',
                 'et.name as employment_type_name',
                 'cs.title as commission_title', 'cs.value as commission_value', 'cs.description as commission_desc',
-                'ct.name as commission_type_name'
+                'ct.name as commission_type_name',
+                'e.contract', 'e.contract_updated_at', 'e.contract_accepted_at'
             )
             ->where('e.agent_id', $userId)
             ->first();
@@ -118,6 +119,17 @@ class EmployeeReviewController extends Controller
             return response()->json(['error' => 'HR employee not found.'], 404);
         }
 
+        // Block activation if any uploaded documents are unverified
+        if ((int) $request->hr_status_id === 1) {
+            $totalDocs      = DB::table('hr_employee_documents')->where('employee_id', $hrEmployee->id)->count();
+            $unverifiedDocs = DB::table('hr_employee_documents')->where('employee_id', $hrEmployee->id)->where('status', 0)->count();
+            if ($totalDocs > 0 && $unverifiedDocs > 0) {
+                return response()->json([
+                    'error' => "Cannot activate: {$unverifiedDocs} document(s) are not verified. Please verify all documents before activating."
+                ], 422);
+            }
+        }
+
         $updated = DB::table('hr_employees')
             ->where('agent_id', $request->user_id)
             ->update(['employee_status_id' => $request->hr_status_id]);
@@ -145,5 +157,71 @@ class EmployeeReviewController extends Controller
         }
 
         return response()->json(['success' => true, 'hr_status_name' => $statusName]);
+    }
+
+    public function verifyDocument(Request $request): JsonResponse
+    {
+        $request->validate(['doc_id' => 'required|integer', 'status' => 'required|in:0,1']);
+
+        $updated = DB::table('hr_employee_documents')
+            ->where('id', $request->doc_id)
+            ->update(['status' => $request->status]);
+
+        if (!$updated) {
+            return response()->json(['error' => 'Document not found.'], 404);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function bulkVerifyDocuments(Request $request): JsonResponse
+    {
+        $request->validate(['hr_employee_id' => 'required|integer']);
+
+        DB::table('hr_employee_documents')
+            ->where('employee_id', $request->hr_employee_id)
+            ->update(['status' => 1]);
+
+        return response()->json(['success' => true, 'message' => 'All documents verified']);
+    }
+
+    public function saveContract(Request $request): JsonResponse
+    {
+        $request->validate(['user_id' => 'required|integer', 'contract' => 'required|string']);
+
+        $hrEmployee = DB::table('hr_employees')->where('agent_id', $request->user_id)->first();
+        if (!$hrEmployee) {
+            return response()->json(['error' => 'HR employee not found.'], 404);
+        }
+
+        DB::table('hr_employees')->where('agent_id', $request->user_id)->update([
+            'contract'             => $request->contract,
+            'contract_updated_at'  => now(),
+            'contract_accepted_at' => null,
+        ]);
+
+        // Notify employee
+        DB::table('notifications')->insert([
+            'issueId'    => $hrEmployee->id,
+            'userId'     => $request->user_id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Contract saved successfully']);
+    }
+
+    public function acceptContract(Request $request): JsonResponse
+    {
+        $request->validate(['user_id' => 'required|integer']);
+
+        $affected = DB::table('hr_employees')->where('agent_id', $request->user_id)
+            ->update(['contract_accepted_at' => now()]);
+
+        if (!$affected) {
+            return response()->json(['error' => 'HR employee not found.'], 404);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Contract accepted']);
     }
 }

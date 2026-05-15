@@ -132,6 +132,52 @@
                     {{ session('flash_message') }}
                 </div>
             @endif
+
+            @php
+                $myHrEmp = \Illuminate\Support\Facades\DB::table('hr_employees')
+                    ->where('agent_id', Auth::id())->first();
+            @endphp
+            @if($myHrEmp && $myHrEmp->contract)
+                @if(!$myHrEmp->contract_accepted_at)
+                <div class="alert alert-warning border-0 shadow-sm" id="myContractBanner" style="border-left:4px solid #ffc107!important;">
+                    <div class="d-flex align-items-center">
+                        <i class="fe fe-file-text mr-2" style="font-size:24px;"></i>
+                        <div class="flex-grow-1">
+                            <strong>New contract added by admin — please review and accept.</strong>
+                            <div class="small text-muted mt-1">Your employment contract has been updated. Please read it carefully and click Accept to confirm.</div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-dark ml-3" data-toggle="collapse" data-target="#myContractBody">
+                            View Contract
+                        </button>
+                    </div>
+                    <div id="myContractBody" class="collapse mt-3">
+                        <div class="border rounded p-3 bg-light mb-3" style="max-height:350px;overflow-y:auto;">
+                            {!! $myHrEmp->contract !!}
+                        </div>
+                        <button type="button" id="myAcceptContractBtn" class="btn btn-success btn-sm">
+                            <i class="fe fe-check mr-1"></i>Accept Contract
+                        </button>
+                        <span id="myAcceptContractMsg" class="small ml-2" style="display:none;"></span>
+                    </div>
+                </div>
+                @else
+                <div class="alert alert-info border-0 shadow-sm" id="myContractBanner">
+                    <div class="d-flex align-items-center">
+                        <i class="fe fe-check-circle mr-2 text-success" style="font-size:20px;"></i>
+                        <div class="flex-grow-1">
+                            <strong>Employment contract accepted.</strong>
+                            <button type="button" class="btn btn-xs btn-outline-secondary ml-2" data-toggle="collapse" data-target="#myContractBodyView" style="font-size:11px;">View</button>
+                        </div>
+                    </div>
+                    <div id="myContractBodyView" class="collapse mt-2">
+                        <div class="border rounded p-3 bg-light" style="max-height:300px;overflow-y:auto;">
+                            {!! $myHrEmp->contract !!}
+                        </div>
+                    </div>
+                </div>
+                @endif
+            @endif
+
             <!--div-->
             <div class="page-header">
                 <div class="text-secondary text-center text-uppercase w-100">
@@ -897,5 +943,32 @@
         // $(document).on('click','#searchValues',function(){
         //     searchData2(1);
         // })
+
+        // Accept Contract (own profile)
+        $(document).on('click', '#myAcceptContractBtn', function () {
+            var btn = this;
+            $(btn).prop('disabled', true).html('<i class="fe fe-loader mr-1"></i>Accepting...');
+            $.ajax({
+                url: '{{ route("employee.review.accept_contract") }}',
+                type: 'POST',
+                data: { _token: $('meta[name="csrf-token"]').attr('content'), user_id: {{ Auth::id() }} },
+                success: function (res) {
+                    if (res.success) {
+                        $('#myAcceptContractMsg').text('✔ Contract accepted successfully.')
+                            .css('color', '#28a745').show();
+                        $(btn).hide();
+                        $('#myContractBanner .alert-warning').removeClass('alert-warning').addClass('alert-success');
+                        $('strong', '#myContractBanner').first().text('Employment contract accepted.');
+                    } else {
+                        $(btn).prop('disabled', false).html('<i class="fe fe-check mr-1"></i>Accept Contract');
+                        alert('Failed to accept. Please try again.');
+                    }
+                },
+                error: function () {
+                    $(btn).prop('disabled', false).html('<i class="fe fe-check mr-1"></i>Accept Contract');
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        });
     </script>
 @endsection

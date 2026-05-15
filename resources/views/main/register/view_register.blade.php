@@ -630,10 +630,46 @@
                         <div class="row mt-3">
                             <div class="col-12">
                                 <div class="card border shadow-sm">
-                                    <div class="card-header bg-light font-weight-bold small py-2">📄 Documents</div>
+                                    <div class="card-header bg-light font-weight-bold small py-2 d-flex align-items-center justify-content-between">
+                                        <span>📄 Documents</span>
+                                        <button type="button" id="rev_bulk_verify_btn" class="btn btn-sm btn-success py-1 px-2" style="font-size:11px;display:none;">
+                                            ✔ Approve All
+                                        </button>
+                                    </div>
                                     <div class="card-body p-2">
                                         <div id="rev_documents_row" class="row"></div>
                                         <p id="rev_no_documents" class="text-muted small mb-0" style="display:none;">No documents uploaded.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contract -->
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="card border shadow-sm">
+                                    <div class="card-header bg-light font-weight-bold small py-2 d-flex align-items-center justify-content-between">
+                                        <span>📝 Contract</span>
+                                        <span id="rev_contract_status_badge" class="badge badge-secondary">No Contract</span>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div id="rev_contract_pending_banner" class="alert alert-warning py-2 mb-3" style="display:none;">
+                                            <i class="fe fe-alert-circle mr-1"></i>
+                                            <strong>Pending employee acceptance.</strong> The employee has not yet accepted the current contract.
+                                        </div>
+                                        <div id="rev_contract_accepted_banner" class="alert alert-success py-2 mb-3" style="display:none;">
+                                            <i class="fe fe-check-circle mr-1"></i>
+                                            <strong>Contract accepted</strong> by employee on <span id="rev_contract_accepted_at"></span>.
+                                        </div>
+                                        <div id="rev_contract_preview" class="border rounded p-3 mb-3 bg-light small" style="min-height:60px;max-height:250px;overflow-y:auto;display:none;"></div>
+                                        <p class="small text-muted mb-1">Write or update the contract below. Saving will notify the employee to review and accept.</p>
+                                        <div id="rev_contract_quill" style="height:220px;"></div>
+                                        <div class="mt-2 d-flex align-items-center">
+                                            <button id="rev_save_contract_btn" class="btn btn-sm btn-primary mr-2">
+                                                <i class="fe fe-save mr-1"></i>Save Contract
+                                            </button>
+                                            <span id="rev_contract_save_msg" class="small" style="display:none;"></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -886,7 +922,6 @@
                         var fullUrl = doc.file_path ? hrBaseUrl + '/' + doc.file_path : '';
                         var thumb = '';
                         if (['jpg','jpeg','png','gif','bmp','webp'].indexOf(ext) !== -1) {
-                            // Image: show thumbnail with onerror fallback to icon
                             thumb = '<a href="' + fullUrl + '" target="_blank">'
                                   + '<img src="' + fullUrl + '" class="img-fluid rounded mb-1"'
                                   + ' style="width:100%;height:90px;object-fit:cover;"'
@@ -901,26 +936,64 @@
                                 ? '<a href="' + fullUrl + '" target="_blank"><i class="fe fe-paperclip text-primary d-block mb-1" style="font-size:48px;"></i></a>'
                                 : '<i class="fe fe-paperclip text-muted d-block mb-1" style="font-size:48px;"></i>';
                         }
-                        var statusBadge = doc.status == 1
-                            ? '<span class="badge badge-success mb-1">Verified</span>'
-                            : '<span class="badge badge-warning mb-1">Pending</span>';
+                        var isVerified = doc.status == 1;
                         var viewLink = fullUrl
-                            ? '<a href="' + fullUrl + '" target="_blank" class="btn btn-xs btn-outline-primary mt-1" style="font-size:10px;">View</a>'
+                            ? '<a href="' + fullUrl + '" target="_blank" class="btn btn-xs btn-outline-primary mt-1 d-block" style="font-size:10px;">View</a>'
                             : '';
-                        var docHtml = '<div class="col-sm-6 col-md-3 col-lg-2 mb-2 text-center">'
-                            + '<div class="border rounded p-2 h-100">'
+                        var checkedAttr = isVerified ? 'checked' : '';
+                        var verifyToggle = '<div class="d-flex align-items-center justify-content-center mt-1">'
+                            + '<div class="custom-control custom-switch">'
+                            + '<input type="checkbox" class="custom-control-input rev-doc-verify-toggle" id="revDocToggle' + doc.id + '"'
+                            + ' data-doc-id="' + doc.id + '" ' + checkedAttr + '>'
+                            + '<label class="custom-control-label rev-doc-verify-label" for="revDocToggle' + doc.id + '" style="font-size:11px;color:' + (isVerified ? '#28a745' : '#ffc107') + ';">'
+                            + (isVerified ? 'Verified' : 'Pending') + '</label>'
+                            + '</div></div>';
+                        var borderColor = isVerified ? '#28a745' : '#ffc107';
+                        var docHtml = '<div class="col-sm-6 col-md-3 col-lg-2 mb-2 text-center" id="revDocCard' + doc.id + '">'
+                            + '<div class="border rounded p-2 h-100" style="border-color:' + borderColor + '!important;border-width:2px!important;">'
                             + thumb
                             + '<p class="small font-weight-bold mb-1" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;">'
                             + (doc.doc_type || doc.file_name) + '</p>'
-                            + statusBadge
                             + viewLink
+                            + verifyToggle
                             + '</div></div>';
                         $('#rev_documents_row').append(docHtml);
                     });
                     $('#rev_no_documents').hide();
+                    $('#rev_bulk_verify_btn').show().data('hr-employee-id', hrEmp ? hrEmp.hr_id : '');
                 } else {
                     $('#rev_no_documents').show();
+                    $('#rev_bulk_verify_btn').hide();
                 }
+
+                // Contract section
+                var contractHtml     = hr ? (hr.contract || '') : '';
+                var contractUpdated  = hr ? hr.contract_updated_at : null;
+                var contractAccepted = hr ? hr.contract_accepted_at : null;
+
+                if (contractAccepted) {
+                    $('#rev_contract_pending_banner').hide();
+                    $('#rev_contract_accepted_banner').show();
+                    $('#rev_contract_accepted_at').text(contractAccepted);
+                    $('#rev_contract_status_badge').text('Accepted').attr('class', 'badge badge-success');
+                } else if (contractUpdated) {
+                    $('#rev_contract_pending_banner').show();
+                    $('#rev_contract_accepted_banner').hide();
+                    $('#rev_contract_status_badge').text('Pending Acceptance').attr('class', 'badge badge-warning text-dark');
+                } else {
+                    $('#rev_contract_pending_banner').hide();
+                    $('#rev_contract_accepted_banner').hide();
+                    $('#rev_contract_status_badge').text('No Contract').attr('class', 'badge badge-secondary');
+                }
+
+                if (contractHtml) {
+                    $('#rev_contract_preview').html(contractHtml).show();
+                } else {
+                    $('#rev_contract_preview').hide();
+                }
+
+                $('#rev_contract_save_msg').hide();
+                initRevContractEditor(contractHtml);
 
                 $('#reviewModalLoader').hide();
                 $('#reviewModalContent').show();
@@ -976,17 +1049,144 @@
             if (!hrStatusId) return;
             var self = this;
             $(self).prop('disabled', true).text('Saving...');
-            $.post('/employee-review/hr-status', {
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                user_id: _reviewUserId, hr_status_id: hrStatusId
-            }, function (res) {
-                $(self).prop('disabled', false).text('Save HR Status');
-                if (res.success) {
-                    $('#rev_hr_badge').text('HR: ' + res.hr_status_name);
-                    $('#rev_hr_status_msg').text('HR status updated to "' + res.hr_status_name + '".').show();
-                } else {
-                    $('#rev_hr_status_msg').text(res.error || 'Update failed.')
-                        .removeClass('text-success').addClass('text-danger').show();
+            $.ajax({
+                url: '/employee-review/hr-status',
+                type: 'POST',
+                data: { _token: $('meta[name="csrf-token"]').attr('content'), user_id: _reviewUserId, hr_status_id: hrStatusId },
+                success: function (res) {
+                    $(self).prop('disabled', false).text('Save HR Status');
+                    if (res.success) {
+                        $('#rev_hr_badge').text('HR: ' + res.hr_status_name);
+                        $('#rev_hr_status_msg').text('HR status updated to "' + res.hr_status_name + '".')
+                            .removeClass('text-danger').addClass('text-success').show();
+                    } else {
+                        $('#rev_hr_status_msg').text(res.error || 'Update failed.')
+                            .removeClass('text-success').addClass('text-danger').show();
+                    }
+                },
+                error: function (xhr) {
+                    $(self).prop('disabled', false).text('Save HR Status');
+                    var msg = 'Update failed.';
+                    if (xhr.responseJSON && (xhr.responseJSON.error || xhr.responseJSON.message)) {
+                        msg = xhr.responseJSON.error || xhr.responseJSON.message;
+                    }
+                    $('#rev_hr_status_msg').text(msg).removeClass('text-success').addClass('text-danger').show();
+                }
+            });
+        });
+
+        // Document verify toggle
+        $(document).on('change', '.rev-doc-verify-toggle', function () {
+            var docId  = $(this).data('doc-id');
+            var status = this.checked ? 1 : 0;
+            var $label = $(this).siblings('.rev-doc-verify-label');
+            var $card  = $('#revDocCard' + docId + ' .border');
+            var self   = this;
+            $.ajax({
+                url: '/employee-review/verify-document',
+                type: 'POST',
+                data: { _token: $('meta[name="csrf-token"]').attr('content'), doc_id: docId, status: status },
+                success: function (res) {
+                    if (res.success) {
+                        $label.text(status === 1 ? 'Verified' : 'Pending')
+                              .css('color', status === 1 ? '#28a745' : '#ffc107');
+                        $card.css('border-color', (status === 1 ? '#28a745' : '#ffc107') + '!important');
+                    } else {
+                        self.checked = !self.checked;
+                        alert('Failed to update document status.');
+                    }
+                },
+                error: function () { self.checked = !self.checked; alert('Request failed.'); }
+            });
+        });
+
+        // Bulk approve all documents
+        $(document).on('click', '#rev_bulk_verify_btn', function () {
+            if (!confirm('Mark ALL documents as Verified?')) return;
+            var hrEmpId = $(this).data('hr-employee-id');
+            if (!hrEmpId) { alert('No HR employee found.'); return; }
+            var self = this;
+            $(self).prop('disabled', true).text('Approving...');
+            $.ajax({
+                url: '/employee-review/bulk-verify-documents',
+                type: 'POST',
+                data: { _token: $('meta[name="csrf-token"]').attr('content'), hr_employee_id: hrEmpId },
+                success: function (res) {
+                    $(self).prop('disabled', false).text('✔ Approve All');
+                    if (res.success) {
+                        // Update all toggles and labels to verified
+                        $('.rev-doc-verify-toggle').each(function() {
+                            this.checked = true;
+                            $(this).siblings('.rev-doc-verify-label').text('Verified').css('color','#28a745');
+                        });
+                        $('#rev_documents_row .border').css('border-color','#28a745');
+                        alert('All documents verified.');
+                    } else {
+                        alert(res.message || 'Bulk verify failed.');
+                    }
+                },
+                error: function () { $(self).prop('disabled', false).text('✔ Approve All'); alert('Request failed.'); }
+            });
+        });
+
+        // ── Contract editor (Quill) ───────────────────────────────────────────
+        function initRevContractEditor(contractHtml) {
+            if ($('#rev_contract_quill').find('.ql-editor').length > 0 && window._revQuill) {
+                // Already initialised — just update content
+                window._revQuill.root.innerHTML = contractHtml || '';
+                return;
+            }
+            function buildQuill() {
+                // Clear any leftover Quill markup before reinitialising
+                $('#rev_contract_quill').empty();
+                window._revQuill = new Quill('#rev_contract_quill', {
+                    theme: 'snow',
+                    placeholder: 'Write the employee contract here...'
+                });
+                window._revQuill.root.innerHTML = contractHtml || '';
+            }
+            if (typeof Quill !== 'undefined') {
+                buildQuill();
+            } else {
+                if (!$('#quill-css').length) {
+                    $('<link id="quill-css" rel="stylesheet" href="https://cdn.quilljs.com/1.3.7/quill.snow.css">').appendTo('head');
+                }
+                $.getScript('https://cdn.quilljs.com/1.3.7/quill.min.js', function () {
+                    buildQuill();
+                });
+            }
+        }
+
+        // Save Contract
+        $(document).on('click', '#rev_save_contract_btn', function () {
+            if (!_reviewUserId) return;
+            if (!window._revQuill) { alert('Editor not ready yet.'); return; }
+            var contractHtml = window._revQuill.root.innerHTML;
+            var self = this;
+            $(self).prop('disabled', true).html('<i class="fe fe-loader mr-1"></i>Saving...');
+            $.ajax({
+                url: '/employee-review/save-contract',
+                type: 'POST',
+                data: { _token: $('meta[name="csrf-token"]').attr('content'), user_id: _reviewUserId, contract: contractHtml },
+                success: function (res) {
+                    $(self).prop('disabled', false).html('<i class="fe fe-save mr-1"></i>Save Contract');
+                    if (res.success) {
+                        $('#rev_contract_preview').html(contractHtml).show();
+                        $('#rev_contract_pending_banner').show();
+                        $('#rev_contract_accepted_banner').hide();
+                        $('#rev_contract_status_badge').text('Pending Acceptance').attr('class', 'badge badge-warning text-dark');
+                        $('#rev_contract_save_msg').text(res.message || 'Contract saved. Employee has been notified.')
+                            .removeClass('text-danger').addClass('text-success').show();
+                    } else {
+                        $('#rev_contract_save_msg').text('Failed to save contract.')
+                            .removeClass('text-success').addClass('text-danger').show();
+                    }
+                },
+                error: function (xhr) {
+                    $(self).prop('disabled', false).html('<i class="fe fe-save mr-1"></i>Save Contract');
+                    var msg = 'Failed to save contract.';
+                    if (xhr.responseJSON && xhr.responseJSON.error) msg = xhr.responseJSON.error;
+                    $('#rev_contract_save_msg').text(msg).removeClass('text-success').addClass('text-danger').show();
                 }
             });
         });
