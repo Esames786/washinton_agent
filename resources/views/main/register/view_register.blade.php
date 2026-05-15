@@ -960,7 +960,7 @@
                         $('#rev_documents_row').append(docHtml);
                     });
                     $('#rev_no_documents').hide();
-                    $('#rev_bulk_verify_btn').show().data('hr-employee-id', hrEmp ? hrEmp.hr_id : '');
+                    $('#rev_bulk_verify_btn').show().data('hr-employee-id', hr ? hr.hr_id : '');
                 } else {
                     $('#rev_no_documents').show();
                     $('#rev_bulk_verify_btn').hide();
