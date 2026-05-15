@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers\phone_quote;
 
@@ -1169,8 +1169,8 @@ class NewQuote extends Controller
             if ($request->pstatus2 == 7) {
                 if ($autoorder->booking_mail < 1) {
                     $autoorder->booking_mail = $autoorder->booking_mail + 1;
-                    // Mail::to(['shawntransport@shipa1.com', $autoorder->oemail])->send(new BookingConfirmationMail($autoorder));
-                    $recipients = ['shawntransport@shipa1.com'];
+                    // Mail::to(['info@hellotransport.com', $autoorder->oemail])->send(new BookingConfirmationMail($autoorder));
+                    $recipients = ['info@hellotransport.com'];
                     if (filter_var($autoorder->oemail, FILTER_VALIDATE_EMAIL)) {
                         $recipients[] = $autoorder->oemail;
                     }
@@ -1662,8 +1662,8 @@ class NewQuote extends Controller
                     if ($request->pstatus == 7) {
                         if ($autoorder->booking_mail < 1) {
                             $autoorder->booking_mail = $autoorder->booking_mail + 1;
-                            // Mail::to(['shawntransport@shipa1.com', $autoorder->oemail])->send(new BookingConfirmationMail($autoorder));
-                            $recipients = ['shawntransport@shipa1.com'];
+                            // Mail::to(['info@hellotransport.com', $autoorder->oemail])->send(new BookingConfirmationMail($autoorder));
+                            $recipients = ['info@hellotransport.com'];
 
                             if (filter_var($autoorder->oemail, FILTER_VALIDATE_EMAIL)) {
                                 $recipients[] = $autoorder->oemail;
@@ -1770,8 +1770,8 @@ class NewQuote extends Controller
 
                         if ($autoorder->booking_mail < 1) {
                             $autoorder->booking_mail = $autoorder->booking_mail + 1;
-                            // Mail::to(['shawntransport@shipa1.com', $autoorder->oemail])->send(new BookingConfirmationMail($autoorder));
-                            $recipients = ['shawntransport@shipa1.com'];
+                            // Mail::to(['info@hellotransport.com', $autoorder->oemail])->send(new BookingConfirmationMail($autoorder));
+                            $recipients = ['info@hellotransport.com'];
 
                             if (filter_var($autoorder->oemail, FILTER_VALIDATE_EMAIL)) {
                                 $recipients[] = $autoorder->oemail;
@@ -2457,13 +2457,13 @@ class NewQuote extends Controller
             $autoorder->booking_mail = $autoorder->booking_mail + 1;
             $autoorder->save();
 
-            $recipients = ['shawntransport@shipa1.com'];
+            $recipients = ['info@hellotransport.com'];
             if (filter_var($autoorder->oemail, FILTER_VALIDATE_EMAIL)) {
                 $recipients[] = $autoorder->oemail;
             }
 
             if ((int)$autoorder->paneltype == 4) {
-                // ShipA1 portal order — fetch all slab tiers and send the unlocked pricing email
+                // ShipA1 portal order â€” fetch all slab tiers and send the unlocked pricing email
                 $pricingData = $this->fetchShipA1Pricing($autoorder, (int)$autoorder->request_hauling);
                 Mail::to($recipients)->send(new ShipA1BookingConfirmationMail($autoorder, $pricingData));
             } else {
@@ -3149,8 +3149,8 @@ class NewQuote extends Controller
                 if ($request->new_pstatus == 7) {
                     if ($autoorder->booking_mail < 1) {
                         $autoorder->booking_mail = $autoorder->booking_mail + 1;
-                        // Mail::to(['shawntransport@shipa1.com', $autoorder->oemail])->send(new BookingConfirmationMail($autoorder));
-                        $recipients = ['shawntransport@shipa1.com'];
+                        // Mail::to(['info@hellotransport.com', $autoorder->oemail])->send(new BookingConfirmationMail($autoorder));
+                        $recipients = ['info@hellotransport.com'];
 
                         if (filter_var($autoorder->oemail, FILTER_VALIDATE_EMAIL)) {
                             $recipients[] = $autoorder->oemail;
@@ -4143,7 +4143,7 @@ class NewQuote extends Controller
 
     public function websiteShipa1Quote(Request $request)
     {
-        // ── Blocked IPs ──────────────────────────────────────────────────────
+        // â”€â”€ Blocked IPs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         $blockedIps = [
             '185.150.191.208',
         ];
@@ -4159,7 +4159,7 @@ class NewQuote extends Controller
             ]);
             return response()->json(['message' => 'Forbidden'], 403);
         }
-        // ─────────────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         try {
             $user = DailyQoute::with('user.userRole')
@@ -5628,8 +5628,8 @@ class NewQuote extends Controller
 
 
         try {
-            // Mail::to(['shawntransport@shipa1.com', $order->oemail])->send(new EditQuotePriceMail($price, $order, $linkv));
-            $recipients = ['shawntransport@shipa1.com'];
+            // Mail::to(['info@hellotransport.com', $order->oemail])->send(new EditQuotePriceMail($price, $order, $linkv));
+            $recipients = ['info@hellotransport.com'];
 
             if (filter_var($order->oemail, FILTER_VALIDATE_EMAIL)) {
                 $recipients[] = $order->oemail;
@@ -5808,8 +5808,8 @@ class NewQuote extends Controller
 
                 if ($order->booking_mail < 1) {
                     $order->booking_mail = $order->booking_mail + 1;
-                    // Mail::to(['shawntransport@shipa1.com', $order->oemail])->send(new BookingConfirmationMail($order));
-                    $recipients = ['shawntransport@shipa1.com'];
+                    // Mail::to(['info@hellotransport.com', $order->oemail])->send(new BookingConfirmationMail($order));
+                    $recipients = ['info@hellotransport.com'];
 
                     if (filter_var($order->oemail, FILTER_VALIDATE_EMAIL)) {
                         $recipients[] = $order->oemail;
@@ -5869,8 +5869,8 @@ class NewQuote extends Controller
 
                 if ($order->booking_mail < 1) {
                     $order->booking_mail = $order->booking_mail + 1;
-                    // Mail::to(['shawntransport@shipa1.com', $order->oemail])->send(new BookingConfirmationMail($order));
-                    $recipients = ['shawntransport@shipa1.com'];
+                    // Mail::to(['info@hellotransport.com', $order->oemail])->send(new BookingConfirmationMail($order));
+                    $recipients = ['info@hellotransport.com'];
 
                     if (filter_var($order->oemail, FILTER_VALIDATE_EMAIL)) {
                         $recipients[] = $order->oemail;
@@ -6784,3 +6784,4 @@ class NewQuote extends Controller
         return view('main.phone_quote.new_quote.order_tracking', compact('autoorder', 'currentStatus'));
     }
 }
+

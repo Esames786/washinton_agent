@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers\phone_quote\callhistory;
 
@@ -171,11 +171,11 @@ class CallHistory extends Controller
                         // dd($autoorder->toArray(), 'oksss', $autoorder->oemail, '$request->toArray()');
 
                         try {
-                            // Mail::to(['shawntransport@shipa1.com'])->send(new CompletedMail($autoorder));
+                            // Mail::to(['info@hellotransport.com'])->send(new CompletedMail($autoorder));
                             if (filter_var($autoorder->oemail, FILTER_VALIDATE_EMAIL)) {
-                                Mail::to([$autoorder->oemail, 'shawntransport@shipa1.com'])->send(new CompletedMail($autoorder));
+                                Mail::to([$autoorder->oemail, 'info@hellotransport.com'])->send(new CompletedMail($autoorder));
                             } else {
-                                Mail::to(['shawntransport@shipa1.com'])->send(new CompletedMail($autoorder));
+                                Mail::to(['info@hellotransport.com'])->send(new CompletedMail($autoorder));
                             }
                         } catch (\Exception $e) {
                             return back()->with('error', 'Error sending email');
@@ -1312,9 +1312,9 @@ class CallHistory extends Controller
         $autoorderreport->userId = Auth::user()->id;
         $autoorderreport->save();
 
-        // Mail::to([$autoorder->oemail, 'shawntransport@shipa1.com'])->send(new PickupConfirmationMail($autoorder));
+        // Mail::to([$autoorder->oemail, 'info@hellotransport.com'])->send(new PickupConfirmationMail($autoorder));
         if (filter_var($autoorder->oemail, FILTER_VALIDATE_EMAIL)) {
-            Mail::to([$autoorder->oemail, 'shawntransport@shipa1.com'])->send(new PickupConfirmationMail($autoorder));
+            Mail::to([$autoorder->oemail, 'info@hellotransport.com'])->send(new PickupConfirmationMail($autoorder));
         } else {
             // Optionally, you can log an error or take another action if the email is invalid
             \Log::warning('Invalid email format for autoorder: ' . $autoorder->oemail);
@@ -1364,9 +1364,9 @@ class CallHistory extends Controller
         $autoorderreport->userId = Auth::user()->id;
         $autoorderreport->save();
 
-        // Mail::to([$autoorder->oemail, 'shawntransport@shipa1.com'])->send(new DeliveredConfirmationMail($autoorder));
+        // Mail::to([$autoorder->oemail, 'info@hellotransport.com'])->send(new DeliveredConfirmationMail($autoorder));
         if (filter_var($autoorder->oemail, FILTER_VALIDATE_EMAIL)) {
-            Mail::to([$autoorder->oemail, 'shawntransport@shipa1.com'])->send(new DeliveredConfirmationMail($autoorder));
+            Mail::to([$autoorder->oemail, 'info@hellotransport.com'])->send(new DeliveredConfirmationMail($autoorder));
         } else {
             // Optionally log an error if the email format is invalid
             \Log::warning('Invalid email format for autoorder: ' . $autoorder->oemail);
@@ -2321,3 +2321,4 @@ class CallHistory extends Controller
         }
     }
 }
+
