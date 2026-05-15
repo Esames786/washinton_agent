@@ -2454,7 +2454,7 @@ class DashboardController extends Controller
             }
 
             // Fetch paginated data
-            $data = $query->orderby('id','desc')->paginate(20);
+            $data = $query->with('user')->orderby('id','desc')->paginate(20);
 
             if ($request->ajax()) {
                 return view('main.phone_quote.query.table', compact('data', 'state'));

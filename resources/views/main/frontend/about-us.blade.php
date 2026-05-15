@@ -1,5 +1,8 @@
 @extends('layouts.frontend-master')
 
+@section('page_title', 'About Us – Trusted Auto Shipping Experts')
+@section('meta_description', 'Learn about Hello Transport — a nationwide auto shipping company committed to safe, on-time vehicle delivery. Discover our story, values, and why customers trust us.')
+
 @section('content')
 
 {{-- ================= PAGE TITLE / BANNER ================= --}}

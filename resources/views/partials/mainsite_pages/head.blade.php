@@ -2,8 +2,8 @@
 <!-- Meta data -->
 <meta charset="UTF-8">
 <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=0'>
-<meta content="SHIPA1" name="description">
-<meta content="SHIPA1 IT DEPARTMENT" name="author">
+<meta content="Hello Transport Agent Portal" name="description">
+<meta content="Hello Transport" name="author">
 <meta name="csrf-token" content="{{ csrf_token() }}" />
 
 <!-- Title -->

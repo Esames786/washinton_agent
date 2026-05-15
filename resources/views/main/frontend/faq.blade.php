@@ -1,5 +1,8 @@
 @extends('layouts.frontend-master')
 
+@section('page_title', 'FAQ – Auto Shipping Questions Answered')
+@section('meta_description', 'Find answers to common auto transport questions: how car shipping works, transit times, costs, insurance coverage, and what to expect with Hello Transport.')
+
 @section('content')
 
 <!-- Page Title -->

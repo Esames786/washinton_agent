@@ -1,5 +1,8 @@
 @extends('layouts.frontend-master')
 
+@section('page_title', 'Privacy Policy')
+@section('meta_description', 'Read Hello Transport\'s Privacy Policy to understand how we collect, use, and protect your personal information when you use our auto shipping services.')
+
 @section('content')
 
 <!-- Page Title -->

@@ -1,5 +1,8 @@
 @extends('layouts.frontend-master')
 
+@section('page_title', 'Customer Reviews & Testimonials')
+@section('meta_description', 'See what our customers say about Hello Transport. Read verified reviews from people who shipped their cars with us across the continental United States.')
+
 @section('content')
 
 <!-- Page Title -->

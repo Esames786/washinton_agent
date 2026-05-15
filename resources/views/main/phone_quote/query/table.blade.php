@@ -298,6 +298,13 @@ if (isset($_GET['titlee'])) {
                                 data-toggle="modal" data-target="#assignOtModal">
                             <i class="fa fa-user-plus"></i> Assign OT
                         </button>
+                        @if ($val->user)
+                            <div class="mt-1">
+                                <small class="text-success font-weight-bold ot-assigned-badge">
+                                    <i class="fa fa-user"></i> <span class="ot-name-text">{{ $val->user->name }}</span>
+                                </small>
+                            </div>
+                        @endif
                     @endif
                 </td>
             </tr>
@@ -1193,6 +1200,15 @@ if (isset($_GET['titlee'])) {
                         $('<span>').text(res.assigned_to).html() + '</strong></div>');
                     $('#assignOtList').empty();
                     $('#assignOtSearch').val('');
+                    // Update the name badge inline on the button row
+                    var $btn = $('.assign-ot-btn[data-query-id="' + queryId + '"]');
+                    var $badge = $btn.siblings('.ot-assigned-badge');
+                    if ($badge.length) {
+                        $badge.find('.ot-name-text').text(res.assigned_to);
+                    } else {
+                        $btn.after('<div class="mt-1"><small class="text-success font-weight-bold ot-assigned-badge"><i class="fa fa-user"></i> <span class="ot-name-text">' +
+                            $('<span>').text(res.assigned_to).html() + '</span></small></div>');
+                    }
                     setTimeout(function () { $('#assignOtModal').modal('hide'); location.reload(); }, 1200);
                 } else {
                     $result.html('<div class="alert alert-danger py-1 mb-0">Failed to assign.</div>');

@@ -1,5 +1,8 @@
 @extends('layouts.frontend-master')
 
+@section('page_title', 'Contact Us – Get a Free Auto Shipping Quote')
+@section('meta_description', 'Reach out to Hello Transport for a free auto shipping quote, order status updates, or customer support. We\'re here 7 days a week.')
+
 @section('content')
 
 <!-- Page Title -->

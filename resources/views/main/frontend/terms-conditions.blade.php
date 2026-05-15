@@ -1,5 +1,8 @@
 @extends('layouts.frontend-master')
 
+@section('page_title', 'Terms & Conditions')
+@section('meta_description', 'Review the Terms and Conditions governing your use of Hello Transport\'s auto shipping services, website, and customer portal.')
+
 @section('content')
 
 <!-- Page Title -->

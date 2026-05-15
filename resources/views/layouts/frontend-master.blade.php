@@ -4,12 +4,40 @@
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>Hello Tranport | The Premier Auto Shipping Company – Nationwide Service</title>
-        <meta name="description" content="Experience the top transportation services throughout the continental United States with Premier Auto Shipping Company.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="google-site-verification" content="dwlNH_KoCtphxr8_X75_OXA-nxdZWfmnrCrJssvnPO4" />
-        <!-- Place favicon.ico in the root directory -->
+
+        {{-- Per-page overridable title & description --}}
+        @php
+            $pageTitle = trim($__env->yieldContent('page_title'));
+            $metaDesc  = trim($__env->yieldContent('meta_description'));
+            $fullTitle = $pageTitle ? $pageTitle . ' | Hello Transport' : 'Hello Transport | #1 Auto Shipping Company – Nationwide Door-to-Door Service';
+            $finalDesc = $metaDesc ?: 'Hello Transport offers reliable, affordable auto shipping across the continental USA. Get an instant quote for car transport, door-to-door delivery, and more.';
+            $canonicalUrl = url()->current();
+        @endphp
+
+        <title>{{ $fullTitle }}</title>
+        <meta name="description" content="{{ $finalDesc }}">
+        <meta name="robots" content="index, follow">
+        <link rel="canonical" href="{{ $canonicalUrl }}">
+
+        {{-- Open Graph --}}
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{{ $canonicalUrl }}">
+        <meta property="og:title" content="{{ $fullTitle }}">
+        <meta property="og:description" content="{{ $finalDesc }}">
+        <meta property="og:image" content="{{ asset('frontend/img/logo/hello_transport.svg') }}">
+        <meta property="og:site_name" content="Hello Transport">
+
+        {{-- Twitter Card --}}
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:title" content="{{ $fullTitle }}">
+        <meta name="twitter:description" content="{{ $finalDesc }}">
+        <meta name="twitter:image" content="{{ asset('frontend/img/logo/hello_transport.svg') }}">
+
+        {{-- Favicon --}}
         <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('frontend/img/logo/hello_transport.svg') }}">
+        <link rel="icon" type="image/svg+xml" href="{{ asset('frontend/img/logo/hello_transport.svg') }}">
         <!-- CSS here -->
         <link rel="stylesheet" href="{{ asset('frontend/css/preloader.css') }}">
         <link rel="stylesheet" href="{{ asset('frontend/css/bootstrap.min.css') }}">
@@ -31,10 +59,16 @@
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-
             gtag('config', 'G-N4GGWBB0YZ');
         </script>
-        <!-- Google tag (gtag.js) -->
+        @if(config('services.recaptcha.site_key'))
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+        @endif
+        <script>
+            window.HT = {
+                recaptchaSiteKey: '{{ config("services.recaptcha.site_key", "") }}'
+            };
+        </script>
     </head>
     <style>
         ul.dropdown-menu.bg-danger.show li {

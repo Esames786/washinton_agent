@@ -1,5 +1,8 @@
 @extends('layouts.frontend-master')
 
+@section('page_title', 'Get an Instant Auto Shipping Quote')
+@section('meta_description', 'Get an instant, no-obligation car shipping quote from Hello Transport. Enter your pickup and delivery locations to see competitive rates in seconds.')
+
 @section('content')
 
 <style>
