@@ -45,8 +45,8 @@
               <td style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:20px 24px;">
                 <p style="margin:0 0 6px;color:#166534;font-size:13px;font-weight:600;">🔗 Login URL</p>
                 <p style="margin:0 0 16px;color:#555;font-size:13px;">
-                  <a href="https://helloagent.daydispatch.com/loginn" style="color:#062e39;word-break:break-all;">
-                    https://helloagent.daydispatch.com/loginn
+                  <a href="https://hellotransport.com/loginn" style="color:#062e39;word-break:break-all;">
+                    https://hellotransport.com/loginn
                   </a>
                 </p>
                 <p style="margin:0 0 4px;color:#166534;font-size:13px;font-weight:600;">📧 Your Email</p>
@@ -58,7 +58,7 @@
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
               <td align="center">
-                <a href="https://helloagent.daydispatch.com/loginn"
+                <a href="https://hellotransport.com/loginn"
                    style="display:inline-block;background:#8fc445;color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:13px 40px;border-radius:8px;letter-spacing:.5px;text-transform:uppercase;">
                   Login to Agent Portal →
                 </a>

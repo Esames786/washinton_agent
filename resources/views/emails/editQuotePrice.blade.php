@@ -13,7 +13,7 @@
             Dear <span style="font-weight: bold">{{ isset($order->oname) ? $order->oname : 'Customer' }}</span>,
         </p>
         <p style="font-size: 18px">
-            We hope this message finds you well! At ShipA1 Transport, we're
+            We hope this message finds you well! At Hello Transport, we're
             committed to providing you with top-notch service at pocket-friendly
             prices. We understand the importance of cost-effective solutions
             without compromising on quality.
@@ -283,16 +283,16 @@
         @endif
 
         <p style="font-size: 18px">
-            Thank you for considering ShipA1 Transport for your transportation
+            Thank you for considering Hello Transport for your transportation
             needs. We look forward to serving you soon!
         </p>
         <p style="font-size: 18px">
             Best Regards,<br />
-            ShipA1 Transport
+            Hello Transport
         </p>
         <p style="font-size: 18px">
             Visit Our Website:
-            <a href="http://www.shipa1.com/" style="color: #8fc445">www.shipa1.com</a>
+            <a href="https://www.hellotransport.com/" style="color: #8fc445">www.hellotransport.com</a>
         </p>
     </div>
 @endsection

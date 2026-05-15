@@ -16,7 +16,7 @@
         <p>Dear {{ $autoorder->oname }},</p>
         <p>
             We hope this email finds you well. We're delighted to announce that the delivery of your shipment with
-            ShipA1 Transport has been successfully completed!
+            Hello Transport has been successfully completed!
         </p>
 
         <h2
@@ -55,7 +55,7 @@
 
         <p>
             Your vehicle has been safely delivered to the destination address.
-            We trust that our services have met your expectations, and we thank you for choosing ShipA1 Transport for
+            We trust that our services have met your expectations, and we thank you for choosing Hello Transport for
             your transportation needs.
             if you have any questions or require assistance with future shipments, please feel free to reach out to
             us. We're here to assist you.
@@ -66,16 +66,16 @@
                 style="color: #0056b3; text-decoration: none;"> 1 (844) 474-4721</a>.
         </p>
         <p>
-            Thank you once again for entrusting ShipA1 Transport with your shipment. We look forward to serving you
+            Thank you once again for entrusting Hello Transport with your shipment. We look forward to serving you
             again in the future.
         </p>
-        <p>Best Regards,<br />ShipA1 Transport</p>
+        <p>Best Regards,<br />Hello Transport</p>
         <p>
             For your convenience, here are our contact details:<br />
             Phone: <a href=" 1 (844) 474-4721" style="color: #0056b3; text-decoration: none;"> 1 (844)
                 474-4721</a><br />
-            Email: <a href="mailto:infos@shipa1.com"
-                style="color: #0056b3; text-decoration: none;">infos@shipa1.com</a><br />
+            Email: <a href="mailto:info@hellotransport.com"
+                style="color: #0056b3; text-decoration: none;">info@hellotransport.com</a><br />
             Hours of availability: 8am to 7pm EST.
         </p>
 @endsection

@@ -19,7 +19,7 @@
             Vehicle: <span>{{ $autoorder->ymk }}</span>
           </li>
         @endif
-        with ShipA1 Transport has been successfully completed.</p>
+        with Hello Transport has been successfully completed.</p>
         
         <h2 style="border-top-right-radius: 10px; border-top-left-radius: 10px; margin: 0; font-size: x-large; border-bottom: 5px solid #8fc445; background: #062e39; color: white; text-transform: uppercase; padding: 5px 18px;">Booking Details:</h2>
         <ul style="list-style-type: none; padding: 0;">
@@ -51,7 +51,7 @@
         <p>Your vehicle has been collected from the origin location and is now on its way to the destination.</p>
         <p>You can continue to track the status of your shipment on our website using your transport number.</p>
         <div style="text-align: center; margin-top: 13px; margin-bottom: 13px;">
-            <a href="https://www.shipa1.com/order_tracking/" target="_blank">
+            <a href="{{ route('order.tracking', $autoorder->id) }}" target="_blank">
               <button style="background-color: #8fc445; color: white; font-size: larger; border: none; padding: 10px 20px; border-radius: 5px;">Track Order</button>
             </a>
           </div>
@@ -65,10 +65,10 @@
           <li style="margin: 5px 0;"><a href="#" style="color: #0056b3; text-decoration: none;">Trustpilot (profile link)</a></li>
         </ul> -->
 
-        <p>Thank you for choosing ShipA1 Transport for your transportation needs. We are committed to providing you with reliable service and ensuring a smooth shipping experience from start to finish.</p>
-        <p>Best Regards,<br>ShipA1 Transport</p>
+        <p>Thank you for choosing Hello Transport for your transportation needs. We are committed to providing you with reliable service and ensuring a smooth shipping experience from start to finish.</p>
+        <p>Best Regards,<br>Hello Transport</p>
         <p>For your convenience, here are our contact details:</p>
         <p>Phone: 1 (844) 474-4721</p>
-        <p>Email: <a href="mailto:infos@shipa1.com" style="color: #0056b3; text-decoration: none;">infos@shipa1.com</a></p>
+        <p>Email: <a href="mailto:info@hellotransport.com" style="color: #0056b3; text-decoration: none;">info@hellotransport.com</a></p>
         <p>Hours of availability: 8am to 7pm EST.</p>
 @endsection

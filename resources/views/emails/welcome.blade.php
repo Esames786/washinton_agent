@@ -56,7 +56,7 @@
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
               <td align="center">
-                <a href="https://helloagent.daydispatch.com/loginn"
+                <a href="https://hellotransport.com/loginn"
                    style="display:inline-block;background:#8fc445;color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:12px 32px;border-radius:8px;letter-spacing:.5px;text-transform:uppercase;">
                   Go to Login →
                 </a>

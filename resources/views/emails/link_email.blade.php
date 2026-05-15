@@ -416,7 +416,7 @@
                                     <tr>
                                         <td style="font-size:14px; height:20px; color:#ffffff; font-weight:normal; font-family: Open Sans, sans-serif;"
                                             align="center">OR Email:
-                                            <a href="mailto:shawntransport@shipa1.com">shawntransport@shipa1.com</a>
+                                            <a href="mailto:info@hellotransport.com">info@hellotransport.com</a>
                                         </td>
                                     </tr>
                                     <tr>
@@ -450,7 +450,7 @@
                         <tr>
                             <td height="28" align="center"
                                 style="font-family: Open Sans, sans-serif;font-size:11px; font-weight:normal; color:#7f8c8d">
-                                ShipA1 All Rights Reserved.
+                                Hello Transport All Rights Reserved.
                             </td>
                         </tr>
                         </tbody>

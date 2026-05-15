@@ -11,7 +11,7 @@
           </thead>
         </table>
         <p>Dear {{ $autoorder->oname }},</p>
-        <p>We are delighted to confirm your booking with ShipA1 Transport! Your satisfaction is our priority, and we are dedicated to providing you with a seamless transportation experience.</p>
+        <p>We are delighted to confirm your booking with Hello Transport! Your satisfaction is our priority, and we are dedicated to providing you with a seamless transportation experience.</p>
         <h2 style="border-top-right-radius: 10px; border-top-left-radius: 10px; margin: 0; font-size: x-large; border-bottom: 5px solid #8fc445; background: #062e39; color: white; text-transform: uppercase; padding: 5px 18px;">Booking Details:</h2>
         <ul style="list-style-type: none; padding: 0;">
           <li style="margin: 5px 0;"><strong>ORDER #:</strong> {{ $autoorder->id }}</li>
@@ -41,9 +41,9 @@
           </a>
         </div>
         <p>To view the terms and conditions of your booking, please follow this link:
-          <a href="https://blog.shipa1.daydispatch.com/public/terms_and_conditions" style="color: #0056b3; text-decoration: none;">Terms and Conditions</a>
+          <a href="https://hellotransport.com/terms-conditions" style="color: #0056b3; text-decoration: none;">Terms and Conditions</a>
         </p>
         <p>For any inquiries or assistance, do not hesitate to contact us. We are here to support you throughout the process.</p>
-        <p>Thank you for choosing ShipA1 Transport for your transportation needs. We look forward to serving you!</p>
-        <p>Best Regards,<br />ShipA1 Transport</p>
+        <p>Thank you for choosing Hello Transport for your transportation needs. We look forward to serving you!</p>
+        <p>Best Regards,<br />Hello Transport</p>
 @endsection

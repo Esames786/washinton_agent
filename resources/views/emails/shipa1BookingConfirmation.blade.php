@@ -136,11 +136,11 @@
 
   <p style="margin-top:16px;">
     To view our terms and conditions:
-    <a href="https://blog.shipa1.daydispatch.com/public/terms_and_conditions"
+    <a href="https://hellotransport.com/terms-conditions"
        style="color:#0056b3;text-decoration:none;">Terms and Conditions</a>
   </p>
   <p>For any inquiries, please don't hesitate to contact us.</p>
-  <p>Thank you for choosing ShipA1 Transport.<br/>Best Regards,<br/>ShipA1 Transport</p>
+  <p>Thank you for choosing Hello Transport.<br/>Best Regards,<br/>Hello Transport</p>
 
 </div>
 @endsection
