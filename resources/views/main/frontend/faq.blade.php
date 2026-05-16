@@ -1,4 +1,4 @@
-@extends('layouts.frontend-master')
+@extends('layouts.new-master')
 
 @section('page_title', 'FAQ – Auto Shipping Questions Answered')
 @section('meta_description', 'Find answers to common auto transport questions: how car shipping works, transit times, costs, insurance coverage, and what to expect with Hello Transport.')
@@ -6,17 +6,18 @@
 @section('content')
 
 <!-- Page Title -->
-<div class="page-title-area bg-11">
+<section class="page-title-area pt-100 pb-100"
+         style="background-image:url({{ asset('frontend/newtheme-assets/img/banner/23.png') }});">
     <div class="container">
-        <div class="page-title-content">
+        <div class="page-title-content text-center">
             <h2>FAQ</h2>
             <ul>
                 <li><a href="{{ route('Frontend.index') }}">Home</a></li>
-                <li class="active">FAQ</li>
+                <li>FAQ</li>
             </ul>
         </div>
     </div>
-</div>
+</section>
 
 <!-- FAQ Area -->
 <section class="faq-area ptb-100">

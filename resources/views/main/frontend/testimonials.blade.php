@@ -1,4 +1,4 @@
-@extends('layouts.frontend-master')
+@extends('layouts.new-master')
 
 @section('page_title', 'Customer Reviews & Testimonials')
 @section('meta_description', 'See what our customers say about Hello Transport. Read verified reviews from people who shipped their cars with us across the continental United States.')
@@ -6,17 +6,18 @@
 @section('content')
 
 <!-- Page Title -->
-<div class="page-title-area bg-5">
+<section class="page-title-area pt-100 pb-100"
+         style="background-image:url({{ asset('frontend/newtheme-assets/img/banner/7.png') }});">
     <div class="container">
-        <div class="page-title-content">
+        <div class="page-title-content text-center">
             <h2>Testimonials</h2>
             <ul>
                 <li><a href="{{ route('Frontend.index') }}">Home</a></li>
-                <li class="active">Testimonials</li>
+                <li>Testimonials</li>
             </ul>
         </div>
     </div>
-</div>
+</section>
 
 <!-- Testimonials Section -->
 <section class="testimonials-area testimonials-page pt-100 pb-70">

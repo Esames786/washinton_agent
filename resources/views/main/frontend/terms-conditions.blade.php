@@ -1,4 +1,4 @@
-@extends('layouts.frontend-master')
+@extends('layouts.new-master')
 
 @section('page_title', 'Terms & Conditions')
 @section('meta_description', 'Review the Terms and Conditions governing your use of Hello Transport\'s auto shipping services, website, and customer portal.')
@@ -6,17 +6,18 @@
 @section('content')
 
 <!-- Page Title -->
-<div class="page-title-area bg-14">
+<section class="page-title-area pt-100 pb-100"
+         style="background-image:url({{ asset('frontend/newtheme-assets/img/banner/23.png') }});">
     <div class="container">
-        <div class="page-title-content">
-            <h2>Terms & Conditions</h2>
+        <div class="page-title-content text-center">
+            <h2>Terms &amp; Conditions</h2>
             <ul>
                 <li><a href="{{ route('Frontend.index') }}">Home</a></li>
-                <li class="active">Terms & Conditions</li>
+                <li>Terms &amp; Conditions</li>
             </ul>
         </div>
     </div>
-</div>
+</section>
 
 <!-- Terms & Conditions Area -->
 <section class="terms-conditions-area ptb-100">

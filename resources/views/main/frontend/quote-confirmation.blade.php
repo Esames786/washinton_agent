@@ -1,18 +1,19 @@
-@extends('layouts.frontend-master')
+@extends('layouts.new-master')
 
 @section('content')
 
-<div class="page-title-area bg-25">
+<section class="page-title-area pt-100 pb-100"
+         style="background-image:url({{ asset('frontend/newtheme-assets/img/banner/7.png') }});">
     <div class="container">
-        <div class="page-title-content">
+        <div class="page-title-content text-center">
             <h2>Quote Submitted</h2>
             <ul>
                 <li><a href="{{ route('Frontend.index') }}">Home</a></li>
-                <li class="active">Confirmation</li>
+                <li>Confirmation</li>
             </ul>
         </div>
     </div>
-</div>
+</section>
 
 <section class="main-contact-area ptb-100">
     <div class="container text-center">

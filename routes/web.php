@@ -90,6 +90,8 @@ Route::get('/Testimonials', 'FrontendController@testimonials')->name('Frontend.T
 Route::get('/Load-Board', 'FrontendController@loadboard')->name('Frontend.loadboard');
 Route::get('/LoadBoard-Packages', 'FrontendController@packages')->name('Frontend.Packages');
 Route::get('/Privacy-Policy', 'FrontendController@privacy')->name('Frontend.privacy');
+Route::get('/services', 'FrontendController@services')->name('Frontend.services');
+Route::get('/services/{slug}', 'FrontendController@serviceShow')->name('Frontend.services.show');
 
 // Keep login accessible at /loginn
 Route::get('/loginn', 'WelcomeController@loginn');

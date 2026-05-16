@@ -1,4 +1,4 @@
-@extends('layouts.frontend-master')
+@extends('layouts.new-master')
 
 @section('page_title', 'Contact Us – Get a Free Auto Shipping Quote')
 @section('meta_description', 'Reach out to Hello Transport for a free auto shipping quote, order status updates, or customer support. We\'re here 7 days a week.')
@@ -6,17 +6,18 @@
 @section('content')
 
 <!-- Page Title -->
-<div class="page-title-area bg-25">
+<section class="page-title-area pt-100 pb-100"
+         style="background-image:url({{ asset('frontend/newtheme-assets/img/banner/39.png') }});">
     <div class="container">
-        <div class="page-title-content">
+        <div class="page-title-content text-center">
             <h2>Contact Us</h2>
             <ul>
                 <li><a href="{{ route('Frontend.index') }}">Home</a></li>
-                <li class="active">Contact Us</li>
+                <li>Contact Us</li>
             </ul>
         </div>
     </div>
-</div>
+</section>
 
 <!-- Contact Form Area -->
 <section class="main-contact-area ptb-100">

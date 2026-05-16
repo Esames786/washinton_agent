@@ -237,4 +237,27 @@ class FrontendController extends Controller
     {
         return view('main.frontend.about-us');
     }
+
+    public function services()
+    {
+        return view('main.frontend.services');
+    }
+
+    public function serviceShow($slug)
+    {
+        $cats = config('hello_services.categories', []);
+        $service = null;
+        $categoryTitle = '';
+        foreach ($cats as $cat) {
+            if (isset($cat['services'][$slug])) {
+                $service = $cat['services'][$slug];
+                $categoryTitle = $cat['title'];
+                break;
+            }
+        }
+        if (!$service) {
+            abort(404);
+        }
+        return view('main.frontend.service-show', compact('service', 'categoryTitle'));
+    }
 }

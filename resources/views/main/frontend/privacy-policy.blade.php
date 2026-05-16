@@ -1,4 +1,4 @@
-@extends('layouts.frontend-master')
+@extends('layouts.new-master')
 
 @section('page_title', 'Privacy Policy')
 @section('meta_description', 'Read Hello Transport\'s Privacy Policy to understand how we collect, use, and protect your personal information when you use our auto shipping services.')
@@ -6,17 +6,18 @@
 @section('content')
 
 <!-- Page Title -->
-<div class="page-title-area bg-14">
+<section class="page-title-area pt-100 pb-100"
+         style="background-image:url({{ asset('frontend/newtheme-assets/img/banner/39.png') }});">
     <div class="container">
-        <div class="page-title-content">
-            <h2>Privacy & Policy</h2>
+        <div class="page-title-content text-center">
+            <h2>Privacy &amp; Policy</h2>
             <ul>
                 <li><a href="{{ route('Frontend.index') }}">Home</a></li>
-                <li class="active">Privacy & Policy</li>
+                <li>Privacy &amp; Policy</li>
             </ul>
         </div>
     </div>
-</div>
+</section>
 
 <!-- Privacy Policy Area -->
 <section class="terms-conditions-area ptb-100">

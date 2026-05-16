@@ -1,4 +1,4 @@
-@extends('layouts.frontend-master')
+@extends('layouts.new-master')
 
 @section('page_title', 'Get an Instant Auto Shipping Quote')
 @section('meta_description', 'Get an instant, no-obligation car shipping quote from Hello Transport. Enter your pickup and delivery locations to see competitive rates in seconds.')
@@ -43,20 +43,36 @@
 
     /* Wrapper needs position:relative for absolute dropdown */
     .zip-wrap, .make-wrap, .model-wrap { position: relative; }
+
+    /* Dark select boxes to match the form theme */
+    #quote-form select.form-control {
+        background-color: #111 !important;
+        color: #fff !important;
+        border: 1px solid #d4af37 !important;
+    }
+    #quote-form select.form-control option {
+        background-color: #111 !important;
+        color: #fff !important;
+    }
+    #quote-form select.form-control:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(212,175,55,0.4);
+    }
 </style>
 
 {{-- Page Title --}}
-<div class="page-title-area bg-25">
+<section class="page-title-area pt-100 pb-100"
+         style="background-image:url({{ asset('frontend/newtheme-assets/img/banner/7.png') }});">
     <div class="container">
-        <div class="page-title-content">
+        <div class="page-title-content text-center">
             <h2>Get Quote</h2>
             <ul>
                 <li><a href="{{ route('Frontend.index') }}">Home</a></li>
-                <li class="active">Get Quote</li>
+                <li>Get Quote</li>
             </ul>
         </div>
     </div>
-</div>
+</section>
 
 {{-- Quote Form --}}
 <section class="main-contact-area ptb-100">
