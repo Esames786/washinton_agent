@@ -2883,6 +2883,9 @@ class DashboardController extends Controller
         $q = trim($request->get('q', ''));
         $users = \App\User::whereIn('role', [1, 2, 3, 8, 9, 14, 17, 18])
             ->where('deleted', 0)
+            ->whereHas('user_setting', function ($query) {
+                $query->where('penal_type', 2); // ProMax (website quote) panel only
+            })
             ->where(function ($query) use ($q) {
                 $query->where('name', 'like', "%{$q}%")
                       ->orWhere('email', 'like', "%{$q}%");
