@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\AutoOrder;
+use App\orderpayment;
+use App\creditcard;
+use App\singlereport;
+use App\order_freight;
 use App\Mail\AgentActivatedEmail;
 use App\Mail\SendCodeMail;
 use App\ShipaQueryPhone;
@@ -2892,10 +2896,83 @@ class DashboardController extends Controller
     public function shipa1_queryAssignDirect(Request $request)
     {
         $request->validate(['query_id' => 'required|integer', 'user_id' => 'required|integer']);
-        \Illuminate\Support\Facades\DB::table('shipa_query')
-            ->where('id', $request->query_id)
-            ->update(['user_id' => $request->user_id]);
-        $user = \App\User::find($request->user_id);
-        return response()->json(['success' => true, 'assigned_to' => $user ? $user->name : 'Unknown']);
+
+        $query = ShipaQuery::find($request->query_id);
+        if (!$query) {
+            return response()->json(['success' => false, 'message' => 'Query not found'], 404);
+        }
+
+        $user = User::find($request->user_id);
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not found'], 404);
+        }
+
+        // Create a copy of this query as an AutoOrder assigned to the OT
+        $lastOrder = AutoOrder::orderBy('id', 'DESC')->first();
+        $order = new AutoOrder();
+        $order->id              = $lastOrder ? $lastOrder->id + 1 : 1;
+        $order->order_taker_id  = $user->id;
+        $order->oname           = $query->oname;
+        $order->oemail          = $query->oemail;
+        $order->ophone          = $query->ophone;
+        $order->main_ph         = $query->main_ph;
+        $order->ymk             = $query->ymk;
+        $order->year            = $query->year;
+        $order->make            = $query->make;
+        $order->model           = $query->model;
+        $order->type            = $query->type;
+        $order->vehicle_opt     = $query->vehicle_opt;
+        $order->condition       = $query->condition;
+        $order->car_type        = $query->car_type;
+        $order->transport       = $query->transport;
+        $order->originzsc       = $query->originzsc;
+        $order->originzip       = $query->originzip;
+        $order->originstate     = $query->originstate;
+        $order->origincity      = $query->origincity;
+        $order->destinationzsc  = $query->destinationzsc;
+        $order->destinationzip  = $query->destinationzip;
+        $order->destinationstate= $query->destinationstate;
+        $order->destinationcity = $query->destinationcity;
+        $order->add_info        = $query->add_info;
+        $order->cname           = $query->cname;
+        $order->cemail          = $query->cemail;
+        $order->paneltype       = $query->paneltype;
+        $order->ip_address      = $query->ip_address;
+        $order->ip_details      = $query->ip_details;
+        $order->ipcity          = $query->ipcity;
+        $order->ipregion        = $query->ipregion;
+        $order->ipcountry       = $query->ipcountry;
+        $order->iploc           = $query->iploc ?? null;
+        $order->ippostal        = $query->ippostal;
+        $order->source          = $query->source ?? 'ShipA1';
+        $order->pstatus         = 0;
+        $order->save();
+
+        // Linked records
+        $payment = new orderpayment();
+        $payment->orderId = $order->id;
+        $payment->save();
+
+        $card = new creditcard();
+        $card->orderId = $order->id;
+        $card->save();
+
+        $rep = new report();
+        $rep->userId  = $user->id;
+        $rep->orderId = $order->id;
+        $rep->pstatus = 0;
+        $rep->save();
+
+        $single = new singlereport();
+        $single->userId  = $user->id;
+        $single->orderId = $order->id;
+        $single->pstatus = 0;
+        $single->save();
+
+        // Mark the query as assigned
+        $query->user_id = $user->id;
+        $query->save();
+
+        return response()->json(['success' => true, 'assigned_to' => $user->name, 'order_id' => $order->id]);
     }
 }
