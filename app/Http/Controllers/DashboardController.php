@@ -2485,11 +2485,21 @@ class DashboardController extends Controller
             // Fetch paginated data
             $data = $query->with('user')->orderby('id','desc')->paginate(20);
 
+            // ProMax OT list for the Assign OT modal
+            $promax_ots = User::whereIn('role', [2, 3, 8, 14, 17, 18])
+                ->where('deleted', 0)
+                ->whereHas('user_setting', function ($q) {
+                    $q->where('penal_type', 2);
+                })
+                ->select('id', 'name', 'slug', 'email')
+                ->orderBy('name')
+                ->get();
+
             if ($request->ajax()) {
-                return view('main.phone_quote.query.table', compact('data', 'state'));
+                return view('main.phone_quote.query.table', compact('data', 'state', 'promax_ots'));
             }
 
-            return view('main.phone_quote.query.index', compact('data', 'state'));
+            return view('main.phone_quote.query.index', compact('data', 'state', 'promax_ots'));
         }
     }
 

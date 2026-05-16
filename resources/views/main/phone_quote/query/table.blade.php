@@ -1140,11 +1140,22 @@ if (isset($_GET['titlee'])) {
             <div class="modal-body">
                 <p class="text-muted mb-2" id="assignOtQueryLabel"></p>
                 <input type="hidden" id="assignOtQueryId">
-                <div class="form-group">
-                    <label>Search User</label>
-                    <input type="text" id="assignOtSearch" class="form-control" placeholder="Type name or email…">
+                <div class="form-group mb-2">
+                    <input type="text" id="assignOtSearch" class="form-control" placeholder="Filter by name…">
                 </div>
-                <ul id="assignOtList" class="list-group mt-2" style="max-height:220px;overflow-y:auto;"></ul>
+                <ul id="assignOtList" class="list-group" style="max-height:260px;overflow-y:auto;">
+                    @foreach ($promax_ots as $ot)
+                        <li class="list-group-item list-group-item-action ot-select-item"
+                            data-user-id="{{ $ot->id }}"
+                            data-user-name="{{ $ot->name }}"
+                            data-user-name-lower="{{ strtolower($ot->name . ' ' . $ot->slug . ' ' . $ot->email) }}"
+                            style="cursor:pointer">
+                            <strong>{{ $ot->name }}</strong>
+                            @if($ot->slug) <span class="text-secondary">({{ $ot->slug }})</span> @endif
+                            <small class="text-muted d-block">{{ $ot->email }}</small>
+                        </li>
+                    @endforeach
+                </ul>
                 <div id="assignOtResult" class="mt-2"></div>
             </div>
         </div>
@@ -1154,43 +1165,25 @@ if (isset($_GET['titlee'])) {
 <script>
 (function () {
     var _assignOtQueryId = null;
-    var _assignOtDebounce = null;
 
-    // When button clicked — set query id and label on modal
+    // When button clicked — set query id and label, reset filter
     $(document).on('click', '.assign-ot-btn', function () {
         _assignOtQueryId = $(this).data('query-id');
         $('#assignOtQueryId').val(_assignOtQueryId);
         $('#assignOtQueryLabel').text($(this).data('query-label'));
         $('#assignOtSearch').val('');
-        $('#assignOtList').empty();
         $('#assignOtResult').html('');
+        // Show all items
+        $('#assignOtList .ot-select-item').show();
     });
 
-    // Debounced search as user types
+    // Inline filter as user types
     $(document).on('input', '#assignOtSearch', function () {
-        clearTimeout(_assignOtDebounce);
-        var q = $(this).val().trim();
-        var $list = $('#assignOtList');
-        if (q.length < 1) { $list.empty(); return; }
-        _assignOtDebounce = setTimeout(function () {
-            $.get('{{ route("shipa1_query.search_order_takers") }}', { q: q }, function (users) {
-                $list.empty();
-                if (!users.length) {
-                    $list.append('<li class="list-group-item text-muted">No users found</li>');
-                    return;
-                }
-                $.each(users, function (i, u) {
-                    $list.append(
-                        '<li class="list-group-item list-group-item-action ot-select-item" ' +
-                        'data-user-id="' + u.id + '" data-user-name="' + $('<span>').text(u.name).html() + '" ' +
-                        'style="cursor:pointer">' +
-                        '<strong>' + $('<span>').text(u.name).html() + '</strong> ' +
-                        '<small class="text-muted">' + $('<span>').text(u.email).html() + '</small>' +
-                        '</li>'
-                    );
-                });
-            });
-        }, 300);
+        var q = $(this).val().toLowerCase();
+        $('#assignOtList .ot-select-item').each(function () {
+            var text = $(this).data('user-name-lower') || $(this).text().toLowerCase();
+            $(this).toggle(text.indexOf(q) !== -1);
+        });
     });
 
     // When a user row is clicked — assign
