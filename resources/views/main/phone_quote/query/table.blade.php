@@ -1164,21 +1164,20 @@ if (isset($_GET['titlee'])) {
 
 <script>
 (function () {
-    var _assignOtQueryId = null;
+    // Unbind first to prevent duplicate handlers from AJAX re-injection
+    $(document).off('click.assignOtBtn').off('input.assignOtSearch').off('click.assignOtItem');
 
     // When button clicked — set query id and label, reset filter
-    $(document).on('click', '.assign-ot-btn', function () {
-        _assignOtQueryId = $(this).data('query-id');
-        $('#assignOtQueryId').val(_assignOtQueryId);
+    $(document).on('click.assignOtBtn', '.assign-ot-btn', function () {
+        $('#assignOtQueryId').val($(this).data('query-id'));
         $('#assignOtQueryLabel').text($(this).data('query-label'));
         $('#assignOtSearch').val('');
         $('#assignOtResult').html('');
-        // Show all items
         $('#assignOtList .ot-select-item').show();
     });
 
     // Inline filter as user types
-    $(document).on('input', '#assignOtSearch', function () {
+    $(document).on('input.assignOtSearch', '#assignOtSearch', function () {
         var q = $(this).val().toLowerCase();
         $('#assignOtList .ot-select-item').each(function () {
             var text = $(this).data('user-name-lower') || $(this).text().toLowerCase();
@@ -1186,8 +1185,8 @@ if (isset($_GET['titlee'])) {
         });
     });
 
-    // When a user row is clicked — assign
-    $(document).on('click', '.ot-select-item', function () {
+    // When a user row is clicked — assign (namespaced so off() removes only this)
+    $(document).on('click.assignOtItem', '.ot-select-item', function () {
         var userId   = $(this).data('user-id');
         var userName = $(this).data('user-name');
         var queryId  = $('#assignOtQueryId').val();

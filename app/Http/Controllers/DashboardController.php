@@ -2485,8 +2485,8 @@ class DashboardController extends Controller
             // Fetch paginated data
             $data = $query->with('user')->orderby('id','desc')->paginate(20);
 
-            // ProMax OT list for the Assign OT modal
-            $promax_ots = User::whereIn('role', [2, 3, 8, 14, 17, 18])
+            // Order Takers with ProMax (penal_type=2) permission for the Assign OT modal
+            $promax_ots = User::where('role', 2)
                 ->where('deleted', 0)
                 ->whereHas('user_setting', function ($q) {
                     $q->where('penal_type', 2);
@@ -2891,7 +2891,7 @@ class DashboardController extends Controller
     public function shipa1_querySearchOrderTakers(Request $request)
     {
         $q = trim($request->get('q', ''));
-        $users = \App\User::whereIn('role', [1, 2, 3, 8, 9, 14, 17, 18])
+        $users = \App\User::where('role', 2)
             ->where('deleted', 0)
             ->whereHas('user_setting', function ($query) {
                 $query->where('penal_type', 2); // ProMax (website quote) panel only
