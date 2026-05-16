@@ -724,9 +724,15 @@ class DashboardController extends Controller
         $total_sheet_access = "";
         $total_emp_access_guide = "";
         $total_emp_panel_access = "";
+        $total_panel_type_4 = "";
+        $total_panel_type_5 = "";
+        $total_panel_type_6 = "";
         $emp_access_phone = $request->emp_access_phone;
         $emp_access_web = $request->emp_access_web;
         $emp_access_test = $request->emp_access_test;
+        $panel_type_4 = $request->panel_type_4;
+        $panel_type_5 = $request->panel_type_5;
+        $panel_type_6 = $request->panel_type_6;
         $emp_show_data = $request->emp_show_data;
         $emp_access_ship = $request->emp_access_ship;
         $emp_access_profile = $request->emp_access_profile;
@@ -746,15 +752,15 @@ class DashboardController extends Controller
         if ($request->emp_access_test <> null) {
             $total_emp_access_test = implode(",", $emp_access_test);
         }
-        // if ($request->panel_type_4 <> null) {
-        //     $total_panel_type_4 = implode(",", $panel_type_4);
-        // }
-        // if ($request->panel_type_5 <> null) {
-        //     $total_panel_type_5 = implode(",", $panel_type_5);
-        // }
-        // if ($request->panel_type_6 <> null) {
-        //     $total_panel_type_6 = implode(",", $panel_type_6);
-        // }
+        if ($request->panel_type_4 <> null) {
+            $total_panel_type_4 = implode(",", $panel_type_4);
+        }
+        if ($request->panel_type_5 <> null) {
+            $total_panel_type_5 = implode(",", $panel_type_5);
+        }
+        if ($request->panel_type_6 <> null) {
+            $total_panel_type_6 = implode(",", $panel_type_6);
+        }
         if ($request->emp_show_data <> null) {
             $total_emp_show_data = implode(",", $emp_show_data);
         }
@@ -801,9 +807,9 @@ class DashboardController extends Controller
             $emp->emp_access_phone = $total_emp_access_phone;
             $emp->emp_access_web = $total_emp_access_web;
             $emp->emp_access_test = $total_emp_access_test;
-            // $emp->panel_type_4 = $total_panel_type_4;
-            // $emp->panel_type_5 = $total_panel_type_5;
-            // $emp->panel_type_6 = $total_panel_type_6;
+            $emp->panel_type_4 = $total_panel_type_4;
+            $emp->panel_type_5 = $total_panel_type_5;
+            $emp->panel_type_6 = $total_panel_type_6;
             $emp->emp_show_data = $total_emp_show_data;
             $emp->emp_access_ship = $total_emp_access_ship;
             $emp->emp_access_profile = $total_emp_access_profile;

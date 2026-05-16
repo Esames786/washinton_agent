@@ -157,6 +157,12 @@
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModa20">Testing Quotes</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
+                                            data-target="#exampleModa24">Shipa1 Website</button>
+                                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                                            data-target="#exampleModa25">Panel Type 5 Quotes</button>
+                                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                                            data-target="#exampleModa26">Panel Type 6 Quotes</button>
+                                        <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModal3">Show Data</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModal4">Shipment Status</button>
