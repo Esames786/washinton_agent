@@ -323,8 +323,21 @@
                 @endif
 
                 <div class="card-body">
+                    <!-- Tabs -->
+                    <ul class="nav nav-tabs mb-3" id="queryTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-tab="unassigned" href="#" role="tab">
+                                Unassigned
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-tab="assigned" href="#" role="tab">
+                                Assigned
+                            </a>
+                        </li>
+                    </ul>
+                    <input type="hidden" id="active_tab" value="unassigned">
                     <div id="table_data">
-
                         @include('main.phone_quote.query.table')
                     </div>
                 </div>
@@ -385,6 +398,7 @@
                         startDate: formattedStartDate,
                         endDate: formattedEndDate,
                         search_as: search_as,
+                        tab: $('#active_tab').val(),
                     },
                     success: function (response) {
                         // Update the UI with the fetched data
@@ -478,6 +492,15 @@
             $(document).on("change", "#search_as", function (e) {
                 e.preventDefault();
 
+                fetchData(1);
+            });
+
+            // Tab switching
+            $(document).on('click', '#queryTabs .nav-link', function (e) {
+                e.preventDefault();
+                $('#queryTabs .nav-link').removeClass('active');
+                $(this).addClass('active');
+                $('#active_tab').val($(this).data('tab'));
                 fetchData(1);
             });
 

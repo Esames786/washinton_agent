@@ -2444,6 +2444,14 @@ class DashboardController extends Controller
             }
             if ($request->has('orderTaker') && $request->orderTaker !== null) {
                 $query->where('user_id', $request->orderTaker);
+            } elseif ($search_as != 2) {
+                // Tab filter: unassigned (user_id=0) or assigned (user_id>0)
+                $tab = $request->input('tab', 'unassigned');
+                if ($tab === 'assigned') {
+                    $query->where('user_id', '>', 0);
+                } else {
+                    $query->where('user_id', 0);
+                }
             }
 
             if ($request->has('search') && $request->search !== null) {
