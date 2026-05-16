@@ -164,19 +164,31 @@ if (isset($_GET['titlee'])) {
                         }
                         ?>">
                             {{ $val->paneltype == 1
-                                ? 'Phone Quote'
+                                ? 'Auction'
                                 : ($val->paneltype == 2
-                                    ? 'Website Quote'
+                                    ? 'ProMax'
                                     : ($val->paneltype == 3
                                         ? 'Testing Quote'
                                         : ($val->paneltype == 4
-                                            ? 'Panel Type 4 Quote'
+                                            ? 'Shipa1 Website'
                                             : ($val->paneltype == 5
                                                 ? 'Panel Type 5 Quote'
                                                 : ($val->paneltype == 6
                                                     ? 'Panel Type 6 Quote'
-                                                    : 'Phone Quote'))))) }}
+                                                    : 'Auction'))))) }}
                         </span>
+
+                        @if ($val->user)
+                            <div class="mt-1">
+                                <span class="badge badge-success">
+                                    <i class="fa fa-user"></i>
+                                    {{ $val->user->name }}
+                                    @if ($val->user->slug)
+                                        ({{ $val->user->slug }})
+                                    @endif
+                                </span>
+                            </div>
+                        @endif
 
                         @if (auth()->user()->role == 1)
                             @if ($val->paneltype != 1)
