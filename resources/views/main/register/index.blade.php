@@ -93,6 +93,20 @@
                                         class="form-control W-100" value="0">
                                 </div>
                             </div>
+                            <div class="col-sm-2 col-md-2" id="per_review_field" style="display:none;">
+                                <div class="form-group">
+                                    <label class="form-label">Per Review</label>
+                                    <input type="number" name="per_review" min="0" id="per_review"
+                                        class="form-control W-100" value="0">
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-2" id="private_pickup_field" style="display:none;">
+                                <div class="form-group">
+                                    <label class="form-label">Private Pickup</label>
+                                    <input type="number" name="private_pickup" min="0" id="private_pickup"
+                                        class="form-control W-100" value="0">
+                                </div>
+                            </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label class="form-label" required>JOB TYPE</label>
@@ -124,10 +138,18 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-sm-4 my-auto" id="private_ot_field" style="display:none;">
+                                <div class="form-group d-flex m-0">
+                                    <input type="checkbox" value="1" name="private_OT" id="private_OT" />
+                                    <label class="form-label my-auto mx-1" for="private_OT">Private OT</label>
+                                </div>
+                            </div>
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label class="form-label">Employee Access</label>
                                     <div class="btn-group">
+                                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                                            data-target="#exampleModa28">Panel Type Access</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModal1">Phone Quotes</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
@@ -144,6 +166,8 @@
                                             data-target="#exampleModal6">Action Access</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModal7">Employee Report</button>
+                                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                                            data-target="#exampleModal9">Guides</button>
                                     </div>
                                 </div>
                             </div>
@@ -3013,6 +3037,88 @@
                                 </div>
                             </div>
                         </div>
+                            {{-- Panel Type Access Modal --}}
+                            <div class="modal fade" id="exampleModa28" tabindex="-1" role="dialog"
+                                aria-labelledby="exampleModalLabel28" aria-hidden="true">
+                                <div class="modal-dialog" role="document" style="max-width: 55%;">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel28">Panel Type Access</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-sm-4">
+                                                            <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access1" value="1">
+                                                            <label class="ml-2" for="emp_panel_access1">Auction</label>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access2" value="2">
+                                                            <label class="ml-2" for="emp_panel_access2">ProMAx</label>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access3" value="3">
+                                                            <label class="ml-2" for="emp_panel_access3">Testing</label>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access4" value="4">
+                                                            <label class="ml-2" for="emp_panel_access4">Shipa1-Website</label>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access5" value="5">
+                                                            <label class="ml-2" for="emp_panel_access5">Panel Type 5</label>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access6" value="6">
+                                                            <label class="ml-2" for="emp_panel_access6">Panel Type 6</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Save</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {{-- Guides Modal --}}
+                            <div class="modal fade" id="exampleModal9" tabindex="-1" role="dialog"
+                                aria-labelledby="exampleModalLabel9" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel9">Employee Access (Guides)</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        @foreach ($guide as $row)
+                                                            <div class="col-sm-12">
+                                                                <input type="checkbox" name="emp_access_guide[]"
+                                                                    id="emp_access_guide{{ $row->id }}"
+                                                                    value="{{ $row->id }}">
+                                                                <label class="ml-2" for="emp_access_guide{{ $row->id }}">{{ $row->page_name }}</label>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Save</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         <div class="col-sm-12 col-md-12 mt-3">
                             <div class="form-group">
                                 <input type="radio" checked name="penalytype" value="1"> Phone Quotes
@@ -3209,6 +3315,11 @@
                     }
                 }
             });
+            // hide role-specific fields by default
+            $("#private_ot_field").hide();
+            $("#per_review_field").hide();
+            $("#private_pickup_field").hide();
+
             if (role == 'CSR' || role == 'Seller Agent' || role == 'Order Taker') {
                 $("#client_number").show();
                 $("#qoutes").show();
@@ -3218,6 +3329,9 @@
                 $("#group_qoutes").show();
                 $("#auto_assigning").hide();
                 $("#dispatcher_quotes").hide();
+                if (role == 'Order Taker') {
+                    $("#private_ot_field").show();
+                }
             } else if (role == 'Manager') {
                 $("#client_number").hide();
                 $("#qoutes").show();
@@ -3234,6 +3348,8 @@
                 } else {
                     $("#auto_assigning").hide();
                     $("#dispatcher_quotes").hide();
+                    $("#per_review_field").show();
+                    $("#private_pickup_field").show();
                 }
                 $("#client_number").hide();
                 $("#qoutes").show();

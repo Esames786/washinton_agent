@@ -460,13 +460,10 @@ class DashboardController extends Controller
         $diabledAccess = OrderTakerQouteAccess::all();
 
         $sheet_data = sheet_data::orderby('id', 'desc')->get();
+        $guide = Guide::all();
 
-
-        // echo "<pre>";
-        // print_r($no);
-        // exit();
         if (Auth::check()) {
-            return view('main.register.index', compact('data', 'no', 'all_ot', 'managers', 'disableNo', 'diabledAccess', 'sheet_data'));
+            return view('main.register.index', compact('data', 'no', 'all_ot', 'managers', 'disableNo', 'diabledAccess', 'sheet_data', 'guide'));
         } else {
             return redirect('/loginn/');
         }
@@ -725,18 +722,19 @@ class DashboardController extends Controller
         $total_emp_access_action = "";
         $total_emp_access_report = "";
         $total_sheet_access = "";
+        $total_emp_access_guide = "";
+        $total_emp_panel_access = "";
         $emp_access_phone = $request->emp_access_phone;
         $emp_access_web = $request->emp_access_web;
         $emp_access_test = $request->emp_access_test;
-        // $panel_type_4 = $request->panel_type_4;
-        // $panel_type_5 = $request->panel_type_5;
-        // $panel_type_6 = $request->panel_type_6;
         $emp_show_data = $request->emp_show_data;
         $emp_access_ship = $request->emp_access_ship;
         $emp_access_profile = $request->emp_access_profile;
         $emp_access_action = $request->emp_access_action;
         $emp_access_report = $request->emp_access_report;
         $emp_sheet_access = $request->sheet_access;
+        $emp_access_guide = $request->emp_access_guide;
+        $emp_panel_access = $request->emp_panel_access;
         // dd($request->emp_access_phone);
         if ($request->emp_access_phone <> null) {
             $total_emp_access_phone = implode(",", $emp_access_phone);
@@ -775,6 +773,12 @@ class DashboardController extends Controller
         if ($request->sheet_access <> null) {
             $total_sheet_access = implode(",", $emp_sheet_access);
         }
+        if ($request->emp_access_guide <> null) {
+            $total_emp_access_guide = implode(",", $emp_access_guide);
+        }
+        if ($request->emp_panel_access <> null) {
+            $total_emp_panel_access = implode(",", $emp_panel_access);
+        }
         $phone = str_replace("-", "", $request->phone_number);
         $usrChk = User::where('email', $request->email)->first();
         if ($usrChk == '') {
@@ -807,7 +811,10 @@ class DashboardController extends Controller
             $emp->emp_access_report = $total_emp_access_report;
             $emp->order_taker_quote = $request->order_taker_quote ?? 0;
             $emp->assign_daily_qoute = $request->assign_daily_qoute ?? 0;
+            $emp->private_OT = $request->private_OT ?? 0;
             $emp->sheet_access = $total_sheet_access;
+            $emp->emp_panel_access = $total_emp_panel_access;
+            $emp->emp_access_guide = $total_emp_access_guide;
             if ($emp->role == 3) {
                 $emp->auto_assign = $request->auto_assign ?? 0;
                 $emp->shipment_status_quote_assign = $request->shipment_status_quote_assign ?? 0;
@@ -815,6 +822,10 @@ class DashboardController extends Controller
             $emp->save();
             $usersetting = new user_setting();
             $usersetting->penal_type = $request->penalytype;
+            $usersetting->call_type = (
+                (is_array($request->emp_access_phone) && in_array("134", $request->emp_access_phone)) ||
+                (is_array($request->emp_access_web) && in_array("134", $request->emp_access_web))
+            ) ? 134 : 135;
             $usersetting->user_id = $emp->id;
             $usersetting->save();
 
