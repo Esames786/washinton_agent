@@ -92,13 +92,20 @@ html, body { height: 100%; margin: 0; }
 .signup-right select { display: block !important; }
 .signup-right .form-control.is-invalid { border-color: #dc3545 !important; }
 .input-icon-wrap { position: relative; }
-.input-icon-wrap .form-control { padding-left: 36px; }
+.input-icon-wrap .form-control { padding-left: 36px !important; }
 .input-icon-wrap .field-icon {
-    position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
-    color: #8fc445; font-size: 13px; pointer-events: none;
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #8fc445;
+    font-size: 13px;
+    pointer-events: none;
+    z-index: 2;
+    line-height: 1;
 }
-.input-icon-wrap textarea.form-control { padding-left: 36px; }
-.input-icon-wrap .field-icon.textarea-icon { top: 14px; transform: none; }
+.input-icon-wrap textarea.form-control { padding-left: 36px !important; }
+.input-icon-wrap .field-icon.textarea-icon { top: 12px; transform: none; }
 .field-error { color: #dc3545; font-size: 11px; margin-top: 3px; display: none; }
 
 /* Submit button */

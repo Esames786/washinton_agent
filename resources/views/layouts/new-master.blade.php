@@ -11,6 +11,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="google-site-verification" content="dwlNH_KoCtphxr8_X75_OXA-nxdZWfmnrCrJssvnPO4" />
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- Bootstrap Min CSS -->
     <link rel="stylesheet" href="{{ asset('frontend/newtheme-assets/css/bootstrap.min.css') }}">
     <!-- Owl Theme Default Min CSS -->
