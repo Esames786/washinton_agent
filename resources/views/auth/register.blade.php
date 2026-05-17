@@ -67,15 +67,29 @@ html, body { height: 100%; margin: 0; }
 
 /* Form fields */
 .form-label { font-size: 12px; font-weight: 600; color: #062e39; margin-bottom: 4px; display: block; }
-.signup-right .form-control, .signup-right select.form-control {
+.signup-right .form-control,
+.signup-right input.form-control,
+.signup-right textarea.form-control,
+.signup-right select.form-control {
     border: 1.5px solid #dee2e6; border-radius: 7px;
     padding: 8px 12px; font-size: 13px;
     transition: border-color .2s, box-shadow .2s; width: 100%;
-    background: #fff;
+    background: #fff !important;
+    color: #333 !important;
+    appearance: auto; -webkit-appearance: auto;
 }
+.signup-right .form-control::placeholder { color: #aaa !important; }
 .signup-right .form-control:focus, .signup-right select.form-control:focus {
     border-color: #8fc445; box-shadow: 0 0 0 3px rgba(143,196,69,.15); outline: none;
 }
+/* Make sure native select options are readable */
+.signup-right select.form-control option {
+    background: #fff !important;
+    color: #333 !important;
+}
+/* Hide any nice-select wrapper the plugin may create for signup selects */
+.signup-right .nice-select { display: none !important; }
+.signup-right select { display: block !important; }
 .signup-right .form-control.is-invalid { border-color: #dc3545 !important; }
 .input-icon-wrap { position: relative; }
 .input-icon-wrap .form-control { padding-left: 36px; }
@@ -408,6 +422,14 @@ html, body { height: 100%; margin: 0; }
 </div>{{-- /signup-wrap --}}
 
 <script>
+// Destroy nice-select on signup form so native selects are used
+(function waitForJQ() {
+    if (typeof window.jQuery === 'undefined') { setTimeout(waitForJQ, 50); return; }
+    if (window.jQuery.fn.niceSelect) {
+        window.jQuery('.signup-right select').niceSelect('destroy');
+    }
+}());
+
 (function () {
     // Account type card toggle
     document.querySelectorAll('input[name="signup_type"]').forEach(function (radio) {
