@@ -2921,9 +2921,7 @@ class DashboardController extends Controller
         }
 
         // Create a copy of this query as an AutoOrder assigned to the OT
-        $lastOrder = AutoOrder::orderBy('id', 'DESC')->first();
         $order = new AutoOrder();
-        $order->id              = $lastOrder ? $lastOrder->id + 1 : 1;
         $order->order_taker_id  = $user->id;
         $order->oname           = $query->oname;
         $order->oemail          = $query->oemail;
