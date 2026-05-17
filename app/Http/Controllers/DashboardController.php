@@ -2951,7 +2951,7 @@ class DashboardController extends Controller
         $order->cemail          = $query->cemail;
         $order->paneltype       = $query->paneltype;
         $order->ip_address      = $query->ip_address;
-        $order->ip_details      = $query->ip_details;
+        $order->ip_details      = $query->ip_details ?? null;
         $order->ipcity          = $query->ipcity;
         $order->ipregion        = $query->ipregion;
         $order->ipcountry       = $query->ipcountry;
@@ -2959,7 +2959,35 @@ class DashboardController extends Controller
         $order->ippostal        = $query->ippostal;
         $order->source          = $query->source ?? 'ShipA1';
         $order->pstatus         = 0;
+
+        // Heavy Equipment dimensions (car_type=2)
+        $order->length_ft       = $query->length_ft ?? null;
+        $order->width_ft        = $query->width_ft  ?? null;
+        $order->height_ft       = $query->height_ft ?? null;
+        $order->weight          = $query->weight    ?? null;
+
         $order->save();
+
+        // Freight detail row (car_type=3 → Dryvan)
+        if ((int) $query->car_type === 3) {
+            $freight = new \App\order_freight();
+            $freight->order_id         = $order->id;
+            $freight->total_weight_lbs = $query->weight ?? null;
+            // Parse frieght_class and commodity from add_info if stored there
+            if ($query->add_info) {
+                foreach (explode(' | ', $query->add_info) as $part) {
+                    if (str_starts_with($part, 'Freight Class: ')) {
+                        $freight->frieght_class = trim(str_replace('Freight Class: ', '', $part));
+                    } elseif (str_starts_with($part, 'Commodity: ')) {
+                        $freight->shipment_prefences = trim(str_replace('Commodity: ', '', $part));
+                        $freight->commodity_detail   = $freight->shipment_prefences;
+                    } elseif (str_starts_with($part, 'Shipping Mode: ')) {
+                        $freight->trailer_type = trim(str_replace('Shipping Mode: ', '', $part));
+                    }
+                }
+            }
+            $freight->save();
+        }
 
         // Linked records
         $payment = new orderpayment();

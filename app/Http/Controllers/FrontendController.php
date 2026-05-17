@@ -70,12 +70,11 @@ class FrontendController extends Controller
             'To_ZipCode'   => 'required|string|max:100',
         ]);
 
-        // Parse origin: "City, State, Zip" or "City,State,Zip" or just a zip
-        $origin      = $request->From_ZipCode;
-        $destination = $request->To_ZipCode;
+        $type = $request->Select_Vehicle ?? 'Car';
 
-        $originParts      = array_map('trim', explode(',', $origin));
-        $destinationParts = array_map('trim', explode(',', $destination));
+        // Parse origin / destination — "City, State, Zip" or bare zip
+        $originParts      = array_map('trim', explode(',', $request->From_ZipCode));
+        $destinationParts = array_map('trim', explode(',', $request->To_ZipCode));
 
         $origincity       = $originParts[0] ?? '';
         $originstate      = $originParts[1] ?? '';
@@ -87,12 +86,61 @@ class FrontendController extends Controller
         $destinationzip   = $destinationParts[2] ?? $destinationParts[0] ?? '';
         $destinationzsc   = trim("{$destinationcity},{$destinationstate},{$destinationzip}", ',');
 
-        $year  = $request->Car_Year ?? null;
-        $make  = $request->Car_Make ?? ($request->Year_Make_Model ?? null);
-        $model = $request->Car_Model ?? null;
+        // Vehicle identity — varies by type
+        $year  = null;
+        $make  = null;
+        $model = null;
 
-        // ymk = "Year Make Model" combined (same as how the internal form stores it)
+        if ($type === 'Heavy Equipment') {
+            // Single "Year Make Model" field
+            $make = $request->Year_Make_Model ?? null;
+        } elseif (in_array($type, ['Car', 'Motorcycle', 'ATV/UTV', 'Golf Cart'])) {
+            $year  = $request->Car_Year  ?? null;
+            $make  = $request->Car_Make  ?? null;
+            $model = $request->Car_Model ?? null;
+        }
         $ymk = trim("{$year} {$make} {$model}");
+
+        // Transport / shipping mode
+        // Cars/Motorcycles/ATV/Golf Cart → Carrier_Type (Open/Enclosed/Drive Away)
+        // Heavy Equipment & Dryvan      → Shipping_Mode (FTL/LTL)
+        $transport = in_array($type, ['Heavy Equipment', 'Dryvan'])
+            ? ($request->Shipping_Mode ?? null)
+            : ($request->Carrier_Type  ?? null);
+
+        // Weight — dedicated field per type
+        $weight = null;
+        if ($type === 'Heavy Equipment') {
+            $weight = $request->Vehicle_Weight ?? null;
+        } elseif ($type === 'Dryvan') {
+            $weight = $request->Freight_Weight ?? null;
+        }
+
+        // Dimensions — Heavy Equipment only
+        $lengthFt = $type === 'Heavy Equipment' ? ($request->Vehicle_Length ?? null) : null;
+        $widthFt  = $type === 'Heavy Equipment' ? ($request->Vehicle_Width  ?? null) : null;
+        $heightFt = $type === 'Heavy Equipment' ? ($request->Vehicle_Height ?? null) : null;
+
+        // car_type drives which table the order taker moves the lead into:
+        //   1 = Car / Motorcycle / ATV / Golf Cart  → order table (standard)
+        //   2 = Heavy Equipment                     → order table (heavy fields)
+        //   3 = Dryvan / Freight                    → order table + order_freight table
+        $carType = match($type) {
+            'Heavy Equipment' => 2,
+            'Dryvan'          => 3,
+            default           => 1,
+        };
+
+        // Additional info — freight class + commodity for Dryvan
+        // Stored in add_info so it transfers when the lead is converted to an order
+        $addInfo = null;
+        if ($type === 'Dryvan') {
+            $parts = [];
+            if ($request->frieght_class)        $parts[] = 'Freight Class: '  . $request->frieght_class;
+            if ($request->Shipment_Preferences) $parts[] = 'Commodity: '      . $request->Shipment_Preferences;
+            if ($request->Shipping_Mode)        $parts[] = 'Shipping Mode: '  . $request->Shipping_Mode;
+            $addInfo = implode(' | ', $parts) ?: null;
+        }
 
         try {
             \App\ShipaQuery::create([
@@ -116,27 +164,30 @@ class FrontendController extends Controller
                 'destinationzsc'   => $destinationzsc,
                 'dterminal'        => 0,
 
-                // Vehicle
+                // Vehicle / load identity
                 'ymk'              => $ymk,
                 'year'             => $year,
                 'make'             => $make,
                 'model'            => $model,
-                'type'             => $request->Select_Vehicle ?? 'Car',
+                'type'             => $type,
                 'condition'        => $request->Carrier_Condition ?? null,
-                'transport'        => $request->Carrier_Type ?? null,
+                'transport'        => $transport,
                 'vehicle_opt'      => 'make',
 
-                // Dimensions (Heavy Equipment)
-                'length_ft'        => $request->Vehicle_Length ?? null,
-                'width_ft'         => $request->Vehicle_Width ?? null,
-                'height_ft'        => $request->Vehicle_Height ?? null,
-                'weight'           => $request->Vehicle_Weight ?? null,
+                // Dimensions — Heavy Equipment
+                'length_ft'        => $lengthFt,
+                'width_ft'         => $widthFt,
+                'height_ft'        => $heightFt,
+                'weight'           => $weight,
 
-                // Meta
+                // Freight details encoded in add_info (order taker reads on conversion)
+                'add_info'         => $addInfo,
+
+                // Meta — car_type tells order taker which pipeline to use
                 'paneltype'        => 2,
                 'pstatus'          => 0,
                 'source'           => 'Website',
-                'car_type'         => 1,
+                'car_type'         => $carType,
             ]);
         } catch (\Throwable $e) {
             Log::error('FrontendController submitQuoteRequest: ' . $e->getMessage());
