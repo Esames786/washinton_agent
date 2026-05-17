@@ -1,4 +1,5 @@
-@extends('layouts.frontend-master')
+@extends('layouts.new-master')
+@section('page_title', 'Sign In')
 
 @section('content')
 <style>

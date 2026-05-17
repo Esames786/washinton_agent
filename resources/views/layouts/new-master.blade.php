@@ -154,6 +154,7 @@
 </script>
 
 @stack('after-scripts')
+@yield('extraScript')
 
 </body>
 </html>

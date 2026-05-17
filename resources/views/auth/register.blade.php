@@ -1,10 +1,10 @@
-@extends('layouts.frontend-master')
+@extends('layouts.new-master')
+@section('page_title', 'Create Account')
 
 @section('content')
 <style>
 /* ── Full-screen split layout ── */
 html, body { height: 100%; margin: 0; }
-main { padding: 0 !important; margin: 0 !important; }
 
 .signup-wrap {
     display: flex;
