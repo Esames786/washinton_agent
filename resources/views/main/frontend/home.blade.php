@@ -349,4 +349,33 @@
         </div>
     </section>
 
+<script>
+(function waitForJQ() {
+    if (typeof window.jQuery === 'undefined') { setTimeout(waitForJQ, 50); return; }
+    var $ = window.jQuery;
+    var counted = false;
+
+    function runCounters() {
+        if (counted) return;
+        counted = true;
+        $('.odometer').each(function () {
+            $(this).html($(this).data('count'));
+        });
+    }
+
+    function checkInView() {
+        var el = $('.counter-area');
+        if (!el.length) return;
+        var top = el.offset().top;
+        if ($(window).scrollTop() + $(window).height() >= top - 100) {
+            runCounters();
+        }
+    }
+
+    $(window).on('scroll', checkInView);
+    // Trigger once on load in case section is already visible
+    setTimeout(checkInView, 400);
+}());
+</script>
+
 @endsection
