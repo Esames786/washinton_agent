@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class FrontendController extends Controller
 {
@@ -166,7 +167,32 @@ class FrontendController extends Controller
                 'source'     => 'Website',
             ]);
         } catch (\Throwable $e) {
-            Log::error('FrontendController submitContactLead: ' . $e->getMessage());
+            Log::error('FrontendController submitContactLead DB: ' . $e->getMessage());
+        }
+
+        try {
+            $to      = env('CONTACT_LEAD_EMAIL', 'info@hellotransport.com');
+            $name    = $request->Lead_Name;
+            $email   = $request->Lead_Email;
+            $phone   = $request->Lead_Phone;
+            $subject = $request->Lead_Subject ?? 'Website Inquiry';
+            $message = $request->Lead_Message ?? '';
+
+            Mail::raw(
+                "New contact/inquiry from hellotransport.com\n\n"
+                . "Name:    {$name}\n"
+                . "Email:   {$email}\n"
+                . "Phone:   {$phone}\n"
+                . "Subject: {$subject}\n\n"
+                . "Message:\n{$message}",
+                function ($msg) use ($to, $name, $email, $subject) {
+                    $msg->to($to, 'Hello Transport')
+                        ->replyTo($email, $name)
+                        ->subject('Website Inquiry: ' . $subject);
+                }
+            );
+        } catch (\Throwable $e) {
+            Log::error('FrontendController submitContactLead mail: ' . $e->getMessage());
         }
 
         return back()->with('success', 'Your message has been sent! We will get back to you shortly.');
