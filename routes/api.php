@@ -19,6 +19,9 @@ use App\Http\Controllers\InstantQuoteApiController;
 //     return $request->user();
 // });
 
+// Public: default contract/T&C (used by CrazyRays signup form)
+Route::get('/default-contract', 'EmployeeReviewController@publicDefaultContract')->middleware('throttle:60,1');
+
 Route::post('/v2/website-quote','phone_quote\NewQuote@websiteShipa1Quote')->middleware('throttle:30,1');
 Route::post('/v2/submit_query','phone_quote\NewQuote@websiteQuery')->middleware('throttle:30,1');
 Route::post('/v2/website-quote-auction','phone_quote\NewQuote@websiteShipa1QuoteAuction')->middleware('throttle:30,1');

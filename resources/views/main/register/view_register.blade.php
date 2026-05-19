@@ -1132,27 +1132,33 @@
         // ── Contract editor (Quill) ───────────────────────────────────────────
         function initRevContractEditor(contractHtml) {
             if ($('#rev_contract_quill').find('.ql-editor').length > 0 && window._revQuill) {
-                // Already initialised — just update content
                 window._revQuill.root.innerHTML = contractHtml || '';
                 return;
             }
-            function buildQuill() {
-                // Clear any leftover Quill markup before reinitialising
+            function buildQuill(html) {
                 $('#rev_contract_quill').empty();
                 window._revQuill = new Quill('#rev_contract_quill', {
                     theme: 'snow',
                     placeholder: 'Write the employee contract here...'
                 });
-                window._revQuill.root.innerHTML = contractHtml || '';
+                window._revQuill.root.innerHTML = html || '';
             }
+            // If no contract saved yet, pre-load the default template (front-end only — not saved until "Save Contract" clicked)
+            function resolveHtml(cb) {
+                if (contractHtml && contractHtml.trim().length > 10) { cb(contractHtml); return; }
+                $.getJSON('{{ route("employee.review.default_contract") }}', function (res) {
+                    cb(res.content || '');
+                }).fail(function () { cb(''); });
+            }
+            function contractHtmlAlias() { return contractHtml; }
             if (typeof Quill !== 'undefined') {
-                buildQuill();
+                resolveHtml(function (html) { buildQuill(html); });
             } else {
                 if (!$('#quill-css').length) {
                     $('<link id="quill-css" rel="stylesheet" href="https://cdn.quilljs.com/1.3.7/quill.snow.css">').appendTo('head');
                 }
                 $.getScript('https://cdn.quilljs.com/1.3.7/quill.min.js', function () {
-                    buildQuill();
+                    resolveHtml(function (html) { buildQuill(html); });
                 });
             }
         }

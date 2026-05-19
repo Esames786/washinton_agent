@@ -168,6 +168,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/employee-review/bulk-verify-documents', 'EmployeeReviewController@bulkVerifyDocuments')->name('employee.review.bulk_verify_documents');
     Route::post('/employee-review/save-contract', 'EmployeeReviewController@saveContract')->name('employee.review.save_contract');
     Route::post('/employee-review/accept-contract', 'EmployeeReviewController@acceptContract')->name('employee.review.accept_contract');
+    Route::get('/employee-review/default-contract', 'EmployeeReviewController@defaultContract')->name('employee.review.default_contract');
 
     // Scope (account impersonation — admin only)
     Route::get('/scope/enter/{userId}', 'ScopeController@enter')->name('scope.enter');

@@ -1600,6 +1600,80 @@ Agent: Thank you for your cooperation. We appreciate your attention to these det
 
     @yield('modal')
 
+    {{-- ── Blocking Contract Acceptance Modal ─────────────────────────────── --}}
+    @php
+        $pendingContractHtml = null;
+        if (auth()->check()) {
+            $pendingContractRow = \Illuminate\Support\Facades\DB::table('hr_employees')
+                ->where('agent_id', auth()->id())
+                ->whereNotNull('contract')
+                ->whereNotNull('contract_updated_at')
+                ->whereNull('contract_accepted_at')
+                ->first();
+            if ($pendingContractRow) {
+                $pendingContractHtml = $pendingContractRow->contract;
+            }
+        }
+    @endphp
+    @if($pendingContractHtml)
+    <div id="contractBlockOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);z-index:999999;display:flex;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:8px;max-width:820px;width:96%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.6);overflow:hidden;">
+            <div style="padding:14px 20px;background:#1a1a2e;color:#d4af37;flex-shrink:0;">
+                <h5 style="margin:0;font-weight:700;font-size:16px;">📝 Action Required — Employee Contract</h5>
+            </div>
+            <div style="padding:12px 20px;background:#fff8e1;border-bottom:1px solid #ffe082;flex-shrink:0;">
+                <p style="margin:0;color:#795548;font-size:13px;"><strong>You have a new or updated contract awaiting your acceptance.</strong> Please read the full contract below and click <em>"I Accept"</em> to continue. This dialog cannot be dismissed until you accept.</p>
+            </div>
+            <div style="flex:1;overflow-y:auto;padding:20px 24px;font-size:14px;line-height:1.7;">
+                {!! $pendingContractHtml !!}
+            </div>
+            <div style="padding:14px 20px;border-top:1px solid #e0e0e0;background:#f5f5f5;display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-shrink:0;">
+                <span id="contractAcceptMsg" style="font-size:13px;display:none;"></span>
+                <button id="contractAcceptBtn"
+                        onclick="acceptPendingContract()"
+                        style="background:#28a745;color:#fff;border:none;padding:10px 32px;font-size:15px;font-weight:600;border-radius:5px;cursor:pointer;display:flex;align-items:center;gap:8px;">
+                    ✓ I Accept this Contract
+                </button>
+            </div>
+        </div>
+    </div>
+    <script>
+    function acceptPendingContract() {
+        var btn = document.getElementById('contractAcceptBtn');
+        var msg = document.getElementById('contractAcceptMsg');
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+        fetch('/employee-review/accept-contract', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ user_id: {{ auth()->id() }} })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+            if (res.success) {
+                document.getElementById('contractBlockOverlay').style.display = 'none';
+            } else {
+                btn.disabled = false;
+                btn.textContent = '✓ I Accept this Contract';
+                msg.style.color = '#dc3545';
+                msg.textContent = 'Could not record acceptance. Please try again.';
+                msg.style.display = 'inline';
+            }
+        })
+        .catch(function() {
+            btn.disabled = false;
+            btn.textContent = '✓ I Accept this Contract';
+            msg.style.color = '#dc3545';
+            msg.textContent = 'Network error. Please try again.';
+            msg.style.display = 'inline';
+        });
+    }
+    </script>
+    @endif
+
     @include('partials.mainsite_pages.foot')
 
     @yield('extraScript')

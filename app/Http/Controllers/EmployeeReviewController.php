@@ -224,4 +224,22 @@ class EmployeeReviewController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Contract accepted']);
     }
+
+    public function defaultContract(): JsonResponse
+    {
+        $tpl = \App\ContractTemplate::getDefault();
+        return response()->json([
+            'title'   => $tpl ? $tpl->title   : 'Employee Contract',
+            'content' => $tpl ? $tpl->content : '',
+        ]);
+    }
+
+    public function publicDefaultContract(): JsonResponse
+    {
+        $tpl = \App\ContractTemplate::getDefault();
+        return response()->json([
+            'title'   => $tpl ? $tpl->title   : 'Terms & Conditions',
+            'content' => $tpl ? $tpl->content : '',
+        ]);
+    }
 }
