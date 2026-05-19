@@ -75,5 +75,7 @@
             @yield('content')
         </main>
     </div>
+
+    @include('layouts.partials.contract-block-modal')
 </body>
 </html>

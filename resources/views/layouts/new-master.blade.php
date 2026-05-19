@@ -158,5 +158,6 @@
 @stack('after-scripts')
 @yield('extraScript')
 
+@include('layouts.partials.contract-block-modal')
 </body>
 </html>

@@ -2644,6 +2644,7 @@ Agent: Thank you for your cooperation. We appreciate your attention to these det
         });
     </script>
 
+    @include('layouts.partials.contract-block-modal')
 </body>
 
 </html>
