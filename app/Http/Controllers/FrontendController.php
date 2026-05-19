@@ -62,15 +62,25 @@ class FrontendController extends Controller
      */
     public function submitQuoteRequest(Request $request)
     {
-        $request->validate([
-            'Custo_Name'   => 'required|string|max:100',
-            'Custo_Phone'  => 'required|string|max:30',
-            'Custo_Email'  => 'required|email|max:150',
-            'From_ZipCode' => 'required|string|max:100',
-            'To_ZipCode'   => 'required|string|max:100',
-        ]);
+        $type      = $request->Select_Vehicle ?? 'Car';
+        $isVehicle = in_array($type, ['Car', 'Motorcycle', 'ATV/UTV', 'Golf Cart']);
 
-        $type = $request->Select_Vehicle ?? 'Car';
+        $zipPattern = ['required', 'string', 'max:100', 'regex:/^[^,]+,\s*[A-Za-z]{2},\s*\d{5}$/'];
+
+        $request->validate([
+            'Custo_Name'        => 'required|string|max:100',
+            'Custo_Phone'       => 'required|string|max:30',
+            'Custo_Email'       => 'required|email|max:150',
+            'From_ZipCode'      => $zipPattern,
+            'To_ZipCode'        => $zipPattern,
+            'Carrier_Type'      => $isVehicle ? 'required|string' : 'nullable',
+            'Carrier_Condition' => $isVehicle ? 'required|string' : 'nullable',
+        ], [
+            'From_ZipCode.regex'      => 'Origin must be in format: City, ST, 12345 (e.g. Brooklyn, NY, 11234)',
+            'To_ZipCode.regex'        => 'Destination must be in format: City, ST, 12345 (e.g. Dallas, TX, 75201)',
+            'Carrier_Type.required'   => 'Please select a carrier type.',
+            'Carrier_Condition.required' => 'Please select vehicle condition.',
+        ]);
 
         // Parse origin / destination — "City, State, Zip" or bare zip
         $originParts      = array_map('trim', explode(',', $request->From_ZipCode));

@@ -143,18 +143,20 @@
                     <div class="form-group zip-wrap">
                         <input type="text" id="from_zip" name="From_ZipCode"
                                class="form-control" autocomplete="off"
-                               placeholder="Moving From (City or Zip Code)"
+                               placeholder="Origin: City, State, Zip (e.g. Brooklyn, NY, 11234)"
                                required value="{{ old('From_ZipCode') }}">
                         <ul class="suggestion-list" id="from_zip_list"></ul>
+                        <span class="zip-error" id="from_zip_error" style="color:#e74c3c;font-size:12px;display:none;"></span>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="form-group zip-wrap">
                         <input type="text" id="to_zip" name="To_ZipCode"
                                class="form-control" autocomplete="off"
-                               placeholder="Moving To (City or Zip Code)"
+                               placeholder="Destination: City, State, Zip (e.g. Dallas, TX, 75201)"
                                required value="{{ old('To_ZipCode') }}">
                         <ul class="suggestion-list" id="to_zip_list"></ul>
+                        <span class="zip-error" id="to_zip_error" style="color:#e74c3c;font-size:12px;display:none;"></span>
                     </div>
                 </div>
             </div>
@@ -199,28 +201,30 @@
                 </div>
             @endif
 
-            {{-- Carrier type & condition --}}
+            {{-- Carrier type & condition — only relevant for Car/Motorcycle/ATV/Golf Cart --}}
+            @if(in_array($type, ['Car', 'Motorcycle', 'ATV/UTV', 'Golf Cart']))
             <div class="row mt-2">
                 <div class="col-lg-6">
                     <div class="form-group">
-                        <select name="Carrier_Type" class="form-control w-100">
-                            <option value="">Carrier Type</option>
-                            <option>Open</option>
-                            <option>Enclosed</option>
-                            <option>Drive Away</option>
+                        <select name="Carrier_Type" class="form-control w-100" required>
+                            <option value="">Select Carrier Type</option>
+                            <option {{ old('Carrier_Type') === 'Open'       ? 'selected' : '' }}>Open</option>
+                            <option {{ old('Carrier_Type') === 'Enclosed'   ? 'selected' : '' }}>Enclosed</option>
+                            <option {{ old('Carrier_Type') === 'Drive Away' ? 'selected' : '' }}>Drive Away</option>
                         </select>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="form-group">
-                        <select name="Carrier_Condition" class="form-control w-100">
-                            <option value="">Vehicle Condition</option>
-                            <option>Running</option>
-                            <option>Not Running</option>
+                        <select name="Carrier_Condition" class="form-control w-100" required>
+                            <option value="">Select Vehicle Condition</option>
+                            <option {{ old('Carrier_Condition') === 'Running'     ? 'selected' : '' }}>Running</option>
+                            <option {{ old('Carrier_Condition') === 'Not Running' ? 'selected' : '' }}>Not Running</option>
                         </select>
                     </div>
                 </div>
             </div>
+            @endif
 
             {{-- Heavy Equipment --}}
             @if($type === 'Heavy Equipment')
@@ -430,6 +434,36 @@
 
     initZip('from_zip', 'from_zip_list');
     initZip('to_zip',   'to_zip_list');
+
+    // ── Origin / Destination format validation ─────────────────────────────
+    // Required format: "City, State, Zip" (3 comma-separated non-empty parts,
+    // state = 2 letters, zip = 5 digits)
+    var zipPattern = /^[^,]+,\s*[A-Za-z]{2},\s*\d{5}$/;
+
+    function validateZipField(inputId, errorId) {
+        var val = $.trim($('#' + inputId).val());
+        var $err = $('#' + errorId);
+        if (!val) { $err.hide(); return true; } // let HTML5 required handle empty
+        if (!zipPattern.test(val)) {
+            $err.text('Please use format: City, ST, 12345 — e.g. Brooklyn, NY, 11234').show();
+            return false;
+        }
+        $err.hide();
+        return true;
+    }
+
+    $('#from_zip').on('blur change', function () { validateZipField('from_zip', 'from_zip_error'); });
+    $('#to_zip').on('blur change',   function () { validateZipField('to_zip',   'to_zip_error'); });
+
+    $('#quote-form').on('submit', function (e) {
+        var ok = true;
+        if (!validateZipField('from_zip', 'from_zip_error')) ok = false;
+        if (!validateZipField('to_zip',   'to_zip_error'))   ok = false;
+        if (!ok) {
+            e.preventDefault();
+            $('html,body').animate({ scrollTop: $('.zip-error:visible').first().offset().top - 120 }, 300);
+        }
+    });
 
     // ── Vehicle Make ──────────────────────────────────────────────────────
     @if(in_array($type, ['Car', 'Motorcycle', 'ATV/UTV', 'Golf Cart']))
