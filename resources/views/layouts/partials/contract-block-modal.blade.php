@@ -1,4 +1,17 @@
 {{-- Blocking contract acceptance overlay — included in every layout --}}
+<style>
+.contract-modal-body { font-family: Georgia, serif; font-size: 14px; line-height: 1.75; color: #222 !important; }
+.contract-modal-body h1,.contract-modal-body h2,.contract-modal-body h3,
+.contract-modal-body h4,.contract-modal-body h5,.contract-modal-body h6 {
+    color: #111 !important; font-weight: 700; margin-top: 20px; margin-bottom: 8px;
+    font-size: revert !important; line-height: 1.3;
+}
+.contract-modal-body p { color: #333 !important; margin-bottom: 10px; font-size: 14px !important; }
+.contract-modal-body ul,.contract-modal-body ol { color: #333 !important; padding-left: 24px; margin-bottom: 10px; }
+.contract-modal-body li { color: #333 !important; font-size: 14px !important; }
+.contract-modal-body strong { color: #111 !important; }
+.contract-modal-body a { color: #1a73e8 !important; }
+</style>
 @auth
 @php
     $contractBlock = null;
@@ -20,8 +33,10 @@
         <div style="padding:12px 20px;background:#fff8e1;border-bottom:1px solid #ffe082;flex-shrink:0;">
             <p style="margin:0;color:#795548;font-size:13px;"><strong>You have a new or updated contract awaiting your acceptance.</strong> Please read the full contract below and click <em>"I Accept"</em> to continue. This dialog cannot be dismissed until you accept.</p>
         </div>
-        <div style="flex:1;overflow-y:auto;padding:20px 24px;font-size:14px;line-height:1.7;">
-            {!! $contractBlock->contract !!}
+        <div style="flex:1;overflow-y:auto;padding:20px 24px;">
+            <div class="contract-modal-body">
+                {!! $contractBlock->contract !!}
+            </div>
         </div>
         <div style="padding:14px 20px;border-top:1px solid #e0e0e0;background:#f5f5f5;display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-shrink:0;">
             <span id="contractAcceptMsg" style="font-size:13px;display:none;"></span>
