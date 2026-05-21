@@ -2,6 +2,8 @@
 
 @section('template_title', 'Application — ' . $application->full_name)
 
+@include('partials.mainsite_pages.return_function')
+
 @section('content')
 <div class="container-fluid">
 
