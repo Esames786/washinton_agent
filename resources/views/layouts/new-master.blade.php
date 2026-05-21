@@ -151,7 +151,7 @@
     });
 
     $(window).on('load', function() {
-        $('#chat-widget').attr('src', "https://www.agent.daydispatch.com/chat_dashboard?user_id=0");
+        $('#chat-widget').attr('src', "{{ url('/chat-widget') }}?user_id={{ auth()->id() ?? 0 }}");
     });
 </script>
 
