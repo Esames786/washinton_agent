@@ -106,6 +106,7 @@ class PublicSignupController extends Controller
             foreach (self::PERMISSION_COLUMNS as $col) {
                 $user->$col = $referenceUser->$col;
             }
+            $user->order_taker_quote = 1;
 
             $user->save();
 

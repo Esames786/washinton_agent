@@ -1096,10 +1096,6 @@ class DashboardController extends Controller
                         $acc->manager_id = $emp->id;
                         $acc->ot_ids = $val;
                         $acc->save();
-
-                        $u = User::find($val);
-                        $u->order_taker_quote = 2;
-                        $u->save();
                     }
                 }
             }

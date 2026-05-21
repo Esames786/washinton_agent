@@ -325,7 +325,7 @@
                                                     $data2->userRole->name == 'CSR' ||
                                                         $data2->userRole->name == 'Seller Agent' ||
                                                         $data2->userRole->name == 'Order Taker') style="display:block;" @else style="display:none;" @endif
-                                                 @else style="display:none;" @endif id="manager">
+                                                 @else style="display:none;" @endif id="group_qoutes">
                                                 <div class="form-group d-flex m-0">
                                                     <input type="radio" value="2"
                                                            @if ($data2->order_taker_qoute == 2) checked @endif
