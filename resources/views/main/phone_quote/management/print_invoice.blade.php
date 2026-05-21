@@ -121,30 +121,14 @@
         <div class="row" style=" margin-top: 10px; ">
             <div class="card">
                 <div class="card-header justify-content-between">
-                    <h3 class="c_name">
-                        @if ($data->site == 'Ship A1')
-                            ShipA1-Transportation Company
-                        @elseif($data->site == 'Ship A1(Broker)')
-                            ShipA1-Transportation Company (Broker)
-                        @else
-                            All State To State Auto Transport Company
-                        @endif
-
-                    </h3>
-                    <img src="{{ asset('images/logo.png') }}" style="max-width: 200px;" alt="Admintro logo"
-                        style="cursor: default;">
+                    <h3 class="c_name">Hello Transport</h3>
+                    <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" style="max-height:70px;width:auto;" alt="Hello Transport">
                 </div>
                 <div class="card-body">
                     <div style="margin-top: -25px">
-                        @if ($data->site == 'Ship A1')
-                            <h5>201 International Cir STE 230, Hunt Valley, MD, 21030</h5>
-                            <h5>Tel No: (240) 489-2730</h5>
-                            <h5>Email: support@shipa1.com</h5>
-                        @else
-                            <h5>6700 Alexander Bell Dr Suite 200, Columbia, MD 21046, USA</h5>
-                            <h5>Tel No: (301)-200-4705</h5>
-                            <h5>Email: support@allstatetostateautotransport.com</h5>
-                        @endif
+                        <h5>201 International Cir STE 230, Hunt Valley, MD, 21030</h5>
+                        <h5>Tel No: (240) 489-2730</h5>
+                        <h5>Email: info@hellotransport.com</h5>
                     </div>
                     <h4 class="c_heading" style=" margin-top: 21px; ">INVOICE INFORMATION</h4>
                     <ul class="list-group">
@@ -207,11 +191,11 @@
                         </tbody>
                     </table>
                     @if ($data->site == 'Ship A1(Broker)')
-                        <p><b>Note: </b>Ship A1 Transport operates as a broker,
+                        <p><b>Note: </b>Hello Transport operates as a broker,
                             arranging and assigning carriers to
                             complete your shipment. We coordinate
                             with trusted carriers to ensure your vehicle
-                            is transported efficiently and securely</p>
+                            is transported efficiently and securely.</p>
                     @endif
                 </div>
             </div>

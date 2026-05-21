@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Print Invoice | ShawnTransport</title>
+    <title>Print Invoice | Hello Transport</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -152,20 +152,16 @@
         <div class="header">
             <div class="row">
                 <div class="col-md-6 logo">
-                    <img src="https://www.shipa1.com/frontend/images/logo/logo-white-2.png" alt="ShipA1 Logo">
+                    <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Hello Transport" style="max-height:70px;width:auto;background:#fff;border-radius:50%;padding:4px;">
                     <div class="contact-info mt-3">
                         <p><i class="fas fa-phone"></i>
-                            @if ($data->site == 'Ship A1')
-                                <span>Tel No: (240) 489-2730</span>
-                            @else
-                                <span>Tel No: (301)-200-4705</span>
-                            @endif
+                            <span>Tel No: (240) 489-2730</span>
                         </p>
                         <p><i class="fas fa-globe"></i>
-                            <span>Email: shawntransport@shipa1.com</span>
+                            <span>Email: info@hellotransport.com</span>
                         </p>
                         <p><i class="fas fa-map-marker-alt"></i>
-                            6700 Alexander Bell Dr Suite 200, Columbia, MD 21046, USA
+                            201 International Cir STE 230, Hunt Valley, MD, 21030
                         </p>
                     </div>
                 </div>
@@ -281,7 +277,7 @@
                 <div class="mt-5 p-3 border border-danger rounded" style="background-color: #fff4f4;">
                     <strong style="color: #ff0000;">Note:</strong>
                     <p class="mt-2" style="font-size: 0.9rem;">
-                        Ship A1 Transport operates as a broker, arranging transportation and acting as an agent on your
+                        Hello Transport operates as a broker, arranging transportation and acting as an agent on your
                         behalf.
                         We coordinate with trusted carriers to ensure your vehicle is transported efficiently and
                         securely.
