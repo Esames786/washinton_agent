@@ -151,11 +151,7 @@
     });
 
     $(window).on('load', function() {
-        @auth
-        $('#chat-widget').attr('src', "{{ url('/chat-widget') }}?user_id={{ auth()->user()->id }}&user_name={{ urlencode(!empty(auth()->user()->slug) ? auth()->user()->slug : auth()->user()->name) }}");
-        @else
         $('#chat-widget').attr('src', "{{ url('/chat-widget') }}?user_id=0");
-        @endauth
         $('#chat-widget-container').addClass('inactivee');
         $('#chat_with_us').addClass('activee');
     });
