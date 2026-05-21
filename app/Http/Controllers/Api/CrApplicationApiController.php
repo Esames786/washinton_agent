@@ -119,6 +119,52 @@ class CrApplicationApiController extends Controller
         ], 201);
     }
 
+    public function contactNotify(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'name'     => ['required', 'string', 'max:100'],
+            'email'    => ['required', 'email', 'max:150'],
+            'phone'    => ['nullable', 'string', 'max:30'],
+            'position' => ['nullable', 'string', 'max:100'],
+            'body'     => ['nullable', 'string'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $name     = $request->input('name');
+        $email    = $request->input('email');
+        $phone    = $request->input('phone') ?: '—';
+        $position = $request->input('position') ?: 'General';
+        $body     = $request->input('body', '');
+
+        $subject = "Career Enquiry: {$position} — {$name}";
+        $text    = implode("\n", [
+            'New career enquiry from CrazyRays website',
+            str_repeat('─', 40),
+            "Name:     {$name}",
+            "Email:    {$email}",
+            "Phone:    {$phone}",
+            "Position: {$position}",
+            str_repeat('─', 40),
+            $body,
+        ]);
+
+        try {
+            Mail::raw($text, function ($msg) use ($subject, $email, $name) {
+                $msg->to(self::CR_ADMIN_EMAIL)
+                    ->replyTo($email, $name)
+                    ->subject($subject);
+            });
+
+            return response()->json(['success' => true, 'message' => "Your message has been sent! We'll be in touch soon."]);
+        } catch (\Throwable $e) {
+            Log::warning('CrApplicationApiController: contact notification email failed', ['error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Failed to send email. Please contact us directly.'], 500);
+        }
+    }
+
     private function assertBridgeKey(Request $request): void
     {
         $configuredKey = (string) config('bridge.shared_key');

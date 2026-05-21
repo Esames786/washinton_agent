@@ -27,6 +27,10 @@ Route::get('/default-contract', 'EmployeeReviewController@publicDefaultContract'
 Route::options('/cr-application', function () { return response('', 200); })->middleware('crazyrays.cors');
 Route::post('/cr-application', [CrApplicationApiController::class, 'store'])->middleware(['crazyrays.cors', 'throttle:20,1']);
 
+// CrazyRays contact/career enquiry form (proxied from crazyrays server)
+Route::options('/cr-contact', function () { return response('', 200); })->middleware('crazyrays.cors');
+Route::post('/cr-contact', [CrApplicationApiController::class, 'contactNotify'])->middleware(['crazyrays.cors', 'throttle:10,1']);
+
 Route::post('/v2/website-quote','phone_quote\NewQuote@websiteShipa1Quote')->middleware('throttle:30,1');
 Route::post('/v2/submit_query','phone_quote\NewQuote@websiteQuery')->middleware('throttle:30,1');
 Route::post('/v2/website-quote-auction','phone_quote\NewQuote@websiteShipa1QuoteAuction')->middleware('throttle:30,1');
