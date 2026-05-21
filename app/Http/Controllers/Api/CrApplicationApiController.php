@@ -22,7 +22,6 @@ class CrApplicationApiController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        $this->assertBridgeKey($request);
 
         $validator = Validator::make($request->all(), [
             'full_name'            => ['required', 'string', 'max:100'],

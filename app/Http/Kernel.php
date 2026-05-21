@@ -63,5 +63,6 @@ class Kernel extends HttpKernel
         'chat-approver' => \App\Http\Middleware\ChatApprover::class,
         'all-roles' => \App\Http\Middleware\AllRoles::class,
         'password.confirm' => \App\Http\Middleware\EnsurePasswordIsConfirmed::class,
+        'crazyrays.cors'   => \App\Http\Middleware\CrazyRaysCors::class,
     ];
 }
