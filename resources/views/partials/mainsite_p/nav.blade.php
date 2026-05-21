@@ -242,6 +242,14 @@ if (!function_exists('get_user_name123')) {
                         </a>
                     </li>
                 @endif
+
+                @if (Auth::user()->role == 1 || in_array('166', $phoneaccess))
+                    <li class="nav-item" data-placement="top" data-toggle="tooltip" title="Campaign Users">
+                        <a class="icon" href="{{ route('cr-applications.index') }}">
+                            <i class="fa fa-user-plus header-icons"></i>
+                        </a>
+                    </li>
+                @endif
                 @if (in_array("63", $phoneaccess))
                     <li class="nav-item" data-placement="top" data-toggle="tooltip" title="Roles">
                         <a class="icon" href="{{url('role')}}"

@@ -603,15 +603,6 @@
                         </a>
                     </li>
                 @endif
-                @if (Auth::user()->role == 1 || in_array('166', $phoneaccess))
-                    <li>
-                        <a class="side-menu__item" href="{{ route('cr-applications.index') }}"
-                           style="background: #d4af3726;">
-                            <span class="js-search-result-thumbnail responsive-img img_border fa fa-user-plus"></span>
-                            <span class="side-menu__label">CrazyRays Applications</span>
-                        </a>
-                    </li>
-                @endif
                 @if (in_array('47', $phoneaccess))
                     <li>
                         <a class="side-menu__item" href="{{ url('coupons') }}">
