@@ -3,6 +3,7 @@ date_default_timezone_set('America/New_York');
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\InstantQuoteApiController;
+use App\Http\Controllers\Api\CrApplicationApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +22,9 @@ use App\Http\Controllers\InstantQuoteApiController;
 
 // Public: default contract/T&C (used by CrazyRays signup form)
 Route::get('/default-contract', 'EmployeeReviewController@publicDefaultContract')->middleware('throttle:60,1');
+
+// CrazyRays campaign application submission
+Route::post('/cr-application', [CrApplicationApiController::class, 'store'])->middleware('throttle:20,1');
 
 Route::post('/v2/website-quote','phone_quote\NewQuote@websiteShipa1Quote')->middleware('throttle:30,1');
 Route::post('/v2/submit_query','phone_quote\NewQuote@websiteQuery')->middleware('throttle:30,1');

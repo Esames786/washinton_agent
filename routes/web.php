@@ -1294,3 +1294,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/chat/show-history', 'WashingtonChatController@showHistory')->name('chat.show.history');
     Route::get('/chat/unread-count', 'WashingtonChatController@unreadCount')->name('chat.unread.count');
 });
+
+// CrazyRays Applications (permission code 166 or role=1)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cr-applications', 'CrApplicationController@index')->name('cr-applications.index');
+    Route::get('/cr-applications/{id}', 'CrApplicationController@show')->name('cr-applications.show');
+    Route::post('/cr-applications/{id}/approve', 'CrApplicationController@approve')->name('cr-applications.approve');
+    Route::post('/cr-applications/{id}/reject', 'CrApplicationController@reject')->name('cr-applications.reject');
+});

@@ -505,6 +505,7 @@
                             163=>'View Mailbox<span class="badge badge-danger">cPanel</span>',
                             164=>'Admin Payment System<span class="badge badge-success">Payments</span>',
                             165=>'Agent Payment System<span class="badge badge-success">Payments</span>',
+                            166=>'CrazyRays Applications<span class="badge badge-warning">New</span>',
                             ];
 
 
@@ -1969,6 +1970,89 @@
         <!-- End Row-->
     </form>
 
+    {{-- ── CrazyRays Application Section ─────────────────────────────────── --}}
+    @php $crApp = \App\CrApplication::where('agent_id', $data2->id)->latest()->first(); @endphp
+    @if($crApp)
+    <div class="row mt-4">
+        <div class="col-xl-12">
+            <div class="card border-0" style="border-top: 3px solid #d4af37 !important;">
+                <div class="card-header d-flex justify-content-between align-items-center" style="background:#111; color:#d4af37;">
+                    <strong><i class="fas fa-user-plus mr-2"></i> CrazyRays Application</strong>
+                    <div>
+                        @if($crApp->status === 'approved')
+                            <span class="badge badge-success mr-2">Approved</span>
+                        @elseif($crApp->status === 'rejected')
+                            <span class="badge badge-danger mr-2">Rejected</span>
+                        @else
+                            <span class="badge badge-warning mr-2">Pending</span>
+                        @endif
+                        <a href="{{ route('cr-applications.show', $crApp->id) }}" class="btn btn-sm btn-outline-light">
+                            <i class="fas fa-external-link-alt mr-1"></i> Full Application
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <table class="table table-sm table-borderless mb-0">
+                                <tr>
+                                    <td class="text-muted" style="width:130px;">Campaign</td>
+                                    <td><span class="badge px-2 py-1" style="background:#d4af37;color:#111;">{{ $crApp->campaign_label }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Applied</td>
+                                    <td>{{ $crApp->created_at->format('d M Y') }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">T&amp;C</td>
+                                    <td>
+                                        @if($crApp->contract_accepted_at)
+                                            <span class="text-success"><i class="fas fa-check-circle"></i> Accepted {{ $crApp->contract_accepted_at->format('d M Y') }}</span>
+                                        @else
+                                            <span class="text-danger"><i class="fas fa-times-circle"></i> Not accepted</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Shift</td>
+                                    <td>{{ $crApp->shift_type ?? '—' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Pay Type</td>
+                                    <td>{{ $crApp->pay_type ?? '—' }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-4">
+                            @if($crApp->campaign_experience)
+                                <strong class="d-block mb-1 text-muted" style="font-size:12px;">CAMPAIGN EXPERIENCE</strong>
+                                <p class="mb-0" style="white-space:pre-wrap; font-size:13px;">{{ Str::limit($crApp->campaign_experience, 300) }}</p>
+                            @endif
+                        </div>
+                        <div class="col-md-4">
+                            @if($crApp->resume_path)
+                                <a href="{{ asset('storage/' . $crApp->resume_path) }}" target="_blank" class="btn btn-sm btn-outline-primary mb-2 w-100">
+                                    <i class="fas fa-download mr-1"></i> Download Resume
+                                </a>
+                            @endif
+                            @if($crApp->documents && count($crApp->documents))
+                                <strong class="d-block mb-1 text-muted" style="font-size:12px;">DOCUMENTS</strong>
+                                @foreach($crApp->documents as $doc)
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <small>{{ $doc['title'] ?? 'Document' }}</small>
+                                        <a href="{{ asset('storage/' . $doc['path']) }}" target="_blank" class="btn btn-xs btn-outline-secondary ml-2">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 
     <div class="modal" id="modaldemo4">
         <div class="modal-dialog modal-dialog-centered text-center " role="document">
