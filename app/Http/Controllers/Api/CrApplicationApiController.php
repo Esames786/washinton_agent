@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\CrApplication;
 use App\Http\Controllers\Controller;
+use App\Mail\CrApplicationConfirmationMail;
 use App\Mail\CrApplicationReceivedMail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -106,6 +107,18 @@ class CrApplicationApiController extends Controller
             'password'             => $request->password ? Hash::make($request->password) : null,
             'status'               => 'pending',
         ]);
+
+        // Confirmation email to applicant (non-blocking)
+        try {
+            Mail::to($application->email, $application->full_name)
+                ->send(new CrApplicationConfirmationMail($application));
+        } catch (\Throwable $e) {
+            Log::warning('CrApplicationApiController: applicant confirmation email failed', [
+                'application_id' => $application->id,
+                'email'          => $application->email,
+                'error'          => $e->getMessage(),
+            ]);
+        }
 
         // Notify CrazyRays admin (non-blocking)
         try {
