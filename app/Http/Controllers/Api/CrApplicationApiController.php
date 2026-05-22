@@ -11,17 +11,19 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class CrApplicationApiController extends Controller
 {
     private const CR_ADMIN_EMAIL = 'careers@crazyrayssolutions.com.pk';
 
     private const VALID_CAMPAIGNS = [
-        'healthcare', 'home_security', 'real_estate', 'dme', 'logistics', 'software', 'amazon',
+        'healthcare', 'home_security', 'real_estate', 'dme', 'logistics', 'software', 'amazon', 'general',
     ];
 
     public function store(Request $request): JsonResponse
     {
+        $campaign = $request->input('campaign');
 
         $validator = Validator::make($request->all(), [
             'full_name'            => ['required', 'string', 'max:100'],
@@ -30,7 +32,10 @@ class CrApplicationApiController extends Controller
             'dob'                  => ['nullable', 'date'],
             'gender'               => ['nullable', 'in:male,female,other'],
             'marital_status'       => ['nullable', 'in:single,married,divorced,widowed'],
-            'email'                => ['required', 'email', 'max:150'],
+            'email'                => [
+                'required', 'email', 'max:150',
+                Rule::unique('cr_applications')->where(fn ($q) => $q->where('campaign', $campaign)),
+            ],
             'phone'                => ['required', 'string', 'max:30'],
             'country'              => ['nullable', 'string', 'max:100'],
             'city'                 => ['nullable', 'string', 'max:100'],
