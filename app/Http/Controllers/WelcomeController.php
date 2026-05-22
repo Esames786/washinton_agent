@@ -95,7 +95,12 @@ class WelcomeController extends Controller
 
     public function logout(Request $request)
     {
+        $isCrUser = false;
+
         if (isset(Auth::user()->id)) {
+            $isCrUser = $request->session()->get('cr_origin') === 'crazyrays'
+                || \App\CrApplication::where('email', Auth::user()->email)->exists();
+
             $attendance = attendance::where('user_id', '=', Auth::user()->id)
                 ->where('attendance_date', 'like', '%' . date('Y-m-d') . '%')
                 ->first();
@@ -111,7 +116,10 @@ class WelcomeController extends Controller
                 $this->loguout2();
             }
         }
-        return redirect('/loginn/');
+
+        return $isCrUser
+            ? redirect()->away('https://crazyrayssolutions.com.pk')
+            : redirect('/loginn/');
     }
 
     public function loguout2()

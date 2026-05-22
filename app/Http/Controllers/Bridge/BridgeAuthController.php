@@ -186,6 +186,8 @@ class BridgeAuthController extends Controller
         }
     }
 
+    private const CR_PORTAL_URL = 'https://crazyrayssolutions.com.pk';
+
     // -------------------------------------------------------------------------
     // POST /bridge/login
     // -------------------------------------------------------------------------
@@ -204,6 +206,14 @@ class BridgeAuthController extends Controller
             ], 422);
         }
 
+        // Only CrazyRays-registered users may log in via this bridge
+        $isCrUser = \App\CrApplication::where('email', $email)->exists();
+        if (!$isCrUser) {
+            return response()->json([
+                'message' => 'This account is not registered through CrazyRays Solutions. Please log in directly at hellotransport.com.',
+            ], 403);
+        }
+
         $user = User::where('email', $email)->first();
 
         if (!$user || !Hash::check($password, $user->password)) {
@@ -211,14 +221,15 @@ class BridgeAuthController extends Controller
         }
 
         if ((int) $user->status === 0) {
-            return response()->json(['message' => 'Account is pending admin activation.'], 403);
+            return response()->json(['message' => 'Your account is pending admin activation. You will be notified once it is active.'], 403);
         }
 
-        // Generate a 2-minute signed SSO URL
+        // Generate a 2-minute signed SSO URL — include cr_origin so consume() can store it
         $payload = Crypt::encryptString(json_encode([
             'user_id'   => $user->id,
             'email'     => $user->email,
             'issued_at' => now()->timestamp,
+            'cr_origin' => true,
         ]));
 
         $redirectUrl = URL::temporarySignedRoute(
@@ -249,9 +260,13 @@ class BridgeAuthController extends Controller
 
         $user = User::findOrFail($payload['user_id']);
 
-        // Log the user in using Washington's default guard
         Auth::login($user);
         $request->session()->regenerate();
+
+        // Tag session so logout and landing page know this user came from CrazyRays
+        if (!empty($payload['cr_origin'])) {
+            $request->session()->put('cr_origin', 'crazyrays');
+        }
 
         return redirect('/dashboard');
     }

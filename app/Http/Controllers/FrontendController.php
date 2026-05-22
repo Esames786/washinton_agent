@@ -3,13 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class FrontendController extends Controller
 {
-    public function home()
+    public function home(Request $request)
     {
+        // Logged-in CR users visiting the hellotransport marketing page get sent back to CrazyRays
+        if (Auth::check()) {
+            $isCrUser = $request->session()->get('cr_origin') === 'crazyrays'
+                || \App\CrApplication::where('email', Auth::user()->email)->exists();
+            if ($isCrUser) {
+                return redirect()->away('https://crazyrayssolutions.com.pk');
+            }
+        }
+
         return view('main.frontend.home');
     }
 
