@@ -31,6 +31,12 @@ Route::post('/cr-application', [CrApplicationApiController::class, 'store'])->mi
 Route::options('/cr-contact', function () { return response('', 200); })->middleware('crazyrays.cors');
 Route::post('/cr-contact', [CrApplicationApiController::class, 'contactNotify'])->middleware(['crazyrays.cors', 'throttle:10,1']);
 
+// Bridge auth endpoints mirrored to /api/ path — avoids WAF/ModSecurity rules
+// that block POST to URLs containing "login" on shared cPanel hosting.
+// crazyrays uses DAYDISPATCH_LOGIN_ENDPOINT=/api/bridge/login
+Route::post('/bridge/register', 'Bridge\BridgeAuthController@register')->middleware('throttle:20,1');
+Route::post('/bridge/login',    'Bridge\BridgeAuthController@login')->middleware('throttle:20,1');
+
 Route::post('/v2/website-quote','phone_quote\NewQuote@websiteShipa1Quote')->middleware('throttle:30,1');
 Route::post('/v2/submit_query','phone_quote\NewQuote@websiteQuery')->middleware('throttle:30,1');
 Route::post('/v2/website-quote-auction','phone_quote\NewQuote@websiteShipa1QuoteAuction')->middleware('throttle:30,1');
