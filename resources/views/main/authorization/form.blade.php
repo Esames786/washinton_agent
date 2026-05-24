@@ -262,36 +262,38 @@
 .zip-loading { display: none; font-size: 0.72rem; color: #17bebb; margin-top: 4px; }
 .zip-loading.show { display: block; }
 
-/* Address suggestion dropdown */
-.addr-wrapper { position: relative; }
-.addr-dropdown {
+/* City / Zip suggestion dropdown */
+.loc-search-wrap { position: relative; }
+.suggestion-list {
     position: absolute;
-    top: calc(100% + 2px);
+    top: 100%;
     left: 0; right: 0;
     z-index: 1050;
     background: #fff;
     border: 1.5px solid #e5e7eb;
-    border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+    list-style: none;
+    margin: 0; padding: 0;
     max-height: 220px;
     overflow-y: auto;
     display: none;
 }
-.addr-dropdown.open { display: block; }
-.addr-item {
+.suggestion-list.open { display: block; }
+.suggestion-list li a {
+    display: block;
     padding: 10px 14px;
-    font-size: 0.83rem;
+    font-size: 0.85rem;
     color: #374151;
     cursor: pointer;
     border-bottom: 1px solid #f3f4f6;
-    line-height: 1.4;
+    text-decoration: none;
     transition: background 0.1s;
 }
-.addr-item:last-child { border-bottom: none; }
-.addr-item:hover, .addr-item.focused { background: #f0fdfd; color: #0e7490; }
-.addr-item strong { display: block; font-weight: 600; }
-.addr-item small { color: #9ca3af; font-size: 0.75rem; }
-.addr-spinner { padding: 12px 14px; font-size: 0.8rem; color: #9ca3af; text-align: center; }
+.suggestion-list li:last-child a { border-bottom: none; }
+.suggestion-list li a:hover,
+.suggestion-list li.focused a { background: #f0fdfd; color: #0e7490; }
 
 @media (max-width: 576px) {
     .auth-body { padding: 22px 16px 24px; }
@@ -439,13 +441,15 @@
             <div class="section-heading"><i class="fas fa-map-marker-alt"></i> Billing Address</div>
             <div class="form-group">
                 <label for="billing_address">Street Address <span class="req">*</span></label>
-                <div class="addr-wrapper">
-                    <input type="text" class="form-control" id="billing_address" name="billing_address"
-                           placeholder="Start typing your address…" required minlength="5" maxlength="150"
-                           autocomplete="off" aria-autocomplete="list" aria-haspopup="true">
-                    <div class="addr-dropdown" id="addrDropdown" role="listbox"></div>
-                </div>
+                <input type="text" class="form-control" id="billing_address" name="billing_address"
+                       placeholder="123 Main St, Apt 4B" required minlength="5" maxlength="150" autocomplete="street-address">
                 <div class="field-feedback" id="billing_addressError"></div>
+            </div>
+            <div class="form-group loc-search-wrap">
+                <label for="locationSearch">Search City / Zip Code <span style="font-weight:400;color:#9ca3af;">&mdash; select to auto-fill below</span></label>
+                <input type="text" class="form-control" id="locationSearch" autocomplete="off"
+                       placeholder="Type city name or zip code (e.g. Brooklyn or 11234)">
+                <ul class="suggestion-list" id="locationSuggestions"></ul>
             </div>
             <div class="row">
                 <div class="form-group col-md-3">
@@ -568,95 +572,82 @@ document.getElementById('zip_code').addEventListener('blur', function(){
 });
 
 // ── Image preview ──────────────────────────────────────────────────────────────
-// ── Address autocomplete (Nominatim / OpenStreetMap) ──────────────────────────
-var addrInput    = document.getElementById('billing_address');
-var addrDropdown = document.getElementById('addrDropdown');
-var addrTimer, addrData = [], addrFocus = -1;
+// ── City / Zip suggestion (same pattern as new quote — /get_zip endpoint) ────
+var locInput = document.getElementById('locationSearch');
+var locList  = document.getElementById('locationSuggestions');
+var locTimer, locFocus = -1;
 
-addrInput.addEventListener('input', function(){
-    clearTimeout(addrTimer);
-    var q = this.value.trim();
-    if (q.length < 4){ addrDropdown.classList.remove('open'); return; }
-    addrDropdown.innerHTML = '<div class="addr-spinner"><i class="fas fa-spinner fa-spin"></i> Searching…</div>';
-    addrDropdown.classList.add('open');
-    addrTimer = setTimeout(function(){
-        fetch('https://nominatim.openstreetmap.org/search?format=json&countrycodes=us&limit=6&addressdetails=1&q='+encodeURIComponent(q), {
-            headers:{'Accept-Language':'en-US','User-Agent':'AuthFormApp/1.0'}
-        })
-        .then(function(r){ return r.json(); })
-        .then(function(res){
-            addrData = res;
-            addrDropdown.innerHTML = '';
-            addrFocus = -1;
-            if (!res.length){
-                addrDropdown.innerHTML = '<div class="addr-spinner">No results found.</div>';
-                return;
-            }
-            res.forEach(function(r, i){
-                var a = r.address || {};
-                var street = [a.house_number, a.road].filter(Boolean).join(' ') || r.display_name.split(',')[0];
-                var sub    = [a.city||a.town||a.village||a.county, a.state, a.postcode].filter(Boolean).join(', ');
-                var item = document.createElement('div');
-                item.className = 'addr-item';
-                item.setAttribute('role','option');
-                item.dataset.idx = i;
-                item.innerHTML = '<strong>'+escHtml(street)+'</strong><small>'+escHtml(sub)+'</small>';
-                item.addEventListener('mousedown', function(e){
-                    e.preventDefault();
-                    pickAddress(i);
+locInput.addEventListener('keyup', function(){
+    clearTimeout(locTimer);
+    var val = this.value.trim();
+    if (val.length < 2){ closeLoc(); return; }
+    locTimer = setTimeout(function(){
+        $.ajax({
+            url: '{{ url("/get_zip") }}',
+            type: 'GET',
+            dataType: 'json',
+            data: { d_zip1: val },
+            success: function(res){
+                locList.innerHTML = '';
+                locFocus = -1;
+                if (!res || !res.length){ closeLoc(); return; }
+                res.forEach(function(item, i){
+                    var display = item.replace(/,/g, ', ');
+                    var li = document.createElement('li');
+                    li.dataset.idx = i;
+                    var a = document.createElement('a');
+                    a.href = '#';
+                    a.textContent = display;
+                    a.addEventListener('mousedown', function(e){
+                        e.preventDefault();
+                        pickLoc(item, display);
+                    });
+                    li.appendChild(a);
+                    locList.appendChild(li);
                 });
-                addrDropdown.appendChild(item);
-            });
-        })
-        .catch(function(){ addrDropdown.classList.remove('open'); });
-    }, 450);
+                locList.classList.add('open');
+            },
+            error: function(){ closeLoc(); }
+        });
+    }, 300);
 });
 
-addrInput.addEventListener('keydown', function(e){
-    var items = addrDropdown.querySelectorAll('.addr-item');
+locInput.addEventListener('keydown', function(e){
+    var items = locList.querySelectorAll('li');
     if (!items.length) return;
-    if (e.key === 'ArrowDown'){ e.preventDefault(); addrFocus = Math.min(addrFocus+1, items.length-1); highlightAddr(items); }
-    else if (e.key === 'ArrowUp'){ e.preventDefault(); addrFocus = Math.max(addrFocus-1, 0); highlightAddr(items); }
-    else if (e.key === 'Enter' && addrFocus >= 0){ e.preventDefault(); pickAddress(addrFocus); }
-    else if (e.key === 'Escape'){ addrDropdown.classList.remove('open'); }
+    if (e.key === 'ArrowDown'){ e.preventDefault(); locFocus = Math.min(locFocus+1, items.length-1); highlightLoc(items); }
+    else if (e.key === 'ArrowUp'){ e.preventDefault(); locFocus = Math.max(locFocus-1, 0); highlightLoc(items); }
+    else if (e.key === 'Enter' && locFocus >= 0){
+        e.preventDefault();
+        var raw = items[locFocus].dataset.raw;
+        pickLoc(raw, items[locFocus].querySelector('a').textContent);
+    }
+    else if (e.key === 'Escape'){ closeLoc(); }
 });
 
-addrInput.addEventListener('blur', function(){
-    setTimeout(function(){ addrDropdown.classList.remove('open'); }, 200);
-});
+locInput.addEventListener('blur', function(){ setTimeout(closeLoc, 200); });
 
-function highlightAddr(items){
-    items.forEach(function(it,i){ it.classList.toggle('focused', i===addrFocus); });
-    if (items[addrFocus]) items[addrFocus].scrollIntoView({block:'nearest'});
+function highlightLoc(items){
+    items.forEach(function(li, i){ li.classList.toggle('focused', i === locFocus); });
+    if (items[locFocus]) items[locFocus].scrollIntoView({ block: 'nearest' });
 }
 
-function pickAddress(idx){
-    var r = addrData[idx];
-    var a = r.address || {};
-    var street = [a.house_number, a.road].filter(Boolean).join(' ') || r.display_name.split(',')[0];
-    addrInput.value = street;
-    addrDropdown.classList.remove('open');
+function closeLoc(){ locList.classList.remove('open'); locList.innerHTML = ''; locFocus = -1; }
 
-    var cityVal  = a.city || a.town || a.village || a.county || '';
-    var stateVal = a.state || '';
-    var zipVal   = (a.postcode || '').split('-')[0];
-    var cntryVal = a.country || 'United States';
-
-    setValue('city',    cityVal);
-    setValue('state',   stateVal);
-    setValue('country', cntryVal);
-    if (zipVal) setValue('zip_code', zipVal);
-
-    ['billing_address','city','state','zip_code','country'].forEach(validateOne);
+function pickLoc(raw, display){
+    var parts = raw.split(',');
+    setValue('city',     parts[0] ? parts[0].trim() : '');
+    setValue('state',    parts[1] ? parts[1].trim() : '');
+    setValue('zip_code', parts[2] ? parts[2].trim() : '');
+    if (!document.getElementById('country').value) setValue('country', 'United States');
+    locInput.value = display;
+    closeLoc();
+    ['city', 'state', 'zip_code'].forEach(validateOne);
 }
 
 function setValue(id, val){
     var el = document.getElementById(id);
     if (el && val){ el.value = val; markValid(el); }
-}
-
-function escHtml(s){
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // ── Image upload ───────────────────────────────────────────────────────────────
