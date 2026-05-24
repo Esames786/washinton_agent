@@ -1,387 +1,398 @@
 @extends('layouts.print_layout')
 
-@section('template_title')
-    Print Invoice
-@endsection
+@section('template_title', 'Authorization Form')
 
 @include('partials.mainsite_pages.return_function')
 
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 <style>
-    .container-style {
-        margin-top: 3rem !important;
-        background: whitesmoke;
-        padding: 1rem 2rem;
-        border: 1px solid #b5b1b18c;
-        box-shadow: 0px 0px 4px gray;
-        width: 80%; /* Adjust the width as needed */
-        margin: 0 auto; /* Center the container */
-    }
+*, *::before, *::after { box-sizing: border-box; }
 
-    .underline {
-        text-decoration: underline;
-    }
+body { font-family: 'Inter', sans-serif; background: #f0f2f5; }
 
-    #signatureCanvas {
-        width: 80%; /* Adjust the width as needed */
-        max-width: 100%;
-        height: 150px;
-    }
+.show-wrapper { max-width: 860px; margin: 36px auto; padding: 0 16px 60px; }
 
-    @keyframes slideInLeft {
+/* Toolbar */
+.show-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.btn-dl {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #17bebb;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+.btn-dl:hover { opacity: 0.88; color: #fff; text-decoration: none; }
+.show-meta { font-size: 0.78rem; color: #9ca3af; }
 
-        0% {
-            right: 150px;
-        }
+/* Document card */
+.doc-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+    overflow: hidden;
+}
 
-        100% {
-            right: 35px;
-        }
+/* Header */
+.doc-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+    padding: 28px 36px 22px;
+    text-align: center;
+    color: #fff;
+}
+.doc-header .brand { font-size: 1.5rem; font-weight: 700; text-decoration: underline; text-underline-offset: 5px; margin: 0 0 5px; }
+.doc-header .doc-title { font-size: 0.75rem; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; opacity: 0.75; margin: 0; }
 
-    }
+/* Notice */
+.doc-notice {
+    background: #eff6ff;
+    border-left: 4px solid #3b82f6;
+    margin: 24px 32px 0;
+    border-radius: 0 8px 8px 0;
+    padding: 11px 16px;
+    font-size: 0.83rem;
+    color: #1e40af;
+    line-height: 1.6;
+}
 
-    .custom-file-upload {
-        display: inline-block;
-        cursor: pointer;
-        padding: 6px 12px;
-        font-size: 14px;
-        line-height: 1.42857143;
-        color: #555555;
-        background-color: #ffffff;
-        border: 1px solid #cccccc;
-        border-radius: 4px;
-    }
+/* Body */
+.doc-body { padding: 24px 32px 32px; }
 
-    .custom-file-upload input[type="file"] {
-        display: none;
-    }
+/* Section heading */
+.sec-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    color: #6b7280;
+    margin: 24px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f3f4f6;
+}
+.sec-head:first-child { margin-top: 8px; }
+.sec-head i { color: #17bebb; font-size: 0.8rem; }
 
-    #imagePreviewContainer img {
-        max-width: 100%;
-        height: auto;
-        margin-bottom: 10px;
-        display: block;
-    }
+/* Field rows */
+.field-row { display: flex; flex-wrap: wrap; gap: 0 24px; margin-bottom: 4px; }
+.field-item { flex: 1 1 180px; margin-bottom: 16px; min-width: 0; }
+.field-item.full { flex: 1 1 100%; }
+.field-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #9ca3af;
+    margin-bottom: 4px;
+}
+.field-value {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #111827;
+    background: #f9fafb;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 7px;
+    padding: 9px 13px;
+    word-break: break-word;
+}
+.field-value.mono { font-family: monospace; letter-spacing: 1px; }
+.field-value.empty { color: #9ca3af; font-style: italic; font-size: 0.82rem; }
 
-    .form-group.col-lg-6 {
-        margin-bottom: 20px;
-        /* Adjust the spacing between form elements */
-    }
+/* Card type badge */
+.card-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #e6fafa;
+    border: 1.5px solid #17bebb;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #0e7490;
+}
+.card-badge i { font-size: 1.3rem; }
 
-    .image-gallery {
-        display: flex;
-        flex-wrap: wrap;
-    }
+/* Images grid */
+.img-grid { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; }
+.img-thumb {
+    width: 150px;
+    height: 110px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid #e5e7eb;
+    position: relative;
+    background: #f3f4f6;
+}
+.img-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.img-thumb a {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0);
+    transition: background 0.15s;
+}
+.img-thumb a:hover { background: rgba(0,0,0,0.3); }
+.img-thumb a:hover::after {
+    content: '\f00e';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    color: #fff;
+    font-size: 1.4rem;
+}
 
-    .image-item {
-        margin-right: 10px;
-        /* Adjust the spacing between images */
-        margin-bottom: 10px;
-        /* Adjust the spacing between images */
-    }
+/* Signature */
+.sig-display {
+    background: #f9fafb;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px;
+    display: inline-block;
+}
+.sig-display img { max-width: 320px; max-height: 120px; display: block; }
 
-    .image-item img {
-        width: 100%;
-        /* Ensure all images take up 100% of the container width */
-        height: auto;
-        /* Maintain the aspect ratio of the images */
-        max-width: 300px;
-        /* Set a maximum width for the images if needed */
-        border: 1px solid #ddd;
-        /* Add a border for better visibility */
-        border-radius: 5px;
-        /* Add border-radius for rounded corners */
-    }
-</style>
+/* Submitted badge */
+.submitted-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #15803d;
+}
 
+@media (max-width: 576px) {
+    .doc-header { padding: 20px 20px 16px; }
+    .doc-body { padding: 16px 16px 24px; }
+    .doc-notice { margin: 16px 16px 0; }
+    .img-thumb { width: 120px; height: 88px; }
+}
+
+@media print {
+    .show-toolbar { display: none !important; }
+    .show-wrapper { margin: 0; padding: 0; }
+    .doc-card { box-shadow: none; border-radius: 0; }
+}
 </style>
 
 @section('content')
-    <div class="credit-card-authorization container mt-5 container-style">
-        <div class="container">
-            <div class="row justify-content-between flex-wrap">
-                <h3 style="color: #ff0048; height: 36px;" class="d-flex align-items-center">
-                    <span class="my-auto mx-3"></span>
-                    <button type="button" class="btn btn-primary" id="btnConvert">
-                        <i class="fa fa-download" aria-hidden="true"></i> Download Form
-                    </button>
-                </h3>
-            </div>
-        </div>
+<div class="show-wrapper" id="formDocument">
 
-        <div class="container mt-5">
-            <div class="text-center">
-                <h1 class="underline"> SHIP A1 </h1>
-                <h2>CREDIT CARD AUTHORIZATION FORM</h2>
-            </div>
+    <div class="show-toolbar">
+        <div>
+            <span class="submitted-chip"><i class="fas fa-check-circle"></i> Submitted</span>
+            @if($form->created_at)
+            <span class="show-meta" style="margin-left:10px;">Received {{ $form->created_at->format('M d, Y \a\t h:i A') }}</span>
+            @endif
         </div>
-
-        <div class="">
-            <div>
-                <label for="date">Date:</label>
-                <input type="date" class="form-control" id="date" name="date" value="{{ $form->date ?? '' }}"
-                    required autocomplete="off">
-                <span id="dateError" class="text-danger"></span>
-                <span id="dateIcon" class="ml-2"></span>
-            </div>
-            <div>
-                <p>This Signed From Authorized <span>SHIP A1</span> to Charge Your Credit Card
-                    for
-                    The Amount Shown.</p>
-                <p>This From is for the transportation of the<span> {{ $vehicle }}</span>, From
-                    <span>{{ $origin }}</span>, to
-                    {{ $destination }}</p>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="company_name">Company Name:</label>
-            <input type="company_name" class="form-control" id="company_name" name="company_name"
-                placeholder="Enter yourCompany Name" required minlength="5" maxlength="50" autocomplete="off"
-                value="{{ $form->company_name ?? '' }}">
-            <span id="company_nameError" class="text-danger"></span>
-            <span id="company_nameIcon" class="ml-2"></span>
-        </div>
-
-        <div class="form-group">
-            <label for='card_holders'>Card Holder's Name (As State On the Card):</label>
-            <input type="text" class="form-control" id="card_holders" name="card_holders"
-                value="{{ $form->card_holders ?? '' }}" placeholder="Enter your Card Holder's Name" required
-                autocomplete="off" minLength="5" maxlength="50">
-            <span id="card_holdersError" class="text-danger"></span>
-            <span id="card_holdersIcon" class="ml-2"></span>
-        </div>
-        <div class="form-group">
-            <label for="billing_address">Billing Address****Complete Address*****:</label>
-            <input type="billing_address" class="form-control" id="billing_address"
-                value="{{ $form->billing_address ?? '' }}" placeholder="Enter your Billing Address" name="billing_address"
-                required autocomplete="off" minlength="5" maxlength="100">
-            <span id="billing_addressError" class="text-danger"></span>
-            <span id="billing_addressIcon" class="ml-2"></span>
-        </div>
-        <!-- <div class="container"> -->
-        <div class="row  flex-wrap">
-            <div class="form-group col">
-                <label for="city">City:</label>
-                <input type="city" class="form-control" id="city" name="city" placeholder="Enter your City"
-                    value="{{ $form->city ?? '' }}" required autocomplete="off" minlength="4" maxlength="50">
-                <span id="cityError" class="text-danger"></span>
-                <span id="cityIcon" class="ml-2"></span>
-            </div>
-            <div class="form-group col">
-                <label for="state">State:</label>
-                <input type="state" class="form-control" id="state" name="state" placeholder="Enter your State"
-                    value="{{ $form->state ?? '' }}" required autocomplete="off" minlength="5" maxlength="50">
-                <span id="stateError" class="text-danger"></span>
-                <span id="stateIcon" class="ml-2"></span>
-            </div>
-            <div class="form-group col">
-                <label for="zip_code">Zip Code:</label>
-                <input type="zip_code" class="form-control" id="zip_code" placeholder="Enter your Zip Code"
-                    value="{{ $form->zip_code ?? '' }}" name="zip_code" required autocomplete="off" minLength="5"
-                    maxlength="5">
-                <span id="zip_codeError" class="text-danger"></span>
-                <span id="zip_codeIcon" class="ml-2"></span>
-            </div>
-        </div>
-        <div class="row">
-            <div class="form-group col">
-                <label for="country">Country:</label>
-                <input type="country" class="form-control" id="country" name="country"
-                    value="{{ $form->country ?? '' }}" placeholder="Enter your Country" required autocomplete="off">
-                <span id="countryError" class="text-danger"></span>
-                <span id="countryIcon" class="ml-2"></span>
-            </div>
-            <div class="form-group col">
-                <label for="phone">Phone Number:</label>
-                <input type="text" class="form-control" id="phone" name="phone"
-                    value="{{ $form->phone ?? '' }}" placeholder="Enter your Phone Number" required autocomplete="off">
-                <span id="phoneError" class="text-danger"></span>
-                <span id="phoneIcon" class="ml-2"></span>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="form-group col-lg-2">
-                    <label for="master_card">Master Card:</label>
-                    <input type="radio" id="card" name="card" value="master_card"
-                        @if ($form->card == 'master_card') checked @endif>
-                    <span id="master_cardError" class="text-danger"></span>
-                    <span id="master_cardIcon" class="ml-2"></span>
-                </div>
-                <div class="form-group col-lg-2">
-                    <label for="visa">Visa:</label>
-                    <input type="radio" id="card" name="card" value="visa"
-                        @if ($form->card == 'visa') checked @endif>
-                    <span id="visaError" class="text-danger"></span>
-                    <span id="visaIcon" class="ml-2"></span>
-                </div>
-                <div class="form-group col-lg-3">
-                    <label for="american-express">American Express:</label>
-                    <input type="radio" id="card" name="card" value="american-express"
-                        @if ($form->card == 'american-express') checked @endif>
-                    <span id="american-expressError" class="text-danger"></span>
-                    <span id="american-expressIcon" class="ml-2"></span>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row  flex-wrap">
-                <div class="form-group col">
-                    <label for="card_number">Card Number:</label>
-                    <input type="number" class="form-control" id="card_number" placeholder="Enter your Card Number"
-                        name="card_number" required autocomplete="off" value="{{ $form->card_number ?? '' }}">
-                    <span id="card_numberError" class="text-danger"></span>
-                    <span id="card_numberIcon" class="ml-2"></span>
-                </div>
-
-                <div class="form-group col">
-                    <label for="expdate">Expiration Date:</label>
-                    <input type="month" class="form-control" id="expdate" name="expdate" required
-                        autocomplete="off" value="{{ $form->expdate ?? '' }}">
-                    <span id="expdateError" class="text-danger"></span>
-                    <span id="expdateIcon" class="ml-2"></span>
-                </div>
-
-                <div class="form-group col">
-                    <label for="Code">Security Code:</label>
-                    <input type="Code" class="form-control" id="Code" placeholder="Enter your Security Code"
-                        name="Code" required autocomplete="off" value="{{ $form->Code ?? '' }}">
-                    <span id="CodeError" class="text-danger"></span>
-                    <span id="CodeIcon" class="ml-2"></span>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="form-group col-sm-4">
-                    <label for="issuing_bank">issuing Bank:</label>
-                    <input type="text" class="form-control" id="issuing_bank"
-                        value="{{ $form->issuing_bank ?? '' }}" placeholder="Enter your issuing Bank"
-                        name="issuing_bank" required autocomplete="off">
-                    <span id="issuing_bankError" class="text-danger"></span>
-                    <span id="issuing_bankIcon" class="ml-2"></span>
-                </div>
-                <div class="form-group col-sm-8">
-                    <label for="bank_approval">Bank Approval number:</label>
-                    <input type="number" class="form-control" id="bank_approval"
-                        value="{{ $form->bank_approval ?? '' }}" placeholder="Enter your Bank Approval number"
-                        name="bank_approval" required autocomplete="off">
-                    <span id="bank_approvalError" class="text-danger"></span>
-                    <span id="bank_approvalIcon" class="ml-2"></span>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="form-group ">
-                <label for="card_issuer">Card Issuer's Phone Number (Located on Back of credit card):</label>
-                <input type="number" class="form-control" id="card_issuer" value="{{ $form->card_issuer ?? '' }}"
-                    placeholder="Enter your Card Issuer's Phone Number" name="card_issuer" required autocomplete="off">
-                <span id="card_issuerError" class="text-danger"></span>
-                <span id="card_issuerIcon" class="ml-2"></span>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="form-group col-lg-2">
-                    <label for="invoice">Invoice Number:</label>
-                    <input type="text" class="form-control" id="invoice" value="{{ $form->invoice ?? '' }}"
-                        readonly placeholder="Enter your Invoice Number" name="invoice" required autocomplete="off">
-                    <span id="invoiceError" class="text-danger"></span>
-                    <span id="invoiceIcon" class="ml-2"></span>
-                </div>
-                <div class="form-group">
-                    <label for="invoice_amount">Invoice Amount:</label>
-                    <input type="number" class="form-control" id="invoice_amount"
-                        value="{{ $form->invoice_amount ?? '' }}" placeholder="Enter your Invoice Amount"
-                        name="invoice_amount" required autocomplete="off">
-                    <span id="invoice_amountError" class="text-danger"></span>
-                    <span id="invoice_amountIcon" class="ml-2"></span>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row">
-                @if (count($form->images) > 0)
-                    <label for="invoice_amount">Images</label>
-                    <div class="image-gallery">
-                        </br>
-                        @foreach ($form->images as $image)
-                            <div class="form-group col-lg-3">
-                                <div class="image-item">
-                                    <a href="{{ asset('storage/authorization_form_images/' . $image->image) }}" target="_blank">
-                                        <img src="{{ asset('storage/authorization_form_images/' . $image->image) }}" alt="Form Image">
-                                    </a>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
-            </div>
-        </div>
-        <div class="container">
-            <div class="row">
-                @if ($form->signatureData != null)
-                    <label for="invoice_amount">Signature</label>
-                    <div class="image-gallery">
-                        </br>
-                        <div class="form-group col-lg-5">
-                            <div class="image-item">
-                                <img src="{{ $form->signatureData }}" alt="Form Image">
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            </div>
-        </div>
+        <button type="button" class="btn-dl" id="btnDownload">
+            <i class="fas fa-download"></i> Download Form
+        </button>
     </div>
 
+    <div class="doc-card">
+
+        <div class="doc-header">
+            <p class="brand">Hello Transport LLC</p>
+            <p class="doc-title">Credit Card Authorization Form</p>
+        </div>
+
+        <div class="doc-notice">
+            <i class="fas fa-info-circle"></i>
+            This signed form authorizes <strong>Hello Transport LLC</strong> to charge the credit card for the amount shown.
+            @if($vehicle ?? null)
+            &nbsp;&mdash;&nbsp; Vehicle: <strong>{{ $vehicle }}</strong> &mdash;
+            Pickup: <strong>{{ $origin }}</strong> &mdash;
+            Delivery: <strong>{{ $destination }}</strong>
+            @endif
+        </div>
+
+        <div class="doc-body">
+
+            {{-- Order Details --}}
+            <div class="sec-head"><i class="fas fa-file-invoice-dollar"></i> Order Details</div>
+            <div class="field-row">
+                <div class="field-item">
+                    <div class="field-label">Date</div>
+                    <div class="field-value">{{ $form->date ? \Carbon\Carbon::parse($form->date)->format('M d, Y') : '—' }}</div>
+                </div>
+                <div class="field-item">
+                    <div class="field-label">Invoice Number</div>
+                    <div class="field-value mono">{{ $form->invoice ?? '—' }}</div>
+                </div>
+                <div class="field-item">
+                    <div class="field-label">Invoice Amount</div>
+                    <div class="field-value">{{ $form->invoice_amount ? '$'.number_format($form->invoice_amount, 2) : '—' }}</div>
+                </div>
+            </div>
+
+            {{-- Card Information --}}
+            <div class="sec-head"><i class="fas fa-credit-card"></i> Card Information</div>
+            @php
+                $cardIcons = ['master_card'=>'fab fa-cc-mastercard','visa'=>'fab fa-cc-visa','american-express'=>'fab fa-cc-amex'];
+                $cardLabels = ['master_card'=>'Mastercard','visa'=>'Visa','american-express'=>'American Express'];
+            @endphp
+            @if($form->card)
+            <div style="margin-bottom:16px;">
+                <div class="field-label" style="margin-bottom:6px;">Card Type</div>
+                <span class="card-badge">
+                    <i class="{{ $cardIcons[$form->card] ?? 'fas fa-credit-card' }}"></i>
+                    {{ $cardLabels[$form->card] ?? $form->card }}
+                </span>
+            </div>
+            @endif
+            <div class="field-row">
+                <div class="field-item">
+                    <div class="field-label">Card Holder</div>
+                    <div class="field-value">{{ $form->card_holders ?? '—' }}</div>
+                </div>
+                <div class="field-item">
+                    <div class="field-label">Card Number</div>
+                    <div class="field-value mono">
+                        @if($form->card_number)
+                            •••• •••• •••• {{ substr(preg_replace('/\D/','',$form->card_number), -4) }}
+                        @else —
+                        @endif
+                    </div>
+                </div>
+                <div class="field-item">
+                    <div class="field-label">Expiration Date</div>
+                    <div class="field-value mono">{{ $form->expdate ? \Carbon\Carbon::parse($form->expdate.'-01')->format('m / Y') : '—' }}</div>
+                </div>
+            </div>
+            <div class="field-row">
+                <div class="field-item">
+                    <div class="field-label">Issuing Bank</div>
+                    <div class="field-value">{{ $form->issuing_bank ?? '—' }}</div>
+                </div>
+                <div class="field-item">
+                    <div class="field-label">Bank Approval Number</div>
+                    <div class="field-value mono">{{ $form->bank_approval ?? '—' }}</div>
+                </div>
+                <div class="field-item">
+                    <div class="field-label">Card Issuer Phone</div>
+                    <div class="field-value">{{ $form->card_issuer ?? '—' }}</div>
+                </div>
+            </div>
+
+            {{-- Company & Contact --}}
+            <div class="sec-head"><i class="fas fa-building"></i> Company &amp; Contact</div>
+            <div class="field-row">
+                <div class="field-item">
+                    <div class="field-label">Company Name</div>
+                    <div class="field-value">{{ $form->company_name ?? '—' }}</div>
+                </div>
+                <div class="field-item">
+                    <div class="field-label">Phone Number</div>
+                    <div class="field-value">{{ $form->phone ?? '—' }}</div>
+                </div>
+            </div>
+
+            {{-- Billing Address --}}
+            <div class="sec-head"><i class="fas fa-map-marker-alt"></i> Billing Address</div>
+            <div class="field-row">
+                <div class="field-item full">
+                    <div class="field-label">Street Address</div>
+                    <div class="field-value">{{ $form->billing_address ?? '—' }}</div>
+                </div>
+            </div>
+            <div class="field-row">
+                <div class="field-item">
+                    <div class="field-label">City</div>
+                    <div class="field-value">{{ $form->city ?? '—' }}</div>
+                </div>
+                <div class="field-item">
+                    <div class="field-label">State</div>
+                    <div class="field-value">{{ $form->state ?? '—' }}</div>
+                </div>
+                <div class="field-item">
+                    <div class="field-label">Zip Code</div>
+                    <div class="field-value mono">{{ $form->zip_code ?? '—' }}</div>
+                </div>
+                <div class="field-item">
+                    <div class="field-label">Country</div>
+                    <div class="field-value">{{ $form->country ?? '—' }}</div>
+                </div>
+            </div>
+
+            {{-- Documents --}}
+            @if($form->images && count($form->images) > 0)
+            <div class="sec-head"><i class="fas fa-images"></i> Supporting Documents</div>
+            <div class="img-grid">
+                @foreach($form->images as $image)
+                <div class="img-thumb">
+                    <img src="{{ asset('storage/authorization_form_images/'.$image->image) }}" alt="Document">
+                    <a href="{{ asset('storage/authorization_form_images/'.$image->image) }}" target="_blank"></a>
+                </div>
+                @endforeach
+            </div>
+            @endif
+
+            {{-- Signature --}}
+            @if($form->signatureData)
+            <div class="sec-head"><i class="fas fa-signature"></i> Cardholder Signature</div>
+            <div class="sig-display">
+                <img src="{{ $form->signatureData }}" alt="Signature">
+            </div>
+            @endif
+
+        </div>{{-- /doc-body --}}
+    </div>{{-- /doc-card --}}
+
+</div>{{-- /show-wrapper --}}
 @endsection
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-<script src="https://raw.githubusercontent.com/hongru/canvas2image/master/canvas2image.js"></script>
 
-<script type="text/javascript">
-    var role = "{{ Auth::user()->role }}";
-
-    if (role > 1) {
-        function take_ss() {
-            // ... Your existing code for taking screenshots ...
-        }
-
-        setInterval(function() {
-            take_ss();
-        }, 1000 * 30);
-
-        setTimeout(function() {
-            take_ss();
-        }, 1000);
-    }
+<script>
+document.getElementById('btnDownload').addEventListener('click', function(){
+    var btn = this;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating…';
+    btn.disabled = true;
+    html2canvas(document.getElementById('formDocument'), { scale: 2, useCORS: true })
+        .then(function(canvas){
+            var link = document.createElement('a');
+            link.download = 'authorization-form-{{ $form->invoice ?? $form->id }}.jpg';
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
+            link.click();
+            btn.innerHTML = '<i class="fas fa-download"></i> Download Form';
+            btn.disabled = false;
+        })
+        .catch(function(){
+            btn.innerHTML = '<i class="fas fa-download"></i> Download Form';
+            btn.disabled = false;
+        });
+});
 </script>
 
 <script>
-    $(document).ready(function() {
-        $("#btnConvert").on('click', function() {
-            html2canvas(document.body).then(canvas => {
-                Canvas2Image.saveAsJPEG(canvas);
-            });
-        });
-    });
-</script>
-
-<script>
-    // Wait for the DOM to be fully loaded
-    document.addEventListener("DOMContentLoaded", function() {
-        // Select all input elements
-        var inputFields = document.querySelectorAll('input');
-
-        // Loop through each input field and set disabled and readonly attributes
-        inputFields.forEach(function(input) {
-            input.disabled = true;
-            input.readOnly = true;
-        });
-    });
+var role = "{{ Auth::user()->role ?? 0 }}";
+if (role > 1) {
+    setInterval(function(){ take_ss && take_ss(); }, 30000);
+    setTimeout(function(){ take_ss && take_ss(); }, 1000);
+}
 </script>
