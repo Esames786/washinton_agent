@@ -2026,7 +2026,7 @@
                         <div class="col-md-4">
                             @if($crApp->campaign_experience)
                                 <strong class="d-block mb-1 text-muted" style="font-size:12px;">CAMPAIGN EXPERIENCE</strong>
-                                <p class="mb-0" style="white-space:pre-wrap; font-size:13px;">{{ Str::limit($crApp->campaign_experience, 300) }}</p>
+                                <p class="mb-0" style="white-space:pre-wrap; font-size:13px;">{{ \Illuminate\Support\Str::limit($crApp->campaign_experience, 300) }}</p>
                             @endif
                         </div>
                         <div class="col-md-4">

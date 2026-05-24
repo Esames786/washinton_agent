@@ -455,7 +455,7 @@
 
     function getAllConvo(v)
     {
-        var id = "{{ Auth::guard('Admin')->user()->id }}";
+        var id = "{{ Auth::id() }}";
         var data = '';
         var date = '';
         var flag = '';
@@ -507,7 +507,7 @@
 
     function getAllConvo2(v)
     {
-        var id = "{{ Auth::guard('Admin')->user()->id }}";
+        var id = "{{ Auth::id() }}";
         var data = '';
         var date = '';
         var flag = '';
@@ -613,8 +613,8 @@
         $("body").children().css("opacity",0.5);
         $("body marquee").css("opacity",1);
 
-    var role = "{{ Auth::guard('Admin')->user()->role_id }}";
-    var rolename = "{{ Auth::guard('Admin')->user()->role->role }}";
+    var role = "{{ Auth::user()->role ?? '' }}";
+    var rolename = "{{ Auth::user()->userRole->name ?? '' }}";
 
     // if(role > 1)
     // {
