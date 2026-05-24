@@ -42,4 +42,16 @@ return [
         array_map('trim', explode(',', env('BRIDGE_ALLOWED_ORIGINS', '')))
     ),
 
+    /*
+    |--------------------------------------------------------------------------
+    | CrazyRays portal (crazyrayssolutions.com.pk) — outbound redirect config
+    |--------------------------------------------------------------------------
+    | Used when a CR user logs out — we redirect back to crazyrays to clear
+    | their session there as well.
+    */
+    'crazyrays' => [
+        'base_url'               => env('CRAZYRAYS_BASE_URL', ''),
+        'session_clear_endpoint' => env('CRAZYRAYS_SESSION_CLEAR_ENDPOINT', '/session-clear'),
+    ],
+
 ];

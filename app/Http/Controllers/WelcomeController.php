@@ -117,8 +117,11 @@ class WelcomeController extends Controller
             }
         }
 
-        return $isCrUser
-            ? redirect()->away('https://crazyrayssolutions.com.pk')
+        $crBase = rtrim(config('bridge.crazyrays.base_url', ''), '/');
+        $crSessionClear = config('bridge.crazyrays.session_clear_endpoint', '/session-clear');
+
+        return $isCrUser && $crBase
+            ? redirect()->away($crBase . $crSessionClear)
             : redirect('/loginn/');
     }
 
