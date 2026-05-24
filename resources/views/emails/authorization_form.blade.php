@@ -363,18 +363,10 @@
                         <tr>
                             <td valign="middle" style="text-align:left; padding: 1em 2.5em;">
                                 <p>
-                                    <form action="{{route('authorization.form') }}" method="get">
-                                        <input type="hidden" name="cID" value="{{ $cID }}">
-                                        {{-- <input type="hidden" name="cname" value="{{ $cname }}">
-                                        <input type="hidden" name="cphone" value="{{ $cphone }}">
-                                        <input type="hidden" name="invoiceNo" value="{{ $invoiceNo }}">
-                                        <input type="hidden" name="invoiceAmount" value="{{ $invoiceAmount }}">
-                                        <input type="hidden" name="origin" value="{{ $origin }}">
-                                        <input type="hidden" name="destination" value="{{ $destination }}">
-                                        <input type="hidden" name="vehicle" value="{{ $vehicle }}">
-                                        <input type="hidden" name="email" value="{{ $email }}"> --}}
-                                        <button type="submit" class="btn btn-primary">Click Me</button>
-                                    </form>
+                                    <a href="{{ route('authorization.form', ['cID' => $cID]) }}"
+                                       style="display:inline-block;padding:12px 24px;background:#17bebb;color:#ffffff;border-radius:5px;font-family:'Work Sans',sans-serif;font-size:15px;font-weight:600;text-decoration:none;">
+                                        Click Me
+                                    </a>
                                 </p>
 
 
