@@ -262,6 +262,37 @@
 .zip-loading { display: none; font-size: 0.72rem; color: #17bebb; margin-top: 4px; }
 .zip-loading.show { display: block; }
 
+/* Address suggestion dropdown */
+.addr-wrapper { position: relative; }
+.addr-dropdown {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0; right: 0;
+    z-index: 1050;
+    background: #fff;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    max-height: 220px;
+    overflow-y: auto;
+    display: none;
+}
+.addr-dropdown.open { display: block; }
+.addr-item {
+    padding: 10px 14px;
+    font-size: 0.83rem;
+    color: #374151;
+    cursor: pointer;
+    border-bottom: 1px solid #f3f4f6;
+    line-height: 1.4;
+    transition: background 0.1s;
+}
+.addr-item:last-child { border-bottom: none; }
+.addr-item:hover, .addr-item.focused { background: #f0fdfd; color: #0e7490; }
+.addr-item strong { display: block; font-weight: 600; }
+.addr-item small { color: #9ca3af; font-size: 0.75rem; }
+.addr-spinner { padding: 12px 14px; font-size: 0.8rem; color: #9ca3af; text-align: center; }
+
 @media (max-width: 576px) {
     .auth-body { padding: 22px 16px 24px; }
     .auth-header { padding: 22px 20px 18px; }
@@ -408,8 +439,12 @@
             <div class="section-heading"><i class="fas fa-map-marker-alt"></i> Billing Address</div>
             <div class="form-group">
                 <label for="billing_address">Street Address <span class="req">*</span></label>
-                <input type="text" class="form-control" id="billing_address" name="billing_address"
-                       placeholder="123 Main St, Apt 4B" required minlength="5" maxlength="150" autocomplete="street-address">
+                <div class="addr-wrapper">
+                    <input type="text" class="form-control" id="billing_address" name="billing_address"
+                           placeholder="Start typing your address…" required minlength="5" maxlength="150"
+                           autocomplete="off" aria-autocomplete="list" aria-haspopup="true">
+                    <div class="addr-dropdown" id="addrDropdown" role="listbox"></div>
+                </div>
                 <div class="field-feedback" id="billing_addressError"></div>
             </div>
             <div class="row">
@@ -533,6 +568,98 @@ document.getElementById('zip_code').addEventListener('blur', function(){
 });
 
 // ── Image preview ──────────────────────────────────────────────────────────────
+// ── Address autocomplete (Nominatim / OpenStreetMap) ──────────────────────────
+var addrInput    = document.getElementById('billing_address');
+var addrDropdown = document.getElementById('addrDropdown');
+var addrTimer, addrData = [], addrFocus = -1;
+
+addrInput.addEventListener('input', function(){
+    clearTimeout(addrTimer);
+    var q = this.value.trim();
+    if (q.length < 4){ addrDropdown.classList.remove('open'); return; }
+    addrDropdown.innerHTML = '<div class="addr-spinner"><i class="fas fa-spinner fa-spin"></i> Searching…</div>';
+    addrDropdown.classList.add('open');
+    addrTimer = setTimeout(function(){
+        fetch('https://nominatim.openstreetmap.org/search?format=json&countrycodes=us&limit=6&addressdetails=1&q='+encodeURIComponent(q), {
+            headers:{'Accept-Language':'en-US','User-Agent':'AuthFormApp/1.0'}
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(res){
+            addrData = res;
+            addrDropdown.innerHTML = '';
+            addrFocus = -1;
+            if (!res.length){
+                addrDropdown.innerHTML = '<div class="addr-spinner">No results found.</div>';
+                return;
+            }
+            res.forEach(function(r, i){
+                var a = r.address || {};
+                var street = [a.house_number, a.road].filter(Boolean).join(' ') || r.display_name.split(',')[0];
+                var sub    = [a.city||a.town||a.village||a.county, a.state, a.postcode].filter(Boolean).join(', ');
+                var item = document.createElement('div');
+                item.className = 'addr-item';
+                item.setAttribute('role','option');
+                item.dataset.idx = i;
+                item.innerHTML = '<strong>'+escHtml(street)+'</strong><small>'+escHtml(sub)+'</small>';
+                item.addEventListener('mousedown', function(e){
+                    e.preventDefault();
+                    pickAddress(i);
+                });
+                addrDropdown.appendChild(item);
+            });
+        })
+        .catch(function(){ addrDropdown.classList.remove('open'); });
+    }, 450);
+});
+
+addrInput.addEventListener('keydown', function(e){
+    var items = addrDropdown.querySelectorAll('.addr-item');
+    if (!items.length) return;
+    if (e.key === 'ArrowDown'){ e.preventDefault(); addrFocus = Math.min(addrFocus+1, items.length-1); highlightAddr(items); }
+    else if (e.key === 'ArrowUp'){ e.preventDefault(); addrFocus = Math.max(addrFocus-1, 0); highlightAddr(items); }
+    else if (e.key === 'Enter' && addrFocus >= 0){ e.preventDefault(); pickAddress(addrFocus); }
+    else if (e.key === 'Escape'){ addrDropdown.classList.remove('open'); }
+});
+
+addrInput.addEventListener('blur', function(){
+    setTimeout(function(){ addrDropdown.classList.remove('open'); }, 200);
+});
+
+function highlightAddr(items){
+    items.forEach(function(it,i){ it.classList.toggle('focused', i===addrFocus); });
+    if (items[addrFocus]) items[addrFocus].scrollIntoView({block:'nearest'});
+}
+
+function pickAddress(idx){
+    var r = addrData[idx];
+    var a = r.address || {};
+    var street = [a.house_number, a.road].filter(Boolean).join(' ') || r.display_name.split(',')[0];
+    addrInput.value = street;
+    addrDropdown.classList.remove('open');
+
+    var cityVal  = a.city || a.town || a.village || a.county || '';
+    var stateVal = a.state || '';
+    var zipVal   = (a.postcode || '').split('-')[0];
+    var cntryVal = a.country || 'United States';
+
+    setValue('city',    cityVal);
+    setValue('state',   stateVal);
+    setValue('country', cntryVal);
+    if (zipVal) setValue('zip_code', zipVal);
+
+    ['billing_address','city','state','zip_code','country'].forEach(validateOne);
+}
+
+function setValue(id, val){
+    var el = document.getElementById(id);
+    if (el && val){ el.value = val; markValid(el); }
+}
+
+function escHtml(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Image upload ───────────────────────────────────────────────────────────────
 var uploadedFiles = [];
 var fileInput = document.getElementById('multiImages');
 var previewGrid = document.getElementById('previewGrid');
