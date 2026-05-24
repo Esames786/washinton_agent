@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\AuthorizationForm;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Mail\AuthorizationFormMail;
 use App\AutoOrder;
 use App\AuthorizationFormImages;
@@ -152,6 +153,29 @@ class AuthorizationFormController extends Controller
         }
     }
     
+    public function revealCard(Request $request, $id)
+    {
+        if (!Auth::check()) {
+            return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
+        }
+
+        if (!$request->filled('password')) {
+            return response()->json(['success' => false, 'message' => 'Password is required.'], 422);
+        }
+
+        if (!Hash::check($request->input('password'), Auth::user()->password)) {
+            return response()->json(['success' => false, 'message' => 'Incorrect password. Please try again.'], 403);
+        }
+
+        $form = AuthorizationForm::find($id);
+
+        if (!$form) {
+            return response()->json(['success' => false, 'message' => 'Record not found.'], 404);
+        }
+
+        return response()->json(['success' => true, 'card_number' => $form->card_number]);
+    }
+
     public function allForms()
     {
         if(Auth::check())

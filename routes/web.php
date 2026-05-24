@@ -246,6 +246,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Authorization Form Submit
     Route::get('/authorization-form/show/{id}', 'AuthorizationFormController@show')->name('authorization.forms.show');
+    Route::post('/authorization-form/{id}/reveal-card', 'AuthorizationFormController@revealCard')->name('authorization.forms.reveal-card');
 
     // Authorization Form Submit
     Route::resource('messagechats', 'MessageChatController');

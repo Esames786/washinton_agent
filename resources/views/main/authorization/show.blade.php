@@ -271,10 +271,18 @@ body { font-family: 'Inter', sans-serif; background: #f0f2f5; }
                 </div>
                 <div class="field-item">
                     <div class="field-label">Card Number</div>
-                    <div class="field-value mono">
+                    <div class="field-value mono" style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                        <span id="cardNumberDisplay">
+                            @if($form->card_number)
+                                •••• •••• •••• {{ substr(preg_replace('/\D/','',$form->card_number), -4) }}
+                            @else —
+                            @endif
+                        </span>
                         @if($form->card_number)
-                            •••• •••• •••• {{ substr(preg_replace('/\D/','',$form->card_number), -4) }}
-                        @else —
+                        <button type="button" id="btnRevealCard" onclick="openRevealModal()"
+                            style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;font-size:0.72rem;font-weight:600;background:#f0fdfd;border:1.5px solid #17bebb;border-radius:6px;color:#0e7490;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;transition:all 0.15s;">
+                            <i class="fas fa-eye"></i> View
+                        </button>
                         @endif
                     </div>
                 </div>
@@ -365,6 +373,46 @@ body { font-family: 'Inter', sans-serif; background: #f0f2f5; }
 </div>{{-- /show-wrapper --}}
 @endsection
 
+{{-- Password verify modal --}}
+<div id="revealModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:12px;padding:32px 28px;width:100%;max-width:380px;margin:0 16px;box-shadow:0 20px 60px rgba(0,0,0,0.2);font-family:'Inter',sans-serif;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+            <div style="width:36px;height:36px;background:#f0fdfd;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-lock" style="color:#17bebb;font-size:1rem;"></i>
+            </div>
+            <div>
+                <div style="font-size:1rem;font-weight:700;color:#111827;">Verify Identity</div>
+                <div style="font-size:0.75rem;color:#6b7280;">Enter your password to reveal the card number</div>
+            </div>
+        </div>
+        <div style="margin-top:20px;">
+            <label style="font-size:0.75rem;font-weight:600;color:#374151;display:block;margin-bottom:6px;">Your Password</label>
+            <div style="position:relative;">
+                <input type="password" id="revealPassword" placeholder="Enter your password"
+                    style="width:100%;padding:10px 40px 10px 14px;font-size:0.875rem;font-family:'Inter',sans-serif;border:1.5px solid #e5e7eb;border-radius:8px;outline:none;background:#fafafa;"
+                    onkeydown="if(event.key==='Enter') submitReveal()">
+                <button type="button" onclick="toggleRevealPwd(this)"
+                    style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#9ca3af;padding:0;">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            <div id="revealError" style="display:none;margin-top:8px;font-size:0.78rem;color:#ef4444;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:7px 10px;">
+                <i class="fas fa-exclamation-circle"></i> <span id="revealErrorMsg"></span>
+            </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:20px;">
+            <button type="button" onclick="closeRevealModal()"
+                style="flex:1;padding:10px;font-size:0.875rem;font-weight:500;border:1.5px solid #e5e7eb;border-radius:8px;background:#fff;cursor:pointer;font-family:'Inter',sans-serif;color:#374151;">
+                Cancel
+            </button>
+            <button type="button" id="revealSubmitBtn" onclick="submitReveal()"
+                style="flex:1;padding:10px;font-size:0.875rem;font-weight:600;border:none;border-radius:8px;background:#17bebb;color:#fff;cursor:pointer;font-family:'Inter',sans-serif;">
+                <i class="fas fa-unlock-alt"></i> Reveal
+            </button>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
@@ -386,6 +434,86 @@ document.getElementById('btnDownload').addEventListener('click', function(){
             btn.innerHTML = '<i class="fas fa-download"></i> Download Form';
             btn.disabled = false;
         });
+});
+</script>
+
+<script>
+var revealUrl  = '{{ route("authorization.forms.reveal-card", $form->id) }}';
+var revealToken = '{{ csrf_token() }}';
+var cardRevealed = false;
+
+function openRevealModal(){
+    if (cardRevealed) return;
+    document.getElementById('revealPassword').value = '';
+    document.getElementById('revealError').style.display = 'none';
+    document.getElementById('revealModal').style.display = 'flex';
+    setTimeout(function(){ document.getElementById('revealPassword').focus(); }, 80);
+}
+
+function closeRevealModal(){
+    document.getElementById('revealModal').style.display = 'none';
+}
+
+function toggleRevealPwd(btn){
+    var inp = document.getElementById('revealPassword');
+    var icon = btn.querySelector('i');
+    if (inp.type === 'password'){
+        inp.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        inp.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+}
+
+function submitReveal(){
+    var pwd = document.getElementById('revealPassword').value;
+    var errBox = document.getElementById('revealError');
+    var errMsg = document.getElementById('revealErrorMsg');
+    var btn = document.getElementById('revealSubmitBtn');
+
+    if (!pwd){ errMsg.textContent = 'Please enter your password.'; errBox.style.display = 'block'; return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying…';
+
+    $.ajax({
+        url: revealUrl,
+        type: 'POST',
+        data: { _token: revealToken, password: pwd },
+        success: function(res){
+            if (res.success){
+                var raw = res.card_number || '';
+                var digits = raw.replace(/\D/g,'');
+                var formatted = digits.replace(/(.{4})/g,'$1 ').trim();
+                document.getElementById('cardNumberDisplay').textContent = formatted || raw;
+                document.getElementById('btnRevealCard').style.display = 'none';
+                cardRevealed = true;
+                closeRevealModal();
+            } else {
+                errMsg.textContent = res.message || 'Verification failed.';
+                errBox.style.display = 'block';
+            }
+        },
+        error: function(xhr){
+            var msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Incorrect password. Please try again.';
+            errMsg.textContent = msg;
+            errBox.style.display = 'block';
+        },
+        complete: function(){
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-unlock-alt"></i> Reveal';
+            document.getElementById('revealPassword').value = '';
+        }
+    });
+}
+
+document.getElementById('revealModal').addEventListener('click', function(e){
+    if (e.target === this) closeRevealModal();
+});
+
+document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeRevealModal();
 });
 </script>
 
