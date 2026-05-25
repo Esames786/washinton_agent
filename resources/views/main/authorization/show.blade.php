@@ -208,7 +208,7 @@ body { font-family: 'Inter', sans-serif; background: #f0f2f5; }
             <span class="show-meta" style="margin-left:10px;">Received {{ $form->created_at->format('M d, Y \a\t h:i A') }}</span>
             @endif
         </div>
-        <button type="button" class="btn-dl" id="btnDownload">
+        <button type="button" class="btn-dl" onclick="downloadForm(this)">
             <i class="fas fa-download"></i> Download Form
         </button>
     </div>
@@ -370,74 +370,55 @@ body { font-family: 'Inter', sans-serif; background: #f0f2f5; }
         </div>{{-- /doc-body --}}
     </div>{{-- /doc-card --}}
 
+    {{-- Password verify modal --}}
+    <div id="revealModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:12px;padding:32px 28px;width:100%;max-width:380px;margin:0 16px;box-shadow:0 20px 60px rgba(0,0,0,0.2);font-family:'Inter',sans-serif;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+                <div style="width:36px;height:36px;background:#f0fdfd;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fas fa-lock" style="color:#17bebb;font-size:1rem;"></i>
+                </div>
+                <div>
+                    <div style="font-size:1rem;font-weight:700;color:#111827;">Verify Identity</div>
+                    <div style="font-size:0.75rem;color:#6b7280;">Enter your password to reveal the card number</div>
+                </div>
+            </div>
+            <div style="margin-top:20px;">
+                <label style="font-size:0.75rem;font-weight:600;color:#374151;display:block;margin-bottom:6px;">Your Password</label>
+                <div style="position:relative;">
+                    <input type="password" id="revealPassword" placeholder="Enter your password"
+                        style="width:100%;padding:10px 40px 10px 14px;font-size:0.875rem;font-family:'Inter',sans-serif;border:1.5px solid #e5e7eb;border-radius:8px;outline:none;background:#fafafa;"
+                        onkeydown="if(event.key==='Enter') submitReveal()">
+                    <button type="button" onclick="toggleRevealPwd(this)"
+                        style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#9ca3af;padding:0;">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div id="revealError" style="display:none;margin-top:8px;font-size:0.78rem;color:#ef4444;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:7px 10px;">
+                    <i class="fas fa-exclamation-circle"></i> <span id="revealErrorMsg"></span>
+                </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:20px;">
+                <button type="button" onclick="closeRevealModal()"
+                    style="flex:1;padding:10px;font-size:0.875rem;font-weight:500;border:1.5px solid #e5e7eb;border-radius:8px;background:#fff;cursor:pointer;font-family:'Inter',sans-serif;color:#374151;">
+                    Cancel
+                </button>
+                <button type="button" id="revealSubmitBtn" onclick="submitReveal()"
+                    style="flex:1;padding:10px;font-size:0.875rem;font-weight:600;border:none;border-radius:8px;background:#17bebb;color:#fff;cursor:pointer;font-family:'Inter',sans-serif;">
+                    <i class="fas fa-unlock-alt"></i> Reveal
+                </button>
+            </div>
+        </div>
+    </div>
+
 </div>{{-- /show-wrapper --}}
 @endsection
 
-{{-- Password verify modal --}}
-<div id="revealModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
-    <div style="background:#fff;border-radius:12px;padding:32px 28px;width:100%;max-width:380px;margin:0 16px;box-shadow:0 20px 60px rgba(0,0,0,0.2);font-family:'Inter',sans-serif;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-            <div style="width:36px;height:36px;background:#f0fdfd;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <i class="fas fa-lock" style="color:#17bebb;font-size:1rem;"></i>
-            </div>
-            <div>
-                <div style="font-size:1rem;font-weight:700;color:#111827;">Verify Identity</div>
-                <div style="font-size:0.75rem;color:#6b7280;">Enter your password to reveal the card number</div>
-            </div>
-        </div>
-        <div style="margin-top:20px;">
-            <label style="font-size:0.75rem;font-weight:600;color:#374151;display:block;margin-bottom:6px;">Your Password</label>
-            <div style="position:relative;">
-                <input type="password" id="revealPassword" placeholder="Enter your password"
-                    style="width:100%;padding:10px 40px 10px 14px;font-size:0.875rem;font-family:'Inter',sans-serif;border:1.5px solid #e5e7eb;border-radius:8px;outline:none;background:#fafafa;"
-                    onkeydown="if(event.key==='Enter') submitReveal()">
-                <button type="button" onclick="toggleRevealPwd(this)"
-                    style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#9ca3af;padding:0;">
-                    <i class="fas fa-eye"></i>
-                </button>
-            </div>
-            <div id="revealError" style="display:none;margin-top:8px;font-size:0.78rem;color:#ef4444;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:7px 10px;">
-                <i class="fas fa-exclamation-circle"></i> <span id="revealErrorMsg"></span>
-            </div>
-        </div>
-        <div style="display:flex;gap:10px;margin-top:20px;">
-            <button type="button" onclick="closeRevealModal()"
-                style="flex:1;padding:10px;font-size:0.875rem;font-weight:500;border:1.5px solid #e5e7eb;border-radius:8px;background:#fff;cursor:pointer;font-family:'Inter',sans-serif;color:#374151;">
-                Cancel
-            </button>
-            <button type="button" id="revealSubmitBtn" onclick="submitReveal()"
-                style="flex:1;padding:10px;font-size:0.875rem;font-weight:600;border:none;border-radius:8px;background:#17bebb;color:#fff;cursor:pointer;font-family:'Inter',sans-serif;">
-                <i class="fas fa-unlock-alt"></i> Reveal
-            </button>
-        </div>
-    </div>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-
+@section('extraScript')
 <script>
-document.getElementById('btnDownload').addEventListener('click', function(){
-    var btn = this;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating…';
-    btn.disabled = true;
-    html2canvas(document.getElementById('formDocument'), { scale: 2, useCORS: true })
-        .then(function(canvas){
-            var link = document.createElement('a');
-            link.download = 'authorization-form-{{ $form->invoice ?? $form->id }}.jpg';
-            link.href = canvas.toDataURL('image/jpeg', 0.95);
-            link.click();
-            btn.innerHTML = '<i class="fas fa-download"></i> Download Form';
-            btn.disabled = false;
-        })
-        .catch(function(){
-            btn.innerHTML = '<i class="fas fa-download"></i> Download Form';
-            btn.disabled = false;
-        });
-});
-</script>
+function downloadForm(btn) {
+    window.print();
+}
 
-<script>
 var revealUrl  = '{{ route("authorization.forms.reveal-card", $form->id) }}';
 var revealToken = '{{ csrf_token() }}';
 var cardRevealed = false;
@@ -516,11 +497,4 @@ document.addEventListener('keydown', function(e){
     if (e.key === 'Escape') closeRevealModal();
 });
 </script>
-
-<script>
-var role = "{{ Auth::user()->role ?? 0 }}";
-if (role > 1) {
-    setInterval(function(){ take_ss && take_ss(); }, 30000);
-    setTimeout(function(){ take_ss && take_ss(); }, 1000);
-}
-</script>
+@endsection

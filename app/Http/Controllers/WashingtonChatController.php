@@ -53,12 +53,15 @@ class WashingtonChatController extends Controller
             $deviceId = $request->cookie($cookieName);
         }
 
+        $source = $request->input('source', 'hello');
+
         return view('iframe.dashboard', [
             'user_id'   => $user_id,
             'admin'     => $admin,
             'deviceId'  => $deviceId,
             'domain'    => $domain,
             'user_name' => $user_name,
+            'source'    => $source,
         ]);
     }
 

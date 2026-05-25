@@ -380,6 +380,39 @@ body {
 #keyword::placeholder { color: rgba(255,255,255,0.3); }
 </style>
 
+@if(isset($source) && $source === 'crazyrays')
+<style>
+/* ── CrazyRays Brand Override ── */
+.chat-header { border-bottom-color: #e11d48; }
+.chat-header img, .message img { border-color: #e11d48; }
+.chat-header-info .name { color: #f43f5e; }
+.chat-history-panel strong { color: #e11d48; }
+.chat-history-panel { border-right-color: rgba(225,29,72,0.2); }
+.chat-history-panel ul li button { background: rgba(225,29,72,0.08); border-color: rgba(225,29,72,0.15); }
+.chat-history-panel ul li button:hover,
+.chat-history-panel ul li button.active { background: rgba(225,29,72,0.2); border-color: #e11d48; color: #f43f5e; }
+.messages::-webkit-scrollbar-thumb { background: rgba(225,29,72,0.3); }
+.message.left .bubble { background: rgba(225,29,72,0.12); border-color: rgba(225,29,72,0.2); }
+.message.right .bubble { background: linear-gradient(135deg, #e11d48, #be123c); color: #fff; font-weight: 600; }
+.message .agent-name { color: #e11d48; }
+.user-details-form { background: rgba(225,29,72,0.06); border-color: rgba(225,29,72,0.2); }
+.user-details-form h5 { color: #f43f5e; }
+.user-details-form input { border-color: rgba(225,29,72,0.2); }
+.user-details-form input:focus { border-color: #e11d48; }
+.btn-start-chat { background: linear-gradient(135deg, #f43f5e, #e11d48); color: #fff; }
+.btn-start-chat:hover { background: linear-gradient(135deg, #f87171, #e11d48); }
+.typing-indicator { background: rgba(225,29,72,0.06); }
+.chat-footer { border-top-color: rgba(225,29,72,0.2); }
+.chat-footer input[type="text"] { border-color: rgba(225,29,72,0.2); }
+.chat-footer input[type="text"]:focus { border-color: #e11d48; }
+.chat-footer .send-btn { background: linear-gradient(135deg, #f43f5e, #e11d48); color: #fff; }
+.chat-footer .send-btn:hover { background: linear-gradient(135deg, #f87171, #e11d48); }
+#emoji-popup { border-color: rgba(225,29,72,0.3); }
+#emoji-popup .emoji:hover { background: rgba(225,29,72,0.15); }
+#keyword { border-color: rgba(225,29,72,0.2); }
+</style>
+@endif
+
 <audio id="audio_success" autostart="false">
     <source src="{{ asset('success_sound.mp3') }}" type="audio/mpeg">
 </audio>
@@ -388,9 +421,13 @@ body {
 
     {{-- HEADER --}}
     <div class="chat-header">
-        <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Logo">
+        @if(isset($source) && $source === 'crazyrays')
+            <div style="width:46px;height:46px;border-radius:50%;border:2px solid #e11d48;background:linear-gradient(135deg,#e11d48,#f43f5e);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;flex-shrink:0;letter-spacing:.5px;">CR</div>
+        @else
+            <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Logo">
+        @endif
         <div class="chat-header-info">
-            <div class="name">Hello Transport Support</div>
+            <div class="name">{{ (isset($source) && $source === 'crazyrays') ? 'CrazyRays Support' : 'Hello Transport Support' }}</div>
             <div class="status">Online</div>
         </div>
     </div>
@@ -415,10 +452,18 @@ body {
             @if(!$admin)
                 <div class="messages">
                     <div class="message left">
-                        <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Support">
+                        @if(isset($source) && $source === 'crazyrays')
+                            <div style="width:32px;height:32px;border-radius:50%;border:1.5px solid #e11d48;background:linear-gradient(135deg,#e11d48,#f43f5e);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px;flex-shrink:0;letter-spacing:.5px;">CR</div>
+                        @else
+                            <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Support">
+                        @endif
                         <div>
                             <div class="bubble">
-                                Thank you for contacting Hello Transport! We have agents standing by to assist you at <strong style="color:#FFD700;">1 (844) 474-4721</strong> or here on Live Chat. How can we help you today?
+                                @if(isset($source) && $source === 'crazyrays')
+                                    Thank you for contacting <strong>CrazyRays Solutions</strong>! Our support team is standing by to assist you on Live Chat. How can we help you today?
+                                @else
+                                    Thank you for contacting Hello Transport! We have agents standing by to assist you at <strong style="color:#FFD700;">1 (844) 474-4721</strong> or here on Live Chat. How can we help you today?
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -444,10 +489,18 @@ body {
             @else
                 <div class="messages">
                     <div class="message left">
-                        <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Support">
+                        @if(isset($source) && $source === 'crazyrays')
+                            <div style="width:32px;height:32px;border-radius:50%;border:1.5px solid #e11d48;background:linear-gradient(135deg,#e11d48,#f43f5e);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px;flex-shrink:0;letter-spacing:.5px;">CR</div>
+                        @else
+                            <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Support">
+                        @endif
                         <div>
                             <div class="bubble">
-                                Thank you for contacting Hello Transport! We have agents standing by to assist you at <strong style="color:#FFD700;">1 (844) 474-4721</strong> or here on Live Chat. How can we help you today?
+                                @if(isset($source) && $source === 'crazyrays')
+                                    Thank you for contacting <strong>CrazyRays Solutions</strong>! Our support team is standing by to assist you on Live Chat. How can we help you today?
+                                @else
+                                    Thank you for contacting Hello Transport! We have agents standing by to assist you at <strong style="color:#FFD700;">1 (844) 474-4721</strong> or here on Live Chat. How can we help you today?
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -486,6 +539,15 @@ body {
         localStorage.setItem('device_id_chat', deviceId);
     }
     window.deviceIdChat = deviceId;
+
+    // Brand configuration — driven by ?source= param
+    var brandSource = "{{ $source ?? 'hello' }}";
+    var brandLogoHtml = brandSource === 'crazyrays'
+        ? '<div style="width:32px;height:32px;border-radius:50%;border:1.5px solid #e11d48;background:linear-gradient(135deg,#e11d48,#f43f5e);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px;flex-shrink:0;letter-spacing:.5px;">CR</div>'
+        : '<img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Support">';
+    var brandWelcomeMsg = brandSource === 'crazyrays'
+        ? 'Thank you for contacting <strong>CrazyRays Solutions</strong>! Our support team is standing by to assist you on Live Chat. How can we help you today?'
+        : 'Thank you for contacting Hello Transport! We have agents standing by at <strong style="color:#FFD700;">1 (844) 474-4721</strong>. How can we help you today?';
 </script>
 
 <script>
@@ -644,8 +706,8 @@ body {
                 $('#chat_box').prepend(`
                     <div class="messages">
                         <div class="message left">
-                            <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Support">
-                            <div><div class="bubble">Thank you for contacting Hello Transport! We have agents standing by at <strong style="color:#FFD700;">1 (844) 474-4721</strong>. How can we help you today?</div></div>
+                            ${brandLogoHtml}
+                            <div><div class="bubble">${brandWelcomeMsg}</div></div>
                         </div>
                     </div>
                 `);
@@ -673,13 +735,13 @@ body {
         var messageHTML = '';
         if (res == 0) {
             messageHTML = `<div class="message right">
-                <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="You">
+                ${brandLogoHtml}
                 <div><div class="bubble">${send_value.send_message}</div>${info}</div>
             </div>`;
         } else {
             var agent_name = send_value.admin_name || user_name;
             messageHTML = `<div class="message left">
-                <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Support">
+                ${brandLogoHtml}
                 <div>
                     <div class="agent-name">${agent_name}</div>
                     <div class="bubble">${send_value.receive_message}</div>
