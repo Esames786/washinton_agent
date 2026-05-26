@@ -303,7 +303,7 @@ if (isset($_GET['titlee'])) {
                         </button>
                     @endif
 
-                    @if ((int) Auth::user()->role === 1)
+                    @if ((int) Auth::user()->role === 1 || in_array('148', $phoneaccess))
                         <button type="button" class="btn btn-warning btn-sm mt-1 assign-ot-btn"
                                 data-query-id="{{ $val->id }}"
                                 data-query-label="Query #{{ $val->id }} — {{ $val->oname }}"
