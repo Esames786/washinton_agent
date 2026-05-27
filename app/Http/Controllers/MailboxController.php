@@ -377,6 +377,29 @@ class MailboxController extends Controller
             Log::warning("Mailbox DL: getContent() threw — acc={$acc->id} uid={$uid}: " . $e->getMessage());
         }
 
+        // Fallback: save attachment to a temp dir and read the file
+        if (($content === null || $content === '') && method_exists($att, 'save')) {
+            try {
+                $tmpBase = storage_path('app/tmp-mail-downloads');
+                if (!is_dir($tmpBase)) {
+                    mkdir($tmpBase, 0755, true);
+                }
+                $tmpDir = $tmpBase . '/' . uniqid('mail_att_', true);
+                mkdir($tmpDir, 0755, true);
+
+                $att->save($tmpDir);
+
+                $saved = glob($tmpDir . '/*');
+                if (!empty($saved) && is_file($saved[0])) {
+                    $content = file_get_contents($saved[0]);
+                    foreach ($saved as $f) { @unlink($f); }
+                    @rmdir($tmpDir);
+                }
+            } catch (\Throwable $e) {
+                Log::warning("Mailbox DL: save() fallback failed — acc={$acc->id} uid={$uid}: " . $e->getMessage());
+            }
+        }
+
         Log::info("Mailbox DL: content length=" . (is_string($content) ? strlen($content) : 'null/empty') . " filename={$filename}");
 
         if ($content === null || $content === '') {
