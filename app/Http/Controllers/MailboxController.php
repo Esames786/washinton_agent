@@ -271,18 +271,31 @@ class MailboxController extends Controller
         abort_if(!$acc, 403, 'No mailbox assigned.');
 
         $folderRow  = EmailFolder::where('email_account_id', $acc->id)->where('key', $folder)->first();
-        abort_if(!$folderRow, 404, 'Folder not found.');
+        if (!$folderRow) {
+            Log::warning("Mailbox DL: folder not found — acc={$acc->id} key={$folder}");
+            abort(404, 'Folder not found.');
+        }
 
         $messageRow = EmailMessage::where('email_folder_id', $folderRow->id)->where('uid', $uid)->first();
-        abort_if(!$messageRow, 404, 'Message not found.');
+        if (!$messageRow) {
+            Log::warning("Mailbox DL: message not found in DB — acc={$acc->id} folder={$folder} uid={$uid}");
+            abort(404, 'Message not found.');
+        }
 
         $attachmentRow = EmailMessageAttachment::where('email_message_id', $messageRow->id)
             ->where('attachment_index', $attachmentIndex)->first();
-        abort_if(!$attachmentRow, 404, 'Attachment not found.');
+        if (!$attachmentRow) {
+            Log::warning("Mailbox DL: attachment row not found — msg_id={$messageRow->id} idx={$attachmentIndex}");
+            abort(404, 'Attachment not found.');
+        }
+
+        Log::info("Mailbox DL: start — acc={$acc->id} uid={$uid} idx={$attachmentIndex} disk={$attachmentRow->disk} path={$attachmentRow->path}");
 
         // Serve from disk if already cached
         if ($attachmentRow->disk !== 'imap' && !empty($attachmentRow->path)) {
-            abort_unless(Storage::disk($attachmentRow->disk)->exists($attachmentRow->path), 404, 'File not found.');
+            $exists = Storage::disk($attachmentRow->disk)->exists($attachmentRow->path);
+            Log::info("Mailbox DL: disk cache check — exists={$exists} path={$attachmentRow->path}");
+            if (!$exists) abort(404, 'Cached file not found.');
             return Storage::disk($attachmentRow->disk)->download(
                 $attachmentRow->path,
                 $attachmentRow->original_name ?: ('attachment_' . $attachmentIndex)
@@ -297,23 +310,42 @@ class MailboxController extends Controller
         }
 
         // Live IMAP fetch
-        $client     = $this->imapClient($acc);
-        $realFolder = $this->resolveFolderName($client, $folder, $folderRow->imap_name);
+        try {
+            $client     = $this->imapClient($acc);
+            $realFolder = $this->resolveFolderName($client, $folder, $folderRow->imap_name);
+        } catch (\Throwable $e) {
+            Log::error("Mailbox DL: IMAP connect failed — acc={$acc->id}: " . $e->getMessage());
+            abort(404, 'IMAP connection failed.');
+        }
 
-        $imapFolder = $client->getFolder($realFolder);
+        Log::info("Mailbox DL: IMAP connected, fetching uid={$uid} from folder={$realFolder}");
 
-        $message = $imapFolder->query()
-            ->whereUid($uid)
-            ->setFetchBody(true)
-            ->get()
-            ->first();
+        try {
+            $imapFolder = $client->getFolder($realFolder);
+            $message = $imapFolder->query()
+                ->whereUid($uid)
+                ->setFetchBody(true)
+                ->get()
+                ->first();
+        } catch (\Throwable $e) {
+            Log::error("Mailbox DL: IMAP query failed — acc={$acc->id} uid={$uid}: " . $e->getMessage());
+            abort(404, 'IMAP query failed.');
+        }
 
-        abort_if(!$message, 404, 'IMAP message not found.');
+        if (!$message) {
+            Log::warning("Mailbox DL: message not found in IMAP — acc={$acc->id} uid={$uid}");
+            abort(404, 'IMAP message not found.');
+        }
 
         $atts = collect($message->getAttachments())->values();
-        $att  = $atts->get($attachmentIndex);
+        Log::info("Mailbox DL: IMAP attachments found — count={$atts->count()} requested_idx={$attachmentIndex}");
 
-        abort_if(!$att, 404, 'Attachment not found in IMAP.');
+        $att = $atts->get($attachmentIndex);
+
+        if (!$att) {
+            Log::warning("Mailbox DL: attachment not in IMAP — acc={$acc->id} uid={$uid} idx={$attachmentIndex} total={$atts->count()}");
+            abort(404, 'Attachment not found in IMAP.');
+        }
 
         try {
             if (method_exists($att, 'getName') && $att->getName()) {
@@ -337,10 +369,15 @@ class MailboxController extends Controller
                 $content = $att->getContent();
             }
         } catch (\Throwable $e) {
-            Log::warning("Mailbox download: getContent() threw — acc={$acc->id} uid={$uid}: " . $e->getMessage());
+            Log::warning("Mailbox DL: getContent() threw — acc={$acc->id} uid={$uid}: " . $e->getMessage());
         }
 
-        abort_if($content === null || $content === '', 404, 'Attachment content not available.');
+        Log::info("Mailbox DL: content length=" . (is_string($content) ? strlen($content) : 'null/empty') . " filename={$filename}");
+
+        if ($content === null || $content === '') {
+            Log::warning("Mailbox DL: content empty after IMAP fetch — acc={$acc->id} uid={$uid} idx={$attachmentIndex}");
+            abort(404, 'Attachment content not available.');
+        }
 
         // Cache to disk so future downloads skip IMAP
         try {
