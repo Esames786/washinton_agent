@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Webklex\PHPIMAP\ClientManager;
 
 /**
@@ -278,6 +279,7 @@ class MailboxController extends Controller
             ->where('attachment_index', $attachmentIndex)->first();
         abort_if(!$attachmentRow, 404, 'Attachment not found.');
 
+        // Serve from disk if already cached
         if ($attachmentRow->disk !== 'imap' && !empty($attachmentRow->path)) {
             abort_unless(Storage::disk($attachmentRow->disk)->exists($attachmentRow->path), 404, 'File not found.');
             return Storage::disk($attachmentRow->disk)->download(
@@ -286,29 +288,63 @@ class MailboxController extends Controller
             );
         }
 
-        $client     = $this->imapClient($acc);
-        $realFolder = $this->resolveFolderName($client, $folder, $folderRow->imap_name);
-        $imapFolder = $client->getFolder($realFolder);
-        $message    = $imapFolder->query()->whereUid($uid)->setFetchBody(true)->get()->first();
-        abort_if(!$message, 404, 'IMAP message not found.');
-
-        $atts    = collect($message->getAttachments())->values();
-        $att     = $atts->get($attachmentIndex);
-        abort_if(!$att, 404, 'Attachment not found.');
-
         $mime     = $attachmentRow->mime_type ?: 'application/octet-stream';
         $filename = $attachmentRow->original_name ?: ('attachment_' . $attachmentIndex);
-        $content  = null;
 
-        try { if (method_exists($att, 'getContent')) $content = $att->getContent(); } catch (\Throwable $e) {}
+        // Live IMAP fetch with caching
+        try {
+            $client     = $this->imapClient($acc);
+            $realFolder = $this->resolveFolderName($client, $folder, $folderRow->imap_name);
+            $imapFolder = $client->getFolder($realFolder);
+            $message    = $imapFolder->query()->whereUid($uid)->setFetchBody(true)->get()->first();
 
-        abort_if(!$content, 404, 'Attachment content not available.');
+            if (!$message) {
+                Log::warning("Mailbox download: IMAP message not found — acc={$acc->id} folder={$folder} uid={$uid}");
+                abort(404, 'IMAP message not found.');
+            }
 
-        return response($content, 200, [
-            'Content-Type'        => $mime,
-            'Content-Disposition' => 'attachment; filename="' . addslashes($filename) . '"',
-            'Content-Length'      => (string) strlen($content),
-        ]);
+            $atts = collect($message->getAttachments())->values();
+            $att  = $atts->get($attachmentIndex);
+
+            if (!$att) {
+                Log::warning("Mailbox download: attachment missing in IMAP — acc={$acc->id} uid={$uid} idx={$attachmentIndex} total_atts={$atts->count()}");
+                abort(404, 'Attachment not found in IMAP.');
+            }
+
+            $content = null;
+            try {
+                if (method_exists($att, 'getContent')) $content = $att->getContent();
+            } catch (\Throwable $e) {
+                Log::warning("Mailbox download: getContent() threw — acc={$acc->id} uid={$uid}: " . $e->getMessage());
+            }
+
+            if (!$content) {
+                Log::warning("Mailbox download: getContent() empty — acc={$acc->id} uid={$uid} idx={$attachmentIndex}");
+                abort(404, 'Attachment content not available.');
+            }
+
+            // Cache to disk so future downloads skip IMAP
+            try {
+                $ext  = pathinfo($filename, PATHINFO_EXTENSION) ?: 'bin';
+                $dir  = 'mail-attachments/' . $acc->id . '/' . $messageRow->id;
+                $file = Str::uuid()->toString() . '_ss.' . $ext;
+                Storage::disk('public')->put($dir . '/' . $file, $content);
+                $attachmentRow->update(['disk' => 'public', 'path' => $dir . '/' . $file]);
+            } catch (\Throwable $e) {
+                Log::warning("Mailbox download: disk cache failed — " . $e->getMessage());
+            }
+
+            return response($content, 200, [
+                'Content-Type'        => $mime,
+                'Content-Disposition' => 'attachment; filename="' . addslashes($filename) . '"',
+                'Content-Length'      => (string) strlen($content),
+            ]);
+        } catch (\Illuminate\Http\Exceptions\HttpResponseException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            Log::error("Mailbox download: IMAP exception — acc={$acc->id} folder={$folder} uid={$uid}: " . $e->getMessage());
+            abort(404, 'Attachment not available.');
+        }
     }
 
     private function localAttachmentsPayload(int $emailMessageId, string $folder, int $uid): array
