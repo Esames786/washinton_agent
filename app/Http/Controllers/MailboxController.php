@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Webklex\PHPIMAP\ClientManager;
+use Webklex\PHPIMAP\IMAP;
+use Webklex\PHPIMAP\Message as ImapMessage;
 
 /**
  * User mailbox — read inbox, view messages, download attachments.
@@ -295,8 +297,16 @@ class MailboxController extends Controller
         try {
             $client     = $this->imapClient($acc);
             $realFolder = $this->resolveFolderName($client, $folder, $folderRow->imap_name);
-            $imapFolder = $client->getFolder($realFolder);
-            $message    = $imapFolder->query()->whereUid($uid)->setFetchBody(true)->get()->first();
+            $client->openFolder($realFolder);
+
+            // Use Message constructor directly with explicit UID mode so we issue
+            // "UID FETCH uid (RFC822.TEXT)" instead of the Query default sequence-mode fetch.
+            try {
+                $message = new ImapMessage($uid, null, $client, null, true, false, IMAP::ST_UID);
+            } catch (\Throwable $e) {
+                Log::warning("Mailbox download: IMAP message constructor failed — acc={$acc->id} uid={$uid}: " . $e->getMessage());
+                $message = null;
+            }
 
             if (!$message) {
                 Log::warning("Mailbox download: IMAP message not found — acc={$acc->id} folder={$folder} uid={$uid}");
@@ -339,7 +349,7 @@ class MailboxController extends Controller
                 'Content-Disposition' => 'attachment; filename="' . addslashes($filename) . '"',
                 'Content-Length'      => (string) strlen($content),
             ]);
-        } catch (\Illuminate\Http\Exceptions\HttpResponseException $e) {
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
             throw $e;
         } catch (\Throwable $e) {
             Log::error("Mailbox download: IMAP exception — acc={$acc->id} folder={$folder} uid={$uid}: " . $e->getMessage());
