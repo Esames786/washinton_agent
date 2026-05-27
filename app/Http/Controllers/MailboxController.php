@@ -283,7 +283,12 @@ class MailboxController extends Controller
         }
 
         $attachmentRow = EmailMessageAttachment::where('email_message_id', $messageRow->id)
-            ->where('attachment_index', $attachmentIndex)->first();
+            ->where(function ($q) use ($attachmentIndex) {
+                $q->where('attachment_index', $attachmentIndex);
+                if ($attachmentIndex === 0) {
+                    $q->orWhereNull('attachment_index');
+                }
+            })->first();
         if (!$attachmentRow) {
             Log::warning("Mailbox DL: attachment row not found — msg_id={$messageRow->id} idx={$attachmentIndex}");
             abort(404, 'Attachment not found.');

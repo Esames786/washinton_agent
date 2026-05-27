@@ -179,7 +179,7 @@ class MailboxSendController extends Controller
             $folder->last_synced_at = now();
             $folder->save();
 
-            foreach ($attachmentFiles as $file) {
+            foreach ($attachmentFiles as $attIdx => $file) {
                 $disk     = 'public';
                 $dir      = 'mail-attachments/' . $acc->id . '/' . $message->id;
                 $filename = Str::uuid()->toString() . '_' . $file->getClientOriginalName();
@@ -187,7 +187,7 @@ class MailboxSendController extends Controller
 
                 EmailMessageAttachment::create([
                     'email_message_id' => $message->id,
-                    'attachment_index' => null,
+                    'attachment_index' => $attIdx,
                     'disk'             => $disk,
                     'path'             => $path,
                     'original_name'    => $file->getClientOriginalName(),
