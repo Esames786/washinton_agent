@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Webklex\PHPIMAP\ClientManager;
 use Webklex\PHPIMAP\IMAP;
-use Webklex\PHPIMAP\Message as ImapMessage;
 
 /**
  * User mailbox — read inbox, view messages, download attachments.
@@ -293,68 +292,87 @@ class MailboxController extends Controller
         $mime     = $attachmentRow->mime_type ?: 'application/octet-stream';
         $filename = $attachmentRow->original_name ?: ('attachment_' . $attachmentIndex);
 
-        // Live IMAP fetch with caching
-        try {
-            $client     = $this->imapClient($acc);
-            $realFolder = $this->resolveFolderName($client, $folder, $folderRow->imap_name);
-            $client->openFolder($realFolder);
-
-            // Use Message constructor directly with explicit UID mode so we issue
-            // "UID FETCH uid (RFC822.TEXT)" instead of the Query default sequence-mode fetch.
-            try {
-                $message = new ImapMessage($uid, null, $client, null, true, false, IMAP::ST_UID);
-            } catch (\Throwable $e) {
-                Log::warning("Mailbox download: IMAP message constructor failed — acc={$acc->id} uid={$uid}: " . $e->getMessage());
-                $message = null;
-            }
-
-            if (!$message) {
-                Log::warning("Mailbox download: IMAP message not found — acc={$acc->id} folder={$folder} uid={$uid}");
-                abort(404, 'IMAP message not found.');
-            }
-
-            $atts = collect($message->getAttachments())->values();
-            $att  = $atts->get($attachmentIndex);
-
-            if (!$att) {
-                Log::warning("Mailbox download: attachment missing in IMAP — acc={$acc->id} uid={$uid} idx={$attachmentIndex} total_atts={$atts->count()}");
-                abort(404, 'Attachment not found in IMAP.');
-            }
-
-            $content = null;
-            try {
-                if (method_exists($att, 'getContent')) $content = $att->getContent();
-            } catch (\Throwable $e) {
-                Log::warning("Mailbox download: getContent() threw — acc={$acc->id} uid={$uid}: " . $e->getMessage());
-            }
-
-            if (!$content) {
-                Log::warning("Mailbox download: getContent() empty — acc={$acc->id} uid={$uid} idx={$attachmentIndex}");
-                abort(404, 'Attachment content not available.');
-            }
-
-            // Cache to disk so future downloads skip IMAP
-            try {
-                $ext  = pathinfo($filename, PATHINFO_EXTENSION) ?: 'bin';
-                $dir  = 'mail-attachments/' . $acc->id . '/' . $messageRow->id;
-                $file = Str::uuid()->toString() . '_ss.' . $ext;
-                Storage::disk('public')->put($dir . '/' . $file, $content);
-                $attachmentRow->update(['disk' => 'public', 'path' => $dir . '/' . $file]);
-            } catch (\Throwable $e) {
-                Log::warning("Mailbox download: disk cache failed — " . $e->getMessage());
-            }
-
-            return response($content, 200, [
-                'Content-Type'        => $mime,
-                'Content-Disposition' => 'attachment; filename="' . addslashes($filename) . '"',
-                'Content-Length'      => (string) strlen($content),
-            ]);
-        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
-            throw $e;
-        } catch (\Throwable $e) {
-            Log::error("Mailbox download: IMAP exception — acc={$acc->id} folder={$folder} uid={$uid}: " . $e->getMessage());
-            abort(404, 'Attachment not available.');
+        if (!str_contains($filename, '.')) {
+            $filename .= '.' . $this->extensionFromMime($mime);
         }
+
+        // Live IMAP fetch
+        $client     = $this->imapClient($acc);
+        $realFolder = $this->resolveFolderName($client, $folder, $folderRow->imap_name);
+
+        $imapFolder = $client->getFolder($realFolder);
+
+        $message = $imapFolder->query()
+            ->whereUid($uid)
+            ->setFetchBody(true)
+            ->get()
+            ->first();
+
+        abort_if(!$message, 404, 'IMAP message not found.');
+
+        $atts = collect($message->getAttachments())->values();
+        $att  = $atts->get($attachmentIndex);
+
+        abort_if(!$att, 404, 'Attachment not found in IMAP.');
+
+        try {
+            if (method_exists($att, 'getName') && $att->getName()) {
+                $filename = $att->getName();
+            }
+        } catch (\Throwable $e) {}
+
+        if (!str_contains($filename, '.')) {
+            $filename .= '.' . $this->extensionFromMime($mime);
+        }
+
+        try {
+            if (method_exists($att, 'getMimeType') && $att->getMimeType()) {
+                $mime = $att->getMimeType();
+            }
+        } catch (\Throwable $e) {}
+
+        $content = null;
+        try {
+            if (method_exists($att, 'getContent')) {
+                $content = $att->getContent();
+            }
+        } catch (\Throwable $e) {
+            Log::warning("Mailbox download: getContent() threw — acc={$acc->id} uid={$uid}: " . $e->getMessage());
+        }
+
+        abort_if($content === null || $content === '', 404, 'Attachment content not available.');
+
+        // Cache to disk so future downloads skip IMAP
+        try {
+            $ext  = pathinfo($filename, PATHINFO_EXTENSION) ?: 'bin';
+            $dir  = 'mail-attachments/' . $acc->id . '/' . $messageRow->id;
+            $file = Str::uuid()->toString() . '_ss.' . $ext;
+            Storage::disk('public')->put($dir . '/' . $file, $content);
+            $attachmentRow->update(['disk' => 'public', 'path' => $dir . '/' . $file]);
+        } catch (\Throwable $e) {
+            Log::warning("Mailbox download: disk cache failed — " . $e->getMessage());
+        }
+
+        return response($content, 200, [
+            'Content-Type'        => $mime,
+            'Content-Disposition' => 'attachment; filename="' . addslashes($filename) . '"',
+            'Content-Length'      => (string) strlen($content),
+        ]);
+    }
+
+    private function extensionFromMime(?string $mime): string
+    {
+        return match (strtolower((string) $mime)) {
+            'image/gif'        => 'gif',
+            'image/jpeg'       => 'jpg',
+            'image/png'        => 'png',
+            'image/webp'       => 'webp',
+            'application/pdf'  => 'pdf',
+            'application/zip'  => 'zip',
+            'text/plain'       => 'txt',
+            'text/html'        => 'html',
+            default            => 'bin',
+        };
     }
 
     private function localAttachmentsPayload(int $emailMessageId, string $folder, int $uid): array
