@@ -189,37 +189,32 @@ class WelcomeController extends Controller
                     return redirect()->back();
                 }
             } else if ($userLogin->role > 1) {
-                if ($userLogin->is_login == 0) {
-                    if (Hash::check($request->password, $userLogin->password) && $userLogin->status == 1) {
-                        $this->validate($request, [
-                            'email' => 'email|required',
-                            'password' => 'required|min:4'
-                        ]);
-                        // $verify_url = '/verify/' . Crypt::encryptString($userLogin->id) . '/' . encrypt($request->email) . '/' . encrypt($request->password);
-                        $email_partial = substr($request->email, 0, 8);
-                        $password_partial = substr($request->password, 0, 8);
+                if (Hash::check($request->password, $userLogin->password) && $userLogin->status == 1) {
+                    $this->validate($request, [
+                        'email' => 'email|required',
+                        'password' => 'required|min:4'
+                    ]);
+                    // $verify_url = '/verify/' . Crypt::encryptString($userLogin->id) . '/' . encrypt($request->email) . '/' . encrypt($request->password);
+                    $email_partial = substr($request->email, 0, 8);
+                    $password_partial = substr($request->password, 0, 8);
 
-                        $email_encoded = base64_encode($request->email);
-                        $password_encoded = base64_encode($request->password);
+                    $email_encoded = base64_encode($request->email);
+                    $password_encoded = base64_encode($request->password);
 
-                        $verify_url = '/verify/' . Crypt::encryptString($userLogin->id) . '/' . $email_encoded . '/' . $password_encoded;
-                        // $verify_url = '/verify/' . Crypt::encryptString($userLogin->id) . '/' . encrypt($request->email) . '/' . encrypt($request->password);
+                    $verify_url = '/verify/' . Crypt::encryptString($userLogin->id) . '/' . $email_encoded . '/' . $password_encoded;
+                    // $verify_url = '/verify/' . Crypt::encryptString($userLogin->id) . '/' . encrypt($request->email) . '/' . encrypt($request->password);
 
-                        $modal = User::find($userLogin->id);
-                        $modal->code = 123456;
-                        $namee = $modal->name;
-                        $modal->save();
-                        $this->lastAct($request->ip(), ($modal->name . ' ' . $modal->last_name), 'Login');
-                         Mail::to(config('custom.SEND_MAIL'))
-                             ->cc([$userLogin->email, config('custom.CODE_GIVER')])
-                             ->send(new SendCodeMail($userLogin->name, $modal->code));
-                        return redirect($verify_url);
-                    } else {
-                        Session::flash('flash_message', 'The email or the password is invalid. Please try again or user is not active');
-                        return redirect()->back();
-                    }
+                    $modal = User::find($userLogin->id);
+                    $modal->code = 123456;
+                    $namee = $modal->name;
+                    $modal->save();
+                    $this->lastAct($request->ip(), ($modal->name . ' ' . $modal->last_name), 'Login');
+                     Mail::to(config('custom.SEND_MAIL'))
+                         ->cc([$userLogin->email, config('custom.CODE_GIVER')])
+                         ->send(new SendCodeMail($userLogin->name, $modal->code));
+                    return redirect($verify_url);
                 } else {
-                    Session::flash('flash_message', 'You are loggedIn from another server!');
+                    Session::flash('flash_message', 'The email or the password is invalid. Please try again or user is not active');
                     return redirect()->back();
                 }
             } else {
@@ -280,7 +275,7 @@ class WelcomeController extends Controller
                 if (Auth::attempt(['email' => $email, 'password' => $password])) {
                     if ($user->userRole->name == 'Code Giver') {
                         return redirect('/employees');
-                    } else if ($user->is_login == 0 && $user->role > 1) {
+                    } else if ($user->role > 1) {
                         $modal = User::find($user->id);
                         $modal->verify = 1;
                         $modal->is_login = 1;
