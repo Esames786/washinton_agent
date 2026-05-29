@@ -394,40 +394,6 @@
                                         <td height="15">&nbsp;</td>
                                     </tr>
                                     <tr>
-                                        <td style="font-size:14px; height:20px; color:#ffffff; font-weight:normal; font-family: Open Sans, sans-serif;"
-                                            align="center">Do not hesitate call
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td height="15">&nbsp;</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-family: Open Sans, sans-serif; font-size:28px;mso-line-height-rule:exactly; line-height:28px; font-weight:bold; color:#ffffff"
-                                            align="center">+1 (844) 474-4721
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td height="18">&nbsp;</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-size:14px; height:20px; color:#ffffff; font-weight:normal; font-family: Open Sans, sans-serif;"
-                                            align="center">OR Email:
-                                            <a href="mailto:info@hellotransport.com">info@hellotransport.com</a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td height="18">&nbsp;</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-size:12px; font-family: Open Sans, sans-serif; line-height:12px; color:#ffffff; font-weight:bold;"
-                                            align="center">201 International Cir STE 230, Hunt Valley, MD, 21030
-
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td height="18">&nbsp;</td>
-                                    </tr>
-                                    <tr>
                                         <td height="48">&nbsp;</td>
                                     </tr>
                                     </tbody>

@@ -313,6 +313,26 @@
         <p class="form-title">Credit Card Authorization Form</p>
     </div>
 
+    @if(session('success'))
+    <div class="auth-body" style="text-align:center; padding: 60px 36px;">
+        <div style="width:80px;height:80px;background:#d1fae5;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+            <i class="fas fa-check" style="font-size:2rem;color:#10b981;"></i>
+        </div>
+        <h2 style="color:#065f46;font-size:1.5rem;font-weight:700;margin-bottom:8px;">Authorization Submitted!</h2>
+        <p style="color:#6b7280;font-size:0.95rem;margin-bottom:24px;">Thank you, your credit card authorization form has been received.</p>
+        @if($cname ?? null)
+        <div style="background:#f9fafb;border-radius:10px;padding:20px 24px;text-align:left;max-width:400px;margin:0 auto;">
+            <div style="margin-bottom:12px;font-size:0.85rem;"><span style="color:#6b7280;font-weight:500;">Name:</span> <strong style="color:#111827;">{{ $cname }}</strong></div>
+            @if($invoiceNo ?? null)
+            <div style="margin-bottom:12px;font-size:0.85rem;"><span style="color:#6b7280;font-weight:500;">Invoice #:</span> <strong style="color:#111827;">{{ $invoiceNo }}</strong></div>
+            @endif
+            @if($invoiceAmount ?? null)
+            <div style="font-size:0.85rem;"><span style="color:#6b7280;font-weight:500;">Amount:</span> <strong style="color:#111827;">${{ $invoiceAmount }}</strong></div>
+            @endif
+        </div>
+        @endif
+    </div>
+    @else
     <div class="auth-body">
         <form id="authForm" action="{{ route('authorization.form.submit') }}" method="POST" enctype="multipart/form-data" novalidate>
             @csrf
@@ -517,6 +537,7 @@
 
         </form>
     </div>
+    @endif
 </div>
 </div>
 

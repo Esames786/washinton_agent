@@ -68,7 +68,7 @@
         <p>Thank you for choosing Hello Transport for your transportation needs. We are committed to providing you with reliable service and ensuring a smooth shipping experience from start to finish.</p>
         <p>Best Regards,<br>Hello Transport</p>
         <p>For your convenience, here are our contact details:</p>
-        <p>Phone: 1 (844) 474-4721</p>
+
         <p>Email: <a href="mailto:info@hellotransport.com" style="color: #0056b3; text-decoration: none;">info@hellotransport.com</a></p>
         <p>Hours of availability: 8am to 7pm EST.</p>
 @endsection

@@ -62,8 +62,7 @@
         </p>
         <p>
             We also invite you to book another shipment with us at your convenience and get a discount of $50. You can
-            get an instant quote by visiting our website or calling us at <a href=" 1 (844) 474-4721"
-                style="color: #0056b3; text-decoration: none;"> 1 (844) 474-4721</a>.
+            get an instant quote by visiting our website.
         </p>
         <p>
             Thank you once again for entrusting Hello Transport with your shipment. We look forward to serving you
@@ -72,8 +71,6 @@
         <p>Best Regards,<br />Hello Transport</p>
         <p>
             For your convenience, here are our contact details:<br />
-            Phone: <a href=" 1 (844) 474-4721" style="color: #0056b3; text-decoration: none;"> 1 (844)
-                474-4721</a><br />
             Email: <a href="mailto:info@hellotransport.com"
                 style="color: #0056b3; text-decoration: none;">info@hellotransport.com</a><br />
             Hours of availability: 8am to 7pm EST.
