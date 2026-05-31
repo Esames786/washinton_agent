@@ -38,6 +38,7 @@ Route::post('/bridge/register', 'Bridge\BridgeAuthController@register')->middlew
 Route::post('/bridge/login',    'Bridge\BridgeAuthController@login')->middleware('throttle:20,1');
 
 Route::post('/v2/website-quote','phone_quote\NewQuote@websiteShipa1Quote')->middleware('throttle:30,1');
+Route::post('/submit/instant-quote','phone_quote\AutohaulQuoteController@store')->middleware('throttle:30,1');
 Route::post('/v2/submit_query','phone_quote\NewQuote@websiteQuery')->middleware('throttle:30,1');
 Route::post('/v2/website-quote-auction','phone_quote\NewQuote@websiteShipa1QuoteAuction')->middleware('throttle:30,1');
 Route::get('/get-card','phone_quote\customer\CustomerController@getCard');
