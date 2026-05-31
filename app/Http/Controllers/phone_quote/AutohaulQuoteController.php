@@ -157,9 +157,9 @@ class AutohaulQuoteController extends Controller
             $data->shippingdate     = $request['shippingdate'] ?? null;
             $data->car_type         = $request['car_type'] ?? null;
             $data->paneltype        = 4;
-            $data->cname            = $request['cname'] ?? null;
-            $data->cemail           = $request['cemail'] ?? null;
-            $data->main_ph          = $request['main_ph'] ?? null;
+            $data->cname            = $request['cname']   ?? $request['oname']  ?? null;
+            $data->cemail           = $request['cemail']  ?? $request['oemail'] ?? null;
+            $data->main_ph          = $request['main_ph'] ?? $request['ophone'] ?? null;
             $data->length_ft        = $request['length_ft'] ?? null;
             $data->length_in        = $request['length_in'] ?? null;
             $data->width_ft         = $request['width_ft'] ?? null;
