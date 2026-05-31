@@ -305,12 +305,20 @@ class AutohaulQuoteController extends Controller
             $data->save();
 
             // ── Send price email (failure must not kill the order) ────────────
-            try {
-                Mail::to($request['oemail'])->send(new HelloTransportInstantQuoteMail($q));
-            } catch (\Exception $mailEx) {
-                Log::error('HelloTransport autohaul email failed', [
+            $recipientEmail = $q->customer_email ?? $request['oemail'] ?? null;
+            if (filter_var($recipientEmail, FILTER_VALIDATE_EMAIL)) {
+                try {
+                    Mail::to($recipientEmail)->send(new HelloTransportInstantQuoteMail($q));
+                } catch (\Exception $mailEx) {
+                    Log::error('HelloTransport autohaul email failed', [
+                        'order_id' => $data->id,
+                        'error'    => $mailEx->getMessage(),
+                    ]);
+                }
+            } else {
+                Log::warning('HelloTransport autohaul email skipped — no valid recipient', [
                     'order_id' => $data->id,
-                    'error'    => $mailEx->getMessage(),
+                    'oemail'   => $request['oemail'] ?? null,
                 ]);
             }
 
