@@ -123,6 +123,12 @@ class AutohaulQuoteController extends Controller
                 $user_iddd = $nextUser->id;
             }
 
+            // ── Normalize year/make/model — hualt sends them as single-element arrays ─
+            $year  = is_array($request['year'])  ? ($request['year'][0]  ?? '') : ($request['year']  ?? '');
+            $make  = is_array($request['make'])  ? ($request['make'][0]  ?? '') : ($request['make']  ?? '');
+            $model = is_array($request['model']) ? ($request['model'][0] ?? '') : ($request['model'] ?? '');
+            $ymk   = $request['ymk'] ?? trim("$year $make $model");
+
             // ── Create AutoOrder (payment placeholder = 0, back-filled after pricing) ─
             $order = AutoOrder::orderBy('id', 'DESC')->first();
             $data = new AutoOrder;
@@ -131,12 +137,12 @@ class AutohaulQuoteController extends Controller
             $data->oname            = $request['oname'];
             $data->oemail           = $request['oemail'];
             $data->ophone           = $request['ophone'];
-            $data->ymk              = $request['ymk'];
-            $data->year             = $request['year'];
+            $data->ymk              = $ymk;
+            $data->year             = $year;
             $data->type             = $request['type'] ?? null;
             $data->vehicle_opt      = $request['vehicle_opt'] ?? null;
-            $data->model            = $request['model'];
-            $data->make             = $request['make'];
+            $data->model            = $model;
+            $data->make             = $make;
             $data->condition        = $request['condition'];
             $data->originzsc        = $request['originzsc'];
             $data->originzip        = $request['originzip'];
@@ -251,9 +257,9 @@ class AutohaulQuoteController extends Controller
                 ],
                 'vehicles' => [
                     [
-                        'year'  => (int) $request['year'],
-                        'make'  => $request['make'],
-                        'model' => $request['model'],
+                        'year'  => (int) $year,
+                        'make'  => $make,
+                        'model' => $model,
                         'type'  => 'Car',
                     ],
                 ],
@@ -267,7 +273,7 @@ class AutohaulQuoteController extends Controller
             $q->origin_location      = $request['originzsc'];
             $q->destination_location = $request['destinationzsc'];
             $q->type                 = $request['car_type'] ?? null;
-            $q->year_make_model      = $request['ymk'];
+            $q->year_make_model      = $ymk;
             $q->customer_name        = $request['oname'];
             $q->customer_phone       = $request['ophone'];
             $q->customer_email       = $request['oemail'];
