@@ -228,12 +228,12 @@ class AutohaulQuoteController extends Controller
             $of->pick_up_services      = $request['pick_up_services'] ?? null;
             $of->deliver_services      = $request['deliver_services'] ?? null;
             $of->shipment_prefences    = $request['category'] ?? null;
-            $of->stackable             = $request['stackable'] ?? null;
-            $of->hazardous             = $request['hazardous'] ?? null;
-            $of->handling_unit         = $request['handling_unit'] ?? null;
-            $of->protect_from_freezing = $request['protect_from_freezing'] ?? null;
-            $of->sort_segregate        = $request['sort_segregate'] ?? null;
-            $of->blind_shipment        = $request['blind_shipment'] ?? null;
+            $of->stackable             = $request['stackable'] ?? 0;
+            $of->hazardous             = $request['hazardous'] ?? 0;
+            $of->handling_unit         = $request['handling_unit'] ?? 0;
+            $of->protect_from_freezing = $request['protect_from_freezing'] ?? 0;
+            $of->sort_segregate        = $request['sort_segregate'] ?? 0;
+            $of->blind_shipment        = $request['blind_shipment'] ?? 0;
             $of->save();
 
             // ── Get pricing from central-gateway ─────────────────────────────
