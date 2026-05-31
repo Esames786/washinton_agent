@@ -155,7 +155,7 @@ class AutohaulQuoteController extends Controller
             $data->add_info         = $request['add_info'] ?? null;
             $data->transport        = $request['transport'] ?? null;
             $data->shippingdate     = $request['shippingdate'] ?? null;
-            $data->car_type         = $request['car_type'] ?? null;
+            $data->car_type         = 1;
             $data->paneltype        = 4;
             $data->cname            = $request['cname']   ?? $request['oname']  ?? null;
             $data->cemail           = $request['cemail']  ?? $request['oemail'] ?? null;
@@ -272,7 +272,7 @@ class AutohaulQuoteController extends Controller
             $q = new InstantQuote();
             $q->origin_location      = $request['originzsc'];
             $q->destination_location = $request['destinationzsc'];
-            $q->type                 = $request['car_type'] ?? null;
+            $q->type                 = 'Car';
             $q->year_make_model      = $ymk;
             $q->customer_name        = $request['oname'];
             $q->customer_phone       = $request['ophone'];
