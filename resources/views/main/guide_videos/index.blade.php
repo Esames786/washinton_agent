@@ -17,7 +17,7 @@
         <div class="card">
             <div class="card-header d-flex align-items-center justify-content-between">
                 <div class="card-title">Manage Guide Videos</div>
-                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#videoModal">
+                <button class="btn btn-primary btn-sm" id="btnAddVideo">
                     <i class="fe fe-plus"></i> Add Video
                 </button>
             </div>
@@ -53,7 +53,7 @@
                 <h5 class="modal-title" id="videoModalLabel">Add Guide Video</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
             </div>
-            <form id="videoForm" enctype="multipart/form-data">
+            <form id="videoForm" method="POST" action="{{ route('guide-videos.store') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" id="videoId" name="_video_id" value="">
                 <div class="modal-body">
@@ -87,9 +87,12 @@
 </div>
 @endsection
 
-@section('js')
+@section('extraScript')
 <script>
 $(function () {
+    var storeUrl = '{{ route('guide-videos.store') }}';
+    var baseUrl  = '{{ url('guide-videos') }}';
+
     // ── DataTable ────────────────────────────────────────────────────────────
     var table = $('#guide-videos-table').DataTable({
         processing: true,
@@ -107,14 +110,15 @@ $(function () {
     });
 
     // ── Open add modal ───────────────────────────────────────────────────────
-    $('[data-target="#videoModal"]').on('click', function () {
+    $('#btnAddVideo').on('click', function () {
         $('#videoModalLabel').text('Add Guide Video');
         $('#videoForm')[0].reset();
         $('#videoId').val('');
+        $('#videoForm').attr('action', storeUrl);
         $('#videoRequired').show();
         $('#currentVideo').hide();
         $('#modal-error, #modal-success').hide();
-        $('#videoForm').attr('action', '{{ route('guide-videos.store') }}');
+        $('#videoModal').modal('show');
     });
 
     // ── Open edit modal ──────────────────────────────────────────────────────
@@ -127,35 +131,30 @@ $(function () {
         $('#videoId').val(id);
         $('#videoTitle').val(title);
         $('#videoDescription').val(desc);
+        $('#videoForm').attr('action', baseUrl + '/' + id);
         $('#videoRequired').hide();
         $('#currentVideo').show();
         $('#modal-error, #modal-success').hide();
-        $('#videoForm').attr('action', '{{ url('guide-videos') }}/' + id);
         $('#videoModal').modal('show');
     });
 
-    // ── Form submit (add + edit) ─────────────────────────────────────────────
+    // ── Form submit (AJAX) ───────────────────────────────────────────────────
     $('#videoForm').on('submit', function (e) {
         e.preventDefault();
 
         var formData = new FormData(this);
         var url      = $(this).attr('action');
-        var id       = $('#videoId').val();
-
-        if (id) {
-            formData.append('_method', 'POST');
-        }
 
         $('#videoSubmitBtn').prop('disabled', true).text('Saving…');
         $('#modal-error, #modal-success').hide();
 
         $.ajax({
-            url: url,
-            method: 'POST',
-            data: formData,
+            url:         url,
+            method:      'POST',
+            data:        formData,
             processData: false,
             contentType: false,
-            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            headers:     { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
             success: function (res) {
                 $('#videoSubmitBtn').prop('disabled', false).text('Save');
                 if (res.success) {
