@@ -506,6 +506,8 @@
                             164=>'Admin Payment System<span class="badge badge-success">Payments</span>',
                             165=>'Agent Payment System<span class="badge badge-success">Payments</span>',
                             166=>'CrazyRays Applications<span class="badge badge-warning">New</span>',
+                            167=>'Guide Videos (Manage)<span class="badge badge-warning">New</span>',
+                            168=>'Guide Videos (View)<span class="badge badge-warning">New</span>',
                             ];
 
 

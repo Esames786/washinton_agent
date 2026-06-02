@@ -1303,3 +1303,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cr-applications/{id}/approve', 'CrApplicationController@approve')->name('cr-applications.approve');
     Route::post('/cr-applications/{id}/reject', 'CrApplicationController@reject')->name('cr-applications.reject');
 });
+
+// Guide Videos (permission 167 = manage, 168 = view)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/guide-videos',          'GuideVideoController@index')->name('guide-videos.index');
+    Route::post('/guide-videos',         'GuideVideoController@store')->name('guide-videos.store');
+    Route::post('/guide-videos/{id}',    'GuideVideoController@update')->name('guide-videos.update');
+    Route::delete('/guide-videos/{id}',  'GuideVideoController@destroy')->name('guide-videos.destroy');
+    Route::get('/guide-videos/view',     'GuideVideoController@viewer')->name('guide-videos.viewer');
+});
