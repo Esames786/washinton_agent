@@ -80,18 +80,19 @@ class GuideVideoController extends Controller
         $rawFile  = $rawFiles['video'] ?? null;
 
         Log::info('GuideVideo store: request received', [
-            'user_id'        => Auth::id(),
-            'title'          => $request->input('title'),
-            'has_file'       => $request->hasFile('video'),
-            'all_files'      => array_keys($rawFiles),
-            'content_type'   => $request->header('Content-Type'),
-            'raw_file_class' => $rawFile ? get_class($rawFile) : null,
-            'raw_is_valid'   => $rawFile ? $rawFile->isValid() : null,
-            'raw_error_code' => $rawFile ? $rawFile->getError() : null,
-            'raw_real_path'  => $rawFile ? $rawFile->getRealPath() : null,
-            'raw_size'       => $rawFile ? $rawFile->getSize() : null,
-            'raw_mime'       => $rawFile ? $rawFile->getMimeType() : null,
-            'raw_orig_name'  => $rawFile ? $rawFile->getClientOriginalName() : null,
+            'user_id'          => Auth::id(),
+            'title'            => $request->input('title'),
+            'has_file'         => $request->hasFile('video'),
+            'all_files'        => array_keys($rawFiles),
+            'content_type'     => $request->header('Content-Type'),
+            'raw_file_class'   => $rawFile ? get_class($rawFile) : null,
+            'raw_is_valid'     => $rawFile ? $rawFile->isValid() : null,
+            'raw_error_code'   => $rawFile ? $rawFile->getError() : null,
+            'raw_orig_name'    => $rawFile ? $rawFile->getClientOriginalName() : null,
+            'raw_real_path'    => $rawFile ? (string) $rawFile->getRealPath() : null,
+            'upload_tmp_dir'   => ini_get('upload_tmp_dir'),
+            'sys_temp_dir'     => sys_get_temp_dir(),
+            'tmp_dir_writable' => is_writable(sys_get_temp_dir()),
         ]);
 
         $request->validate([
