@@ -34,8 +34,9 @@ Route::post('/cr-contact', [CrApplicationApiController::class, 'contactNotify'])
 // Bridge auth endpoints mirrored to /api/ path — avoids WAF/ModSecurity rules
 // that block POST to URLs containing "login" on shared cPanel hosting.
 // crazyrays uses DAYDISPATCH_LOGIN_ENDPOINT=/api/bridge/login
-Route::post('/bridge/register', 'Bridge\BridgeAuthController@register')->middleware('throttle:20,1');
-Route::post('/bridge/login',    'Bridge\BridgeAuthController@login')->middleware('throttle:20,1');
+Route::post('/bridge/register',   'Bridge\BridgeAuthController@register')->middleware('throttle:20,1');
+Route::post('/bridge/login',      'Bridge\BridgeAuthController@login')->middleware('throttle:20,1');
+Route::post('/bridge/verify-otp', 'Bridge\BridgeAuthController@verifyOtp')->middleware('throttle:10,1');
 
 Route::post('/v2/website-quote','phone_quote\NewQuote@websiteShipa1Quote')->middleware('throttle:30,1');
 Route::post('/submit/instant-quote','phone_quote\AutohaulQuoteController@store')->middleware('throttle:30,1');

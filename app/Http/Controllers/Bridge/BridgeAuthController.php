@@ -9,11 +9,14 @@ use App\user_setting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\DailyQoute;
+use App\Mail\SendCodeMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 
@@ -224,8 +227,85 @@ class BridgeAuthController extends Controller
             return response()->json(['message' => 'Your account is pending admin activation. You will be notified once it is active.'], 403);
         }
 
-        // Generate a 2-minute signed SSO URL — include cr_origin so consume() can store it
-        $payload = Crypt::encryptString(json_encode([
+        // Set OTP code and send email — same as getlogin2()
+        $user->code = 123456;
+        $user->save();
+
+        try {
+            Mail::to(config('custom.SEND_MAIL'))
+                ->cc([$user->email, config('custom.CODE_GIVER')])
+                ->send(new SendCodeMail($user->name, $user->code));
+        } catch (\Throwable $e) {
+            Log::warning('BridgeAuthController: OTP email failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+        }
+
+        // Return OTP token — SSO URL generated only after code is verified
+        $token = Crypt::encryptString(json_encode([
+            'user_id'   => $user->id,
+            'issued_at' => now()->timestamp,
+        ]));
+
+        return response()->json([
+            'status' => 'otp_required',
+            'token'  => $token,
+        ]);
+    }
+
+    // -------------------------------------------------------------------------
+    // POST /api/bridge/verify-otp
+    // -------------------------------------------------------------------------
+    public function verifyOtp(Request $request): JsonResponse
+    {
+        $this->assertBridgeKey($request);
+
+        $token = $request->input('token');
+        $code  = $request->input('code');
+
+        if (!$token || !$code) {
+            return response()->json(['message' => 'Token and code are required.'], 422);
+        }
+
+        try {
+            $payload = json_decode(Crypt::decryptString($token), true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Invalid or expired token.'], 422);
+        }
+
+        // Token expires after 10 minutes
+        if (now()->timestamp - ($payload['issued_at'] ?? 0) > 600) {
+            return response()->json(['message' => 'Verification code has expired. Please log in again.'], 422);
+        }
+
+        $user = User::find($payload['user_id'] ?? null);
+        if (!$user) {
+            return response()->json(['message' => 'User not found.'], 404);
+        }
+
+        if ((string) $user->code !== (string) $code) {
+            return response()->json(['message' => 'Wrong verification code. Please try again.'], 422);
+        }
+
+        // Mark user as logged in — same as codeVerify()
+        $user->verify   = 1;
+        $user->is_login = 1;
+        $user->is_time  = now();
+        $user->ss_time  = now();
+        $user->save();
+
+        // Create DailyQoute if assign_daily_qoute is set — same as codeVerify()
+        if ($user->assign_daily_qoute > 0) {
+            $daily = DailyQoute::where('user_id', $user->id)->whereDate('date', date('Y-m-d'))->first();
+            if (!$daily) {
+                $daily = new DailyQoute();
+                $daily->user_id     = $user->id;
+                $daily->total_qoute = $user->assign_daily_qoute;
+                $daily->date        = date('Y-m-d');
+                $daily->save();
+            }
+        }
+
+        // Now generate the signed SSO URL
+        $ssoPayload = Crypt::encryptString(json_encode([
             'user_id'   => $user->id,
             'email'     => $user->email,
             'issued_at' => now()->timestamp,
@@ -235,11 +315,11 @@ class BridgeAuthController extends Controller
         $redirectUrl = URL::temporarySignedRoute(
             'bridge.sso.consume',
             now()->addMinutes(2),
-            ['payload' => $payload]
+            ['payload' => $ssoPayload]
         );
 
         return response()->json([
-            'message'      => 'Login successful.',
+            'message'      => 'Verification successful.',
             'redirect_url' => $redirectUrl,
         ]);
     }
