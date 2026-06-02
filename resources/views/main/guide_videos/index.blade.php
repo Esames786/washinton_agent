@@ -5,6 +5,7 @@
 @endsection
 
 @section('content')
+@include('partials.mainsite_pages.return_function')
 <div class="page-header">
     <div class="text-secondary text-center text-uppercase w-100">
         <h1 class="my-4"><b>Guide Videos</b></h1>
