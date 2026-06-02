@@ -831,6 +831,18 @@ if (!function_exists('get_user_name123')) {
                                     <div class="">Guides</div>
                                 </a>
                             @endif
+                            @if(in_array('167', $phoneaccess) || Auth::user()->role == 1)
+                                <a class="dropdown-item d-flex" href="{{ route('guide-videos.index') }}">
+                                    <i class="fa fa-video-camera pr-2 mt-1 ml-1"></i>
+                                    <div class="">Guide Videos (Manage)</div>
+                                </a>
+                            @endif
+                            @if(in_array('168', $phoneaccess) || Auth::user()->role == 1)
+                                <a class="dropdown-item d-flex" href="{{ route('guide-videos.viewer') }}">
+                                    <i class="fa fa-play-circle pr-2 mt-1 ml-1"></i>
+                                    <div class="">Guide Videos</div>
+                                </a>
+                            @endif
                             @if(Auth::user()->role == 1 || Auth::user()->role == 3)
                                 <a class="dropdown-item d-flex" href="{{url('/jd_report')}}">
                                     <i class="fa fa-book pr-2 mt-1 ml-1"></i>
