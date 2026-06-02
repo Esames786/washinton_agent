@@ -75,20 +75,62 @@ class GuideVideoController extends Controller
     {
         abort_unless($this->hasAccess(self::PERMISSION_MANAGE), 403);
 
+        Log::info('GuideVideo store: request received', [
+            'user_id'      => Auth::id(),
+            'title'        => $request->input('title'),
+            'has_file'     => $request->hasFile('video'),
+            'all_files'    => array_keys($request->allFiles()),
+            'content_type' => $request->header('Content-Type'),
+        ]);
+
         $request->validate([
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
-            'video'       => 'required|file|mimetypes:video/mp4,video/avi,video/mov,video/wmv,video/webm|max:204800',
+            'video'       => 'required|file',
         ]);
 
-        $path = $request->file('video')->store('guide_videos', 'public');
+        $file = $request->file('video');
 
-        GuideVideo::create([
-            'title'       => $request->title,
-            'description' => $request->description,
-            'filename'    => $path,
-            'user_id'     => Auth::id(),
+        Log::info('GuideVideo store: file info', [
+            'file_present'    => (bool) $file,
+            'is_valid'        => $file ? $file->isValid() : null,
+            'error_code'      => $file ? $file->getError() : null,
+            'original_name'   => $file ? $file->getClientOriginalName() : null,
+            'mime_type'       => $file ? $file->getMimeType() : null,
+            'size_bytes'      => $file ? $file->getSize() : null,
+            'tmp_path'        => $file ? $file->getRealPath() : null,
         ]);
+
+        if (!$file || !$file->isValid()) {
+            Log::error('GuideVideo store: file invalid', [
+                'error_code' => $file ? $file->getError() : 'no file',
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Upload failed. Error code: ' . ($file ? $file->getError() : 'no file received'),
+            ], 422);
+        }
+
+        try {
+            $path = $file->store('guide_videos', 'public');
+            Log::info('GuideVideo store: file stored', ['path' => $path]);
+        } catch (\Throwable $e) {
+            Log::error('GuideVideo store: storage failed', ['error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Storage error: ' . $e->getMessage()], 500);
+        }
+
+        try {
+            GuideVideo::create([
+                'title'       => $request->title,
+                'description' => $request->description,
+                'filename'    => $path,
+                'user_id'     => Auth::id(),
+            ]);
+            Log::info('GuideVideo store: record created', ['path' => $path, 'user_id' => Auth::id()]);
+        } catch (\Throwable $e) {
+            Log::error('GuideVideo store: DB insert failed', ['error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Database error: ' . $e->getMessage()], 500);
+        }
 
         return response()->json(['success' => true, 'message' => 'Video uploaded successfully.']);
     }
@@ -102,12 +144,19 @@ class GuideVideoController extends Controller
         $request->validate([
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
-            'video'       => 'nullable|file|mimetypes:video/mp4,video/avi,video/mov,video/wmv,video/webm|max:204800',
+            'video'       => 'nullable|file',
         ]);
 
         if ($request->hasFile('video')) {
+            $file = $request->file('video');
+            if (!$file->isValid()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Upload failed. The file may exceed the server upload limit.',
+                ], 422);
+            }
             Storage::disk('public')->delete($video->filename);
-            $video->filename = $request->file('video')->store('guide_videos', 'public');
+            $video->filename = $file->store('guide_videos', 'public');
         }
 
         $video->title       = $request->title;
