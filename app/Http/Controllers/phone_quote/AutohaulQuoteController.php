@@ -9,11 +9,11 @@ use App\DailyQoute;
 use App\Http\Controllers\Controller;
 use App\InstantQuote;
 use App\Mail\HelloTransportInstantQuoteMail;
-use App\order_freight;
 use App\orderpayment;
 use App\OrderTakerQouteAccess;
 use App\report;
 use App\Services\CentralGateway\GatewayClient;
+use App\ShipaQuery;
 use App\singlereport;
 use App\User;
 use Illuminate\Http\Request;
@@ -47,7 +47,64 @@ class AutohaulQuoteController extends Controller
         }
 
         try {
-            // ── Order taker assignment ────────────────────────────────────────
+            // ── Normalize year/make/model — hualt sends them as single-element arrays ─
+            $year  = is_array($request['year'])  ? ($request['year'][0]  ?? '') : ($request['year']  ?? '');
+            $make  = is_array($request['make'])  ? ($request['make'][0]  ?? '') : ($request['make']  ?? '');
+            $model = is_array($request['model']) ? ($request['model'][0] ?? '') : ($request['model'] ?? '');
+            $ymk   = $request['ymk'] ?? trim("$year $make $model");
+
+            // ── Step 1: Save to shipa_query (mirrors websiteQuery) ────────────
+            $query = new ShipaQuery;
+            $query->oname            = $request['oname'];
+            $query->oemail           = $request['oemail'];
+            $query->ophone           = $request['ophone'];
+            $query->ymk              = $ymk;
+            $query->year             = $year;
+            $query->type             = $request['type'] ?? null;
+            $query->vehicle_opt      = $request['vehicle_opt'] ?? null;
+            $query->model            = $model;
+            $query->make             = $make;
+            $query->condition        = $request['condition'] ?? null;
+            $query->originzsc        = $request['originzsc'];
+            $query->originzip        = $request['originzip'];
+            $query->originstate      = $request['originstate'];
+            $query->origincity       = $request['origincity'];
+            $query->destinationzsc   = $request['destinationzsc'];
+            $query->destinationzip   = $request['destinationzip'];
+            $query->destinationstate = $request['destinationstate'];
+            $query->destinationcity  = $request['destinationcity'];
+            $query->add_info         = $request['add_info'] ?? null;
+            $query->transport        = $request['transport'] ?? null;
+            $query->shippingdate     = $request['shippingdate'] ?? null;
+            $query->car_type         = 1;
+            $query->paneltype        = 4;
+            $query->cname            = $request['cname']   ?? $request['oname']  ?? null;
+            $query->cemail           = $request['cemail']  ?? $request['oemail'] ?? null;
+            $query->main_ph          = $request['main_ph'] ?? $request['ophone'] ?? null;
+            $query->length_ft        = $request['length_ft'] ?? null;
+            $query->length_in        = $request['length_in'] ?? null;
+            $query->width_ft         = $request['width_ft'] ?? null;
+            $query->width_in         = $request['width_in'] ?? null;
+            $query->height_ft        = $request['height_ft'] ?? null;
+            $query->height_in        = $request['height_in'] ?? null;
+            $query->weight           = $request['weight'] ?? null;
+            $query->load_method      = $request['load_method'] ?? null;
+            $query->unload_method    = $request['unload_method'] ?? null;
+            $query->ip_address       = $request['ip'] ?? null;
+            $query->ipcity           = $request['ipcity'] ?? null;
+            $query->ipregion         = $request['ipregion'] ?? null;
+            $query->ipcountry        = $request['ipcountry'] ?? null;
+            $query->iploc            = $request['iploc'] ?? null;
+            $query->ippostal         = $request['ippostal'] ?? null;
+            $query->pstatus          = 0;
+            $query->source           = 'HelloTransport';
+            $query->roro             = $request['roro'] ?? null;
+            $query->heavy_type       = $request['heavy_type'] ?? null;
+            $query->category         = $request['category'] ?? null;
+            $query->subcategory      = $request['subcategory'] ?? null;
+            $query->save();
+
+            // ── Step 2: Pick order taker (DailyQoute round-robin) ────────────
             $user_iddd = null;
 
             $user = DailyQoute::with('user.userRole')
@@ -86,157 +143,105 @@ class AutohaulQuoteController extends Controller
                         }
                     }
                 }
+                $user_iddd = $user->user->id;
             } else {
-                $user = User::with('userRole')
+                $last = AutoOrder::where('paneltype', 4)->orderBy('id', 'DESC')->first();
+                $last_user_id = $last ? $last->order_taker_id : null;
+
+                $eligibleUsers = User::with('userRole', 'user_setting')
+                    ->where('role', 2)
                     ->where('deleted', 0)
-                    ->whereHas('userRole', function ($q) {
-                        $q->where('name', 'Order Taker')->orWhere('name', 'Seller Agent');
+                    ->whereHas('user_setting', function ($q) {
+                        $q->where('penal_type', 2);
                     })
-                    ->inRandomOrder()
-                    ->first();
+                    ->orderBy('id')
+                    ->get();
+
+                $nextUser = null;
+                if ($last_user_id) {
+                    $nextUser = $eligibleUsers->first(function ($u) use ($last_user_id) {
+                        return $u->id > $last_user_id;
+                    });
+                }
+                if (!$nextUser) {
+                    $nextUser = $eligibleUsers->first();
+                }
+                if ($nextUser) {
+                    $user_iddd = $nextUser->id;
+                }
             }
 
-            $last = AutoOrder::where('paneltype', 4)->orderBy('id', 'DESC')->first();
-            $last_user_id = $last ? $last->order_taker_id : null;
-
-            $eligibleUsers = User::with('userRole', 'user_setting')
-                ->where('role', 2)
-                ->where('deleted', 0)
-                ->whereHas('user_setting', function ($q) {
-                    $q->where('penal_type', 2);
-                })
-                ->orderBy('id')
-                ->get();
-
-            $nextUser = null;
-            if ($last_user_id) {
-                $nextUser = $eligibleUsers->first(function ($u) use ($last_user_id) {
-                    return $u->id > $last_user_id;
-                });
-            }
-
-            if (!$nextUser) {
-                $nextUser = $eligibleUsers->first();
-            }
-
-            if ($nextUser) {
-                $user_iddd = $nextUser->id;
-            }
-
-            // ── Normalize year/make/model — hualt sends them as single-element arrays ─
-            $year  = is_array($request['year'])  ? ($request['year'][0]  ?? '') : ($request['year']  ?? '');
-            $make  = is_array($request['make'])  ? ($request['make'][0]  ?? '') : ($request['make']  ?? '');
-            $model = is_array($request['model']) ? ($request['model'][0] ?? '') : ($request['model'] ?? '');
-            $ymk   = $request['ymk'] ?? trim("$year $make $model");
-
-            // ── Create AutoOrder (payment placeholder = 0, back-filled after pricing) ─
-            $order = AutoOrder::orderBy('id', 'DESC')->first();
-            $data = new AutoOrder;
-            $data->id               = $order->id + 1;
+            // ── Step 3: Create AutoOrder from ShipaQuery (mirrors shipa1_queryAssignDirect) ─
+            $data = new AutoOrder();
             $data->order_taker_id   = $user_iddd;
-            $data->oname            = $request['oname'];
-            $data->oemail           = $request['oemail'];
-            $data->ophone           = $request['ophone'];
-            $data->ymk              = $ymk;
-            $data->year             = $year;
-            $data->type             = $request['type'] ?? null;
-            $data->vehicle_opt      = $request['vehicle_opt'] ?? null;
-            $data->model            = $model;
-            $data->make             = $make;
-            $data->condition        = $request['condition'];
-            $data->originzsc        = $request['originzsc'];
-            $data->originzip        = $request['originzip'];
-            $data->originstate      = $request['originstate'];
-            $data->origincity       = $request['origincity'];
-            $data->destinationzsc   = $request['destinationzsc'];
-            $data->destinationzip   = $request['destinationzip'];
-            $data->destinationstate = $request['destinationstate'];
-            $data->destinationcity  = $request['destinationcity'];
-            $data->add_info         = $request['add_info'] ?? null;
-            $data->transport        = $request['transport'] ?? null;
-            $data->shippingdate     = $request['shippingdate'] ?? null;
+            $data->oname            = $query->oname;
+            $data->oemail           = $query->oemail;
+            $data->ophone           = $query->ophone;
+            $data->main_ph          = $query->main_ph;
+            $data->ymk              = $query->ymk;
+            $data->year             = $query->year;
+            $data->make             = $query->make;
+            $data->model            = $query->model;
+            $data->type             = $query->type;
+            $data->vehicle_opt      = $query->vehicle_opt;
+            $data->condition        = $query->condition;
             $data->car_type         = 1;
+            $data->transport        = $query->transport;
+            $data->shippingdate     = $query->shippingdate ?? null;
+            $data->originzsc        = $query->originzsc;
+            $data->originzip        = $query->originzip;
+            $data->originstate      = $query->originstate;
+            $data->origincity       = $query->origincity;
+            $data->destinationzsc   = $query->destinationzsc;
+            $data->destinationzip   = $query->destinationzip;
+            $data->destinationstate = $query->destinationstate;
+            $data->destinationcity  = $query->destinationcity;
+            $data->add_info         = $query->add_info;
+            $data->cname            = $query->cname;
+            $data->cemail           = $query->cemail;
             $data->paneltype        = 4;
-            $data->cname            = $request['cname']   ?? $request['oname']  ?? null;
-            $data->cemail           = $request['cemail']  ?? $request['oemail'] ?? null;
-            $data->main_ph          = $request['main_ph'] ?? $request['ophone'] ?? null;
-            $data->length_ft        = $request['length_ft'] ?? null;
-            $data->length_in        = $request['length_in'] ?? null;
-            $data->width_ft         = $request['width_ft'] ?? null;
-            $data->width_in         = $request['width_in'] ?? null;
-            $data->height_ft        = $request['height_ft'] ?? null;
-            $data->height_in        = $request['height_in'] ?? null;
-            $data->weight           = $request['weight'] ?? null;
-            $data->load_method      = $request['load_method'] ?? null;
-            $data->unload_method    = $request['unload_method'] ?? null;
-            $data->ip_address       = $request['ip'] ?? null;
-            $data->ip_details       = $request['ip_details'] ?? null;
-            $data->ipcity           = $request['ipcity'] ?? null;
-            $data->ipregion         = $request['ipregion'] ?? null;
-            $data->ipcountry        = $request['ipcountry'] ?? null;
-            $data->iploc            = $request['iploc'] ?? null;
-            $data->ippostal         = $request['ippostal'] ?? null;
-            $data->image            = $request['image'] ?? null;
-            $data->available_at_auction = $request['available_at_auction'] ?? null;
-            $data->modification     = $request['modification'] ?? null;
-            $data->modify_info      = $request['modify_info'] ?? null;
-            $data->link             = $request['link'] ?? null;
-            $data->rv_type          = $request['rv_type'] ?? null;
-            $data->boat_on_trailer  = $request['boat_on_trailer'] ?? null;
-            $data->pstatus          = 0;
+            $data->ip_address       = $query->ip_address;
+            $data->ipcity           = $query->ipcity;
+            $data->ipregion         = $query->ipregion;
+            $data->ipcountry        = $query->ipcountry;
+            $data->iploc            = $query->iploc ?? null;
+            $data->ippostal         = $query->ippostal;
+            $data->length_ft        = $query->length_ft ?? null;
+            $data->width_ft         = $query->width_ft  ?? null;
+            $data->height_ft        = $query->height_ft ?? null;
+            $data->weight           = $query->weight    ?? null;
             $data->source           = 'HelloTransport';
-            $data->roro             = $request['roro'] ?? null;
-            $data->heavy_type       = $request['heavy_type'] ?? null;
-            $data->category         = $request['category'] ?? null;
-            $data->subcategory      = $request['subcategory'] ?? null;
-            $data->payment          = 0;
+            $data->pstatus          = 0;
             $data->request_hauling  = 1;
+            $data->payment          = 0;
             $data->save();
 
-            // ── Companion records ─────────────────────────────────────────────
-            $op = new orderpayment;
+            // ── Companion records (same as shipa1_queryAssignDirect) ──────────
+            $op = new orderpayment();
             $op->orderId = $data->id;
             $op->save();
 
-            $cc = new creditcard;
+            $cc = new creditcard();
             $cc->orderId = $data->id;
             $cc->save();
 
-            $rpt = new report;
-            $rpt->userId  = 1;
+            $rpt = new report();
+            $rpt->userId  = $user_iddd ?? 1;
             $rpt->orderId = $data->id;
             $rpt->pstatus = 0;
             $rpt->save();
 
-            $sr = new singlereport;
-            $sr->userId  = 1;
+            $sr = new singlereport();
+            $sr->userId  = $user_iddd ?? 1;
             $sr->orderId = $data->id;
             $sr->pstatus = 0;
             $sr->save();
 
-            $of = new order_freight;
-            $of->order_id              = $data->id;
-            $of->frieght_class         = $request['frieght_class'] ?? null;
-            $of->equipment_type        = $request['equipment_type'] ?? null;
-            $of->trailer_specification = $request['trailer_specification'] ?? null;
-            $of->ex_pickup_date        = $request['ex_pickup_date'] ?? null;
-            $of->ex_pickup_time        = $request['ex_pickup_time'] ?? null;
-            $of->ex_delivery_date      = $request['ex_delivery_date'] ?? null;
-            $of->ex_delivery_time      = $request['ex_delivery_time'] ?? null;
-            $of->commodity_detail      = $request['commodity_detail'] ?? null;
-            $of->commodity_unit        = $request['commodity_unit'] ?? null;
-            $of->pick_up_services      = $request['pick_up_services'] ?? null;
-            $of->deliver_services      = $request['deliver_services'] ?? null;
-            $of->shipment_prefences    = $request['category'] ?? null;
-            $of->stackable             = $request['stackable'] ?? 0;
-            $of->hazardous             = $request['hazardous'] ?? 0;
-            $of->handling_unit         = $request['handling_unit'] ?? 0;
-            $of->protect_from_freezing = $request['protect_from_freezing'] ?? 0;
-            $of->sort_segregate        = $request['sort_segregate'] ?? 0;
-            $of->blind_shipment        = $request['blind_shipment'] ?? 0;
-            $of->save();
+            // Mark ShipaQuery as assigned
+            $query->user_id = $user_iddd;
+            $query->save();
 
-            // ── Get pricing from central-gateway ─────────────────────────────
+            // ── Step 4: Get pricing from central-gateway ──────────────────────
             $gateway = new GatewayClient();
             $pricingResult = $gateway->quote([
                 'platform_code' => config('gateway.autohaul.platform'),
@@ -268,7 +273,7 @@ class AutohaulQuoteController extends Controller
 
             $pricingBody = $pricingResult['body'] ?? [];
 
-            // ── Save InstantQuote ─────────────────────────────────────────────
+            // ── Step 5: Save InstantQuote ─────────────────────────────────────
             $q = new InstantQuote();
             $q->origin_location      = $request['originzsc'];
             $q->destination_location = $request['destinationzsc'];
@@ -296,7 +301,7 @@ class AutohaulQuoteController extends Controller
             $q->order_taker_id       = $user_iddd;
             $q->save();
 
-            // Set display-only fields for email (not DB columns — set after save)
+            // Set display-only fields for email (not DB columns)
             $q->condition = $request['condition'] ?? null;
             $q->transport = $request['transport'] ?? null;
 
@@ -304,7 +309,7 @@ class AutohaulQuoteController extends Controller
             $data->payment = $q->offer_open ?? 0;
             $data->save();
 
-            // ── Send price email (failure must not kill the order) ────────────
+            // ── Step 6: Send price email ──────────────────────────────────────
             $recipientEmail = $q->customer_email ?? $request['oemail'] ?? null;
             if (filter_var($recipientEmail, FILTER_VALIDATE_EMAIL)) {
                 try {
@@ -329,6 +334,7 @@ class AutohaulQuoteController extends Controller
                 'status'      => true,
                 'status_code' => 201,
             ]);
+
         } catch (\Exception $e) {
             Log::error('AutohaulQuoteController::store failed', [
                 'error' => $e->getMessage(),
@@ -355,10 +361,10 @@ class AutohaulQuoteController extends Controller
             $count_save->save();
         } else {
             $count_save = new count_day();
-            $count_save->user_id    = $user_id;
-            $count_save->order_id   = $order_id;
+            $count_save->user_id       = $user_id;
+            $count_save->order_id      = $order_id;
             $count_save->expected_date = !empty($expected_date) ? $expected_date : date('Y-m-d H:i:s');
-            $count_save->pstatus    = $pstatus;
+            $count_save->pstatus       = $pstatus;
             $count_save->save();
         }
     }
