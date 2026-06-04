@@ -551,6 +551,15 @@ if (!function_exists('get_user_name123')) {
                         </select>
                     </form>
                 {{-- @endif --}}
+                @if(Auth::user()->role==1 || in_array('169', $phoneaccess))
+                <div class="header_ri">
+                    <div class="dropdown header-fullscreen">
+                        <a class="nav-link icon full-screen-link p-0" href="{{ route('ringcentral.portal') }}" target="RingCentralPortal" title="Open R-Dialer">
+                            <button class="btn-sm text-white border-0" style="background:#705ec8; border-color:transparent;">Access Dialer</button>
+                        </a>
+                    </div>
+                </div>
+                @endif
                 @if(Auth::user()->role==1)
                <div class="header_ri">
                     <div class="dropdown   header-fullscreen">

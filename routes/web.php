@@ -1222,13 +1222,13 @@ Route::group(['middleware' => ['auth']], function () {
 
     // ── RingCentral R-Dialer (auth-protected) ────────────────────────────────
     Route::prefix('r')->group(function () {
-        Route::get('/auth',                    'RingCentralController@authenticate');
-        Route::get('/portal',                  'RingCentralController@ring_central_portal')->middleware('ringcentral.access');
-        Route::get('/dialer',                  'RingCentralController@dialer')->middleware('ringcentral.access');
-        Route::get('/monitor',                 'RingCentralController@monitor');
-        Route::post('/logout',                 'RingCentralController@logout');
-        Route::post('/reconnect',              'RingCentralController@reconnect');
-        Route::get('/check-connection-status', 'RingCentralController@checkConnectionStatus');
+        Route::get('/auth',                    'RingCentralController@authenticate')        ->name('ringcentral.auth');
+        Route::get('/portal',                  'RingCentralController@ring_central_portal') ->name('ringcentral.portal')->middleware('ringcentral.access');
+        Route::get('/dialer',                  'RingCentralController@dialer')              ->name('ringcentral.dialer')->middleware('ringcentral.access');
+        Route::get('/monitor',                 'RingCentralController@monitor')             ->name('ringcentral.monitor');
+        Route::post('/logout',                 'RingCentralController@logout')              ->name('ringcentral.logout');
+        Route::post('/reconnect',              'RingCentralController@reconnect')           ->name('ringcentral.reconnect');
+        Route::get('/check-connection-status', 'RingCentralController@checkConnectionStatus')->name('ringcentral.check-connection-status');
     });
 
     Route::get('/view_template', 'TemplateController@index')->name('view_template');
