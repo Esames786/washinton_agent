@@ -1251,12 +1251,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/templates',                                                          'RingCentralApiController@createSmsTemplate')         ->name('ringcentral.api.templates.create');
         Route::post('/messages/mark-read',                                                 'RingCentralApiController@markMessagesRead')          ->name('ringcentral.api.messages.mark-read');
         Route::get('/attachment',                                                          'RingCentralApiController@getAttachment')             ->name('ringcentral.api.attachment');
-        Route::get('/recording/{recordingId}',                                             'RingCentralApiController@getRecording')              ->name('ringcentral.api.recording');
+        Route::get('/recording/{id}',                                                       'RingCentralApiController@getRecording')              ->name('ringcentral.api.recording');
         Route::get('/phone-numbers',                                                       'RingCentralApiController@getPhoneNumbers')           ->name('ringcentral.api.phone-numbers');
         Route::get('/voicemails',                                                          'RingCentralApiController@getVoicemails')             ->name('ringcentral.api.voicemails');
         Route::post('/voicemails/mark-status',                                             'RingCentralApiController@markVoicemailsStatus')      ->name('ringcentral.api.voicemails.mark-status');
-        Route::get('/voicemail/{voicemailId}',                                             'RingCentralApiController@getVoicemail')              ->name('ringcentral.api.voicemail');
-        Route::delete('/voicemail/{voicemailId}',                                          'RingCentralApiController@deleteVoicemail')           ->name('ringcentral.api.voicemail.delete');
+        Route::get('/voicemail/{id}',                                                      'RingCentralApiController@getVoicemail')              ->name('ringcentral.api.voicemail');
+        Route::delete('/voicemail/{id}',                                                   'RingCentralApiController@deleteVoicemail')           ->name('ringcentral.api.voicemail.delete');
         Route::get('/recordings',                                                          'RingCentralApiController@getCallRecordings')         ->name('ringcentral.refreshRecordings');
         Route::get('/events/stream',                                                       'RingCentralApiController@streamWebhookEvents')       ->name('ringcentral.api.events.stream');
         Route::get('/webphone-token',                                                      'RingCentralApiController@webphoneToken')             ->name('ringcentral.api.webphone-token');

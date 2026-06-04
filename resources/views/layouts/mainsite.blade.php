@@ -1671,6 +1671,31 @@ Agent: Thank you for your cooperation. We appreciate your attention to these det
 
     @include('partials.mainsite_p.foot')
 
+    <script>
+        window.RC_PORTAL_URL = "{{ route('ringcentral.portal') }}";
+        window.RC_PORTAL_WINDOW_NAME = "RingCentralPortal";
+    </script>
+    <script src="/js/ringcentral-portal-bridge.js?v={{ filemtime(public_path('js/ringcentral-portal-bridge.js')) }}"></script>
+
+    @if(Auth::check())
+        @php
+            $layoutRcUser  = Auth::user();
+            $layoutHasRDialer = $layoutRcUser->role == 1
+                || in_array('169', explode(',', $layoutRcUser->emp_access_phone  ?? ''))
+                || in_array('169', explode(',', $layoutRcUser->emp_access_web    ?? ''))
+                || in_array('169', explode(',', $layoutRcUser->emp_access_test   ?? ''))
+                || in_array('169', explode(',', $layoutRcUser->panel_type_4      ?? ''))
+                || in_array('169', explode(',', $layoutRcUser->panel_type_5      ?? ''))
+                || in_array('169', explode(',', $layoutRcUser->panel_type_6      ?? ''));
+        @endphp
+        @if($layoutHasRDialer)
+            <script>
+                window.RC_GLOBAL_WEBHOOK_STREAM_URL = "{{ route('ringcentral.api.events.stream') }}";
+            </script>
+            <script src="/js/ringcentral-webhook-global.js"></script>
+        @endif
+    @endif
+
     @yield('extraScript')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
