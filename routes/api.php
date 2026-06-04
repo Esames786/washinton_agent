@@ -82,7 +82,7 @@ Route::middleware(['auth:sanctum'])->prefix('r')->group(function () {
     Route::post('/call-control/merge',                                                'RingCentralApiController@mergeTelephonySessions')     ->name('ringcentral.api.call-control.merge');
     Route::post('/telephony/conference',                                              'RingCentralApiController@createTelephonyConference')  ->name('ringcentral.api.conference');
     Route::post('/telephony/sessions/{sessionId}/parties/bring-in',                  'RingCentralApiController@bringInParty')               ->name('ringcentral.api.bring-in');
-    Route::post('/call-control/sessions/{sessionId}/parties/{partyId}/switch-to-web','RingCentralApiController@switchToWebPhone')           ->name('ringcentral.api.switch-to-web');
+    Route::post('/call-control/sessions/{sessionId}/parties/{partyId}/switch-to-web','RingCentralApiController@switchToWebPhone')           ->name('ringcentral.api.call-control.switch-to-web');
     Route::get('/blocked-numbers',                                                    'RingCentralApiController@getBlockedNumbers')          ->name('ringcentral.api.blocked-numbers.list');
     Route::post('/blocked-numbers',                                                   'RingCentralApiController@addBlockedNumber')           ->name('ringcentral.api.blocked-numbers.add');
     Route::delete('/blocked-numbers/{id}',                                            'RingCentralApiController@removeBlockedNumber')        ->name('ringcentral.api.blocked-numbers.remove');
