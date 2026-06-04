@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\OrderPricingController;
+use App\Http\Controllers\RingCentralApiController;
 use App\Http\Controllers\phone_quote\neworder\NewOrder;
 use App\Http\Controllers\SiteSettingsController;
 use App\Http\Controllers\EmailTemplateController;
@@ -1220,7 +1221,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/approaching/save/email', 'phone_quote\neworder\NewOrder@approaching_save_email')->name('approaching.save.email');
 
 
-    // ── RingCentral R-Dialer (auth-protected) ────────────────────────────────
+    // ── RingCentral R-Dialer portal/dialer (session auth) ────────────────────
     Route::prefix('r')->group(function () {
         Route::get('/auth',                    'RingCentralController@authenticate')        ->name('ringcentral.auth');
         Route::get('/portal',                  'RingCentralController@ring_central_portal') ->name('ringcentral.portal')->middleware('ringcentral.access');
@@ -1229,6 +1230,45 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/logout',                 'RingCentralController@logout')              ->name('ringcentral.logout');
         Route::post('/reconnect',              'RingCentralController@reconnect')           ->name('ringcentral.reconnect');
         Route::get('/check-connection-status', 'RingCentralController@checkConnectionStatus')->name('ringcentral.check-connection-status');
+    });
+
+    // ── RingCentral R-Dialer API (session auth — web.php, NOT api.php) ────────
+    Route::prefix('api/r')->group(function () {
+        Route::get('/', fn() => response()->noContent())->name('ringcentral.api.base');
+        Route::post('/send-sms',                                                           'RingCentralApiController@sendSMS')                  ->name('ringcentral.api.send-sms');
+        Route::post('/telephony/conference',                                               'RingCentralApiController@createConference')          ->name('ringcentral.api.conference');
+        Route::post('/telephony/sessions/{sessionId}/parties/bring-in',                   'RingCentralApiController@bringInParty')              ->name('ringcentral.api.bring-in');
+        Route::get('/call-control/sessions',                                               'RingCentralApiController@callControlSessions')       ->name('ringcentral.api.call-control.sessions');
+        Route::post('/call-control/sessions/{sessionId}/parties/{partyId}/transfer',      'RingCentralApiController@callControlTransfer')       ->name('ringcentral.api.call-control.transfer');
+        Route::delete('/call-control/sessions/{sessionId}/parties/{partyId}',             'RingCentralApiController@callControlRemoveParty')    ->name('ringcentral.api.call-control.remove-party');
+        Route::post('/call-control/merge',                                                 'RingCentralApiController@callControlMerge')          ->name('ringcentral.api.call-control.merge');
+        Route::post('/call-control/sessions/{sessionId}/parties/{partyId}/switch-to-web', 'RingCentralApiController@callControlSwitchToWeb')    ->name('ringcentral.api.call-control.switch-to-web');
+        Route::get('/calls',                                                               'RingCentralApiController@getCallHistory')            ->name('ringcentral.api.calls');
+        Route::get('/calls/summary',                                                       'RingCentralApiController@getCallsSummary')           ->name('ringcentral.api.calls.summary');
+        Route::post('/calls/mark-seen',                                                    'RingCentralApiController@markCallsSeen')             ->name('ringcentral.api.calls.mark-seen');
+        Route::get('/messages',                                                            'RingCentralApiController@getMessageHistory')         ->name('ringcentral.api.messages');
+        Route::get('/templates',                                                           'RingCentralApiController@listSmsTemplates')          ->name('ringcentral.api.templates');
+        Route::post('/templates',                                                          'RingCentralApiController@createSmsTemplate')         ->name('ringcentral.api.templates.create');
+        Route::post('/messages/mark-read',                                                 'RingCentralApiController@markMessagesRead')          ->name('ringcentral.api.messages.mark-read');
+        Route::get('/attachment',                                                          'RingCentralApiController@getAttachment')             ->name('ringcentral.api.attachment');
+        Route::get('/recording/{recordingId}',                                             'RingCentralApiController@getRecording')              ->name('ringcentral.api.recording');
+        Route::get('/phone-numbers',                                                       'RingCentralApiController@getPhoneNumbers')           ->name('ringcentral.api.phone-numbers');
+        Route::get('/voicemails',                                                          'RingCentralApiController@getVoicemails')             ->name('ringcentral.api.voicemails');
+        Route::post('/voicemails/mark-status',                                             'RingCentralApiController@markVoicemailsStatus')      ->name('ringcentral.api.voicemails.mark-status');
+        Route::get('/voicemail/{voicemailId}',                                             'RingCentralApiController@getVoicemail')              ->name('ringcentral.api.voicemail');
+        Route::delete('/voicemail/{voicemailId}',                                          'RingCentralApiController@deleteVoicemail')           ->name('ringcentral.api.voicemail.delete');
+        Route::get('/recordings',                                                          'RingCentralApiController@getCallRecordings')         ->name('ringcentral.refreshRecordings');
+        Route::get('/events/stream',                                                       'RingCentralApiController@streamWebhookEvents')       ->name('ringcentral.api.events.stream');
+        Route::get('/webphone-token',                                                      'RingCentralApiController@webphoneToken')             ->name('ringcentral.api.webphone-token');
+        Route::get('/webphone-token-timer',                                                'RingCentralApiController@webphoneTokenTimer')        ->name('ringcentral.api.webphone-token-timer');
+        Route::post('/close-instance',                                                     'RingCentralApiController@closeInstance')             ->name('ringcentral.api.close-instance');
+        Route::get('/blocked-numbers',                                                     'RingCentralApiController@listBlockedNumbers')        ->name('ringcentral.api.blocked-numbers.list');
+        Route::post('/blocked-numbers',                                                    'RingCentralApiController@addBlockedNumber')          ->name('ringcentral.api.blocked-numbers.add');
+        Route::delete('/blocked-numbers/{id}',                                             'RingCentralApiController@removeBlockedNumber')       ->name('ringcentral.api.blocked-numbers.remove');
+        Route::post('/blocked-numbers/check',                                              'RingCentralApiController@checkBlockedNumber')        ->name('ringcentral.api.blocked-numbers.check');
+        Route::get('/blocked-numbers/settings',                                            'RingCentralApiController@getBlockedNumberSettings')  ->name('ringcentral.api.blocked-numbers.settings.get');
+        Route::patch('/blocked-numbers/settings',                                          'RingCentralApiController@updateBlockedNumberSettings')->name('ringcentral.api.blocked-numbers.settings.update');
+        Route::get('/blocked-numbers/debug',                                               'RingCentralApiController@debugBlockedNumbers')       ->name('ringcentral.api.blocked-numbers.debug');
     });
 
     Route::get('/view_template', 'TemplateController@index')->name('view_template');
