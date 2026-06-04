@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#0a0a0a" rx="60"/>
+
+  <!-- Gold outer ring accent -->
+  <rect x="18" y="18" width="476" height="476" rx="46" fill="none" stroke="#c9a84c" stroke-width="6"/>
+
+  <!-- Truck icon (simplified semi-truck silhouette) -->
+  <!-- Trailer body -->
+  <rect x="80" y="168" width="220" height="120" rx="8" fill="#c9a84c"/>
+  <!-- Cab body -->
+  <rect x="300" y="196" width="110" height="92" rx="8" fill="#c9a84c"/>
+  <!-- Cab roof curve -->
+  <path d="M300 196 Q300 168 328 168 L390 168 L410 196 Z" fill="#c9a84c"/>
+  <!-- Windshield -->
+  <path d="M308 198 Q308 176 330 176 L386 176 L402 198 Z" fill="#0a0a0a" opacity="0.6"/>
+  <!-- Cab door window -->
+  <rect x="312" y="204" width="46" height="44" rx="4" fill="#0a0a0a" opacity="0.5"/>
+  <!-- Undercarriage bar -->
+  <rect x="80" y="288" width="340" height="12" rx="4" fill="#a07828"/>
+  <!-- Wheels -->
+  <circle cx="148" cy="316" r="28" fill="#1a1a1a" stroke="#c9a84c" stroke-width="6"/>
+  <circle cx="148" cy="316" r="12" fill="#c9a84c"/>
+  <circle cx="228" cy="316" r="28" fill="#1a1a1a" stroke="#c9a84c" stroke-width="6"/>
+  <circle cx="228" cy="316" r="12" fill="#c9a84c"/>
+  <circle cx="352" cy="316" r="28" fill="#1a1a1a" stroke="#c9a84c" stroke-width="6"/>
+  <circle cx="352" cy="316" r="12" fill="#c9a84c"/>
+  <!-- Exhaust stack -->
+  <rect x="292" y="136" width="14" height="60" rx="4" fill="#c9a84c"/>
+  <!-- Stack smoke dots -->
+  <circle cx="299" cy="126" r="7" fill="#c9a84c" opacity="0.5"/>
+  <circle cx="304" cy="113" r="5" fill="#c9a84c" opacity="0.3"/>
+
+  <!-- "HELLO" text -->
+  <text x="256" y="400" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="52" fill="#c9a84c" text-anchor="middle" letter-spacing="8">HELLO</text>
+  <!-- "TRANSPORT" text -->
+  <text x="256" y="448" font-family="Arial, sans-serif" font-weight="400" font-size="22" fill="#888888" text-anchor="middle" letter-spacing="5">TRANSPORT</text>
+
+  <!-- Top thin gold line accent -->
+  <line x1="80" y1="140" x2="432" y2="140" stroke="#c9a84c" stroke-width="2" opacity="0.4"/>
+  <line x1="80" y1="354" x2="432" y2="354" stroke="#c9a84c" stroke-width="2" opacity="0.4"/>
+</svg>

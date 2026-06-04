@@ -93,6 +93,11 @@ Route::get('/Privacy-Policy', 'FrontendController@privacy')->name('Frontend.priv
 Route::get('/services', 'FrontendController@services')->name('Frontend.services');
 Route::get('/services/{slug}', 'FrontendController@serviceShow')->name('Frontend.services.show');
 
+// RingCentral OAuth callback (public — no auth)
+Route::get('/here', 'RingCentralController@callback');
+// RingCentral webhook (public — validated by Verification-Token header)
+Route::match(['get', 'post'], '/r/webhook', 'RingCentralWebhookController@handle');
+
 // Keep login accessible at /loginn
 Route::get('/loginn', 'WelcomeController@loginn');
 Route::get('/login_mohsin', 'WelcomeController@login_mohsin');
@@ -1215,10 +1220,16 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/approaching/save/email', 'phone_quote\neworder\NewOrder@approaching_save_email')->name('approaching.save.email');
 
 
-    Route::get('/ringcentral/auth', 'RingCentralController@authenticate');
-    Route::get('/ringcentral/callback','RingCentralController@callback');
-    Route::get('/callback', 'OAuthController@handleCallback');
-    Route::get('/ring_central_portal', 'RingCentralController@ring_central_portal');
+    // ── RingCentral R-Dialer (auth-protected) ────────────────────────────────
+    Route::prefix('r')->group(function () {
+        Route::get('/auth',                    'RingCentralController@authenticate');
+        Route::get('/portal',                  'RingCentralController@ring_central_portal')->middleware('ringcentral.access');
+        Route::get('/dialer',                  'RingCentralController@dialer')->middleware('ringcentral.access');
+        Route::get('/monitor',                 'RingCentralController@monitor');
+        Route::post('/logout',                 'RingCentralController@logout');
+        Route::post('/reconnect',              'RingCentralController@reconnect');
+        Route::get('/check-connection-status', 'RingCentralController@checkConnectionStatus');
+    });
 
     Route::get('/view_template', 'TemplateController@index')->name('view_template');
     Route::get('/template_datatable', 'TemplateController@template_datatable')->name('template_datatable');

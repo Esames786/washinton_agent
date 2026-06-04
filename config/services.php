@@ -49,4 +49,16 @@ return [
         'secret_key' => env('RECAPTCHA_SECRET_KEY', ''),
     ],
 
+    'ringcentral' => [
+        'client_id'                        => env('RINGCENTRAL_CLIENT_ID'),
+        'client_secret'                    => env('RINGCENTRAL_CLIENT_SECRET'),
+        'server'                           => env('RINGCENTRAL_SERVER', 'https://platform.ringcentral.com'),
+        'redirect_url'                     => env('RINGCENTRAL_REDIRECT_URL'),
+        'webhook_url'                      => env('RINGCENTRAL_WEBHOOK_URL'),
+        'webhook_secret'                   => env('RINGCENTRAL_WEBHOOK_SECRET', ''),
+        'webhook_scope_batch_window_ms'    => env('RINGCENTRAL_WEBHOOK_SCOPE_BATCH_WINDOW_MS', 800),
+        'webhook_event_history_size'       => env('RINGCENTRAL_WEBHOOK_EVENT_HISTORY_SIZE', 120),
+        'token_refresh_window_seconds'     => env('RINGCENTRAL_TOKEN_REFRESH_WINDOW_SECONDS', 60),
+    ],
+
 ];

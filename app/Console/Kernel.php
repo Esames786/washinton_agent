@@ -35,6 +35,16 @@ class Kernel extends ConsoleKernel
             ->runInBackground()
             ->withoutOverlapping()
             ->timezone('America/New_York');
+
+        $schedule->command('ringcentral:sync-history')
+            ->dailyAt('10:00')
+            ->timezone('America/New_York')
+            ->withoutOverlapping();
+
+        $schedule->command('ringcentral:cleanup-old-media --days=30')
+            ->dailyAt('02:00')
+            ->timezone('America/New_York')
+            ->withoutOverlapping();
     }
 
     /**

@@ -1071,6 +1071,12 @@ if (!function_exists('get_user_name123')) {
                                     <div class="">Guide Videos</div>
                                 </a>
                             @endif
+                            @if(in_array('169', $phoneaccess) || Auth::user()->role == 1)
+                                <a class="dropdown-item d-flex" href="{{ url('/r/portal') }}">
+                                    <i class="fe fe-phone pr-2 mt-1 ml-1"></i>
+                                    <div class="">Access Dialer</div>
+                                </a>
+                            @endif
                             @if(Auth::user()->role == 1 || Auth::user()->role == 3)
                                 <a class="dropdown-item d-flex" href="{{url('/jd_report')}}">
                                     <i class="fa fa-book pr-2 mt-1 ml-1"></i>

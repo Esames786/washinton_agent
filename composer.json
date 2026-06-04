@@ -14,6 +14,7 @@
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.0",
         "phpmailer/phpmailer": "^6.9",
+        "ringcentral/ringcentral-php": "^3.0",
         "sendinblue/api-v3-sdk": "^8.4",
         "stevebauman/location": "^6.6",
         "stripe/stripe-php": "^15.7",

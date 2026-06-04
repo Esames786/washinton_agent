@@ -1,254 +1,538 @@
-@extends('layouts.innerpages')
+@extends('layouts.mainsite')
 
-@section('template_title')
-    {{  ucfirst(trim("$_SERVER[REQUEST_URI]",'/'))}}
+@section('styles')
+    <link rel="stylesheet" href="/css/ringcentral.css">
+    <link rel="stylesheet" href="/css/ringcentral-messages.css">
 @endsection
+
+@php
+    $rcIsLocalTesting = (bool) config('features.ringcentral_local_testing');
+@endphp
+
 @section('content')
 
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
-    @include('partials.mainsite_pages.return_function')
-    <style>
-        select.form-control:not([size]):not([multiple]) {
-            height: 28px;
-        }
+    <!-- Checking Connection UI - Shown by default while verifying connection -->
 
-        input[type='radio']:after {
-            width: 15px;
-            height: 15px;
-            border-radius: 15px;
-            top: -4px;
-            left: -1px;
-            position: relative;
-            background-color: #d1d3d1;
-            content: '';
-            display: inline-block;
-            visibility: visible;
-            border: 2px solid white;
-        }
-
-        input[type='radio']:checked:after {
-            width: 20px;
-            height: 20px;
-            border-radius: 100px;
-            top: -2px;
-            left: -6px;
-            position: relative;
-            background-color: rgb(23 162 184);
-            content: '';
-            display: inline-block;
-            visibility: visible;
-            border: 2px solid white;
-        }
-
-        .table {
-            color: rgb(0 0 0);
-            width: 100%;
-            max-width: 100%;
-            margin-bottom: 1rem;
-            font-weight: 500;
-        }
-
-        .table-bordered, .text-wrap table, .table-bordered th, .text-wrap table th, .table-bordered td, .text-wrap table td {
-            border: 1px solid rgb(0 0 0);
-        }
-
-        .table > thead > tr > td, .table > thead > tr > th {
-            font-weight: 500;
-            -webkit-transition: all .3s ease;
-            font-size: 18px;
-            color: rgb(0 0 0);
-        }
-
-        /* Style the tab */
-        .tab {
-            overflow: hidden;
-            border: 1px solid #ccc;
-            background-color: #f1f1f1;
-        }
-
-        /* Style the buttons that are used to open the tab content */
-        .tab button {
-            background-color: inherit;
-            float: left;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 14px 16px;
-            transition: 0.3s;
-        }
-
-        /* Change background color of buttons on hover */
-        .tab button:hover {
-            background-color: #ddd;
-        }
-
-        /* Create an active/current tablink class */
-        .tab button.active {
-            background-color: #ccc;
-        }
-
-        /* Style the tab content */
-        .tabcontent {
-            display: none;
-            padding: 6px 12px;
-            border: 1px solid #ccc;
-            border-top: none;
-        }
-
-        .tabcontent {
-            animation: fadeEffect 1s; /* Fading effect takes 1 second */
-        }
-
-        /* Go from zero to full opacity */
-        @keyframes fadeEffect {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-    </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
-
-    <!--/app header-->                                                <!--Page header-->
-    <div class="page-header">
-        <!--<div class="page-leftheader">-->
-        <!--    <input type="hidden" value="{{trim("$_SERVER[REQUEST_URI]",'/')}}" id="titlee">-->
-        <!--    <ol class="breadcrumb">-->
-        <!--        <li class="breadcrumb-item"><a href="#"><i class="fe fe-layout mr-2 fs-14"></i>Home</a>-->
-        <!--        </li>-->
-        <!--        <li class="breadcrumb-item active" aria-current="page"><a href="#">Reports</a></li>-->
-        <!--    </ol>-->
-        <!--</div>-->
-        <div class="text-secondary text-center text-uppercase w-100">
-            <h1 class="my-4"><b>RingCentral</b></h1>
+    <div id="checkingConnectionUI" style="display:block;">
+        <div class="alert alert-info">
+            <div class="rc-checking-flex">
+                <span class="rc-spinner-wrapper">
+                    <span class="rc-spinner"></span>
+                </span>
+                <span>Checking R-Dialer  connection...</span>
+            </div>
         </div>
     </div>
-    <!--End Page header-->
-    <!-- Row -->
-    <div class="row">
-        <div class="col-12">
-            @if(session('flash_message'))
-                <div class="alert alert-success">
-                    {{session('flash_message')}}
-                </div>
-            @endif
-            <!--div-->
-            <div class="card">
-                <div class="card-body">
-                    <!-- Authentication Section -->
-                    <div class="mb-6">
-                        <h2 class="text-xl font-semibold">Step 1: Authenticate</h2>
-                        @if(session('ringcentral_access_token'))
-                            <a href="{{ url('/ringcentral/auth') }}"
-                               class="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-700">
-                                Authenticate with RingCentral
-                            </a>
-                        @else
-                            <p class="text-green-500">You are authenticated!</p>
-                        @endif
+
+    <div id="connectedUI" style="display:none;">
+        <div id="rc-token-progress-bar" aria-hidden="true"></div>
+        <div class="row">
+            <div class="col-12">
+                @if (session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                @endif
+
+                @if (session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                @endif
+
+                <div class="top-header">
+                    @php
+                        $rcUserName = $ringCentralUser?->user?->name ?? 'User';
+                        $rcPhoneRaw = $ringCentralUser->phone_number ?? '';
+                        $rcDigits = preg_replace('/\D+/', '', (string) $rcPhoneRaw);
+                        $rcMasked = $rcDigits ? str_repeat('*', max(0, strlen($rcDigits) - 4)) . substr($rcDigits, -4) :
+                            'Loading...';
+                    @endphp
+                    @php $rcInitials = strtoupper(substr(str_replace(' ', '', $rcUserName), 0, 2)); @endphp
+
+                    <div class="rc-user-menu-wrap" id="rcUserMenuWrap">
+                        <div class="brand" id="rcUserMenuToggle" onclick="rcToggleUserMenu(event)" style="cursor:pointer;"
+                            title="Account menu" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false"
+                            aria-controls="rcUserDropdown">
+                            <div class="avatar">{{ $rcInitials }}</div>
+                            <h1>
+                                <strong id="connectedPhoneNumber" data-full-number="{{ $rcPhoneRaw }}">{{ $rcUserName }} -
+                                    {{ $rcMasked }}</strong>
+
+                                {{-- WebPhone loading indicator --}}
+                                <span id="webphoneLoadingIndicator"
+                                    style="display: inline-flex; align-items: center; margin-left: 10px; vertical-align: middle;">
+                                    <div class="webphone-loader">
+                                        <span class="webphone-loader-text">loading</span>
+                                        <span class="webphone-load"></span>
+                                    </div>
+                                </span>
+                            </h1>
+                        </div>
+
+                        <!-- User account dropdown -->
+                        <div class="rc-user-dropdown" id="rcUserDropdown" hidden style="display:none;">
+
+                            {{-- Profile --}}
+                            <div class="rc-ud-profile">
+                                <div class="rc-ud-avatar-lg">{{ $rcInitials }}</div>
+                                <div>
+                                    <div class="rc-ud-name">{{ $rcUserName }}</div>
+                                    <a href="#" class="rc-ud-link">View profile</a>
+                                </div>
+                            </div>
+
+                            <div class="rc-ud-divider"></div>
+
+                            {{-- Status --}}
+                            <div class="rc-ud-status-row">
+                                <span class="rc-ud-status-dot"></span>
+                                <span class="rc-ud-status-text">Available</span>
+                                <i class="fa fa-angle-down" style="color:#6c757d;font-size:11px;"></i>
+                                <div class="rc-ud-status-sep"></div>
+                                <input type="text" class="rc-ud-status-input" placeholder="Set status message">
+                            </div>
+<!-- 
+                            <div class="rc-ud-divider"></div>
+
+                            {{-- Settings --}}
+                            <div class="rc-ud-item">Incoming call rules</div>
+                            <div class="rc-ud-item rc-ud-item-split">
+                                <span>Accept queue calls</span>
+                                <div class="rc-ud-item-right">
+                                    <span class="rc-ud-edit-link">Edit</span>
+                                    <div class="rc-ud-toggle is-on" onclick="this.classList.toggle('is-on'); event.stopPropagation();"></div>
+                                </div>
+                            </div>
+                            <div class="rc-ud-item">Auto-replies</div>
+
+                            <div class="rc-ud-divider"></div>
+
+                            <div class="rc-ud-item">Add account</div>
+
+                            <div class="rc-ud-divider"></div>
+
+                            <div class="rc-ud-item">Manage company account</div>
+                            <div class="rc-ud-item">Download desktop app</div>
+                            <div class="rc-ud-item">Check for updates</div>
+                            <div class="rc-ud-item rc-ud-item-arrow">
+                                <span>Help</span>
+                                <i class="fa fa-angle-right" style="color:#adb5bd;"></i>
+                            </div> -->
+
+                            <div class="rc-ud-divider"></div>
+
+                            <div class="rc-ud-item rc-ud-signout" onclick="logout()">Sign out</div>
+                        </div>
                     </div>
 
-                    <!-- Call Controls Section -->
-                    <div class="mb-6">
-                        <h2 class="text-xl font-semibold">Step 2: Make a Call</h2>
-                        @if(session('ringcentral_access_token'))
-                            <div>
-                                <input type="text" id="phone-number" placeholder="Enter phone number"
-                                       class="border border-gray-300 px-4 py-2 rounded mb-4">
-                                <button id="call-button"
-                                        class="bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-700">
-                                    Call
-                                </button>
-                                <button id="hangup-button"
-                                        class="bg-red-500 text-white px-4 py-2 rounded shadow hover:bg-red-700">
-                                    Hang Up
-                                </button>
+                    <div class="header-icons">
+                        <span class="icon" title="Coming Soon" style="opacity:0.5;cursor:not-allowed;">⚙</span>
+                        <span class="icon" title="Coming Soon" style="opacity:0.5;cursor:not-allowed;">＋</span>
+                        <div id="dialerMinimizedCall" class="dialer-minimized">
+                            <button type="button" id="dialerMinimizedOpenBtn"
+                                onclick="restoreDialerFromMinimized()">Open</button>
+                            <span class="dialer-minimized-timer" id="dialerMinimizedTimer">00:00</span>
+                            <span class="dialer-minimized-number" id="dialerMinimizedNumber">Active call</span>
+                            <div id="dialerMinimizedIncomingActions" style="display:none;gap:6px;align-items:center;">
+                                <button type="button" onclick="answerIncomingCall()">Answer</button>
+                                <button type="button" onclick="declineIncomingCall()">Reject</button>
                             </div>
-                        @else
-                            <p class="text-red-500">Please authenticate with RingCentral to make calls.</p>
-                        @endif
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div><!-- end app-content-->
 
-    <div class="modal fade" id="historyModal" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="d-flex justify-content-end px-2">
+            <div><button class="btn btn-outline-warning" id="clearRcStorageBtn" onclick="clearRcBrowserStorage()"
+                    style="{{ $rcIsLocalTesting ? '' : 'display:none;' }}">Clear
+                    Browser Session</button></div>
+            <div><button class="btn btn-secondary" id="openDebugBtn"
+                    style="{{ $rcIsLocalTesting ? '' : 'display:none;' }}">Debug Info</button></div>
+            <div><button onclick="logout()" class="btn btn-danger" id="rcDisconnectBtn"
+                    style="{{ $rcIsLocalTesting ? '' : 'display:none;' }}">Disconnect</button></div>
+        </div>
+
+        <!-- Tabbed panels (Messages, Calls, Voicemail, Recordings) -->
+        <div class="col-md-12 p-0">
+            <div class="mb-3" style="overflow: hidden; background: #fff;">
+                <div class="row h-100">
+
+                    <!-- Sidebar -->
+                    <div class="col-2 col-md-1 px-0">
+                        <div class="list-group rc-tabs" role="tablist">
+                            <a class="list-group-item list-group-item-action" data-toggle="tab" href="#tabCalls" role="tab">
+                                <span class="rc-icon-wrapper">
+                                    <i class="fa fa-phone"></i>
+                                    <span id="rcCallsMissedBadge" class="badge bg-danger ms-1 is-hidden">0</span>
+                                </span>
+                                <span>Calls</span>
+                            </a>
+
+                            <a class="list-group-item list-group-item-action active rc-tab-item" data-toggle="tab"
+                                href="#tabMessages" role="tab">
+
+                                <span class="rc-icon-wrap">
+                                    <i class="fa fa-comment"></i>
+                                    <span id="rcTextUnreadBadge" class="badge d-none">0</span>
+                                </span>
+
+                                <span>Text</span>
+                            </a>
+
+                            <a class="list-group-item list-group-item-action rc-tab-item" data-toggle="tab"
+                                href="#tabSettings" role="tab">
+                                <span class="rc-icon-wrap">
+                                    <i class="fa fa-cog"></i>
+                                </span>
+                                <span>Settings</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="col-10 col-md-11 col-lg-3 px-0 rc-main-tabs-col"
+                        style="overflow: hidden; border-left: 1px solid #dee2e6;">
+                        <div class="tab-content rc-main-tab-content">
+                            @include('main.ringcentral.messages')
+                            @include('main.ringcentral.calls')
+                            @include('main.ringcentral.settings')
+                        </div>
+                    </div>
+
+                    <!-- Single Chat Panel -->
+                    <div class="col-12 col-lg-8" style="border-left: 1px solid #dee2e6; padding: 20px;">
+                        <div id="chatDesktopSlot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disconnected UI - Shown when not connected -->
+    <div id="disconnectedUI" style="display:none;">
+        <div class="alert alert-warning">
+            Not connected to R-Dialer .
+            <button id="reconnectBtn" class="btn btn-outline-primary ml-2">Reconnect</button>
+            <button id="connectBtn" class="btn btn-primary ml-2"
+                onclick="window.location.href='{{ route('ringcentral.auth') }}'">Connect
+                to R-Dialer </button>
+            <div id="reconnectStatus" class="small text-muted mt-2" style="display:none;"></div>
+        </div>
+    </div>
+
+    <!-- Global Error Modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="historyModalLabel">History for Order #</h5>
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">⚠️ Something went wrong</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="historyModalContent">
+                <div class="modal-body">
+                    <p id="errorModalMessage" class="mb-2">An unexpected error occurred.</p>
+                    <p class="small text-muted" id="errorModalHint" style="display:none;">You may need to reload the
+                        page to
+                        recover.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="errorModalReloadBtn">Reload Page</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Debug Info Modal -->
+    <div class="modal fade" id="debugModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Debug Info</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Lib:</strong> <span id="rcDebugLib">Not loaded</span></p>
+                    <p><strong>Token:</strong> <span id="rcDebugToken">Not initialized</span></p>
+                    <p><strong>Session:</strong> <span id="rcDebugSession">—</span></p>
+                    <div class="mb-3">
+                        <button id="fetchTokenBtn" class="btn btn-info btn-sm">Fetch Token</button>
+                    </div>
+                    <h6>Log:</h6>
+                    <pre id="rcDebugLog" class="rc-debug-log"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
-@section('extraScript')
-    {{--<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>--}}
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-
-
-    <script src="https://unpkg.com/ringcentral-web-phone@2.0.9/dist/cjs/index.js"></script>
-    <script>
-        let webPhone;
-        let session;
-
-        // Initialize WebPhone after authentication
-        const token = @json(session('ringcentral_access_token'));
-        const sipInfo = @json(session('ringcentral_sip_info'));
-
-        if (token && sipInfo) {
-            try {
-                webPhone = new RingCentral.WebPhone({ sipInfo: sipInfo });
-                webPhone.userAgent.start();
-                console.log('WebPhone initialized successfully');
-            } catch (error) {
-                console.error('Failed to initialize WebPhone:', error);
-            }
-        } else {
-            console.warn('No SIP info found. Please authenticate with RingCentral.');
+<script>
+    // Console helpers for local testing:
+    // showOpenDebugBtn()
+    // showRcDisconnectBtn()
+    // showClearRcStorageBtn()
+    // showRingCentralButtons()
+    window.showRingCentralButton = function (buttonId) {
+        const btn = document.getElementById(buttonId);
+        if (!btn) {
+            console.log('#' + buttonId + ' not found');
+            return null;
         }
 
-        // Make a call
-        document.getElementById('call-button').addEventListener('click', function() {
-            const phoneNumber = document.getElementById('phone-number').value;
-            if (webPhone && phoneNumber) {
-                try {
-                    session = webPhone.userAgent.invite(phoneNumber);
-                    session.on('accepted', () => console.log('Call accepted'));
-                    session.on('terminated', () => console.log('Call ended'));
-                } catch (error) {
-                    console.error('Failed to make a call:', error);
-                    alert('Failed to make a call. Please check the console for details.');
-                }
-            } else {
-                alert('Please authenticate and enter a phone number.');
-            }
+        btn.style.display = 'inline-block';
+        btn.hidden = false;
+        btn.classList.remove('d-none');
+        console.log('Showing #' + buttonId, btn);
+        return btn;
+    };
+
+    window.showOpenDebugBtn = function () {
+        return window.showRingCentralButton('openDebugBtn');
+    };
+
+    window.showRcDisconnectBtn = function () {
+        return window.showRingCentralButton('rcDisconnectBtn');
+    };
+
+    window.showClearRcStorageBtn = function () {
+        return window.showRingCentralButton('clearRcStorageBtn');
+    };
+
+    window.showRingCentralButtons = function () {
+        ['openDebugBtn', 'rcDisconnectBtn', 'clearRcStorageBtn'].forEach(function (buttonId) {
+            window.showRingCentralButton(buttonId);
         });
+    };
+    window.__RC_PORTAL_BOOTSTRAPPED = true;
+    const RC_PORTAL_WINDOW_NAME = 'RingCentralPortal';
+    const RC_PORTAL_ALIVE_KEY = 'rcPortalAlive';
+    const RC_PORTAL_FOCUS_REQUEST_KEY = 'rcPortalFocusRequest';
+    const RC_PORTAL_CHANNEL_NAME = 'rcPortalBridge';
+    const RC_PORTAL_ALIVE_PING_MS = 15000;
+    const RC_PORTAL_INSTANCE_ID = 'rcp_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+    let rcPortalBridgeChannel = null;
 
-        // Hang up a call
-        document.getElementById('hangup-button').addEventListener('click', function() {
-            if (session) {
-                try {
-                    session.terminate();
-                    console.log('Call terminated');
-                } catch (error) {
-                    console.error('Failed to hang up:', error);
-                }
+    try {
+        window.name = RC_PORTAL_WINDOW_NAME;
+    } catch (_) { }
+
+    try {
+        if ('BroadcastChannel' in window) {
+            rcPortalBridgeChannel = new BroadcastChannel(RC_PORTAL_CHANNEL_NAME);
+        }
+    } catch (_) {
+        rcPortalBridgeChannel = null;
+    }
+
+    function rcPortalReadAliveRecord() {
+        try {
+            const raw = localStorage.getItem(RC_PORTAL_ALIVE_KEY);
+            if (!raw) return null;
+            if (/^\d+$/.test(raw)) {
+                return { ts: parseInt(raw, 10), legacy: true };
             }
-        });
-    </script>
+            const parsed = JSON.parse(raw);
+            return parsed && typeof parsed === 'object' ? parsed : null;
+        } catch (_) {
+            return null;
+        }
+    }
 
+    function rcPortalAliveRecordIsFresh(record) {
+        const ts = parseInt((record && (record.ts || record.timestamp || record.createdAt)) || '0', 10);
+        return !!ts && ((Date.now() - ts) <= (RC_PORTAL_ALIVE_PING_MS * 4));
+    }
 
-@endsection
+    function rcPortalReadPendingRequest(key) {
+        try {
+            const raw = localStorage.getItem(key);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            return parsed && typeof parsed === 'object' ? parsed : null;
+        } catch (_) {
+            return null;
+        }
+    }
 
+    function rcPortalHasFreshVisibleHandoff() {
+        const keys = ['rcPendingDialRequest', 'rcPendingMessageRequest'];
+        for (let i = 0; i < keys.length; i++) {
+            const pending = rcPortalReadPendingRequest(keys[i]);
+            if (!pending || !pending.visibleHandoffId) continue;
 
+            const createdAt = parseInt(pending.createdAt || '0', 10);
+            if (!createdAt || ((Date.now() - createdAt) > 45000)) continue;
+
+            if (pending.targetPortalInstanceId) {
+                return pending.targetPortalInstanceId === RC_PORTAL_INSTANCE_ID;
+            }
+
+            if (document.hidden || document.visibilityState !== 'visible') continue;
+            if (typeof document.hasFocus === 'function' && !document.hasFocus()) continue;
+
+            try {
+                if (sessionStorage.getItem(RC_VISIBLE_HANDOFF_SESSION_KEY) === pending.visibleHandoffId) {
+                    return true;
+                }
+            } catch (_) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function rcPortalIsActiveInstance() {
+        if (rcPortalHasFreshVisibleHandoff()) return true;
+
+        const alive = rcPortalReadAliveRecord();
+        if (!rcPortalAliveRecordIsFresh(alive)) return true;
+        if (!alive.instanceId) return true;
+        return alive.instanceId === RC_PORTAL_INSTANCE_ID;
+    }
+
+    window.RC_PORTAL_INSTANCE_ID = RC_PORTAL_INSTANCE_ID;
+    window.rcPortalIsActiveInstance = rcPortalIsActiveInstance;
+
+    function rcPortalPingAlive() {
+        if (!rcPortalIsActiveInstance()) return;
+
+        const payload = {
+            instanceId: RC_PORTAL_INSTANCE_ID,
+            ts: Date.now(),
+            href: window.location.href
+        };
+
+        try {
+            localStorage.setItem(RC_PORTAL_ALIVE_KEY, JSON.stringify(payload));
+        } catch (_) { }
+
+        try {
+            if (rcPortalBridgeChannel) {
+                rcPortalBridgeChannel.postMessage({
+                    type: 'portal-alive',
+                    payload: payload
+                });
+            }
+        } catch (_) { }
+    }
+
+    function rcPortalHandleFocusRequest() {
+        if (!rcPortalIsActiveInstance()) return;
+        rcPortalPingAlive();
+        try { window.focus(); } catch (_) { }
+    }
+
+    rcPortalPingAlive();
+    setInterval(rcPortalPingAlive, RC_PORTAL_ALIVE_PING_MS);
+    window.addEventListener('focus', rcPortalPingAlive);
+    window.addEventListener('storage', function (event) {
+        if (event.key !== RC_PORTAL_FOCUS_REQUEST_KEY || !event.newValue) return;
+        rcPortalHandleFocusRequest();
+    });
+    try {
+        if (rcPortalBridgeChannel) {
+            rcPortalBridgeChannel.addEventListener('message', function (event) {
+                const data = event && event.data ? event.data : {};
+                if (data.type === 'focus' || data.type === 'dial-request' || data.type === 'message-request') {
+                    rcPortalHandleFocusRequest();
+                }
+            });
+        }
+    } catch (_) { }
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) rcPortalPingAlive();
+    });
+    window.addEventListener('beforeunload', function () {
+        try {
+            const alive = rcPortalReadAliveRecord();
+            if (alive && alive.instanceId === RC_PORTAL_INSTANCE_ID) {
+                localStorage.removeItem(RC_PORTAL_ALIVE_KEY);
+            }
+        } catch (_) { }
+    });
+
+    window.RC_ROUTES = {
+        checkConnectionStatus: "{{ route('ringcentral.check-connection-status') }}",
+        'ringcentral.check-connection-status': "{{ route('ringcentral.check-connection-status') }}",
+        'ringcentral.api.base': "{{ route('ringcentral.api.base') }}",
+        'ringcentral.api.calls': "{{ route('ringcentral.api.calls') }}",
+        'ringcentral.api.calls.summary': "{{ route('ringcentral.api.calls.summary') }}",
+        'ringcentral.api.calls.mark-seen': "{{ route('ringcentral.api.calls.mark-seen') }}",
+        'ringcentral.api.messages': "{{ route('ringcentral.api.messages') }}",
+        'ringcentral.api.messages.mark-read': "{{ route('ringcentral.api.messages.mark-read') }}",
+        'ringcentral.api.attachment': "{{ route('ringcentral.api.attachment') }}",
+        'ringcentral.api.events.stream': "{{ route('ringcentral.api.events.stream') }}",
+        'ringcentral.api.templates': "{{ route('ringcentral.api.templates') }}",
+        'ringcentral.api.templates.create': "{{ route('ringcentral.api.templates.create') }}",
+        'ringcentral.api.send-sms': "{{ route('ringcentral.api.send-sms') }}",
+        'ringcentral.api.phone-numbers': "{{ route('ringcentral.api.phone-numbers') }}",
+        'ringcentral.api.voicemails': "{{ route('ringcentral.api.voicemails') }}",
+        'ringcentral.api.voicemails.mark-status': "{{ route('ringcentral.api.voicemails.mark-status') }}",
+        'ringcentral.api.voicemail': "{{ route('ringcentral.api.voicemail', ['id' => ':id']) }}",
+        'ringcentral.api.voicemail.delete': "{{ route('ringcentral.api.voicemail.delete', ['id' => ':id']) }}",
+        'ringcentral.api.recording': "{{ route('ringcentral.api.recording', ['id' => ':id']) }}",
+        'ringcentral.refreshRecordings': "{{ route('ringcentral.refreshRecordings') }}",
+        'ringcentral.api.webphone-token': "{{ route('ringcentral.api.webphone-token') }}",
+        'ringcentral.api.webphone-token-timer': "{{ route('ringcentral.api.webphone-token-timer') }}",
+        // TEMP (publish-safe): conference routes disabled.
+        // 'ringcentral.api.conference': "{{ route('ringcentral.api.conference') }}",
+        // 'ringcentral.api.bring-in': "{{ route('ringcentral.api.bring-in', ['sessionId' => ':sessionId']) }}",
+        'ringcentral.api.call-control.sessions': "{{ route('ringcentral.api.call-control.sessions') }}",
+        'ringcentral.api.call-control.transfer': "{{ route('ringcentral.api.call-control.transfer', ['sessionId' => ':sessionId', 'partyId' => ':partyId']) }}",
+        // TEMP (publish-safe): merge route disabled.
+        // 'ringcentral.api.call-control.merge': "{{ route('ringcentral.api.call-control.merge') }}",
+        'ringcentral.api.call-control.switch-to-web': "{{ route('ringcentral.api.call-control.switch-to-web', ['sessionId' => ':sessionId', 'partyId' => ':partyId']) }}",
+        'ringcentral.api.close-instance': "{{ route('ringcentral.api.close-instance') }}",
+        'ringcentral.api.blocked-numbers.list': "{{ route('ringcentral.api.blocked-numbers.list') }}",
+        'ringcentral.api.blocked-numbers.add': "{{ route('ringcentral.api.blocked-numbers.add') }}",
+        'ringcentral.api.blocked-numbers.remove': "{{ route('ringcentral.api.blocked-numbers.remove', ['id' => ':id']) }}",
+        'ringcentral.api.blocked-numbers.check': "{{ route('ringcentral.api.blocked-numbers.check') }}",
+        'ringcentral.api.blocked-numbers.settings.get': "{{ route('ringcentral.api.blocked-numbers.settings.get') }}",
+        'ringcentral.api.blocked-numbers.settings.update': "{{ route('ringcentral.api.blocked-numbers.settings.update') }}",
+        'ringcentral.reconnect': "{{ route('ringcentral.reconnect') }}",
+        'logout': "{{ route('ringcentral.logout') }}"
+    };
+
+    window.RC_FEATURES = {
+        callControl: {{ config('features.ringcentral_call_control') ? 'true' : 'false' }}
+    };
+
+    // Keep all displayed timestamps in browser local PC time.
+    window.RC_DATE_FORMAT = Object.assign({}, window.RC_DATE_FORMAT || {}, { offsetHours: null });
+
+    window.RC_INITIAL_PAGE_SIZE = 30;
+    window.RC_REFRESH_SYNC_COUNT = 30;
+    window.RC_WEBPHONE_REFRESH_SECONDS = {{ (int) config('services.ringcentral.token_refresh_window_seconds', 300) }};
+    window.RC_SHOW_TOKEN_COUNTDOWN = @json($rcIsLocalTesting);
+    window.RC_MESSAGES_INITIAL_BEFORE_CURSOR = '2026-04-17T15:31:49-04:00|26240';
+</script>
+
+<script src="/js/ringcentral-webrtc-phone.js"></script>
+<!-- Include extracted R-Dialer modules -->
+<script src="/js/ringcentral-events.js"></script> <!-- Moved to top for early error handling -->
+<script src="/js/ringcentral-utilities.js"></script>
+<script src="/js/ringcentral-modals.js"></script>
+<script src="/js/ringcentral-action-buttons.js"></script>
+<script src="/js/ringcentral-tabs.js"></script>
+<script src="/js/ringcentral-webphone-loader.js"></script>
+<script src="/js/ringcentral-webphone-init.js?v={{ filemtime(public_path('js/ringcentral-webphone-init.js')) }}"></script>
+<script src="/js/ringcentral-call-control-init.js"></script>
+<script src="/js/ringcentral-webphone-cleanup.js"></script>
+<script src="/js/ringcentral-debug.js"></script>
+<script src="/js/ringcentral-datetime.js"></script>
+<script src="/js/ringcentral-blocked-numbers.js"></script>
+<script src="/js/ringcentral-calls.js"></script>
+<script src="/js/ringcentral-messages.js"></script>
+<script src="/js/ringcentral-recordings.js"></script>
+<script src="/js/ringcentral-voicemail.js"></script>
+<script src="/js/ringcentral-dialer-controls.js"></script>
+<script src="/js/ringcentral-audio-controls.js"></script>
+<script src="/js/ringcentral-data-loading.js?v={{ filemtime(public_path('js/ringcentral-data-loading.js')) }}"></script>
+<script src="/js/ringcentral-audio-settings.js"></script>
+<script src="/js/ringcentral-incoming-calls.js"></script>

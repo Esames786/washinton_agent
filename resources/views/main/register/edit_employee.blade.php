@@ -508,6 +508,7 @@
                             166=>'CrazyRays Applications<span class="badge badge-warning">New</span>',
                             167=>'Guide Videos (Manage)<span class="badge badge-warning">New</span>',
                             168=>'Guide Videos (View)<span class="badge badge-warning">New</span>',
+                            169=>'R-Dialer (RingCentral Phone)<span class="badge badge-primary">R-Dialer</span>',
                             ];
 
 

@@ -61,3 +61,42 @@ Route::post('/email_order_api/submit','phone_quote\NewQuote@email_order_apiStore
 // submit order-email form card
 Route::post('/email_orderCard_api/submit','phone_quote\NewQuote@email_order_apiStoreCard');
  
+
+
+// ── RingCentral R-Dialer API ─────────────────────────────────────────────────
+Route::middleware(['auth:sanctum'])->prefix('r')->group(function () {
+    Route::post('/send-sms',                                                     'RingCentralApiController@sendSMS');
+    Route::get('/calls',                                                         'RingCentralApiController@getCallHistory');
+    Route::get('/calls/summary',                                                 'RingCentralApiController@getCallSummary');
+    Route::post('/calls/mark-seen',                                              'RingCentralApiController@markCallsSeen');
+    Route::get('/messages',                                                      'RingCentralApiController@getMessageHistory');
+    Route::post('/messages/mark-read',                                           'RingCentralApiController@markMessagesRead');
+    Route::get('/voicemails',                                                    'RingCentralApiController@getVoicemails');
+    Route::get('/voicemail/{id}',                                                'RingCentralApiController@getVoicemail');
+    Route::post('/voicemails/mark-status',                                       'RingCentralApiController@markVoicemailStatus');
+    Route::delete('/voicemail/{id}',                                             'RingCentralApiController@deleteVoicemail');
+    Route::get('/call-control/sessions',                                         'RingCentralApiController@getTelephonySessions');
+    Route::post('/call-control/sessions/{sessionId}/parties/{partyId}/transfer', 'RingCentralApiController@transferTelephonyParty');
+    Route::delete('/call-control/sessions/{sessionId}/parties/{partyId}',        'RingCentralApiController@removeTelephonyParty');
+    Route::post('/call-control/merge',                                           'RingCentralApiController@mergeTelephonySessions');
+    Route::post('/telephony/conference',                                         'RingCentralApiController@createTelephonyConference');
+    Route::post('/telephony/sessions/{sessionId}/parties/bring-in',             'RingCentralApiController@bringInParty');
+    Route::post('/call-control/sessions/{sessionId}/parties/{partyId}/switch-to-web', 'RingCentralApiController@switchToWebPhone');
+    Route::get('/blocked-numbers',                                               'RingCentralApiController@getBlockedNumbers');
+    Route::post('/blocked-numbers',                                              'RingCentralApiController@addBlockedNumber');
+    Route::delete('/blocked-numbers/{id}',                                       'RingCentralApiController@removeBlockedNumber');
+    Route::post('/blocked-numbers/check',                                        'RingCentralApiController@checkBlockedNumber');
+    Route::get('/blocked-numbers/settings',                                      'RingCentralApiController@getBlockedNumbersSettings');
+    Route::patch('/blocked-numbers/settings',                                    'RingCentralApiController@updateBlockedNumbersSettings');
+    Route::get('/blocked-numbers/debug',                                         'RingCentralApiController@debugBlockedNumbers');
+    Route::get('/templates',                                                     'RingCentralApiController@getTemplates');
+    Route::post('/templates',                                                    'RingCentralApiController@createTemplate');
+    Route::get('/attachment',                                                    'RingCentralApiController@serveAttachment');
+    Route::get('/recording/{id}',                                                'RingCentralApiController@getRecording');
+    Route::get('/recordings',                                                    'RingCentralApiController@getRecordings');
+    Route::get('/phone-numbers',                                                 'RingCentralApiController@getPhoneNumbers');
+    Route::get('/webphone-token',                                                'RingCentralApiController@getWebPhoneToken');
+    Route::get('/webphone-token-timer',                                          'RingCentralApiController@getWebPhoneTokenTimer');
+    Route::post('/close-instance',                                               'RingCentralApiController@closeWebPhoneInstance');
+    Route::get('/events/stream',                                                 'RingCentralApiController@streamWebhookEvents');
+});
