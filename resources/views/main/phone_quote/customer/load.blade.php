@@ -1,4 +1,5 @@
 @include('partials.mainsite_pages.return_function')
+@include('partials.ringcentral_js_helpers')
 <?php
 $respn = trim("$_SERVER[REQUEST_URI]", '/');
 if (isset($_GET['titlee'])) {
@@ -165,9 +166,16 @@ if (isset($_GET['titlee'])) {
 
 <script>
     function msg(num) {
-        var num1 = atob(num);
-        window.location.href = 'rcmobile://sms/?number=' + num1;
-        console.log(num1);
+        if (hasRDialerAccess) {
+            launchRingCentralMessage(num);
+        } else {
+            var num1 = atob(num);
+            var check_call = '{{ check_call() }}';
+            if (check_call == 134 || check_call == 135) {
+                window.location.href = 'rcapp://r/sms?type=new&number=' + num1;
+            }
+        }
+        console.log(num);
     }
 </script>
 

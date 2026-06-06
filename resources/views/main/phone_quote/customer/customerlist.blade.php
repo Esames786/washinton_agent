@@ -205,6 +205,8 @@
 
 @section('extraScript')
 
+@include('partials.ringcentral_js_helpers')
+
     <script>
         $(document).ready(function () {
             $.ajaxSetup({
@@ -339,9 +341,18 @@
 
         function call(num)
         {
-             var num1 = atob(num);
-             var newNum = num1.replace(/[- )(]/g,'');
-             window.location.href = 'rcmobile://call?number='+newNum;
+             if (hasRDialerAccess) {
+                 launchRingCentralDialer(num);
+             } else {
+                 var num1 = atob(num);
+                 var check_call = '{{ check_call() }}';
+                 if (check_call == 134) {
+                     window.location.href = 'tel:' + num1.replace(/\D/g, '');
+                 } else if (check_call == 135) {
+                     var newNum = num1.replace(/[- )(]/g,'');
+                     window.location.href = 'rcmobile://call?number='+newNum;
+                 }
+             }
         }
 
         function Search() {

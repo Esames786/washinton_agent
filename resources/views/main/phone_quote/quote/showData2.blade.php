@@ -1,4 +1,5 @@
 @include('partials.mainsite_pages.return_function')
+@include('partials.ringcentral_js_helpers')
 <div class="row mb-2">
     <div class="col-lg-12 col-12">
         <div class="card">
@@ -551,10 +552,16 @@
      
      function call2(num)
      {
-         var num1 = atob(num);
-        //  var newNum = num1.replace(/[- )(]/g,'');
-        //  console.log(num1);
-         window.location.href = 'rcmobile://call/?number='+num1;
-        //  window.location.href = 'tel://'+newNum;
+         if (hasRDialerAccess) {
+             launchRingCentralDialer(num);
+         } else {
+             var num1 = atob(num);
+             var check_call = '{{ check_call() }}';
+             if (check_call == 134) {
+                 window.location.href = 'tel:' + num1.replace(/\D/g, '');
+             } else if (check_call == 135) {
+                 window.location.href = 'rcmobile://call/?number='+num1;
+             }
+         }
      }
 </script>

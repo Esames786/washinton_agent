@@ -2861,64 +2861,56 @@ if (isset($_GET['titlee'])) {
         // console.log('id', 'status', 'name', 'phone', id, status, name, phone, origin, destination);
     }
 </script>
+@include('partials.ringcentral_js_helpers')
 <script>
-    var phoneaccessArray = <?php echo $phoneaccessJson; ?>;
-
     function call(num) {
         console.log('onclick call');
-        var num1 = atob(num);
 
-        var check_panel = '{{ $check_panel }}';
-        var check_call = '{{ $check_call }}';
-
-        if (check_call == 134) {
-            var formattedNum = num1.replace(/\D/g, '');
-            window.location.href = 'tel:' + formattedNum;
-        } else if (check_call == 135) {
-            window.location.href = 'rcmobile://call/?number=' + num1;
+        if (hasRDialerAccess) {
+            launchRingCentralDialer(num);
+        } else {
+            var num1 = atob(num);
+            var check_call = '{{ $check_call }}';
+            if (check_call == 134) {
+                window.location.href = 'tel:' + num1.replace(/\D/g, '');
+            } else if (check_call == 135) {
+                window.location.href = 'rcmobile://call/?number=' + num1;
+            }
         }
 
         var id = $("#orderId").val();
         $.ajax({
             url: "{{ url('/notRes') }}",
             type: "GET",
-            data: {
-                id: id
-            },
-            success: function(res) {
-                console.log('Response from server:', res);
-            },
-            error: function(err) {
-                console.error('AJAX error:', err);
-            }
+            data: { id: id },
+            success: function(res) { console.log('Response from server:', res); },
+            error: function(err) { console.error('AJAX error:', err); }
         });
     }
 
-
     function call2(num) {
-        var num1 = atob(num);
-        var check_panel = '{{ $check_panel }}';
-        var check_call = '{{ $check_call }}';
-
-        if (check_call == 134) {
-            var formattedNum = num1.replace(/\D/g, '');
-            window.location.href = 'tel:' + formattedNum;
-        } else if (check_call == 135) {
-            window.location.href = 'rcmobile://call/?number=' + num1;
+        if (hasRDialerAccess) {
+            launchRingCentralDialer(num);
+        } else {
+            var num1 = atob(num);
+            var check_call = '{{ $check_call }}';
+            if (check_call == 134) {
+                window.location.href = 'tel:' + num1.replace(/\D/g, '');
+            } else if (check_call == 135) {
+                window.location.href = 'rcmobile://call/?number=' + num1;
+            }
         }
     }
 
     function msg(num) {
-        var num1 = atob(num);
-        var check_panel = '{{ $check_panel }}';
-        var check_call = '{{ $check_call }}';
-
-        if (check_call == 134) {
-            var formattedNum = num1.replace(/\D/g, '');
-            // window.location.href = 'sms:' + formattedNum;
-            window.location.href = 'rcmobile://sms/?number=' + num1;
-        } else if (check_call == 135) {
-            window.location.href = 'rcmobile://sms/?number=' + num1;
+        if (hasRDialerAccess) {
+            launchRingCentralMessage(num);
+        } else {
+            var num1 = atob(num);
+            var check_call = '{{ $check_call }}';
+            if (check_call == 134 || check_call == 135) {
+                window.location.href = 'rcapp://r/sms?type=new&number=' + num1;
+            }
         }
     }
 </script>

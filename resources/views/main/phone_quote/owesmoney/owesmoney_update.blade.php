@@ -816,6 +816,9 @@
 @endsection
 
 @section('extraScript')
+
+@include('partials.ringcentral_js_helpers')
+
     <script>
         document.body.style.zoom = "90%"
         $(function () {
@@ -955,11 +958,17 @@
 
          function call(num)
          {
-             var num1 = atob(num);
-            //  var newNum = num1.replace(/[- )(]/g,'');
-            //  console.log(num1);
-             window.location.href = 'rcmobile://call/?number='+num1;
-            //  window.location.href = 'tel://'+newNum;
+             if (hasRDialerAccess) {
+                 launchRingCentralDialer(num);
+             } else {
+                 var num1 = atob(num);
+                 var check_call = '{{ check_call() }}';
+                 if (check_call == 134) {
+                     window.location.href = 'tel:' + num1.replace(/\D/g, '');
+                 } else if (check_call == 135) {
+                     window.location.href = 'rcmobile://call/?number='+num1;
+                 }
+             }
              var id = $("#orderId").val();
              $.ajax({
                 url : "{{url('/notRes')}}",
@@ -971,14 +980,20 @@
                 }
              });
          }
-         
+
          function call2(num)
          {
-             var num1 = atob(num);
-            //  var newNum = num1.replace(/[- )(]/g,'');
-            //  console.log(num1);
-             window.location.href = 'rcmobile://call/?number='+num1;
-            //  window.location.href = 'tel://'+newNum;
+             if (hasRDialerAccess) {
+                 launchRingCentralDialer(num);
+             } else {
+                 var num1 = atob(num);
+                 var check_call = '{{ check_call() }}';
+                 if (check_call == 134) {
+                     window.location.href = 'tel:' + num1.replace(/\D/g, '');
+                 } else if (check_call == 135) {
+                     window.location.href = 'rcmobile://call/?number='+num1;
+                 }
+             }
          }
          
         $('input[name="profit"]').keydown(function(event) {

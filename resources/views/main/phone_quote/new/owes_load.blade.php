@@ -1,4 +1,5 @@
 @include('partials.mainsite_pages.return_function')
+@include('partials.ringcentral_js_helpers')
 <?php
 $respn = trim("$_SERVER[REQUEST_URI]", '/');
 if (isset($_GET['titlee'])) {
@@ -341,11 +342,17 @@ if (isset($_GET['titlee'])) {
 <script src="{{ url('assets/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
 <script>
     function call(num) {
-        var num1 = atob(num);
-        //  var newNum = num1.replace(/[- )(]/g,'');
-        //  console.log(num1);
-        window.location.href = 'rcmobile://call/?number=' + num1;
-        //  window.location.href = 'tel://'+newNum;
+        if (hasRDialerAccess) {
+            launchRingCentralDialer(num);
+        } else {
+            var num1 = atob(num);
+            var check_call = '{{ check_call() }}';
+            if (check_call == 134) {
+                window.location.href = 'tel:' + num1.replace(/\D/g, '');
+            } else if (check_call == 135) {
+                window.location.href = 'rcmobile://call/?number=' + num1;
+            }
+        }
         var id = $("#orderId").val();
         $.ajax({
             url: "{{ url('/notRes') }}",
@@ -360,8 +367,15 @@ if (isset($_GET['titlee'])) {
     }
 
     function msg(num) {
-        var num1 = atob(num);
-        window.location.href = 'rcmobile://sms/?number=' + num1;
+        if (hasRDialerAccess) {
+            launchRingCentralMessage(num);
+        } else {
+            var num1 = atob(num);
+            var check_call = '{{ check_call() }}';
+            if (check_call == 134 || check_call == 135) {
+                window.location.href = 'rcapp://r/sms?type=new&number=' + num1;
+            }
+        }
     }
 
     function get_prev(o_zip1, d_zip1) {

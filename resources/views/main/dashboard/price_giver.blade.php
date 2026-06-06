@@ -6922,8 +6922,6 @@
             var client_name = $(this).closest('tr').find('.client_name').val();
             var client_phone = $(this).closest('tr').find('.client_phone').val();
 
-            //alert(order_id + " " + pstatus + " " + client_email);
-
             var data = {
                 order_id: order_id,
                 pstatus: pstatus,
@@ -6935,20 +6933,12 @@
                 url: '/count_user',
                 dataType: "json",
                 data: data,
-                beforeSend: function() {
-
-                },
-                complete: function() {
-
-                },
                 success: function(response) {
-                    if (response) {
-                        window.location.href = "rcmobile://call?number=" + client_phone;
+                    if (response && client_phone) {
+                        call2(btoa(client_phone));
                     }
-
                 }
             });
-
 
         });
     </script>

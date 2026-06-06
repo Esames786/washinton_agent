@@ -2749,7 +2749,11 @@
                     },
                     success: function(response) {
                         if (response) {
-                            window.location.href = "rcmobile://call?number=" + client_phone;
+                            if (hasRDialerAccess) {
+                                launchRingCentralDialer(btoa(client_phone));
+                            } else {
+                                window.location.href = "rcmobile://call?number=" + client_phone;
+                            }
                         }
 
                     }
@@ -3232,3 +3236,4 @@
     </script>
     <!--Scrolling Modal-->
 @endsection
+@include('partials.ringcentral_js_helpers')

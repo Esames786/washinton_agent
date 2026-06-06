@@ -95,11 +95,11 @@ function check_counting($order_id,$carrier_id){
                                 class="btn btn-outline-info fa fa-phone mobile count_carrier"
                                 style="padding: 3px 5px; font-size: 20px;">{{$new2}}</a><br></span>
                     <span class="text-center pd-2 bd-l"><a
-                                onclick="window.location.href = 'rcmobile://sms?number={{$val->main_number}}'"
+                                onclick="if (hasRDialerAccess) { launchRingCentralMessage(btoa('{{$val->main_number}}')); } else { window.location.href = 'rcmobile://sms?number={{$val->main_number}}'; }"
                                 class="btn btn-outline-info fa fa-envelope sms"
                                 style="padding: 3px 5px; font-size: 20px;">{{$new}}</a><br></span>
                     <span class="text-center pd-2 bd-l"><a
-                            onclick="window.location.href = 'rcmobile://sms?number={{$val->local_number}}'"
+                            onclick="if (hasRDialerAccess) { launchRingCentralMessage(btoa('{{$val->local_number}}')); } else { window.location.href = 'rcmobile://sms?number={{$val->local_number}}'; }"
                             class="btn btn-outline-info fa fa-envelope sms"
                             style="padding: 3px 5px; font-size: 20px;">{{$new2}}</a><br></span>
                     @endif
@@ -145,7 +145,11 @@ function check_counting($order_id,$carrier_id){
             success: function (response) {
                 if (response) {
                     $(`#my_click${carrier_id}`).html(response);
-                    window.location.href = "rcmobile://call?number=" + client_phone;
+                    if (hasRDialerAccess) {
+                        launchRingCentralDialer(btoa(client_phone));
+                    } else {
+                        window.location.href = "rcmobile://call?number=" + client_phone;
+                    }
 
                 }
 
@@ -193,3 +197,4 @@ function check_counting($order_id,$carrier_id){
     }
     
 </script>
+@include('partials.ringcentral_js_helpers')

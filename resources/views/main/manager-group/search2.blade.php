@@ -54,3 +54,4 @@
         {{$user->links()}}
     </div>
 </div>
+@include('partials.ringcentral_js_helpers')

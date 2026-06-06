@@ -207,12 +207,13 @@
                                             @endphp
                                             @if ($val3)
                                                 <span class="text-center pd-2 bd-l">
-                                                    <a onclick="window.location.href = 'rcmobile://sms?number={{ $val3 }}'"
+                                                    <a onclick="if (hasRDialerAccess) { launchRingCentralDialer(btoa('{{ $val3 }}')); } else { window.location.href = 'rcmobile://call?number={{ $val3 }}'; }"
                                                         class="btn btn-outline-info fa fa-phone mobile count_user mb-2"
                                                         style="padding: 3px 5px; font-size: 20px;">{{ $new }}</a><br>
                                                 </span>
                                                 <span class="text-center pd-2 bd-l">
-                                                    <a class="btn btn-outline-info fa fa-envelope sms mb-2"
+                                                    <a onclick="if (hasRDialerAccess) { launchRingCentralMessage(btoa('{{ $val3 }}')); } else { window.location.href = 'rcmobile://sms?number={{ $val3 }}'; }"
+                                                        class="btn btn-outline-info fa fa-envelope sms mb-2"
                                                         style="padding: 3px 5px; font-size: 20px;">{{ $new }}</a><br>
                                                 </span>
                                             @endif
@@ -844,3 +845,4 @@
         });
     </script>
 @endsection
+@include('partials.ringcentral_js_helpers')

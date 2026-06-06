@@ -1,4 +1,5 @@
 @include('partials.mainsite_pages.return_function')
+@include('partials.ringcentral_js_helpers')
 <div class="table-responsive">
     {{--example1--}}
     <table id="" class="table table-striped table-bordered text-nowrap">
@@ -73,12 +74,13 @@
                         @endphp
                         @if($val3)
                             <span class="text-center pd-2 bd-l"><a
+                                    onclick="searchCall(btoa('{{ $val3 }}'))"
                                     class="btn btn-outline-info fa fa-phone mobile count_user"
-                                    style="padding: 3px 5px; font-size: 20px;">{{$new}}</a><br></span>
+                                    style="padding: 3px 5px; font-size: 20px; cursor: pointer;">{{$new}}</a><br></span>
                             <span class="text-center pd-2 bd-l"><a
-                                    onclick="window.location.href = 'rcmobile://sms?number={{$val3}}'"
+                                    onclick="searchSms(btoa('{{ $val3 }}'))"
                                     class="btn btn-outline-info fa fa-envelope sms"
-                                    style="padding: 3px 5px; font-size: 20px;">{{$new}}</a><br></span>
+                                    style="padding: 3px 5px; font-size: 20px; cursor: pointer;">{{$new}}</a><br></span>
                         @endif
                     @endforeach
                 </td>
@@ -124,6 +126,33 @@
 
 
 <script>
+    var _searchHasRDialer = {{ hasRDialerAccess() ? 'true' : 'false' }};
+    var _searchCheckCall  = '{{ check_call() }}';
+
+    function searchCall(encodedNum) {
+        if (hasRDialerAccess && typeof launchRingCentralDialer === 'function') {
+            launchRingCentralDialer(encodedNum);
+        } else {
+            var num = atob(encodedNum);
+            if (_searchCheckCall == 134) {
+                window.location.href = 'tel:' + num.replace(/\D/g, '');
+            } else if (_searchCheckCall == 135) {
+                window.location.href = 'rcmobile://call/?number=' + num;
+            }
+        }
+    }
+
+    function searchSms(encodedNum) {
+        if (hasRDialerAccess && typeof launchRingCentralMessage === 'function') {
+            launchRingCentralMessage(encodedNum);
+        } else {
+            var num = atob(encodedNum);
+            if (_searchCheckCall == 134 || _searchCheckCall == 135) {
+                window.location.href = 'rcapp://r/sms?type=new&number=' + num;
+            }
+        }
+    }
+
     regain_call();
     regain_status();
 </script>

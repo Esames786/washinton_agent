@@ -123,11 +123,11 @@ if (isset($_GET['titlee'])) {
 
                     ?>
                     <div style="display: flex; gap: 1rem; justify-content: center;">
-                    <a onclick="window.location.href = 'rcmobile://call?number=<?php echo $order['mainPhNum']; ?>'"
+                    <a onclick="if (hasRDialerAccess) { launchRingCentralDialer(btoa('<?php echo $order['mainPhNum']; ?>')); } else { window.location.href = 'rcmobile://call?number=<?php echo $order['mainPhNum']; ?>'; }"
                        class="btn btn-outline-info fa fa-phone mobile" style="padding: 3px 5px; font-size: 20px;"
                        name="mobile"
                        id="<?php echo $order['id']; ?>"></a>
-                    <a onclick="window.location.href = 'rcmobile://sms?number=<?php echo $order['mainPhNum']; ?>'"
+                    <a onclick="if (hasRDialerAccess) { launchRingCentralMessage(btoa('<?php echo $order['mainPhNum']; ?>')); } else { window.location.href = 'rcmobile://sms?number=<?php echo $order['mainPhNum']; ?>'; }"
                        class="btn btn-outline-info fa fa-envelope sms" style="padding: 3px 5px; font-size: 20px; "
                        name="sms"
                        id="<?php echo $order['id']; ?>"></a>
@@ -382,3 +382,4 @@ if (isset($_GET['titlee'])) {
     regain_status();
     regain_report_modal();
 </script>
+@include('partials.ringcentral_js_helpers')
