@@ -64,3 +64,6 @@ Route::post('/email_orderCard_api/submit','phone_quote\NewQuote@email_order_apiS
 
 
 // RC API routes moved to web.php (session auth — not sanctum)
+
+// Public guide videos API — used by CrazyRays usage guide page
+Route::get('/guide-videos/public', 'GuideVideoController@publicApi');

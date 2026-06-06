@@ -197,4 +197,19 @@ class GuideVideoController extends Controller
         $videos = GuideVideo::with('user')->latest()->get();
         return view('main.guide_videos.viewer', compact('videos'));
     }
+
+    // ── Public API for CrazyRays (no auth — bridge key validated) ─────────────
+    public function publicApi()
+    {
+        $videos = GuideVideo::with('user')->latest()->get()->map(fn($v) => [
+            'id'          => $v->id,
+            'title'       => $v->title,
+            'description' => $v->description,
+            'video_url'   => url('storage/' . $v->filename),
+            'uploaded_by' => $v->user ? $v->user->name . ' ' . $v->user->last_name : 'Admin',
+            'date'        => $v->created_at ? $v->created_at->format('M d, Y') : '',
+        ]);
+
+        return response()->json(['data' => $videos]);
+    }
 }
