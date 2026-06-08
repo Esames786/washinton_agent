@@ -284,7 +284,7 @@ class EmployeeSyncController extends Controller
     private function assertBridgeKey(Request $request): void
     {
         $providedKey = $request->header('X-Bridge-Key');
-        $expectedKey = config('app.hellotransport_bridge_shared_key') ?? env('HELLOTRANSPORT_BRIDGE_SHARED_KEY');
+        $expectedKey = env('HELLOTRANSPORT_BRIDGE_KEY');
 
         if (!$providedKey || $providedKey !== $expectedKey) {
             Log::warning('EmployeeSyncController: Invalid bridge key', [
