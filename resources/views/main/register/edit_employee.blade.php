@@ -305,7 +305,7 @@
                                             <div class="col-sm-4 my-auto">
                                                 <div class="form-group d-flex m-0">
                                                     <input type="radio" value="0"
-                                                           @if ($data2->order_taker_qoute == 0) checked @endif
+                                                           @if ($data2->order_taker_quote == 0) checked @endif
                                                            name="order_taker_quote" id="all_qoute" />
                                                     <label class="form-label my-auto mx-1" for="all_qoute">All
                                                         Qoutes</label>
@@ -314,7 +314,7 @@
                                             <div class="col-sm-4 my-auto">
                                                 <div class="form-group d-flex m-0">
                                                     <input type="radio" value="1"
-                                                           @if ($data2->order_taker_qoute == 1) checked @endif
+                                                           @if ($data2->order_taker_quote == 1) checked @endif
                                                            name="order_taker_quote" id="own_qoute" />
                                                     <label class="form-label my-auto mx-1" for="own_qoute">Own
                                                         Qoutes</label>
@@ -328,7 +328,7 @@
                                                  @else style="display:none;" @endif id="group_qoutes">
                                                 <div class="form-group d-flex m-0">
                                                     <input type="radio" value="2"
-                                                           @if ($data2->order_taker_qoute == 2) checked @endif
+                                                           @if ($data2->order_taker_quote == 2) checked @endif
                                                            name="order_taker_quote" id="group_qoute" />
                                                     <label class="form-label my-auto mx-1" for="group_qoute">Group
                                                         Qoutes</label>
@@ -362,7 +362,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6"
-                                         @if ($data2->order_taker_qoute == 2) style="display:block;" @else style="display:none;" @endif
+                                         @if ($data2->order_taker_quote == 2) style="display:block;" @else style="display:none;" @endif
                                          id="manager">
                                         <div class="form-group m-0">
                                             <label class="form-label">Managers</label>
