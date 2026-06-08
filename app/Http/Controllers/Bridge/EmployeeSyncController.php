@@ -62,8 +62,8 @@ class EmployeeSyncController extends Controller
 
         $validator = Validator::make($request->all(), [
             'employee_id' => ['required', 'integer'],
-            'first_name'  => ['required', 'string', 'max:50'],
-            'last_name'   => ['required', 'string', 'max:50'],
+            'first_name'  => ['nullable', 'string', 'max:50'],
+            'last_name'   => ['nullable', 'string', 'max:50'],
             'email'       => ['required', 'email', 'max:50'],
             'phone'       => ['nullable', 'string', 'max:20'],
             'role_id'     => ['required', 'integer'],
@@ -80,6 +80,11 @@ class EmployeeSyncController extends Controller
 
         try {
             DB::beginTransaction();
+
+            // Generate defaults for first_name and last_name if missing
+            $email = $request->input('email');
+            $firstName = trim($request->input('first_name')) ?: explode('@', $email)[0];
+            $lastName = trim($request->input('last_name')) ?: 'Employee';
 
             // Step 1: Get or create role in washinton_agent
             $roleId = $this->getRoleIdOrCreate(
@@ -99,9 +104,9 @@ class EmployeeSyncController extends Controller
             $user = $this->createOrUpdateUser(
                 [
                     'hr_employee_id' => $request->input('employee_id'),
-                    'first_name'     => $request->input('first_name'),
-                    'last_name'      => $request->input('last_name'),
-                    'email'          => $request->input('email'),
+                    'first_name'     => $firstName,
+                    'last_name'      => $lastName,
+                    'email'          => $email,
                     'phone'          => $request->input('phone', ''),
                 ],
                 $roleId
@@ -223,11 +228,14 @@ class EmployeeSyncController extends Controller
 
         // Create new user
         try {
-            // Generate a random password
+            // Generate a random password and unique slug
             $password = Str::random(12);
+            $slug = $this->generateUniqueSlug($data['email']);
 
             $user = new User();
             $user->name           = $data['first_name'] . ' ' . $data['last_name'];
+            $user->last_name      = $data['last_name'];
+            $user->slug           = $slug;
             $user->email          = $data['email'];
             $user->password       = Hash::make($password);
             $user->phone          = $data['phone'] ?? '';
@@ -272,6 +280,27 @@ class EmployeeSyncController extends Controller
             ]);
             return null;
         }
+    }
+
+    /**
+     * Generate a unique slug from email address
+     *
+     * @param string $email
+     * @return string
+     */
+    private function generateUniqueSlug(string $email): string
+    {
+        $baseSlug = Str::slug(explode('@', $email)[0]);
+        $slug = $baseSlug;
+        $counter = 1;
+
+        // Ensure uniqueness by appending counter if needed
+        while (User::where('slug', $slug)->exists()) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+
+        return $slug;
     }
 
     /**
