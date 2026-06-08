@@ -211,10 +211,10 @@ class EmployeeSyncController extends Controller
         if ($user) {
             // Update existing user
             $user->update([
-                'name'              => $data['first_name'] . ' ' . $data['last_name'],
-                'phone'             => $data['phone'] ?? '',
-                'role'              => $roleId,
-                'hr_employee_id'    => $data['hr_employee_id'],
+                'name'           => $data['first_name'] . ' ' . $data['last_name'],
+                'phone'          => $data['phone'] ?? '',
+                'role'           => $roleId,
+                'hr_employee_id' => $data['hr_employee_id'],
             ]);
 
             Log::info('EmployeeSyncController: Existing user updated', [
@@ -239,19 +239,17 @@ class EmployeeSyncController extends Controller
             $user->email          = $data['email'];
             $user->password       = Hash::make($password);
             $user->phone          = $data['phone'] ?? '';
+            $user->address        = '';
             $user->role           = $roleId;
             $user->hr_employee_id = $data['hr_employee_id'];
-            $user->current_status = 0; // Inactive until admin activates
-            $user->verify         = 1; // Must be 1 to appear in employee list
+            $user->verify         = 1;
             $user->status         = 0;
 
-            // Copy permissions from reference user (Agent type)
+            // Copy permissions from reference user (Agent type) — same pattern as PublicSignupController
             $referenceUser = User::find(self::AGENT_REFERENCE_USER_ID);
             if ($referenceUser) {
                 foreach (self::PERMISSION_COLUMNS as $col) {
-                    if (property_exists($referenceUser, $col)) {
-                        $user->$col = $referenceUser->$col ?? 0;
-                    }
+                    $user->$col = $referenceUser->$col;
                 }
                 $user->order_taker_quote = 1;
             }
