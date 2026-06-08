@@ -1330,6 +1330,14 @@ Route::prefix('bridge')->group(function () {
 });
 
 // ============================================================
+// HR Portal Bridge (washinton_hr → washinton_agent)
+// X-Bridge-Key must match HELLOTRANSPORT_BRIDGE_SHARED_KEY in .env
+// ============================================================
+Route::prefix('bridge')->group(function () {
+    Route::post('/employee/sync', 'Bridge\EmployeeSyncController@syncEmployee');
+});
+
+// ============================================================
 // Washington Chat System
 // Customer-facing iframe (public — no auth)
 // Admin panel endpoints (auth required, role=1)

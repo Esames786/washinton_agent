@@ -16,6 +16,8 @@ use App\creditcard;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\QuoteSubmissionMail;
 
 class InstantQuoteApiController extends Controller
 {
@@ -306,6 +308,32 @@ class InstantQuoteApiController extends Controller
 
             // Commit transaction
             DB::commit();
+
+            // Send confirmation emails with try-catch
+            try {
+                // Send email to customer
+                if (!empty($order->oemail)) {
+                    try {
+                        Mail::to($order->oemail)->send(new QuoteSubmissionMail($order, 'customer'));
+                        Log::info('Quote confirmation email sent to customer: ' . $order->oemail);
+                    } catch (\Exception $emailException) {
+                        Log::error('Failed to send customer email for quote ID ' . $order->id . ': ' . $emailException->getMessage());
+                        // Continue execution even if email fails
+                    }
+                }
+
+                // Send email to company info email
+                try {
+                    Mail::to('info@hellotransport.com')->send(new QuoteSubmissionMail($order, 'company'));
+                    Log::info('Quote submission notification email sent to info@hellotransport.com for quote ID ' . $order->id);
+                } catch (\Exception $emailException) {
+                    Log::error('Failed to send company notification email for quote ID ' . $order->id . ': ' . $emailException->getMessage());
+                    // Continue execution even if email fails
+                }
+            } catch (\Exception $emailException) {
+                Log::error('Error in email sending process for quote ID ' . $order->id . ': ' . $emailException->getMessage());
+                // Don't break execution - quote is already saved successfully
+            }
 
             return "SAVE";
         } catch (ValidationException $e) {

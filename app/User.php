@@ -19,7 +19,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'current_status'
+        'current_status',
+        'phone',
+        'role',
+        'hr_employee_id',
+        'verify',
+        'status',
     ];
 
     /**

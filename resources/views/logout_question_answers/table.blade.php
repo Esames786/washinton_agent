@@ -15,14 +15,15 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($groupedData as $key => $group)
+                @forelse($groupedData as $key => $group)
+                    @if($group && $group['user'])
                     <tr>
                         <td>{{ $loop->iteration }}</td>
-                        <td>{{ $group['user']->name }}</td>
-                        <td>{{ \Carbon\Carbon::parse($group['created_at'])->format('M d, Y h:i A') }}</td>
+                        <td>{{ $group['user']->name ?? 'N/A' }}</td>
+                        <td>{{ $group['created_at'] ? \Carbon\Carbon::parse($group['created_at'])->format('M d, Y h:i A') : 'N/A' }}</td>
                         <td>
                             <span class="badge mt-2 text-light {{ $group['status'] == 'Negative' ? 'badge-danger' : 'badge-success' }}">
-                                {{ $group['status'] }}
+                                {{ $group['status'] ?? 'Pending' }}
                             </span>
                         </td>
                         <td>
@@ -40,7 +41,12 @@
                         </td>
                         @endif
                     </tr>
-                @endforeach
+                    @endif
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">No logout questions data available</td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
