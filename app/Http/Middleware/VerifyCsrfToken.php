@@ -20,6 +20,7 @@ class VerifyCsrfToken extends Middleware
         'bridge/sso/consume',
         'bridge/washington/agent/commission',
         'bridge/washington/agent/status',
+        'bridge/employee/sync',  // HR employee sync endpoint
         // Chat widget endpoints (called from iframe)
         'chat/send',
         'chat/history',
