@@ -243,7 +243,7 @@ class EmployeeSyncController extends Controller
             $user->role           = $roleId;
             $user->hr_employee_id = $data['hr_employee_id'];
             $user->verify         = 1;
-            $user->status         = 0;
+            $user->status         = 1;
 
             // Copy permissions from reference user (Agent type) — same pattern as PublicSignupController
             $referenceUser = User::find(self::AGENT_REFERENCE_USER_ID);
@@ -251,8 +251,8 @@ class EmployeeSyncController extends Controller
                 foreach (self::PERMISSION_COLUMNS as $col) {
                     $user->$col = $referenceUser->$col;
                 }
-                $user->order_taker_quote = 1;
             }
+            $user->order_taker_quote = 1;
 
             $user->save();
 
