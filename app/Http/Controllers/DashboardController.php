@@ -2481,12 +2481,10 @@ class DashboardController extends Controller
             // Fetch paginated data
             $data = $query->with('user')->orderby('id','desc')->paginate(20);
 
-            // Order Takers with ProMax (penal_type=2) permission for the Assign OT modal
+            // All active Order Takers for the Assign OT modal
             $promax_ots = User::where('role', 2)
                 ->where('deleted', 0)
-                ->whereHas('user_setting', function ($q) {
-                    $q->where('penal_type', 2);
-                })
+                ->where('status', 1)
                 ->select('id', 'name', 'slug', 'email')
                 ->orderBy('name')
                 ->get();

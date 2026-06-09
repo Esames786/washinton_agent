@@ -154,6 +154,15 @@ class BridgeAuthController extends Controller
             $setting->call_type  = 134; // Default Call App type for navbar
             $setting->save();
 
+            // Also grant ProMax (penal_type=2) access so user is eligible for website quote assignment
+            if ($penal_type !== 2) {
+                $promax             = new user_setting();
+                $promax->user_id    = $user->id;
+                $promax->penal_type = 2;
+                $promax->call_type  = 134;
+                $promax->save();
+            }
+
             DB::commit();
 
             // ── Mirror to HR portal (non-blocking) ───────────────────────────
