@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\QuoteSubmissionMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -163,7 +164,7 @@ class FrontendController extends Controller
         }
 
         try {
-            \App\ShipaQuery::create([
+            $query = \App\ShipaQuery::create([
                 // Customer
                 'oname'            => $request->Custo_Name,
                 'oemail'           => $request->Custo_Email,
@@ -211,6 +212,23 @@ class FrontendController extends Controller
             ]);
         } catch (\Throwable $e) {
             Log::error('FrontendController submitQuoteRequest: ' . $e->getMessage());
+        }
+
+        // Send confirmation emails — non-blocking, failure does not affect the redirect
+        if (isset($query)) {
+            try {
+                Mail::to($request->Custo_Email)->send(new QuoteSubmissionMail($query, 'customer'));
+                Log::info('FrontendController: customer confirmation email sent', ['email' => $request->Custo_Email]);
+            } catch (\Throwable $e) {
+                Log::warning('FrontendController: customer email failed', ['error' => $e->getMessage()]);
+            }
+
+            try {
+                Mail::to('info@hellotransport.com')->send(new QuoteSubmissionMail($query, 'company'));
+                Log::info('FrontendController: company notification email sent');
+            } catch (\Throwable $e) {
+                Log::warning('FrontendController: company email failed', ['error' => $e->getMessage()]);
+            }
         }
 
         return redirect()->route('Frontend.qoute.confirmation');
