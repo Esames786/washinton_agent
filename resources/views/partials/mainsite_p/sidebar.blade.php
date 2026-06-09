@@ -208,7 +208,7 @@
                         <li>
                             <a class="side-menu__item" href="{{ route('view_query') }}">
                                 <span class="js-search-result-thumbnail responsive-img img_border fa fa-question"></span>
-                                <span class="side-menu__label">Shipa1 Query</span>
+                                <span class="side-menu__label">Website Query</span>
                             </a>
                         </li>
                     @endif

@@ -219,19 +219,19 @@
                                         @endif
                                         @if (in_array('3', $emp_panel_access))
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#exampleModa20">Testing Quotes</button>
+                                                    data-target="#exampleModa20">Testing Quote</button>
                                         @endif
                                         @if (in_array('4', $emp_panel_access))
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#exampleModa24">Shipa1 Website</button>
+                                                    data-target="#exampleModa24">Website Quote</button>
                                         @endif
                                         @if (in_array('5', $emp_panel_access))
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#exampleModa25">Panel Type 5 Quotes</button>
+                                                    data-target="#exampleModa25">Panel Type 5 Quote</button>
                                         @endif
                                         @if (in_array('6', $emp_panel_access))
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#exampleModa26">Panel Type 6 Quotes</button>
+                                                    data-target="#exampleModa26">Panel Type 6 Quote</button>
                                         @endif
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                                 data-target="#exampleModal3">Show Data</button>
@@ -486,8 +486,8 @@
                             140=>'Dealer Approaching view <span class="badge badge-warning">New</span>',
                             144=>'Dealer Approaching Assign <span class="badge badge-warning">New</span>',
                             141=>'Dealer Approaching Filter<span class="badge badge-warning">New</span>',
-                            147=>'Shipa1 Query<span class="badge badge-warning">New</span>',
-                            148=>'Shipa1 Query Assign<span class="badge badge-warning">New</span>',
+                            147=>'Website Query<span class="badge badge-warning">New</span>',
+                            148=>'Website Query Assign<span class="badge badge-warning">New</span>',
                             149=>'How Did You Find Us?<span class="badge badge-warning">New</span>',
                             150=>'How Did You Find Us? Phone<span class="badge badge-warning">New</span>',
                             151=>'Chat Support<span class="badge badge-warning">New</span>',
@@ -1497,7 +1497,7 @@
                                                                    @if (in_array('4', $emp_panel_access)) {{ 'checked' }} @endif
                                                                    name="emp_panel_access[]" id="emp_panel_access4"
                                                                    value="4"><label class="ml-2"
-                                                                                    for="emp_panel_access4">Shipa1-Website</label>
+                                                                                    for="emp_panel_access4">Website Quote</label>
                                                         </div>
                                                         <div class="col-sm-4">
                                                             <input type="checkbox"
@@ -1946,7 +1946,7 @@
                                     name="penalytype" value="3"> Testing Quote
                                     <br>
                                     <input type="radio" @if ($pt == 4) checked @endif
-                                    name="penalytype" value="4"> Shipa1 Website
+                                    name="penalytype" value="4"> Website Quote
                                     <br>
                                     <input type="radio" @if ($pt == 5) checked @endif
                                     name="penalytype" value="5"> Panel Type 5 Quote

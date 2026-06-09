@@ -129,6 +129,15 @@ class PublicSignupController extends Controller
                 $promax->save();
             }
 
+            // Also grant Website Quote (penal_type=4) access so autohaul leads land here
+            if ($penal_type !== 4) {
+                $website             = new user_setting();
+                $website->user_id    = $user->id;
+                $website->penal_type = 4;
+                $website->call_type  = 134;
+                $website->save();
+            }
+
             DB::commit();
 
         } catch (\Throwable $e) {

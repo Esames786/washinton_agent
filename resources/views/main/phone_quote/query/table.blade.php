@@ -171,7 +171,7 @@ if (isset($_GET['titlee'])) {
                                     : ($val->paneltype == 3
                                         ? 'Testing Quote'
                                         : ($val->paneltype == 4
-                                            ? 'Shipa1 Website'
+                                            ? 'Website Quote'
                                             : ($val->paneltype == 5
                                                 ? 'Panel Type 5 Quote'
                                                 : ($val->paneltype == 6

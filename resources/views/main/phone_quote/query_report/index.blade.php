@@ -102,7 +102,7 @@
         <!--    </ol>-->
         <!--</div>-->
         <div class="text-secondary text-center text-uppercase w-100">
-            <h1 class="my-4"><b>Shipa1 Query Report</b></h1>
+            <h1 class="my-4"><b>Website Query Report</b></h1>
         </div>
     </div>
     <!--End Page header-->

@@ -155,13 +155,13 @@
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModal2">Website Quotes</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModa20">Testing Quotes</button>
+                                            data-target="#exampleModa20">Testing Quote</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModa24">Shipa1 Website</button>
+                                            data-target="#exampleModa24">Website Quote</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModa25">Panel Type 5 Quotes</button>
+                                            data-target="#exampleModa25">Panel Type 5 Quote</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModa26">Panel Type 6 Quotes</button>
+                                            data-target="#exampleModa26">Panel Type 6 Quote</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModal3">Show Data</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
@@ -332,8 +332,8 @@
                             140=>'Dealer Approaching view <span class="badge badge-warning">New</span>',
                             144=>'Dealer Approaching Assign <span class="badge badge-warning">New</span>',
                             141=>'Dealer Approaching Filter<span class="badge badge-warning">New</span>',
-                            147=>'Shipa1 Query<span class="badge badge-warning">New</span>',
-                            148=>'Shipa1 Query Assign<span class="badge badge-warning">New</span>',
+                            147=>'Website Query<span class="badge badge-warning">New</span>',
+                            148=>'Website Query Assign<span class="badge badge-warning">New</span>',
                             149=>'How Did You Find Us?<span class="badge badge-warning">New</span>',
                             150=>'How Did You Find Us? Phone<span class="badge badge-warning">New</span>',
                             151=>'Chat Support<span class="badge badge-warning">New</span>',
@@ -1347,7 +1347,7 @@
                                                         </div>
                                                         <div class="col-sm-4">
                                                             <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access4" value="4">
-                                                            <label class="ml-2" for="emp_panel_access4">Shipa1-Website</label>
+                                                            <label class="ml-2" for="emp_panel_access4">Website Quote</label>
                                                         </div>
                                                         <div class="col-sm-4">
                                                             <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access5" value="5">

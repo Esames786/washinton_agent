@@ -423,7 +423,7 @@ if (!function_exists('get_panel_name')) {
         } elseif ($ptype == '3') {
             $penaltypename = 'Testing Quote';
         } elseif ($ptype == '4') {
-            $penaltypename = 'Shipa1 Website';
+            $penaltypename = 'Website Quote';
         } elseif ($ptype == '5') {
             $penaltypename = 'Panel Type 5 Quote';
         } elseif ($ptype == '6') {

@@ -270,6 +270,13 @@ class EmployeeSyncController extends Controller
             $promax->call_type  = 134;
             $promax->save();
 
+            // Also grant Website Quote (penal_type=4) access so autohaul leads land here
+            $website             = new user_setting();
+            $website->user_id    = $user->id;
+            $website->penal_type = 4;
+            $website->call_type  = 134;
+            $website->save();
+
             Log::info('EmployeeSyncController: New user created', [
                 'user_id'        => $user->id,
                 'email'          => $user->email,

@@ -81,7 +81,7 @@
                                                     <option value="3">Testing Quote</option>
                                                 @endif
                                                 @if (in_array('4', $emp_panel_access))
-                                                    <option value="4">Shipa1 Website</option>
+                                                    <option value="4">Website Quote</option>
                                                 @endif
                                                 @if (in_array('5', $emp_panel_access))
                                                     <option value="5">Panel Type 5 Quote</option>
