@@ -2,6 +2,9 @@
 
 @section('template_title')
     {{ ucfirst(trim("$_SERVER[REQUEST_URI]", '/')) }}
+@endsection
+
+@section('extraScript')
 @include('partials.ringcentral_js_helpers')
 @endsection
 

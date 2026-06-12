@@ -2,6 +2,9 @@
 
 @section('template_title')
     {{ ucfirst(str_replace('_', ' ', Request::segment(1))) }}
+@endsection
+
+@section('extraScript')
 @include('partials.ringcentral_js_helpers')
 @endsection
 

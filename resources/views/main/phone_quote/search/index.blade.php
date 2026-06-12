@@ -2,6 +2,9 @@
 
 @section('template_title')
     Search Orders
+@endsection
+
+@section('extraScript')
 @include('partials.ringcentral_js_helpers')
 @endsection
 
