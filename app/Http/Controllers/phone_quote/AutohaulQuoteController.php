@@ -152,7 +152,7 @@ class AutohaulQuoteController extends Controller
                     ->where('role', 2)
                     ->where('deleted', 0)
                     ->whereHas('user_setting', function ($q) {
-                        $q->where('penal_type', 2);
+                        $q->whereIn('penal_type', [2, 4]);
                     })
                     ->orderBy('id')
                     ->get();
