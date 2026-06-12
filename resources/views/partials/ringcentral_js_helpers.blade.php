@@ -6,13 +6,13 @@
 var phoneaccessArray = <?php echo isset($phoneaccessJson) ? $phoneaccessJson : '[]'; ?>;
 var hasRDialerAccess = ({{ Auth::user()->role == 1 ? 'true' : 'false' }} || phoneaccessArray.includes('161'));
 
-const RC_PENDING_DIAL_REQUEST_KEY = 'rcPendingDialRequest';
-const RC_PENDING_MESSAGE_REQUEST_KEY = 'rcPendingMessageRequest';
-const RC_PORTAL_URL = "{{ route('ringcentral.portal') }}";
-const RC_PORTAL_WINDOW_NAME = 'RingCentralPortal';
-const RC_PORTAL_ALIVE_KEY = 'rcPortalAlive';
-const RC_PORTAL_FOCUS_REQUEST_KEY = 'rcPortalFocusRequest';
-const RC_PORTAL_ALIVE_MAX_AGE_MS = 120000;
+var RC_PENDING_DIAL_REQUEST_KEY = 'rcPendingDialRequest';
+var RC_PENDING_MESSAGE_REQUEST_KEY = 'rcPendingMessageRequest';
+var RC_PORTAL_URL = "{{ route('ringcentral.portal') }}";
+var RC_PORTAL_WINDOW_NAME = 'RingCentralPortal';
+var RC_PORTAL_ALIVE_KEY = 'rcPortalAlive';
+var RC_PORTAL_FOCUS_REQUEST_KEY = 'rcPortalFocusRequest';
+var RC_PORTAL_ALIVE_MAX_AGE_MS = 120000;
 
 function getRingCentralPortalAliveTimestamp() {
     try {
