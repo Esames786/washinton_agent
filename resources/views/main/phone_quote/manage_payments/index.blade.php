@@ -4,10 +4,6 @@
     {{ ucfirst(trim("$_SERVER[REQUEST_URI]", '/')) }}
 @endsection
 
-@section('extraScript')
-@include('partials.ringcentral_js_helpers')
-@endsection
-
 @section('content')
     <style>
         select.form-control:not([size]):not([multiple]) {
@@ -2497,6 +2493,7 @@
 @endsection
 
 @section('extraScript')
+@include('partials.ringcentral_js_helpers')
     <script>
         function showprice() {
 
