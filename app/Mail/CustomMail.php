@@ -37,12 +37,11 @@ class CustomMail extends Mailable
 
 
         $email = $this
-            ->subject('ShipA1 Shipping And Logistic Services')
-            ->view('emails.custom'); // View file name without the ".blade.php" extension
+            ->subject('Hello Transport - Auto Transportation Services')
+            ->view('emails.custom');
 
-        // Set the from address if provided
         if ($this->fromAddress) {
-            $email->from($this->fromAddress, 'Shawn Transport');
+            $email->from($this->fromAddress, 'Hello Transport');
         }
 
         return $email;

@@ -121,7 +121,7 @@
                     <div >
                     <h5>201 International Cir STE 230, Hunt Valley, MD, 21030</h5>
                     <h5>Tel No: (240) 489-2730</h5>
-                    <h5>Email: support@shipa1.com</h5>
+                    <h5>Email: info@hellotransport.com</h5>
                     </div>
                     <h4 class="c_heading" style=" margin-top: 21px; ">ORDER INFORMATION</h4>
                     <ul class="list-group">

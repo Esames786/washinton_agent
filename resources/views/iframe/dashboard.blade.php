@@ -462,7 +462,7 @@ body {
                                 @if(isset($source) && $source === 'crazyrays')
                                     Thank you for contacting <strong>CrazyRays Solutions</strong>! Our support team is standing by to assist you on Live Chat. How can we help you today?
                                 @else
-                                    Thank you for contacting Hello Transport! We have agents standing by to assist you at <strong style="color:#FFD700;">1 (844) 474-4721</strong> or here on Live Chat. How can we help you today?
+                                    Thank you for contacting Hello Transport! We have agents standing by to assist you here on Live Chat. How can we help you today?
                                 @endif
                             </div>
                         </div>
@@ -499,7 +499,7 @@ body {
                                 @if(isset($source) && $source === 'crazyrays')
                                     Thank you for contacting <strong>CrazyRays Solutions</strong>! Our support team is standing by to assist you on Live Chat. How can we help you today?
                                 @else
-                                    Thank you for contacting Hello Transport! We have agents standing by to assist you at <strong style="color:#FFD700;">1 (844) 474-4721</strong> or here on Live Chat. How can we help you today?
+                                    Thank you for contacting Hello Transport! We have agents standing by to assist you here on Live Chat. How can we help you today?
                                 @endif
                             </div>
                         </div>
@@ -547,7 +547,7 @@ body {
         : '<img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Support">';
     var brandWelcomeMsg = brandSource === 'crazyrays'
         ? 'Thank you for contacting <strong>CrazyRays Solutions</strong>! Our support team is standing by to assist you on Live Chat. How can we help you today?'
-        : 'Thank you for contacting Hello Transport! We have agents standing by at <strong style="color:#FFD700;">1 (844) 474-4721</strong>. How can we help you today?';
+        : 'Thank you for contacting Hello Transport! We have agents standing by to assist you. How can we help you today?';
 </script>
 
 <script>

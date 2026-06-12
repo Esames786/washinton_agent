@@ -8,7 +8,7 @@
 
     <head>
         <title>Chat</title>
-        <link rel="icon" href="https://washington.shawntransport.com/frontend/img/logo/hello_transport.svg" type="image/png">
+        <link rel="icon" href="{{ url('frontend/img/logo/hello_transport.svg') }}" type="image/png">
     </head>
     <style>
         .message-feed.media .media-body,

@@ -263,7 +263,7 @@
                         </p>
 
                         <p>
-                            <strong>Email:</strong> hodontime@shipa1.com
+                            <strong>Email:</strong> info@hellotransport.com
                         </p>
                     </div>
                 </div>

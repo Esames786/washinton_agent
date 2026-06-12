@@ -2015,7 +2015,7 @@
                                     </div>
                                     <div class="sidebar__info-text">
                                         <span>Call us now</span>
-                                        <h5><a href="tel:+14107184031">1 (844) 474-4721</a></h5>
+                                        <h5><a href="mailto:info@hellotransport.com">info@hellotransport.com</a></h5>
                                     </div>
                                 </div>
                                 <div class="sidebar__info-item">

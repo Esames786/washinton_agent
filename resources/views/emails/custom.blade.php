@@ -21,7 +21,7 @@
         <h1 style="margin: 0; color: #19a4d7;" >{{ $content }} </h1>
     </div>
     <div style="flex: 0 0 16.666%;  width: 16.666%; max-width: 16.666%; text-align: right;">
-      <a href="https://www.shipa1.com/" style="cursor: pointer;">  <button style="  
+      <a href="https://www.hellotransport.com/" style="cursor: pointer;">  <button style="  
     padding: 10px 7px;
     background: #ededed;
     color: #19a4d7;

@@ -24,8 +24,7 @@
                 Your quote request has been received. Our team will review it and contact you shortly.
             </p>
             <p style="font-size:14px;color:#888;">
-                You can also reach us at <a href="tel:+14107184031">1 (410) 718-4031</a>
-                or <a href="mailto:hodontime@shipa1.com">hodontime@shipa1.com</a>.
+                You can also reach us at <a href="mailto:info@hellotransport.com">info@hellotransport.com</a>.
             </p>
             <a href="{{ route('Frontend.index') }}" class="default-btn btn-two" style="display:inline-block;margin-top:24px;">
                 <span>Back to Home</span>

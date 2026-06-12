@@ -415,8 +415,8 @@
                         <div class="container-fluid">
                             <div class="col-lg-12 p-0">
                                     <?php
-                                    $state = \App\User::with('assignedData')->has('assignedData')->first();
-                                    $state = $state->assignedData->state;
+                                    $stateUser = \App\User::with('assignedData')->has('assignedData')->first();
+                                    $state = $stateUser ? $stateUser->assignedData->state : null;
                                     ?>
                                 <div class="row">
                                     <div class="col-lg-3">

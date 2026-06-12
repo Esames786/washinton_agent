@@ -108,9 +108,9 @@ if (isset($_GET['titlee'])) {
 
                         @endif
                     </td>
+                    <?php $ophone = explode('*^', $val->ophone); ?>
                     @if (in_array('42', $phoneaccess))
                         <td>
-                            <?php $ophone = explode('*^', $val->ophone); ?>
 
                             @foreach ($ophone as $val3)
                                 <?php

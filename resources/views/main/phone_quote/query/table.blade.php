@@ -279,9 +279,9 @@ if (isset($_GET['titlee'])) {
                     <span class="text-center pd-2 bd-l mt-2">
 
                     @if ($val->oemail)
-                        <button type="button" class="btn btn-info send-email">Send Email
+                        {{-- <button type="button" class="btn btn-info send-email">Send Email
                             <input hidden type="text" class="Email-Address" value="{{ $val->oemail }}">
-                        </button>
+                        </button> --}}
                         @php
                             $emailHistory = \App\EmailHistory::where('recipient', $val->oemail)
                                 ->orderby('id', 'DESC')

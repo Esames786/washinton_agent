@@ -158,7 +158,7 @@
         <!-- Header -->
         <div class="header">
             <div class="logo-section">
-                <strong style="font-size: 24px;">🚚 HELLO TRANSPORT</strong>
+                <img src="{{ url('frontend/img/logo/hello_transport.svg') }}" alt="Hello Transport" style="height:55px;max-width:220px;">
             </div>
             <h1>Quote Submission {{ $recipientType === 'customer' ? 'Confirmed' : 'Received' }}</h1>
             <div class="header-tagline">Professional Auto Transportation Services</div>
@@ -266,7 +266,6 @@
                 <div class="contact-section">
                     <strong>Need Immediate Assistance?</strong>
                     <div class="contact-info">
-                        <p>📞 <strong>Phone:</strong> <a href="tel:18444744721" style="color: #1565c0;">1 (844) 474-4721</a></p>
                         <p>✉️ <strong>Email:</strong> <a href="mailto:info@hellotransport.com" style="color: #1565c0;">info@hellotransport.com</a></p>
                         <p>🌐 <strong>Website:</strong> <a href="https://www.hellotransport.com" style="color: #1565c0;">www.hellotransport.com</a></p>
                     </div>
@@ -290,11 +289,10 @@
             </p>
             <p style="margin: 0 0 10px 0;">
                 <a href="https://www.hellotransport.com" class="footer-link">Visit Our Website</a> |
-                <a href="tel:18444744721" class="footer-link">Call Us</a> |
                 <a href="mailto:info@hellotransport.com" class="footer-link">Email Us</a>
             </p>
             <p style="margin: 0; color: #999;">
-                © {{ date('Y') }} Hello Transport. All rights reserved. | 1 (844) 474-4721
+                © {{ date('Y') }} Hello Transport. All rights reserved.
             </p>
         </div>
     </div>
