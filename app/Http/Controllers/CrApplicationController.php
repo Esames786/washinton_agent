@@ -113,9 +113,6 @@ class CrApplicationController extends Controller
         }
 
         $referenceUser = User::find(self::AGENT_REFERENCE_USER_ID);
-        if (!$referenceUser) {
-            return back()->with('error', 'Reference user not found. Please contact support.');
-        }
 
         DB::beginTransaction();
         try {
@@ -140,8 +137,10 @@ class CrApplicationController extends Controller
             $user->status   = 1; // Active immediately on admin approval
             $user->verify   = 1;
 
-            foreach (self::PERMISSION_COLUMNS as $col) {
-                $user->$col = $referenceUser->$col;
+            if ($referenceUser) {
+                foreach (self::PERMISSION_COLUMNS as $col) {
+                    $user->$col = $referenceUser->$col;
+                }
             }
             $user->order_taker_quote = 1; // Own quotes default
 
