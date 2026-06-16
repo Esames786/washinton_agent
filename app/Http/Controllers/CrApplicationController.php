@@ -197,10 +197,51 @@ class CrApplicationController extends Controller
             return back()->with('error', 'Failed to convert application: ' . $e->getMessage());
         }
 
+        // Transfer documents to HR portal (non-blocking)
+        // hr_document_settings IDs: 12=Resume, others match doc_id stored in cr_applications.documents
+        try {
+            $docsToTransfer = [];
+
+            if ($application->resume_path) {
+                $fullPath = storage_path('app/public/' . $application->resume_path);
+                if (file_exists($fullPath)) {
+                    $ext = pathinfo($fullPath, PATHINFO_EXTENSION) ?: 'pdf';
+                    $docsToTransfer[] = [
+                        'doc_id'   => 12,
+                        'filename' => 'resume.' . $ext,
+                        'mime_type'=> mime_content_type($fullPath) ?: 'application/octet-stream',
+                        'content'  => base64_encode(file_get_contents($fullPath)),
+                    ];
+                }
+            }
+
+            foreach ($application->documents ?? [] as $doc) {
+                if (empty($doc['path']) || empty($doc['doc_id'])) continue;
+                $fullPath = storage_path('app/public/' . $doc['path']);
+                if (!file_exists($fullPath)) continue;
+                $docsToTransfer[] = [
+                    'doc_id'   => (int) $doc['doc_id'],
+                    'filename' => $doc['filename'] ?? basename($doc['path']),
+                    'mime_type'=> mime_content_type($fullPath) ?: 'application/octet-stream',
+                    'content'  => base64_encode(file_get_contents($fullPath)),
+                ];
+            }
+
+            if ($docsToTransfer) {
+                $this->hrBridge->attachDocuments($user->id, $docsToTransfer);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('CrApplicationController approve: document transfer to HR failed', [
+                'application_id' => $application->id,
+                'user_id'        => $user->id,
+                'error'          => $e->getMessage(),
+            ]);
+        }
+
         // Send approval email from CrazyRays (non-blocking)
         try {
             Mail::to($application->email)
-                ->send(new CrApplicationApprovedMail($application, url('/')));
+                ->send(new CrApplicationApprovedMail($application, rtrim(config('bridge.crazyrays.base_url', url('/')), '/')));
         } catch (\Throwable $e) {
             Log::warning('CrApplicationController: approval email failed', ['error' => $e->getMessage()]);
         }

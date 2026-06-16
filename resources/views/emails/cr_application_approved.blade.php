@@ -23,7 +23,7 @@ body{font-family:Arial,sans-serif;background:#f5f5f5;margin:0;padding:20px;}
     <div class="body">
         <p>Dear <strong>{{ $application->full_name }}</strong>,</p>
         <p>We are pleased to inform you that your application for the <strong>{{ $application->campaign_label }}</strong> campaign has been reviewed and <strong>approved</strong>.</p>
-        <p>Your account has been created on the HelloTransport portal. You can log in using the credentials below:</p>
+        <p>Your account has been created on the CrazyRays portal. You can log in using the credentials below:</p>
 
         <div class="info-box">
             <p><strong>Portal:</strong> <a href="{{ $portalUrl }}" style="color:#d4af37;">{{ $portalUrl }}</a></p>

@@ -61,6 +61,22 @@ class HrPortalBridgeService
     }
 
     /**
+     * Transfer CR application documents to the HR portal after approval.
+     * Files are base64-encoded and sent as JSON to avoid multipart complexity.
+     *
+     * @param  int    $agentId    The washinton_agent user.id (stored as hr_employees.agent_id)
+     * @param  array  $documents  [['doc_id'=>int, 'filename'=>str, 'mime_type'=>str, 'content'=>base64str], ...]
+     */
+    public function attachDocuments(int $agentId, array $documents): array
+    {
+        return $this->post(
+            '/bridge/employee/attach-documents',
+            ['agent_id' => $agentId, 'documents' => $documents],
+            'Unable to attach documents to HR employee.'
+        );
+    }
+
+    /**
      * Get a one-time admin SSO URL to view an HR employee profile.
      *
      * @param  int  $hrEmployeeId  The hr_employees.id
