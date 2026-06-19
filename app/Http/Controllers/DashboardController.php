@@ -2917,7 +2917,25 @@ class DashboardController extends Controller
             return response()->json(['success' => false, 'message' => 'User not found'], 404);
         }
 
-        // Create a copy of this query as an AutoOrder assigned to the OT
+        // If an order already exists for this query, reassign it instead of creating a duplicate
+        if (!empty($query->order_id)) {
+            $existing = AutoOrder::find($query->order_id);
+            if ($existing) {
+                $existing->order_taker_id = $user->id;
+                $existing->pstatus        = 0;
+                $existing->save();
+
+                report::where('orderId', $existing->id)->update(['userId' => $user->id, 'pstatus' => 0]);
+                singlereport::where('orderId', $existing->id)->update(['userId' => $user->id, 'pstatus' => 0]);
+
+                $query->user_id = $user->id;
+                $query->save();
+
+                return response()->json(['success' => true, 'assigned_to' => $user->name, 'order_id' => $existing->id]);
+            }
+        }
+
+        // No existing order — create one now
         $order = new AutoOrder();
         $order->order_taker_id  = $user->id;
         $order->oname           = $query->oname;
@@ -3005,8 +3023,9 @@ class DashboardController extends Controller
         $single->pstatus = 0;
         $single->save();
 
-        // Mark the query as assigned
-        $query->user_id = $user->id;
+        // Mark the query as assigned and link to the new order
+        $query->user_id  = $user->id;
+        $query->order_id = $order->id;
         $query->save();
 
         return response()->json(['success' => true, 'assigned_to' => $user->name, 'order_id' => $order->id]);

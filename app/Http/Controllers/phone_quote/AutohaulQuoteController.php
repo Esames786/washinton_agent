@@ -237,8 +237,9 @@ class AutohaulQuoteController extends Controller
             $sr->pstatus = 0;
             $sr->save();
 
-            // Mark ShipaQuery as assigned (0 = unassigned if no OT found, not NULL)
-            $query->user_id = $user_iddd ?? 0;
+            // Mark ShipaQuery as assigned and link to the created order
+            $query->user_id  = $user_iddd ?? 0;
+            $query->order_id = $data->id;
             $query->save();
 
             // ── Step 4: Get pricing from central-gateway ──────────────────────
