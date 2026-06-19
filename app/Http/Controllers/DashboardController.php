@@ -972,6 +972,9 @@ class DashboardController extends Controller
         $phone = str_replace("-", "", $request->phone_number);
         $emp = User::find($request->user_id);
         $assign_daily_qoute = $emp->assign_daily_qoute;
+        if ($request->email && User::where('email', $request->email)->where('id', '!=', $request->user_id)->exists()) {
+            return 'ALREADY EXIST';
+        }
         $full_name = $request->first_name . ' ' . $request->last_name;
         $emp->name = $request->first_name;
         $emp->last_name = $request->last_name;

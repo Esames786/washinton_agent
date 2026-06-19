@@ -116,6 +116,15 @@ class CrApplicationController extends Controller
 
         DB::beginTransaction();
         try {
+            // Guard: if a user with this email already exists, link to them instead of creating a duplicate
+            $existingUser = User::where('email', $application->email)->first();
+            if ($existingUser) {
+                $application->status = 'approved';
+                $application->save();
+                DB::commit();
+                return back()->with('error', 'A user with this email (' . $application->email . ') already exists (ID #' . $existingUser->id . '). Application marked approved but no new account was created.');
+            }
+
             // Auto-generate slug from name
             $base = Str::slug($application->full_name);
             $slug = $base;

@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Barryvdh\DomPDF\Facade\Pdf;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,36 +27,55 @@ class NdaController extends Controller
             return response()->json(['success' => false, 'message' => 'NDA not required for this account.'], 403);
         }
 
-        try {
-            // Strip the data URI prefix: data:image/png;base64,...
-            $sigBase64 = preg_replace('/^data:image\/\w+;base64,/', '', $request->signature_data);
-            $sigBinary = base64_decode($sigBase64);
-            if (!$sigBinary || strlen($sigBinary) < 100) {
-                return response()->json(['success' => false, 'message' => 'Invalid signature. Please draw again.']);
-            }
+        // Validate signature canvas data
+        $sigBase64 = preg_replace('/^data:image\/\w+;base64,/', '', $request->signature_data);
+        $sigBinary = base64_decode($sigBase64);
+        if (!$sigBinary || strlen($sigBinary) < 100) {
+            return response()->json(['success' => false, 'message' => 'Invalid signature. Please draw again.']);
+        }
 
-            // Generate PDF
-            $pdf = Pdf::loadView('nda.pdf', [
+        $signedAt = now();
+        $relPath  = null;
+
+        // Attempt PDF generation — non-blocking (sign succeeds even if PDF fails)
+        try {
+            $html = view('nda.pdf', [
                 'employeeName'  => $request->employee_name,
                 'cnic'          => $request->cnic,
-                'signedDate'    => now()->format('d M Y H:i'),
+                'signedDate'    => $signedAt->format('d M Y H:i'),
                 'signatureData' => $request->signature_data,
-            ])->setPaper('a4', 'portrait');
+            ])->render();
 
-            // Save PDF
+            $options = new Options();
+            $options->set('isRemoteEnabled', true);
+            $options->set('isHtml5ParserEnabled', true);
+            $dompdf = new Dompdf($options);
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
             $dir      = 'nda_documents';
-            $filename = 'nda_' . $user->id . '_' . now()->format('YmdHis') . '.pdf';
+            $filename = 'nda_' . $user->id . '_' . $signedAt->format('YmdHis') . '.pdf';
             $relPath  = $dir . '/' . $filename;
 
             Storage::disk('public')->makeDirectory($dir);
-            Storage::disk('public')->put($relPath, $pdf->output());
+            Storage::disk('public')->put($relPath, $dompdf->output());
 
-            // Clear NDA flag on user + mirrored hr_employees record (same DB)
+        } catch (\Throwable $e) {
+            Log::error('NDA PDF generation failed (signature still recorded)', [
+                'user_id' => $user->id,
+                'error'   => $e->getMessage(),
+            ]);
+            $relPath = null;
+        }
+
+        // Clear NDA flag regardless of PDF outcome
+        try {
             DB::table('user')
                 ->where('id', $user->id)
                 ->update([
                     'nda_required'      => 0,
-                    'nda_signed_at'     => now(),
+                    'nda_signed_at'     => $signedAt,
                     'nda_document_path' => $relPath,
                 ]);
 
@@ -63,12 +83,12 @@ class NdaController extends Controller
                 ->where('agent_id', $user->id)
                 ->update(['nda_required' => 0]);
 
-            return response()->json(['success' => true]);
-
         } catch (\Throwable $e) {
-            Log::error('NDA sign failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
-            return response()->json(['success' => false, 'message' => 'Server error. Please try again.'], 500);
+            Log::error('NDA flag clear failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Server error saving signature. Please try again.'], 500);
         }
+
+        return response()->json(['success' => true]);
     }
 
     public function download(int $userId)
