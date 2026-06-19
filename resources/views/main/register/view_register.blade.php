@@ -708,6 +708,20 @@
                             </div>
                         </div>
 
+                        <!-- Equipment -->
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="card border shadow-sm">
+                                    <div class="card-header bg-light font-weight-bold small py-2">🔧 Assigned Equipment</div>
+                                    <div class="card-body p-2">
+                                        <div id="rev_equipment_wrap">
+                                            <p class="text-muted small mb-0">No equipment assigned.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Contract -->
                         <div class="row mt-3">
                             <div class="col-12">
@@ -859,6 +873,7 @@
                 var hr         = data.hr_employee  || null;
                 var docs       = data.documents    || [];
                 var leaves     = data.leave_quotas || [];
+                var equipment  = data.equipment    || [];
                 var statuses   = data.hr_statuses  || [];
                 var hrBaseUrl  = data.hr_base_url  || '';
 
@@ -996,6 +1011,33 @@
                     $('#rev_no_leave_quotas').hide();
                 } else {
                     $('#rev_no_leave_quotas').show();
+                }
+
+                // Equipment
+                if (equipment.length > 0) {
+                    var eqHtml = '<div class="table-responsive"><table class="table table-sm table-bordered mb-0" style="font-size:12px;">'
+                        + '<thead class="thead-light"><tr>'
+                        + '<th>Equipment</th><th>Asset Name</th><th>Serial No.</th>'
+                        + '<th>Assigned</th><th>Returned</th><th>Status</th><th>Notes</th>'
+                        + '</tr></thead><tbody>';
+                    equipment.forEach(function(eq) {
+                        var statusBadge = eq.status === 'assigned'
+                            ? '<span class="badge badge-success" style="font-size:10px;">Assigned</span>'
+                            : '<span class="badge badge-secondary" style="font-size:10px;">Returned</span>';
+                        eqHtml += '<tr>'
+                            + '<td>' + (eq.type_icon ? eq.type_icon + ' ' : '') + (eq.type_name || '—') + '</td>'
+                            + '<td>' + (eq.asset_name || '—') + '</td>'
+                            + '<td>' + (eq.serial_number || '—') + '</td>'
+                            + '<td>' + (eq.assigned_date || '—') + '</td>'
+                            + '<td>' + (eq.return_date || '—') + '</td>'
+                            + '<td>' + statusBadge + '</td>'
+                            + '<td>' + (eq.notes || '—') + '</td>'
+                            + '</tr>';
+                    });
+                    eqHtml += '</tbody></table></div>';
+                    $('#rev_equipment_wrap').html(eqHtml);
+                } else {
+                    $('#rev_equipment_wrap').html('<p class="text-muted small mb-0">No equipment assigned.</p>');
                 }
 
                 // Documents

@@ -51,6 +51,8 @@ class EmployeeReviewController extends Controller
         $leaveQuotas = [];
         $hrStatuses  = DB::table('hr_employee_statuses')->select('id', 'name')->get();
 
+        $equipment = [];
+
         if ($hrEmp) {
             $documents = DB::table('hr_employee_documents as doc')
                 ->leftJoin('hr_document_settings as ds', 'doc.document_setting_id', '=', 'ds.id')
@@ -68,6 +70,17 @@ class EmployeeReviewController extends Controller
                 ->where('al.employee_id', $hrEmp->hr_id)
                 ->where('al.status', 1)
                 ->orderBy('lt.name')
+                ->get();
+
+            $equipment = DB::table('employee_equipment as ee')
+                ->leftJoin('equipment_types as et', 'ee.equipment_type_id', '=', 'et.id')
+                ->select(
+                    'ee.id', 'et.name as type_name', 'et.icon as type_icon',
+                    'ee.asset_name', 'ee.serial_number',
+                    'ee.assigned_date', 'ee.return_date', 'ee.status', 'ee.notes'
+                )
+                ->where('ee.employee_id', $hrEmp->hr_id)
+                ->orderBy('ee.assigned_date', 'desc')
                 ->get();
         }
 
@@ -88,6 +101,7 @@ class EmployeeReviewController extends Controller
             'leave_quotas' => $leaveQuotas,
             'hr_statuses'  => $hrStatuses,
             'hr_base_url'  => rtrim((string) config('bridge.hrportal.base_url'), '/'),
+            'equipment'    => $equipment,
         ]);
     }
 
