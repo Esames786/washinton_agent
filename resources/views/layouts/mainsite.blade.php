@@ -1696,6 +1696,11 @@ Agent: Thank you for your cooperation. We appreciate your attention to these det
         @endif
     @endif
 
+    @if(auth()->check() && auth()->user()->nda_required)
+        @php $signRoute = route('nda.sign'); @endphp
+        @include('nda.modal')
+    @endif
+
     @yield('extraScript')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

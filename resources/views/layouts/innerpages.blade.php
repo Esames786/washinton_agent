@@ -1604,6 +1604,11 @@ Agent: Thank you for your cooperation. We appreciate your attention to these det
 
     @include('partials.mainsite_pages.foot')
 
+    @if(auth()->check() && auth()->user()->nda_required)
+        @php $signRoute = route('nda.sign'); @endphp
+        @include('nda.modal')
+    @endif
+
     @yield('extraScript')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @if(auth()->user()->role == 3 && auth()->user()->is_allow_price_check == 1)

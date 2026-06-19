@@ -73,12 +73,15 @@ class EmployeeReviewController extends Controller
 
         return response()->json([
             'agent'       => [
-                'id'     => $agentUser->id,
-                'name'   => $agentUser->name,
-                'slug'   => $agentUser->slug,
-                'email'  => $agentUser->email,
-                'phone'  => $agentUser->phone,
-                'status' => (int) $agentUser->status,
+                'id'              => $agentUser->id,
+                'name'            => $agentUser->name,
+                'slug'            => $agentUser->slug,
+                'email'           => $agentUser->email,
+                'phone'           => $agentUser->phone,
+                'status'          => (int) $agentUser->status,
+                'nda_required'    => (int) ($agentUser->nda_required ?? 0),
+                'nda_signed_at'   => $agentUser->nda_signed_at ?? null,
+                'nda_document_path' => $agentUser->nda_document_path ?? null,
             ],
             'hr_employee'  => $hrEmp,
             'documents'    => $documents,
@@ -240,6 +243,37 @@ class EmployeeReviewController extends Controller
         return response()->json([
             'title'   => $tpl ? $tpl->title   : 'Terms & Conditions',
             'content' => $tpl ? $tpl->content : '',
+        ]);
+    }
+
+    public function requireNda(Request $request): JsonResponse
+    {
+        $request->validate([
+            'user_id'      => 'required|integer',
+            'nda_required' => 'required|in:0,1',
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+
+        // Cannot re-require NDA if already signed and admin is trying to set 1 again — allowed
+        $user->nda_required = (int) $request->nda_required;
+
+        // If admin un-requires (sets 0), also clear the signed record
+        if ((int) $request->nda_required === 0) {
+            $user->nda_signed_at      = null;
+            $user->nda_document_path  = null;
+        }
+
+        $user->save();
+
+        // Mirror to hr_employees (same DB)
+        DB::table('hr_employees')
+            ->where('agent_id', $request->user_id)
+            ->update(['nda_required' => (int) $request->nda_required]);
+
+        return response()->json([
+            'success'      => true,
+            'nda_required' => (int) $user->nda_required,
         ]);
     }
 }

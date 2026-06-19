@@ -610,6 +610,26 @@
                                         <div id="rev_hr_status_msg" class="mt-2 small text-success" style="display:none;"></div>
                                     </div>
                                 </div>
+
+                                <div class="card border shadow-sm mt-3" id="rev_nda_card">
+                                    <div class="card-header bg-light font-weight-bold small py-2">📄 NDA Agreement</div>
+                                    <div class="card-body p-3">
+                                        <div id="rev_nda_status_display" class="mb-2 small"></div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="rev_nda_checkbox">
+                                            <label class="form-check-label small font-weight-bold" for="rev_nda_checkbox">
+                                                Require NDA Signing
+                                            </label>
+                                        </div>
+                                        <button id="rev_save_nda_btn" class="btn btn-sm btn-warning btn-block">Save NDA Setting</button>
+                                        <div id="rev_nda_msg" class="mt-2 small" style="display:none;"></div>
+                                        <div id="rev_nda_download_wrap" class="mt-2" style="display:none;">
+                                            <a id="rev_nda_download_link" href="#" target="_blank" class="btn btn-sm btn-outline-success btn-block">
+                                                <i class="fe fe-download mr-1"></i>Download Signed NDA
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -891,6 +911,26 @@
                 }
                 $('#rev_hr_status_select').html(selectHtml).prop('disabled', !hr);
 
+                // NDA card
+                var ndaRequired = agent.nda_required || 0;
+                var ndaSignedAt = agent.nda_signed_at || null;
+                var ndaDocPath  = agent.nda_document_path || null;
+                $('#rev_nda_checkbox').prop('checked', ndaRequired == 1);
+                if (ndaSignedAt) {
+                    $('#rev_nda_status_display').html(
+                        '<span class="badge badge-success">Signed</span> <span class="text-muted">' + ndaSignedAt + '</span>'
+                    );
+                    $('#rev_nda_download_wrap').show();
+                    $('#rev_nda_download_link').attr('href', '/nda/download/' + agent.id);
+                } else if (ndaRequired) {
+                    $('#rev_nda_status_display').html('<span class="badge badge-warning">Pending Signature</span>');
+                    $('#rev_nda_download_wrap').hide();
+                } else {
+                    $('#rev_nda_status_display').html('<span class="badge badge-secondary">Not Required</span>');
+                    $('#rev_nda_download_wrap').hide();
+                }
+                $('#rev_nda_msg').hide();
+
                 // Leave Quotas
                 $('#rev_leave_quotas_row').empty();
                 if (leaves.length > 0) {
@@ -1071,6 +1111,40 @@
                         msg = xhr.responseJSON.error || xhr.responseJSON.message;
                     }
                     $('#rev_hr_status_msg').text(msg).removeClass('text-success').addClass('text-danger').show();
+                }
+            });
+        });
+
+        // NDA require toggle
+        $(document).on('click', '#rev_save_nda_btn', function () {
+            if (!_reviewUserId) return;
+            var ndaVal = $('#rev_nda_checkbox').is(':checked') ? 1 : 0;
+            var self = this;
+            $(self).prop('disabled', true).text('Saving...');
+            $.ajax({
+                url: '/employee-review/require-nda',
+                type: 'POST',
+                data: { _token: $('meta[name="csrf-token"]').attr('content'), user_id: _reviewUserId, nda_required: ndaVal },
+                success: function (res) {
+                    $(self).prop('disabled', false).text('Save NDA Setting');
+                    if (res.success) {
+                        var msgEl = $('#rev_nda_msg');
+                        if (ndaVal == 1) {
+                            $('#rev_nda_status_display').html('<span class="badge badge-warning">Pending Signature</span>');
+                            $('#rev_nda_download_wrap').hide();
+                            msgEl.text('NDA required. Employee will be prompted to sign on next login.').css('color','#856404').show();
+                        } else {
+                            $('#rev_nda_status_display').html('<span class="badge badge-secondary">Not Required</span>');
+                            $('#rev_nda_download_wrap').hide();
+                            msgEl.text('NDA requirement removed.').css('color','#155724').show();
+                        }
+                    } else {
+                        $('#rev_nda_msg').text('Failed to update. Please try again.').css('color','#721c24').show();
+                    }
+                },
+                error: function () {
+                    $(self).prop('disabled', false).text('Save NDA Setting');
+                    $('#rev_nda_msg').text('Error. Please try again.').css('color','#721c24').show();
                 }
             });
         });

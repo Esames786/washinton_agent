@@ -175,6 +175,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/employee-review/save-contract', 'EmployeeReviewController@saveContract')->name('employee.review.save_contract');
     Route::post('/employee-review/accept-contract', 'EmployeeReviewController@acceptContract')->name('employee.review.accept_contract');
     Route::get('/employee-review/default-contract', 'EmployeeReviewController@defaultContract')->name('employee.review.default_contract');
+    Route::post('/employee-review/require-nda', 'EmployeeReviewController@requireNda')->name('employee.review.require_nda');
+
+    // NDA signing (employee)
+    Route::post('/nda/sign', 'NdaController@sign')->name('nda.sign');
+    Route::get('/nda/download/{userId}', 'NdaController@download')->name('nda.download');
 
     // Scope (account impersonation — admin only)
     Route::get('/scope/enter/{userId}', 'ScopeController@enter')->name('scope.enter');
