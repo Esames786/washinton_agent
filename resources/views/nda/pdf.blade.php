@@ -5,8 +5,9 @@
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 11pt; color: #222; line-height: 1.55; padding: 40px 50px; }
-    .logo-wrap { text-align: center; margin-bottom: 28px; }
-    .logo-wrap img { width: 110px; }
+    .header-wrap { text-align: center; margin-bottom: 28px; }
+    .header-wrap img { width: 110px; display: block; margin: 0 auto 6px; }
+    .company-name { font-size: 13pt; font-weight: bold; color: #1a4ca0; letter-spacing: .3px; }
     .doc-title { text-align: center; margin-bottom: 22px; }
     .doc-title h1 { font-size: 14pt; font-weight: bold; color: #1a4ca0; text-transform: uppercase; letter-spacing: .5px; line-height: 1.4; }
     .intro { margin-bottom: 18px; font-size: 11pt; }
@@ -30,8 +31,12 @@
 </head>
 <body>
 
-<div class="logo-wrap">
-    <img src="{{ public_path('assets/images/png/crazy_rays_logo.png') }}" alt="Crazy Rays Solutions">
+<div class="header-wrap">
+    @php $logoPath = public_path('assets/images/png/crazy_rays_logo.png'); @endphp
+    @if(file_exists($logoPath))
+        <img src="{{ $logoPath }}" alt="">
+    @endif
+    <div class="company-name">Crazy Rays Solutions</div>
 </div>
 
 <div class="doc-title">
