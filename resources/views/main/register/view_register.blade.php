@@ -201,39 +201,61 @@
                                                                         <button type="button"
                                                                             class="btn btn-dark dropdown-toggle"
                                                                             data-toggle="dropdown">
-                                                                            <i class="fe fe-arrow-down mr-2"></i>Edit
+                                                                            <i class="fe fe-eye mr-2"></i>View
                                                                         </button>
                                                                         <div class="dropdown-menu">
+                                                                            <a class="dropdown-item review-employee-btn" href="#"
+                                                                                data-toggle="modal" data-target="#employeeReviewModal"
+                                                                                data-user-id="{{ $val->id }}">
+                                                                                <i class="fe fe-user mr-1"></i> View / Review
+                                                                            </a>
                                                                             <a class="dropdown-item"
-                                                                                href="{{ url('edit_employee' . '/' . $val->id) }}">Edit</a>
+                                                                                href="{{ url('edit_employee' . '/' . $val->id) }}">
+                                                                                <i class="fe fe-edit mr-1"></i> Edit
+                                                                            </a>
                                                                             @if ($val->status == 0)
                                                                                 <a class="dropdown-item review-employee-btn" href="#"
                                                                                     data-toggle="modal" data-target="#employeeReviewModal"
-                                                                                    data-user-id="{{ $val->id }}">Active</a>
+                                                                                    data-user-id="{{ $val->id }}">
+                                                                                    <i class="fe fe-check-circle mr-1"></i> Activate
+                                                                                </a>
                                                                             @else
                                                                                 <a class="dropdown-item review-employee-btn" href="#"
                                                                                     data-toggle="modal" data-target="#employeeReviewModal"
-                                                                                    data-user-id="{{ $val->id }}">Deactivate</a>
+                                                                                    data-user-id="{{ $val->id }}">
+                                                                                    <i class="fe fe-x-circle mr-1"></i> Deactivate
+                                                                                </a>
                                                                             @endif
                                                                             @if ($val->freeze == 1)
                                                                                 <a class="dropdown-item freeze-unfreeze-btn"
                                                                                     data-id="{{ $val->id }}"
                                                                                     data-action="unfreeze"
-                                                                                    href="#">Unfreeze</a>
+                                                                                    href="#">
+                                                                                    <i class="fe fe-unlock mr-1"></i> Unfreeze
+                                                                                </a>
                                                                             @else
                                                                                 <a class="dropdown-item freeze-unfreeze-btn"
                                                                                     data-id="{{ $val->id }}"
                                                                                     data-action="freeze"
-                                                                                    href="#">Freeze</a>
+                                                                                    href="#">
+                                                                                    <i class="fe fe-lock mr-1"></i> Freeze
+                                                                                </a>
                                                                             @endif
                                                                             <a class="dropdown-item"
                                                                                 href="{{ url('reset' . '/' . $val->id) }}"
-                                                                                target="_blank">Reset</a>
-                                                                            <a class="dropdown-item"
-                                                                                href="{{ url('delete_employee' . '/' . $val->id) }}">Delete</a>
+                                                                                target="_blank">
+                                                                                <i class="fe fe-refresh-cw mr-1"></i> Reset
+                                                                            </a>
                                                                             <a class="dropdown-item"
                                                                                 href="{{ url('screen_shots' . '/' . $val->id) }}"
-                                                                                target="_blank">Screen Shots</a>
+                                                                                target="_blank">
+                                                                                <i class="fe fe-camera mr-1"></i> Screen Shots
+                                                                            </a>
+                                                                            <div class="dropdown-divider"></div>
+                                                                            <a class="dropdown-item text-danger"
+                                                                                href="{{ url('delete_employee' . '/' . $val->id) }}">
+                                                                                <i class="fe fe-trash-2 mr-1"></i> Delete
+                                                                            </a>
                                                                         </div>
                                                                     </div>
                                                                 @endif
@@ -243,39 +265,61 @@
                                                                         <button type="button"
                                                                             class="btn btn-dark dropdown-toggle"
                                                                             data-toggle="dropdown">
-                                                                            <i class="fe fe-arrow-down mr-2"></i>Edit
+                                                                            <i class="fe fe-eye mr-2"></i>View
                                                                         </button>
                                                                         <div class="dropdown-menu">
+                                                                            <a class="dropdown-item review-employee-btn" href="#"
+                                                                                data-toggle="modal" data-target="#employeeReviewModal"
+                                                                                data-user-id="{{ $val->id }}">
+                                                                                <i class="fe fe-user mr-1"></i> View / Review
+                                                                            </a>
                                                                             <a class="dropdown-item"
-                                                                                href="{{ url('edit_employee' . '/' . $val->id) }}">Edit</a>
+                                                                                href="{{ url('edit_employee' . '/' . $val->id) }}">
+                                                                                <i class="fe fe-edit mr-1"></i> Edit
+                                                                            </a>
                                                                             @if ($val->status == 0)
                                                                                 <a class="dropdown-item review-employee-btn" href="#"
                                                                                     data-toggle="modal" data-target="#employeeReviewModal"
-                                                                                    data-user-id="{{ $val->id }}">Active</a>
+                                                                                    data-user-id="{{ $val->id }}">
+                                                                                    <i class="fe fe-check-circle mr-1"></i> Activate
+                                                                                </a>
                                                                             @else
                                                                                 <a class="dropdown-item review-employee-btn" href="#"
                                                                                     data-toggle="modal" data-target="#employeeReviewModal"
-                                                                                    data-user-id="{{ $val->id }}">Deactivate</a>
+                                                                                    data-user-id="{{ $val->id }}">
+                                                                                    <i class="fe fe-x-circle mr-1"></i> Deactivate
+                                                                                </a>
                                                                             @endif
                                                                             @if ($val->freeze == 1)
                                                                                 <a class="dropdown-item freeze-unfreeze-btn"
                                                                                     data-id="{{ $val->id }}"
                                                                                     data-action="unfreeze"
-                                                                                    href="#">Unfreeze</a>
+                                                                                    href="#">
+                                                                                    <i class="fe fe-unlock mr-1"></i> Unfreeze
+                                                                                </a>
                                                                             @else
                                                                                 <a class="dropdown-item freeze-unfreeze-btn"
                                                                                     data-id="{{ $val->id }}"
                                                                                     data-action="freeze"
-                                                                                    href="#">Freeze</a>
+                                                                                    href="#">
+                                                                                    <i class="fe fe-lock mr-1"></i> Freeze
+                                                                                </a>
                                                                             @endif
                                                                             <a class="dropdown-item"
                                                                                 href="{{ url('reset' . '/' . $val->id) }}"
-                                                                                target="_blank">Reset</a>
-                                                                            <a class="dropdown-item"
-                                                                                href="{{ url('delete_employee' . '/' . $val->id) }}">Delete</a>
+                                                                                target="_blank">
+                                                                                <i class="fe fe-refresh-cw mr-1"></i> Reset
+                                                                            </a>
                                                                             <a class="dropdown-item"
                                                                                 href="{{ url('screen_shots' . '/' . $val->id) }}"
-                                                                                target="_blank">Screen Shots</a>
+                                                                                target="_blank">
+                                                                                <i class="fe fe-camera mr-1"></i> Screen Shots
+                                                                            </a>
+                                                                            <div class="dropdown-divider"></div>
+                                                                            <a class="dropdown-item text-danger"
+                                                                                href="{{ url('delete_employee' . '/' . $val->id) }}">
+                                                                                <i class="fe fe-trash-2 mr-1"></i> Delete
+                                                                            </a>
                                                                         </div>
                                                                     </div>
                                                                 @endif
