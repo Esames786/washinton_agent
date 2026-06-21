@@ -12,18 +12,21 @@ class AgentActivatedEmail extends Mailable
 
     public $userName;
     public $userEmail;
+    public $brand;
 
-    public function __construct($userName, $userEmail)
+    public function __construct($userName, $userEmail, ?array $brand = null)
     {
         $this->userName  = $userName;
         $this->userEmail = $userEmail;
+        $this->brand     = $brand ?? \App\Support\Brand::byKey(config('brands.default', 'hellotransport'));
     }
 
     public function build()
     {
         return $this
-            ->from(config('mail.from.address', 'noreply@hellotransport.com'), 'Hello Transport')
-            ->subject('Your Hello Transport Agent Account is Now Active!')
-            ->view('emails.agent_activated');
+            ->from(config('mail.from.address', 'noreply@hellotransport.com'), $this->brand['name'])
+            ->subject('Your ' . $this->brand['name'] . ' Agent Account is Now Active!')
+            ->view('emails.agent_activated')
+            ->with('brand', $this->brand);
     }
 }

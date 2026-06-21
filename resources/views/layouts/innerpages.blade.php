@@ -1609,6 +1609,8 @@ Agent: Thank you for your cooperation. We appreciate your attention to these det
         @include('nda.modal')
     @endif
 
+    @include('partials.account_verification_gate')
+
     @yield('extraScript')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @if(auth()->user()->role == 3 && auth()->user()->is_allow_price_check == 1)

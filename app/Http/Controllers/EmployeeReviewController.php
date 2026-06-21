@@ -116,7 +116,7 @@ class EmployeeReviewController extends Controller
         $emailNote = null;
         if ((int) $request->status === 1) {
             try {
-                Mail::to($user->email)->send(new AgentActivatedEmail($user->name, $user->email));
+                Mail::to($user->email)->send(new AgentActivatedEmail($user->name, $user->email, \App\Support\Brand::for($user)));
                 $emailNote = 'Activation email sent to ' . $user->email;
             } catch (\Throwable $e) {
                 Log::warning('changeAgentStatus: activation email failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
@@ -254,9 +254,15 @@ class EmployeeReviewController extends Controller
     public function publicDefaultContract(): JsonResponse
     {
         $tpl = \App\ContractTemplate::getDefault();
+
+        // This endpoint is consumed by crazyrayssolutions.com.pk's signup/careers
+        // form, so the contract must always carry CrazyRays branding.
+        $brand   = \App\Support\Brand::byKey('crazyrays');
+        $content = $tpl ? \App\Support\Brand::applyTokens($tpl->content, $brand) : '';
+
         return response()->json([
-            'title'   => $tpl ? $tpl->title   : 'Terms & Conditions',
-            'content' => $tpl ? $tpl->content : '',
+            'title'   => $tpl ? $tpl->title : 'Terms & Conditions',
+            'content' => $content,
         ]);
     }
 

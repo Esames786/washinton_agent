@@ -159,9 +159,19 @@
                     @if($application->documents && count($application->documents))
                         <ul class="list-group list-group-flush">
                             @foreach($application->documents as $doc)
+                            @php
+                                // Prefer the stored title; if missing or the generic "Document"
+                                // fallback, resolve the real name from hr_document_settings by id.
+                                $docTitle = $doc['title'] ?? null;
+                                if ((empty($docTitle) || $docTitle === 'Document') && !empty($doc['doc_id'])) {
+                                    $docTitle = \Illuminate\Support\Facades\DB::table('hr_document_settings')
+                                        ->where('id', (int) $doc['doc_id'])
+                                        ->value('title') ?: ($docTitle ?: 'Document');
+                                }
+                            @endphp
                             <li class="list-group-item d-flex justify-content-between align-items-center py-2">
                                 <span>
-                                    {{ $doc['title'] ?? 'Document' }}
+                                    {{ $docTitle }}
                                     @if(!empty($doc['is_required']))
                                         <span class="badge badge-danger ml-1">Required</span>
                                     @endif

@@ -14,10 +14,12 @@ class FrontendController extends Controller
     {
         // Logged-in CR users visiting the hellotransport marketing page get sent back to CrazyRays
         if (Auth::check()) {
-            $isCrUser = $request->session()->get('cr_origin') === 'crazyrays'
+            $isCrUser = (int) (Auth::user()->is_crazyrays ?? 0) === 1
+                || $request->session()->get('cr_origin') === 'crazyrays'
                 || \App\CrApplication::where('email', Auth::user()->email)->exists();
             if ($isCrUser) {
-                return redirect()->away('https://crazyrayssolutions.com.pk');
+                $crBase = rtrim(config('bridge.crazyrays.base_url', 'https://crazyrayssolutions.com.pk'), '/');
+                return redirect()->away($crBase ?: 'https://crazyrayssolutions.com.pk');
             }
         }
 

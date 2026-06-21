@@ -27,7 +27,18 @@ class User extends Authenticatable
         'hr_employee_id',
         'verify',
         'status',
+        'is_crazyrays',
     ];
+
+    /**
+     * Whether this account originated from CrazyRays Solutions
+     * (crazyrayssolutions.com.pk signup form OR an approved campaign application).
+     * Drives per-user branding across screens, emails, and redirects.
+     */
+    public function isCrazyrays(): bool
+    {
+        return (int) ($this->is_crazyrays ?? 0) === 1;
+    }
 
     /**
      * The attributes that should be hidden for arrays.

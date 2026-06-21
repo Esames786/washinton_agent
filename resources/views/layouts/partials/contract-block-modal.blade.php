@@ -35,7 +35,7 @@
         </div>
         <div style="flex:1;overflow-y:auto;padding:20px 24px;">
             <div class="contract-modal-body">
-                {!! $contractBlock->contract !!}
+                {!! \App\Support\Brand::applyTokens($contractBlock->contract, \App\Support\Brand::current()) !!}
             </div>
         </div>
         <div style="padding:14px 20px;border-top:1px solid #e0e0e0;background:#f5f5f5;display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-shrink:0;">

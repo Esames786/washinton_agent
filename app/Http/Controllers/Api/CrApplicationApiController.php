@@ -70,14 +70,22 @@ class CrApplicationApiController extends Controller
         if ($request->hasFile('document_files')) {
             foreach ($request->file('document_files') as $docId => $file) {
                 if ($file->isValid()) {
-                    $path      = $file->store('cr_documents', 'public');
-                    $docMeta   = collect($request->input('documents', []))->firstWhere('doc_id', (int) $docId);
+                    $path    = $file->store('cr_documents', 'public');
+                    $docMeta = collect($request->input('documents', []))->firstWhere('doc_id', (int) $docId);
+
+                    // The crazyrays proxy doesn't forward the document title metadata, so
+                    // resolve the human title from hr_document_settings (shared DB) by id.
+                    // Fall back to any forwarded title, then a generic label.
+                    $setting = \Illuminate\Support\Facades\DB::table('hr_document_settings')
+                        ->where('id', (int) $docId)
+                        ->first(['title', 'is_required']);
+
                     $documents[] = [
                         'doc_id'      => (int) $docId,
-                        'title'       => $docMeta['title'] ?? 'Document',
+                        'title'       => $setting->title ?? ($docMeta['title'] ?? 'Document'),
                         'path'        => $path,
                         'filename'    => $file->getClientOriginalName(),
-                        'is_required' => $docMeta['is_required'] ?? false,
+                        'is_required' => $setting->is_required ?? ($docMeta['is_required'] ?? false),
                     ];
                 }
             }

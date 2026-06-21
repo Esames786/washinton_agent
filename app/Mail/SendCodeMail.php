@@ -19,12 +19,14 @@ class SendCodeMail extends Mailable
     public $code;
     public $mainTxt;
     public $name;
+    public $brand;
 
-    public function __construct($name,$code)
+    public function __construct($name, $code, ?array $brand = null)
     {
         $this->name = $name;
         $this->code = $code;
         $this->mainTxt = ucfirst($name) ." your code is: " . $code;
+        $this->brand = $brand ?? \App\Support\Brand::byKey(config('brands.default', 'hellotransport'));
     }
 
     /**
@@ -34,7 +36,7 @@ class SendCodeMail extends Mailable
      */
     public function build()
     {
-        // dd('asdasdasdasd');
-        return $this->view('emails.send_code_email');
+        return $this->view('emails.send_code_email')
+            ->with('brand', $this->brand);
     }
 }

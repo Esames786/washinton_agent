@@ -145,6 +145,7 @@ class CrApplicationController extends Controller
             $user->role     = $role->id;
             $user->status   = 1; // Active immediately on admin approval
             $user->verify   = 1;
+            $user->is_crazyrays = 1; // Originated from a CrazyRays campaign application
 
             if ($referenceUser) {
                 foreach (self::PERMISSION_COLUMNS as $col) {

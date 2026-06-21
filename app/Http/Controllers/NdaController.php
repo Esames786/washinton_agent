@@ -79,9 +79,17 @@ class NdaController extends Controller
                     'nda_document_path' => $relPath,
                 ]);
 
+            // Mirror signed NDA onto hr_employees so HR admin can see/download it.
+            // Store a public URL (storage symlink) on the agent domain since the
+            // HR portal is a separate app/session and cannot use the auth-only
+            // /nda/download route.
             DB::table('hr_employees')
                 ->where('agent_id', $user->id)
-                ->update(['nda_required' => 0]);
+                ->update([
+                    'nda_required'     => 0,
+                    'nda_signed_at'    => $signedAt,
+                    'nda_document_url' => $relPath ? url('storage/' . $relPath) : null,
+                ]);
 
         } catch (\Throwable $e) {
             Log::error('NDA flag clear failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);

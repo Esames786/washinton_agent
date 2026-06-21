@@ -618,7 +618,7 @@ class DashboardController extends Controller
             $modal->save();
 
             try {
-                Mail::to($modal->email)->send(new AgentActivatedEmail($modal->name, $modal->email));
+                Mail::to($modal->email)->send(new AgentActivatedEmail($modal->name, $modal->email, \App\Support\Brand::for($modal)));
             } catch (\Throwable $e) {
                 \Log::warning('user_active: activation email failed', ['user_id' => $id, 'error' => $e->getMessage()]);
             }

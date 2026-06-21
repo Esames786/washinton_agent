@@ -1109,15 +1109,15 @@
                                                         </li><br>
 
                                                         <li class="text-justify">
-                                                            <strong>Service Agreement and Pickup/Delivery Schedule:</strong> Ship A1 Transport is licensed and bonded by the FMCSA and agrees to arrange for the shipment of vehicles described in the quotation on or about the estimated dates based on the carrier/transport schedule.
-                                                            As a broker, we will designate a reliable carrier/transporter to fulfill the terms of this agreement. Ship A1 Transport does not guarantee specific pickup or delivery dates; these dates are estimates only.
-                                                            Ship A1 Transport and the designated carrier are not responsible for delays of any kind. Once a reliable carrier/transporter is assigned, Ship A1 Transport fulfills its service agreement.
+                                                            <strong>Service Agreement and Pickup/Delivery Schedule:</strong> Hello Transport is licensed and bonded by the FMCSA and agrees to arrange for the shipment of vehicles described in the quotation on or about the estimated dates based on the carrier/transport schedule.
+                                                            As a broker, we will designate a reliable carrier/transporter to fulfill the terms of this agreement. Hello Transport does not guarantee specific pickup or delivery dates; these dates are estimates only.
+                                                            Hello Transport and the designated carrier are not responsible for delays of any kind. Once a reliable carrier/transporter is assigned, Hello Transport fulfills its service agreement.
                                                         </li><br>
 
                                                         <li class="text-justify">
-                                                            <strong>First-Time Booking Form and Future Orders:</strong> When a customer contacts Ship A1 Transport for the first time to avail of our services, a Booking Form must be completed and signed.
+                                                            <strong>First-Time Booking Form and Future Orders:</strong> When a customer contacts Hello Transport for the first time to avail of our services, a Booking Form must be completed and signed.
                                                             This form will serve as the official agreement for the initial order. Once this first-time booking form is completed, it will be saved and stored in our records for future reference.
-                                                            For any subsequent orders or quotes made by the same customer, Ship A1 Transport will proceed directly with the booking, without requiring a new booking form.
+                                                            For any subsequent orders or quotes made by the same customer, Hello Transport will proceed directly with the booking, without requiring a new booking form.
                                                             The terms and conditions outlined in the original first-time booking form will automatically apply to all future orders made by the customer, including but not limited to any new orders placed over the phone, via email, or through any other means of communication.
                                                             After the initial order, all future bookings are governed by the terms set forth in the first-time booking form, and the customer acknowledges and agrees to the continuation of the terms from that original agreement for any future orders.
                                                         </li><br>
@@ -1128,15 +1128,15 @@
                                                         </li><br>
 
                                                         <li class="text-justify">
-                                                            <strong>Third-Party Links:</strong> Ship A1 Transport’s website may include third-party links. We are not responsible for the privacy policies or terms and conditions of any third-party links.
+                                                            <strong>Third-Party Links:</strong> Hello Transport’s website may include third-party links. We are not responsible for the privacy policies or terms and conditions of any third-party links.
                                                             We recommend reviewing the privacy policies of third-party websites before providing any personal information.
                                                         </li><br>
 
                                                         <li class="text-justify">
                                                             <strong>Insurance Responsibility and Claims Process:</strong> The carrier/transporter assumes primary insurance responsibility during the transit of your vehicle.
                                                             Any claims for damage must be directed to the actual carrier/transporter who transported your vehicle.
-                                                            The customer agrees that Ship A1 Transport is not responsible for any damage claims. For information on the claim process, refer to the carrier/transporter’s bill of lading.
-                                                            No claims or legal actions can be initiated against Ship A1 Transport. Only the carrier’s terms apply once a carrier is assigned to your order.
+                                                            The customer agrees that Hello Transport is not responsible for any damage claims. For information on the claim process, refer to the carrier/transporter’s bill of lading.
+                                                            No claims or legal actions can be initiated against Hello Transport. Only the carrier’s terms apply once a carrier is assigned to your order.
                                                         </li><br>
 
                                                         <li class="text-justify">
@@ -1149,7 +1149,7 @@
                                                         </li><br>
 
                                                         <li class="text-justify">
-                                                            <strong>Auto Rental Policy:</strong> Ship A1 Transport does not provide auto rental services for delays, damages, accidents, or unforeseen circumstances. Customers should plan accordingly.
+                                                            <strong>Auto Rental Policy:</strong> Hello Transport does not provide auto rental services for delays, damages, accidents, or unforeseen circumstances. Customers should plan accordingly.
                                                         </li><br>
 
                                                         <li class="text-justify">
@@ -1190,16 +1190,16 @@
                                                         </li><br>
 
                                                         <li class="text-justify">
-                                                            <strong>Right to Refuse Service:</strong> Ship A1 Transport reserves the right to refuse service for violations, threats, or harassment.
+                                                            <strong>Right to Refuse Service:</strong> Hello Transport reserves the right to refuse service for violations, threats, or harassment.
                                                         </li><br>
 
                                                         <li class="text-justify">
                                                             <strong>Disclaimer:</strong> Pickup/delivery dates are estimates.
-                                                            Ship A1 Transport is a broker and not responsible for carrier performance or damages.
+                                                            Hello Transport is a broker and not responsible for carrier performance or damages.
                                                         </li><br>
 
                                                         <li class="text-justify">
-                                                            <strong>Limitations of Liability:</strong> Ship A1 Transport is not liable for unforeseen issues such as weather or mechanical delays.
+                                                            <strong>Limitations of Liability:</strong> Hello Transport is not liable for unforeseen issues such as weather or mechanical delays.
                                                         </li><br>
 
                                                         <li class="text-justify">
@@ -1207,7 +1207,7 @@
                                                         </li><br>
 
                                                         <li class="text-justify">
-                                                            <strong>Force Majeure:</strong> Ship A1 Transport is not liable for delays or damages due to acts of God, disasters, strikes, or government actions.
+                                                            <strong>Force Majeure:</strong> Hello Transport is not liable for delays or damages due to acts of God, disasters, strikes, or government actions.
                                                         </li><br>
 
                                                         <li class="text-justify">

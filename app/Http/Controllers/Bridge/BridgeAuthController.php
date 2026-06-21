@@ -135,6 +135,7 @@ class BridgeAuthController extends Controller
             $user->verify   = 1; // Must be 1 so user appears in employee list
             $user->last_name = $lastName;
             $user->slug      = $slug;
+            $user->is_crazyrays = 1; // Originated from crazyrayssolutions.com.pk — drives branding/redirects
 
             foreach (self::PERMISSION_COLUMNS as $col) {
                 $user->$col = $referenceUser->$col;
@@ -252,7 +253,7 @@ class BridgeAuthController extends Controller
         try {
             Mail::to(config('custom.SEND_MAIL'))
                 ->cc([$user->email, config('custom.CODE_GIVER')])
-                ->send(new SendCodeMail($user->name, $user->code));
+                ->send(new SendCodeMail($user->name, $user->code, \App\Support\Brand::for($user)));
         } catch (\Throwable $e) {
             Log::warning('BridgeAuthController: OTP email failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
         }

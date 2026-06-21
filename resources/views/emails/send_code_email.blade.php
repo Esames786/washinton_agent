@@ -40,7 +40,7 @@
                                             <td height="30" valign="middle" align="left" class="center-stack"
                                                 style="font-family: Open Sans, sans-serif;font-size: 18px;font-weight:bold;">
                                                 <a href="#" style="color: #1E9FF2;"><span
-                                                        style="font-size: 35px;font-weight:bold;font-family: 'Lato', sans-serif;">Hello Transport</span></a>
+                                                        style="font-size: 35px;font-weight:bold;font-family: 'Lato', sans-serif;">{{ $brand['name'] ?? 'Hello Transport' }}</span></a>
                                                 <h3>{{ucfirst($name)}}</h3>
                                             </td>
                                         </tr>
@@ -211,7 +211,7 @@
                                                     <tr>
                                                         <td height="28" align="center"
                                                             style="font-family: Open Sans, sans-serif;font-size:11px; font-weight:normal; color:#7f8c8d">
-                                                            Hello Transport All Rights Reserved.
+                                                            {{ $brand['footer'] ?? 'Hello Transport All Rights Reserved.' }}
                                                         </td>
                                                     </tr>
                                                     </tbody>
