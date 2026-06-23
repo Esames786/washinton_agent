@@ -1703,6 +1703,8 @@ Agent: Thank you for your cooperation. We appreciate your attention to these det
 
     @include('partials.account_verification_gate')
 
+    @include('partials.agent_activity_tracker')
+
     @yield('extraScript')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

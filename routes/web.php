@@ -181,6 +181,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/nda/sign', 'NdaController@sign')->name('nda.sign');
     Route::get('/nda/download/{userId}', 'NdaController@download')->name('nda.download');
 
+    // Agent active working-time heartbeat (cursor/keyboard activity)
+    Route::post('/agent/activity-heartbeat', 'AgentActivityController@heartbeat')->name('agent.activity.heartbeat');
+
     // Scope (account impersonation — admin only)
     Route::get('/scope/enter/{userId}', 'ScopeController@enter')->name('scope.enter');
     Route::get('/scope/exit', 'ScopeController@exit')->name('scope.exit');

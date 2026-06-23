@@ -23,8 +23,13 @@ class AgentActivatedEmail extends Mailable
 
     public function build()
     {
+        // Authorized From address (SPF/DKIM valid), brand display name, brand Reply-To.
+        $fromAddress = config('mail.from.address', 'support@hellotransport.com');
+        $replyTo     = $this->brand['email'] ?? $fromAddress;
+
         return $this
-            ->from(config('mail.from.address', 'noreply@hellotransport.com'), $this->brand['name'])
+            ->from($fromAddress, $this->brand['name'])
+            ->replyTo($replyTo, $this->brand['name'])
             ->subject('Your ' . $this->brand['name'] . ' Agent Account is Now Active!')
             ->view('emails.agent_activated')
             ->with('brand', $this->brand);

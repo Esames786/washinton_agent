@@ -1245,7 +1245,9 @@ class NewQuote extends Controller
 
                     $image->move(public_path('quoteForm'), $filename);
 
-                    $imageUrl = 'https://washington.shawntransport.com/quoteForm/' . $filename;
+                    // Build URL on the current app domain (file is stored in this app's
+                    // public/quoteForm) — not the unrelated washington.shawntransport.com.
+                    $imageUrl = url('quoteForm/' . $filename);
 
                     $imageUrls[] = $imageUrl;
                 }
@@ -3175,7 +3177,9 @@ class NewQuote extends Controller
 
                         $image->move(public_path('quoteForm'), $filename);
 
-                        $imageUrl = 'https://washington.shawntransport.com/quoteForm/' . $filename;
+                        // Build URL on the current app domain (file is stored in this app's
+                        // public/quoteForm) — not the unrelated washington.shawntransport.com.
+                        $imageUrl = url('quoteForm/' . $filename);
 
                         $imageUrls[] = $imageUrl;
                     }

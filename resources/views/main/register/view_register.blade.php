@@ -708,6 +708,28 @@
                             </div>
                         </div>
 
+                        <!-- Working Hours -->
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="card border shadow-sm">
+                                    <div class="card-header bg-light font-weight-bold small py-2">🕒 Working Hours (Active Time)</div>
+                                    <div class="card-body p-2">
+                                        <div class="row text-center">
+                                            <div class="col-6">
+                                                <div class="text-muted small">Today</div>
+                                                <div id="rev_work_today" class="font-weight-bold" style="font-size:18px;">—</div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="text-muted small">All-time</div>
+                                                <div id="rev_work_total" class="font-weight-bold" style="font-size:18px;">—</div>
+                                            </div>
+                                        </div>
+                                        <p class="text-muted small mb-0 mt-1" style="font-size:11px;">Counts only active time (cursor/keyboard) while the agent has the portal open.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Equipment -->
                         <div class="row mt-3">
                             <div class="col-12">
@@ -876,6 +898,11 @@
                 var equipment  = data.equipment    || [];
                 var statuses   = data.hr_statuses  || [];
                 var hrBaseUrl  = data.hr_base_url  || '';
+
+                // Working hours (active time)
+                var work = data.working_time || {};
+                $('#rev_work_today').text(work.today_human || '0m');
+                $('#rev_work_total').text(work.total_human || '0m');
 
                 // HR Profile button
                 if (hr) {
@@ -1291,8 +1318,22 @@
 
         // ── Contract editor (Quill) ───────────────────────────────────────────
         function initRevContractEditor(contractHtml) {
+            // If no contract saved yet, pre-load the default template (front-end only — not
+            // saved until "Save Contract" clicked). Branded for the viewed agent via user_id.
+            function resolveHtml(cb) {
+                if (contractHtml && contractHtml.trim().length > 10) { cb(contractHtml); return; }
+                var url = '{{ route("employee.review.default_contract") }}';
+                if (_reviewUserId) { url += (url.indexOf('?') === -1 ? '?' : '&') + 'user_id=' + _reviewUserId; }
+                $.getJSON(url, function (res) {
+                    cb(res.content || '');
+                }).fail(function () { cb(''); });
+            }
+            function setContent(html) {
+                if (window._revQuill) { window._revQuill.root.innerHTML = html || ''; }
+            }
+            // Editor already built (modal opened before) — just resolve + set content
             if ($('#rev_contract_quill').find('.ql-editor').length > 0 && window._revQuill) {
-                window._revQuill.root.innerHTML = contractHtml || '';
+                resolveHtml(setContent);
                 return;
             }
             function buildQuill(html) {
@@ -1303,14 +1344,6 @@
                 });
                 window._revQuill.root.innerHTML = html || '';
             }
-            // If no contract saved yet, pre-load the default template (front-end only — not saved until "Save Contract" clicked)
-            function resolveHtml(cb) {
-                if (contractHtml && contractHtml.trim().length > 10) { cb(contractHtml); return; }
-                $.getJSON('{{ route("employee.review.default_contract") }}', function (res) {
-                    cb(res.content || '');
-                }).fail(function () { cb(''); });
-            }
-            function contractHtmlAlias() { return contractHtml; }
             if (typeof Quill !== 'undefined') {
                 resolveHtml(function (html) { buildQuill(html); });
             } else {

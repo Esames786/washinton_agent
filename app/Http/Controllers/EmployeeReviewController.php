@@ -84,6 +84,12 @@ class EmployeeReviewController extends Controller
                 ->get();
         }
 
+        // Working-time (active cursor/keyboard seconds) — today + all-time total
+        $todaySeconds = (int) (DB::table('agent_active_times')
+            ->where('user_id', $userId)->where('work_date', date('Y-m-d'))->value('active_seconds') ?? 0);
+        $totalSeconds = (int) (DB::table('agent_active_times')
+            ->where('user_id', $userId)->sum('active_seconds') ?? 0);
+
         return response()->json([
             'agent'       => [
                 'id'              => $agentUser->id,
@@ -102,6 +108,12 @@ class EmployeeReviewController extends Controller
             'hr_statuses'  => $hrStatuses,
             'hr_base_url'  => rtrim((string) config('bridge.hrportal.base_url'), '/'),
             'equipment'    => $equipment,
+            'working_time' => [
+                'today_seconds' => $todaySeconds,
+                'today_human'   => \App\AgentActiveTime::format($todaySeconds),
+                'total_seconds' => $totalSeconds,
+                'total_human'   => \App\AgentActiveTime::format($totalSeconds),
+            ],
         ]);
     }
 
@@ -225,7 +237,19 @@ class EmployeeReviewController extends Controller
             'updated_at' => now(),
         ]);
 
-        return response()->json(['success' => true, 'message' => 'Contract saved successfully']);
+        // Email the agent that a contract is awaiting their acceptance (non-blocking, brand-aware)
+        try {
+            $agent = User::find($request->user_id);
+            if ($agent && $agent->email) {
+                Mail::to($agent->email)->send(
+                    new \App\Mail\AgentActionRequiredMail($agent->name, \App\Support\Brand::for($agent), 'contract')
+                );
+            }
+        } catch (\Throwable $e) {
+            Log::warning('saveContract: notify email failed', ['user_id' => $request->user_id, 'error' => $e->getMessage()]);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Contract saved successfully. The employee has been emailed to review and accept.']);
     }
 
     public function acceptContract(Request $request): JsonResponse
@@ -242,12 +266,19 @@ class EmployeeReviewController extends Controller
         return response()->json(['success' => true, 'message' => 'Contract accepted']);
     }
 
-    public function defaultContract(): JsonResponse
+    public function defaultContract(Request $request): JsonResponse
     {
         $tpl = \App\ContractTemplate::getDefault();
+
+        // Brand the preview for the agent being viewed (if a user_id is supplied),
+        // so admins setting up a CrazyRays agent see the correct company name.
+        $viewed  = $request->filled('user_id') ? User::find($request->input('user_id')) : null;
+        $brand   = \App\Support\Brand::for($viewed);
+        $content = $tpl ? \App\Support\Brand::applyTokens($tpl->content, $brand) : '';
+
         return response()->json([
-            'title'   => $tpl ? $tpl->title   : 'Employee Contract',
-            'content' => $tpl ? $tpl->content : '',
+            'title'   => $tpl ? $tpl->title : 'Employee Contract',
+            'content' => $content,
         ]);
     }
 
@@ -290,6 +321,17 @@ class EmployeeReviewController extends Controller
         DB::table('hr_employees')
             ->where('agent_id', $request->user_id)
             ->update(['nda_required' => (int) $request->nda_required]);
+
+        // Email the agent when an NDA is newly required (non-blocking, brand-aware)
+        if ((int) $request->nda_required === 1 && $user->email) {
+            try {
+                Mail::to($user->email)->send(
+                    new \App\Mail\AgentActionRequiredMail($user->name, \App\Support\Brand::for($user), 'nda')
+                );
+            } catch (\Throwable $e) {
+                Log::warning('requireNda: notify email failed', ['user_id' => $request->user_id, 'error' => $e->getMessage()]);
+            }
+        }
 
         return response()->json([
             'success'      => true,

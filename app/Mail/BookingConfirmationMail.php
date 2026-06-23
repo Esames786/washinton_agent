@@ -31,7 +31,7 @@ class BookingConfirmationMail extends Mailable
     public function build()
     {
         return $this
-            ->subject('Booking Confirmation - Your Vehicle Transport with ShipA1 Transport')
+            ->subject('Booking Confirmation - Your Vehicle Transport with Hello Transport')
             ->view('emails.bookingConfirmation');
     }
 }

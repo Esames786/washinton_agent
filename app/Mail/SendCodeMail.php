@@ -36,7 +36,16 @@ class SendCodeMail extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.send_code_email')
+        // Send from the authorized mailbox (SPF/DKIM valid) but display the brand
+        // name; route replies to the brand's own inbox.
+        $fromAddress = config('mail.from.address', 'support@hellotransport.com');
+        $fromName    = $this->brand['name']  ?? config('mail.from.name', 'Hello Transport');
+        $replyTo     = $this->brand['email'] ?? $fromAddress;
+
+        return $this->from($fromAddress, $fromName)
+            ->replyTo($replyTo, $fromName)
+            ->subject('Your ' . $fromName . ' Verification Code')
+            ->view('emails.send_code_email')
             ->with('brand', $this->brand);
     }
 }
