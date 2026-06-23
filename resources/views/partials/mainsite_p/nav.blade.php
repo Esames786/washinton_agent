@@ -528,6 +528,24 @@ if (!function_exists('get_user_name123')) {
                             </select>
                         </form>
                     {{-- @endif --}}
+                @php
+                    $__activeSecs = 0;
+                    try {
+                        if (\Illuminate\Support\Facades\Schema::hasTable('agent_active_times')) {
+                            $__activeSecs = (int) (\Illuminate\Support\Facades\DB::table('agent_active_times')
+                                ->where('user_id', Auth::id())->whereDate('work_date', date('Y-m-d'))->value('active_seconds') ?? 0);
+                        }
+                    } catch (\Throwable $e) {}
+                    $__ah = intdiv($__activeSecs, 3600); $__am = intdiv($__activeSecs % 3600, 60);
+                @endphp
+                <div class="header_ri">
+                    <span title="Your active working time today"
+                          style="display:inline-flex;align-items:center;gap:6px;background:#eafaf1;color:#157347;font-weight:600;font-size:12px;padding:5px 12px;border-radius:20px;white-space:nowrap;">
+                        <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
+                        Active today:&nbsp;<span id="agentActiveTimeDisplay" data-seconds="{{ $__activeSecs }}">{{ ($__ah > 0 ? $__ah.'h ' : '').$__am.'m' }}</span>
+                    </span>
+                </div>
+
                 @if(Auth::user()->role==1 || in_array('169', $phoneaccess))
                 <div class="header_ri">
                     <div class="dropdown header-fullscreen">
