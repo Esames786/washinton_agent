@@ -105,6 +105,23 @@
         .catch(function () { pendingSeconds += secs; /* retry next flush */ });
     }
 
+    // Pull the latest shared total from the DB and repaint (no increment)
+    function syncTotal() {
+        fetch(HEARTBEAT_URL, {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ seconds: 0 })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+            if (res && typeof res.today_seconds === 'number') {
+                if (res.today_seconds > displaySeconds) displaySeconds = res.today_seconds;
+                paintClock();
+            }
+        })
+        .catch(function () {});
+    }
+
     setInterval(function () { flush(false); }, FLUSH_MS);
     document.addEventListener('visibilitychange', function () {
         if (document.visibilityState === 'hidden') {
@@ -112,6 +129,7 @@
             idle = true;          // left the tab → stop the clock
         } else {
             markActive();         // returned to the tab → resume + "Welcome back"
+            syncTotal();          // show the true shared total immediately
         }
     });
     window.addEventListener('pagehide', function () { flush(true); });
