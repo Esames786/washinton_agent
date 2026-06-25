@@ -483,6 +483,7 @@
                             </a>
                         </li>
                     @endif
+                    {{-- Commission Range hidden per request
                     @if (in_array('85', $phoneaccess))
                         <li>
                             <a class="side-menu__item" href="{{ url('commission_range') }}">
@@ -491,6 +492,7 @@
                             </a>
                         </li>
                     @endif
+                    --}}
                     @if (in_array('34', $phoneaccess))
                         <li>
                             <a class="side-menu__item" href="{{ url('filtered-data') }}">
@@ -835,6 +837,7 @@
                             </a>
                         </li>
                     @endif
+                    {{-- Hidden per request: APPROACHING, Autos Approach, DayDispatch (Shipper/Carrier/Broker), Dealer & Carrier Approaching
                     @if (in_array('30', $phoneaccess))
                         <li>
                             <a style="background: #2dd1ba8c" class="side-menu__item"
@@ -907,6 +910,7 @@
                             </a>
                         </li>
                     @endif
+                    --}}
                     {{-- @if (in_array('95', $phoneaccess))
                         <li>
                             <a style="background: #2dd1ba8c" class="side-menu__item"

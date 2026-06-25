@@ -73,6 +73,11 @@ Route::get('/', 'FrontendController@home')->name('Frontend.index');
 // Public frontend pages (no auth required)
 Route::get('/about_us', 'FrontendController@aboutUs')->name('Frontend.about.us');
 Route::get('/faq', 'FrontendController@faq')->name('Frontend.faq');
+
+// Public Terms & Conditions (linked from booking confirmation email)
+Route::get('/terms-conditions', function () {
+    return view('terms_conditions');
+})->name('terms.conditions');
 Route::get('/terms', 'FrontendController@terms')->name('Frontend.terms');
 Route::get('/contact_us', 'FrontendController@contactUs')->name('Frontend.contact.us');
 Route::get('/Quote-Request', 'FrontendController@quoteRequest')->name('Frontend.qoute.request');

@@ -2240,6 +2240,14 @@ class DashboardController extends Controller
 
     public function update_employee_revenue(Request $request)
     {
+        // review_target_achieved is an INT column, but the form posts the text
+        // "achieved" / "not achieved" — normalise it to 1/0 to avoid a SQL error.
+        $reviewTargetAchieved = 0;
+        if ($request->has('review_target_achieved')) {
+            $rta = strtolower(trim((string) $request->review_target_achieved));
+            $reviewTargetAchieved = in_array($rta, ['achieved', '1', 'yes', 'true'], true) ? 1 : 0;
+        }
+
         // Update existing record if revenue_id is provided
         if (isset($request->revenue_id) && $request->revenue_id != null) {
             $existingRecord = UserCommission::where('id', $request->revenue_id)
@@ -2259,7 +2267,7 @@ class DashboardController extends Controller
                 $existingRecord->achieved_commision = $request->has('achieved_commision') ? $request->achieved_commision : 0;
                 $existingRecord->dispatched_by = $request->has('dispatched_by') ? $request->dispatched_by : 0;
                 $existingRecord->cancellation_deduction = $request->has('cancellation_deduction') ? $request->cancellation_deduction : 0;
-                $existingRecord->review_target_achieved = $request->has('review_target_achieved') ? $request->review_target_achieved : 0;
+                $existingRecord->review_target_achieved = $reviewTargetAchieved;
                 $existingRecord->commission = $request->has('commission') ? $request->commission : 0;
                 $existingRecord->average = $request->has('average') ? $request->average : 0;
                 $existingRecord->review_less_than = $request->has('review_less_than') ? $request->review_less_than : '';
@@ -2292,7 +2300,7 @@ class DashboardController extends Controller
             $data->achieved_commision = $request->has('achieved_commision') ? $request->achieved_commision : 0;
             $data->dispatched_by = $request->has('dispatched_by') ? $request->dispatched_by : 0;
             $data->cancellation_deduction = $request->has('cancellation_deduction') ? $request->cancellation_deduction : 0;
-            $data->review_target_achieved = $request->has('review_target_achieved') ? $request->review_target_achieved : 0;
+            $data->review_target_achieved = $reviewTargetAchieved;
             $data->commission = $request->has('commission') ? $request->commission : 0;
             $data->average = $request->has('average') ? $request->average : 0;
             $data->review_less_than = $request->has('review_less_than') ? $request->review_less_than : '';

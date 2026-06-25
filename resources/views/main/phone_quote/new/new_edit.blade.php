@@ -2765,11 +2765,7 @@
                             </div>
                             <div class="">
                                 <div class="flex_ flex_center gap_new">
-                                    @if (Auth::user()->userRole->name != 'Dispatcher')
-                                        <a href="javascript:void(0)" id="zipCityDest"
-                                            class="btn btn-primary mg-r-10">Ship A1
-                                            Rates</a>
-                                    @endif
+                                    {{-- "Ship A1 Rates" button removed per request --}}
                                     <input type="hidden" value="{{ $data->id }}" class="orderID">
                                     @php
                                         $orderApi = App\AutoOrder::find($data->id);

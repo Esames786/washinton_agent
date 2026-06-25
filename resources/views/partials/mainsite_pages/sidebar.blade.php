@@ -468,7 +468,7 @@
                         </a>
                     </li>
                 @endif
-                @if (in_array('85', $phoneaccess))
+                @if (false) {{-- Commission Range hidden per request --}}
                     <li>
                         <a class="side-menu__item" href="{{ url('commission_range') }}">
                             <span class="js-search-result-thumbnail responsive-img img_border fa fa-dollar"></span>
@@ -816,7 +816,7 @@
                         </a>
                     </li>
                 @endif
-                @if (in_array('30', $phoneaccess))
+                @if (false) {{-- APPROACHING hidden per request --}}
                     <li>
                         <a style="background: #2dd1ba8c" class="side-menu__item" href="{{ url('approaching') }}">
                             <span class="js-search-result-thumbnail responsive-img img_border fa fa-mobile"></span>
@@ -826,7 +826,7 @@
                     </li>
                 @endif
                 {{-- @if (Auth::user()->id === 1) --}}
-                @if (Auth::user()->userRole->name == 'Admin' || in_array('94', $phoneaccess))
+                @if (false) {{-- Autos Approach hidden per request --}}
                     <li>
                         <a style="background: #2dd1ba8c" class="side-menu__item"
                             href="{{ route('autos.approach') }}">
@@ -836,7 +836,7 @@
                         </a>
                     </li>
                 @endif
-                @if (Auth::user()->userRole->name == 'Admin' || in_array('137', $phoneaccess))
+                @if (false) {{-- DayDispatch | Shipper hidden per request --}}
                     <li>
                         <a style="background: #2dd1ba8c" class="side-menu__item"
                            href="{{ url('autos_approach_new1') . '/' . base64_encode('Shipper') }}">
@@ -846,7 +846,7 @@
                         </a>
                     </li>
                 @endif
-                @if (Auth::user()->userRole->name == 'Admin' || in_array('138', $phoneaccess))
+                @if (false) {{-- DayDispatch | Carrier hidden per request --}}
                     <li>
                         <a style="background: #2dd1ba8c" class="side-menu__item"
                            href="{{ url('autos_approach_new1') . '/' . base64_encode('Carrier') }}">
@@ -856,7 +856,7 @@
                         </a>
                     </li>
                 @endif
-                @if (Auth::user()->userRole->name == 'Admin' || in_array('139', $phoneaccess))
+                @if (false) {{-- DayDispatch | Broker hidden per request --}}
                     <li>
                         <a style="background: #2dd1ba8c" class="side-menu__item"
                            href="{{ url('autos_approach_new1') . '/' . base64_encode('Broker') }}">
@@ -867,7 +867,7 @@
                     </li>
 
                 @endif
-                @if (Auth::user()->userRole->name == 'Admin' || in_array('140', $phoneaccess))
+                @if (false) {{-- Dealer Approaching hidden per request --}}
                     <li>
                         <a style="background: #2dd1ba8c" class="side-menu__item"
                            href="{{ route('autos.autos_approach_new_dealer') }}">
@@ -878,7 +878,7 @@
                     </li>
                 @endif
 
-                @if (Auth::user()->userRole->name == 'Admin' || in_array('155', $phoneaccess))
+                @if (false) {{-- Carrier Approaching hidden per request --}}
                     <li>
                         <a style="background: #2dd1ba8c" class="side-menu__item"
                            href="{{ route('autos.autos_approach_new_carrier') }}">

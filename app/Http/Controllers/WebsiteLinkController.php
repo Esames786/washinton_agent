@@ -19,7 +19,11 @@ class WebsiteLinkController extends Controller
      */
     public function index(Request $request)
     {
-        $link = ReviewWebsiteLink::where('name','LIKE','%'.$request->search.'%')->orderBy('created_at','DESC')->paginate(10);
+        // Hide ShipA1-related website links per request (kept in DB, just not listed)
+        $link = ReviewWebsiteLink::where('name','LIKE','%'.$request->search.'%')
+            ->where('name','NOT LIKE','%shipa%')
+            ->where('name','NOT LIKE','%ship a1%')
+            ->orderBy('created_at','DESC')->paginate(10);
         if($request->ajax())
         {
             return view('main.website-link.search',compact('link'));

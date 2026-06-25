@@ -8,7 +8,7 @@
             <th>Status</th>
             <th>Approved By</th>
             <th>Created At</th>
-            @if (Auth::user()->userRole->name == 'Admin')
+            @if (optional(Auth::user()->userRole)->name == 'Admin')
                 <th>Action</th>
             @endif
         </tr>
@@ -17,7 +17,7 @@
         @foreach ($block_phones as $key => $val)
             <tr class="parent1{{ $key }}">
                 <td>{{ $loop->iteration }}</td>
-                <td>{{ $val->user->name }}</td>
+                <td>{{ optional($val->user)->name }}</td>
                 <td>{{ $val->phone }}</td>
                 <td>{{ $val->description }}</td>
                 <td id="status-{{ $val->id }}">
@@ -25,13 +25,13 @@
                 </td>
                 <td>
                     @if($val->approved_by)
-                        {{ $val->approved_by->name }}
+                        {{ optional($val->approved_by)->name }}
                     @else
                         {{ $val->approver }}
                     @endif
                 </td>
                 <td>{{ $val->created_at }}</td>
-                @if (in_array('125', $phoneaccess) || Auth::user()->userRole->name == 'Admin')
+                @if (in_array('125', $phoneaccess) || optional(Auth::user()->userRole)->name == 'Admin')
                     <td id="action-{{ $val->id }}">
                         @if ($val->status == 0)
                             <button type="button" class="btn btn-success approve-btn" data-id="{{ $val->id }}">

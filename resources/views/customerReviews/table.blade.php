@@ -14,7 +14,7 @@
             <tr>
                 <td>{{ $key + 1 }}</td>
                 <td>{{ $row->orderId }}</td>
-                <td>{{ $row->user->name }}</td>
+                <td>{{ optional($row->user)->name }}</td>
                 <td>
                     @if ($row->review)
                         {!! '<b>Review:</b> ' . $row->review !!} <br>
