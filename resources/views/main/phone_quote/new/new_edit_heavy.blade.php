@@ -1726,8 +1726,7 @@
                     </div>
                     <div class="">
                         <div class="flex_ flex_center gap_new">
-                            <a href="javascript:void(0)" id="zipCityDest" class="btn btn-primary mg-r-10">Ship A1
-                                Rates</a>
+                            {{-- "Ship A1 Rates" button removed per request --}}
                             <input type="hidden" value="{{ $data->id }}" class="orderID">
                             <div class="priceReq text-left float-left">
                             </div>

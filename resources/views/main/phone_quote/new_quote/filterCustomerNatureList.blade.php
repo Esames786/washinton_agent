@@ -89,6 +89,7 @@
 </div>
 
 @php
+    if (!function_exists('putXs')) {
     function putXs($digits, $status, $num) {
         $val = $num;
         if ($status == 0) {
@@ -183,4 +184,5 @@
         }
         return $val;
     }
+    } // end if(!function_exists('putXs'))
 @endphp

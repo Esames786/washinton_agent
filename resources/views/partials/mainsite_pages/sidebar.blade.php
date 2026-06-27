@@ -816,7 +816,7 @@
                         </a>
                     </li>
                 @endif
-                @if (false) {{-- APPROACHING hidden per request --}}
+                @if (in_array('30', $phoneaccess))
                     <li>
                         <a style="background: #2dd1ba8c" class="side-menu__item" href="{{ url('approaching') }}">
                             <span class="js-search-result-thumbnail responsive-img img_border fa fa-mobile"></span>
@@ -826,7 +826,7 @@
                     </li>
                 @endif
                 {{-- @if (Auth::user()->id === 1) --}}
-                @if (false) {{-- Autos Approach hidden per request --}}
+                @if (optional(Auth::user()->userRole)->name == 'Admin' || in_array('94', $phoneaccess))
                     <li>
                         <a style="background: #2dd1ba8c" class="side-menu__item"
                             href="{{ route('autos.approach') }}">

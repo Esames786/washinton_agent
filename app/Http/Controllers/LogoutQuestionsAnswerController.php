@@ -64,6 +64,14 @@ class LogoutQuestionsAnswerController extends Controller
         {
             $role = Auth()->user()->role;
             $questions = LogoutQuestion::where('role', $role)->get();
+
+            // No logout questions configured for this role (e.g. Manager) — don't
+            // show an empty form that can't be submitted; just log the user out.
+            if ($questions->isEmpty()) {
+                Auth::logout();
+                return redirect()->route('login');
+            }
+
             return view('logout_question_answers.create', compact('questions', 'role'));
         }
         else{

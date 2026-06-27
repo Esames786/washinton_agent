@@ -1128,7 +1128,8 @@ if (!function_exists('get_user_name123')) {
                                 //     # code...
                                 // }
                             @endphp
-                            @if(Auth::user()->role == 1 || Auth::user()->role == 9)
+                            {{-- Allow DayDispatch hidden for Manager (role 9) per request; Admin only --}}
+                            @if(Auth::user()->role == 1)
                                 <div class="form-check form-switch dropdown-item d-flex align-items-center">
                                     <input class="form-check-input" type="checkbox" id="toggleSwitch" value="1" @if ($ddApi->allow == 1) checked @endif>
                                     <label class="form-check-label ms-3" for="toggleSwitch">Allow DayDispatch</label>
