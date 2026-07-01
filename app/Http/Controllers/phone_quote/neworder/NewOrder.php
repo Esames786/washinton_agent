@@ -1066,7 +1066,9 @@ class NewOrder extends Controller
                 $data = AutoOrder::query()->where('paneltype', '=', $ptype);
 
                 if (Auth::user()->order_taker_quote == 1) {
-                    $data = $data->where('order.manager_id', Auth::id())->orWhere('order.order_taker_id', Auth::id());
+                    $data = $data->where(function ($q) {
+                        $q->where('order.manager_id', Auth::id())->orWhere('order.order_taker_id', Auth::id());
+                    });
                 }
 
 //                if (!in_array("68", $phoneaccess) && !in_array("69", $phoneaccess)) {
@@ -1083,40 +1085,17 @@ class NewOrder extends Controller
 
                 if ($search_as == 2 || empty($search_as)) { //search as normal user or himself
                     $user_id = auth()->user()->id;
-                    $ApproachingAssign = ApproachingAssign::where('orderTaker',$user_id)->first();
                     $data = $data->with('latestHistory', 'approach', 'reports')
                         ->groupBy('ophone')
                         ->select('order.*', DB::raw("GROUP_CONCAT(order.id) as order_ids"));
 
-                    if (!empty($ApproachingAssign)) {
-                        $data->where('approaching_user',$user_id);
-//                        $date_range = $ApproachingAssign->date_range;
-//                        if (!empty($date_range)) {
-//                            $dates = explode('-', $date_range);
-//                            $from = date('Y-m-d 00:00:00', strtotime($dates[0]));
-//                            $too = date('Y-m-d 23:59:59', strtotime($dates[1]));
-//                            $data->whereBetween('order.created_at', [$from, $too]);
-//                        }
-
-//                        if ($ApproachingAssign->status == "144") {
-//                            $data->havingRaw("
-//                                            (SELECT GROUP_CONCAT(report.orderId)
-//                                             FROM report
-//                                             WHERE report.orderId IN (SELECT o.id FROM `order` as o WHERE o.ophone = `order`.ophone)
-//                                             AND report.pstatus = 14) = GROUP_CONCAT(`order`.id)
-//                                        ");
-//                        } elseif ($ApproachingAssign->status == "44") {
-//                            $data->havingRaw("
-//                                            (SELECT GROUP_CONCAT(report.orderId)
-//                                             FROM report
-//                                             WHERE report.orderId IN (SELECT o.id FROM `order` as o WHERE o.ophone = `order`.ophone)
-//                                             AND report.pstatus = 4) = GROUP_CONCAT(`order`.id)
-//                                        ");
-//                        }else{
-//                            $data->where('pstatus',$ApproachingAssign->status);
-//                        }
-
-                    }
+                    // Approaching must show ONLY the agent's own quotes / contacts the
+                    // agent approached himself — never other agents' data. (Previously,
+                    // agents with no ApproachingAssign row saw everyone's contacts.)
+                    $data->where(function ($q) use ($user_id) {
+                        $q->where('order.order_taker_id', $user_id)
+                          ->orWhere('order.approaching_user', $user_id);
+                    });
 
                 }else{
                     $data = $data->with('latestHistory', 'approach', 'reports')
@@ -3663,7 +3642,9 @@ class NewOrder extends Controller
 
 
                 if (Auth::user()->order_taker_quote == 1) {
-                    $data = $data->where('order.manager_id', Auth::id())->orWhere('order.order_taker_id', Auth::id());
+                    $data = $data->where(function ($q) {
+                        $q->where('order.manager_id', Auth::id())->orWhere('order.order_taker_id', Auth::id());
+                    });
                 }
 
 
@@ -3681,14 +3662,18 @@ class NewOrder extends Controller
 
                 if ($search_as == 2) { //search as normal user or himself
                     $user_id = auth()->user()->id;
-                    $ApproachingAssign = ApproachingAssign::where('orderTaker',$user_id)->first();
 
                     $data = $data->with('latestHistory', 'approach', 'reports')
                         ->groupBy('ophone')
                         ->select('order.*', DB::raw("GROUP_CONCAT(order.id) as order_ids"));
 
-                    if (!empty($ApproachingAssign)) {
-                        $data->where('approaching_user',$user_id);
+                    // Approaching must show ONLY the agent's own quotes / contacts the
+                    // agent approached himself — never other agents' data.
+                    $data->where(function ($q) use ($user_id) {
+                        $q->where('order.order_taker_id', $user_id)
+                          ->orWhere('order.approaching_user', $user_id);
+                    });
+                    if (false) {
 //                        $date_range = $ApproachingAssign->date_range;
 //                        if (!empty($date_range)) {
 //                            $dates = explode('-', $date_range);

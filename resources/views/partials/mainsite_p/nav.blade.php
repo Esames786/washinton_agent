@@ -311,13 +311,14 @@ if (!function_exists('get_user_name123')) {
                                     <span>Roro Invoice</span>
                                 </a>
                             @endif
-                            @if(in_array("53", $phoneaccess))
+                            {{-- Storage / Carriers / Carriers List hidden per request --}}
+                            @if(false)
                                 <a class="dropdown-item" href="{{url('storage_list')}}"><i
                                             class="fe fe-box mr-1 btn_animation" style="color: #000;"></i>
                                     <span>Storage</span>
                                 </a>
                             @endif
-                            @if (in_array("24", $phoneaccess))
+                            @if (false)
                                 <a class="dropdown-item" href="{{url('carrier_list')}}"><i
                                             class="fe fe-truck mr-1 " style="color: #000;"></i>
                                     <span> Carriers</span>
@@ -332,7 +333,8 @@ if (!function_exists('get_user_name123')) {
                             <?php
                                 $ud = \App\user_setting::where('user_id', '=', Auth::id())->first();
                             ?>
-                            @if (in_array("38", $phoneaccess))
+                            {{-- Customers List hidden per request --}}
+                            @if (false)
                                 <a class="dropdown-item" href="{{url('customer_list')}}"><i
                                             class="fe fe-users mr-1 " style="color: #000;"></i>
                                     <span>Customers List</span>
@@ -368,7 +370,8 @@ if (!function_exists('get_user_name123')) {
                                      <span> Web Price</span>
                                 </a>
                             @endif
-                            @if (in_array("25", $phoneaccess))
+                            {{-- View E-mails hidden per request --}}
+                            @if (false)
                                 <a href="javascript:void(0)" id="view_mail" class="dropdown-item">
                                     <i class="fa fa-envelope mr-1" style="color: black"></i> <span> View E-mails</span>
                                 </a>
@@ -487,22 +490,22 @@ if (!function_exists('get_user_name123')) {
                             <option selected="selected" value=""><?php echo get_panel_name(); ?></option>
                             <optgroup label="Select Panel Type">
                                 @if (in_array('1', $emp_panel_access))
-                                    <option value="1">Auction</option>
+                                    <option value="1">Panel 1</option>
                                 @endif
                                 @if (in_array('2', $emp_panel_access))
-                                    <option value="2">ProMax</option>
+                                    <option value="2">Panel 2</option>
                                 @endif
                                 @if (in_array("110", $phoneaccess) && in_array('3', $emp_panel_access))
-                                    <option value="3">Testing Quote</option>
+                                    <option value="3">Panel 3</option>
                                 @endif
                                 @if (in_array('4', $emp_panel_access))
-                                    <option value="4">Website Quote</option>
+                                    <option value="4">Panel 4</option>
                                 @endif
                                 @if (in_array('5', $emp_panel_access))
-                                    <option value="5">Panel Type 5 Quote</option>
+                                    <option value="5">Panel 5</option>
                                 @endif
                                 @if (in_array('6', $emp_panel_access))
-                                    <option value="6">Panel Type 6 Quote</option>
+                                    <option value="6">Panel 6</option>
                                 @endif
                             </optgroup>
                         </select>
@@ -856,6 +859,12 @@ if (!function_exists('get_user_name123')) {
                                 <a class="dropdown-item d-flex" href="{{url('/guides')}}">
                                     <i class="fa fa-question-circle pr-2 mt-1 ml-1"></i>
                                     <div class="">Guides</div>
+                                </a>
+                            @endif
+                            @if(Auth::user()->role < 6 || Auth::user()->role > 7)
+                                <a class="dropdown-item d-flex" href="{{url('/auction-instructions')}}">
+                                    <i class="fa fa-file-text-o pr-2 mt-1 ml-1"></i>
+                                    <div class="">Auction Instructions</div>
                                 </a>
                             @endif
                             @if(in_array('167', $phoneaccess) || Auth::user()->role == 1)

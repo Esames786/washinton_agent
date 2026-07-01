@@ -130,6 +130,58 @@ class ManagementController extends Controller
         $data = Guide::where('page_route', "$guide")->first();
         return view('main.phone_quote.management.guide', compact('data'));
     }
+
+    /**
+     * Auction Instructions page. Everyone (agents included) can VIEW the
+     * instructions; only admin (role 1) and manager (role 9) can EDIT them.
+     * Content is stored in the existing `guide` table under a fixed page_route.
+     */
+    public function auctionInstructions()
+    {
+        $instruction = Guide::where('page_route', 'auction-instructions')->first();
+
+        if (!$instruction) {
+            $instruction = new Guide();
+            $instruction->guide_type    = 'instruction';
+            $instruction->page_name     = 'Auction Instructions';
+            $instruction->page_route    = 'auction-instructions';
+            $instruction->thumbnail     = '';
+            $instruction->guide_content = '<p>No instructions have been added yet.</p>';
+            $instruction->created_at    = date('Y-m-d H:i:s');
+            $instruction->save();
+        }
+
+        $canEdit = in_array((int) Auth::user()->role, [1, 9], true);
+
+        return view('main.phone_quote.management.auction_instructions', compact('instruction', 'canEdit'));
+    }
+
+    public function auctionInstructionsUpdate(Request $request)
+    {
+        // Only admin (1) and manager (9) may edit the instructions.
+        if (!in_array((int) Auth::user()->role, [1, 9], true)) {
+            abort(403);
+        }
+
+        $request->validate([
+            'guide_content' => 'required|string',
+        ]);
+
+        $instruction = Guide::where('page_route', 'auction-instructions')->first();
+
+        if (!$instruction) {
+            $instruction = new Guide();
+            $instruction->guide_type = 'instruction';
+            $instruction->page_name  = 'Auction Instructions';
+            $instruction->page_route = 'auction-instructions';
+            $instruction->thumbnail  = '';
+        }
+
+        $instruction->guide_content = $request->guide_content;
+        $instruction->save();
+
+        return redirect()->route('auction_instructions')->with('success', 'Auction Instructions updated successfully!');
+    }
     public function del_guide($id)
     {
         $data = Guide::withTrashed()->find($id);

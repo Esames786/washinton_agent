@@ -464,7 +464,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (in_array('33', $phoneaccess))
+                    @if (false) {{-- Price Per Mile hidden per request --}}
                         <li>
                             <a class="side-menu__item" href="{{ url('mile-price') }}">
                                 <span
@@ -475,7 +475,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (in_array('72', $phoneaccess))
+                    @if (false) {{-- Offer Price hidden per request --}}
                         <li>
                             <a class="side-menu__item" href="{{ url('offer-price') }}">
                                 <span class="js-search-result-thumbnail responsive-img img_border fa fa-dollar"></span>
@@ -525,6 +525,7 @@
                         <!--    </a>-->
                         <!--</li>-->
                     @endif
+                    {{-- Hidden per request: Show Data, Transfer Quotes, Port Price, Revenue, Dispatch Report
                     @if (in_array('37', $phoneaccess))
                         <li>
                             <a class="side-menu__item" href="{{ url('show-data') }}">
@@ -570,6 +571,7 @@
                             </a>
                         </li>
                     @endif
+                    --}}
                     @if (in_array('57', $phoneaccess))
                         <li>
                             <a class="side-menu__item" href="{{ url('performance_report') }}">
@@ -691,6 +693,7 @@
                             </a>
                         </li>
                     @endif
+                    {{-- Hidden per request: Demand Order, Sell Invoice, Port Tracking, Message Chats, Employee Revenue (OT/DB/DIS/Private OT)
                     @if (in_array('90', $phoneaccess))
                         <li>
                             <a class="side-menu__item" href="{{ url('demand_order') }}">
@@ -757,6 +760,7 @@
                             </a>
                         </li>
                     @endif
+                    --}}
                     @if (Auth::user()->userRole->name == 'Admin' || in_array('132', $phoneaccess))
                         <li>
                             {{-- <a class="side-menu__item" href="{{ route('agent.report') }}"> --}}
@@ -774,7 +778,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (Auth::user()->userRole->name == 'Admin' || in_array('133', $phoneaccess))
+                    @if (false) {{-- Customer Reviews hidden per request --}}
                         <li>
                             <a class="side-menu__item" href="{{ route('customer.reviews') }}">
                                 <span class="js-search-result-thumbnail responsive-img img_border fa fa-file"></span>
@@ -790,7 +794,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (Auth::user()->userRole->name == 'Admin' || in_array('123', $phoneaccess))
+                    @if (false) {{-- Request Price hidden per request --}}
                         <li>
                             <a class="side-menu__item" href="{{ route('requestPrice.index') }}">
                                 <span class="js-search-result-thumbnail responsive-img img_border fa fa-file"></span>
@@ -799,7 +803,7 @@
                         </li>
                     @endif
 
-                    @if (Auth::user()->userRole->name == 'Admin' || in_array('106', $phoneaccess))
+                    @if (false) {{-- Customer Nature List/Filter hidden per request --}}
                         <li>
                             <a style="background: #2dd1ba8c" class="side-menu__item"
                                 href="{{ route('customerNatureList') }}">
@@ -847,7 +851,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (in_array('94', $phoneaccess))
+                    @if (false) {{-- Autos Approach hidden per request (#7) --}}
                         <li>
                             <a style="background: #2dd1ba8c" class="side-menu__item"
                                 href="{{ route('autos.approach') }}">

@@ -5870,19 +5870,10 @@ class NewQuote extends Controller
 
                 $this->expected_date($order->id, 1, $pstatuss, $expected_date);
 
-                if ($order->booking_mail < 1) {
-                    $order->booking_mail = $order->booking_mail + 1;
-                    // Mail::to(['info@hellotransport.com', $order->oemail])->send(new BookingConfirmationMail($order));
-                    $recipients = ['info@hellotransport.com'];
-
-                    if (filter_var($order->oemail, FILTER_VALIDATE_EMAIL)) {
-                        $recipients[] = $order->oemail;
-                    }
-
-                    Mail::to($recipients)->send(new BookingConfirmationMail($order));
-
-                    $order->save();
-                }
+                // Payment was NOT submitted (missing payment / follow-up). Do NOT send the
+                // booking confirmation email — it must only go out once payment is actually
+                // submitted (the save_with_pay branch above). The order stays in status 7
+                // so it remains in the follow-up / missing-payment folder.
 
                 return response()->json(['message' => 'Order payment updated successfully'], 200);
             } catch (\Exception $e) {

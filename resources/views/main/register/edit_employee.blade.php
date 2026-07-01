@@ -211,27 +211,27 @@
                                                 data-target="#exampleModa28">Panel Type Access</button>
                                         @if (in_array('1', $emp_panel_access))
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#exampleModal1">Auction</button>
+                                                    data-target="#exampleModal1">Panel 1</button>
                                         @endif
                                         @if (in_array('2', $emp_panel_access))
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#exampleModal2">ProMax</button>
+                                                    data-target="#exampleModal2">Panel 2</button>
                                         @endif
                                         @if (in_array('3', $emp_panel_access))
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#exampleModa20">Testing Quote</button>
+                                                    data-target="#exampleModa20">Panel 3</button>
                                         @endif
                                         @if (in_array('4', $emp_panel_access))
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#exampleModa24">Website Quote</button>
+                                                    data-target="#exampleModa24">Panel 4</button>
                                         @endif
                                         @if (in_array('5', $emp_panel_access))
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#exampleModa25">Panel Type 5 Quote</button>
+                                                    data-target="#exampleModa25">Panel 5</button>
                                         @endif
                                         @if (in_array('6', $emp_panel_access))
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#exampleModa26">Panel Type 6 Quote</button>
+                                                    data-target="#exampleModa26">Panel 6</button>
                                         @endif
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                                 data-target="#exampleModal3">Show Data</button>

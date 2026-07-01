@@ -466,6 +466,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/add_guide_list', 'phone_quote\management\ManagementController@add_guide_list');
         Route::post('/add_guide_post', 'phone_quote\management\ManagementController@add_guide_post');
         Route::get('/guide/{any}', 'phone_quote\management\ManagementController@guide');
+        Route::get('/auction-instructions', 'phone_quote\management\ManagementController@auctionInstructions')->name('auction_instructions');
+        Route::post('/auction-instructions/update', 'phone_quote\management\ManagementController@auctionInstructionsUpdate')->name('auction_instructions.update');
         Route::get('/tags', 'phone_quote\management\ManagementController@tags');
         Route::get('/luxury', 'phone_quote\management\ManagementController@luxuryVehicle');
         Route::get('/non-luxury', 'phone_quote\management\ManagementController@nonLuxuryVehicle');

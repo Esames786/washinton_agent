@@ -286,13 +286,8 @@
                                         Submit
                                     </button>
 
-                                    <button type="button"
-                                            id="btn-cancel-payment"
-                                            class="btn btn-danger w-35"
-                                            style="font-size:22px; border-radius:10px;"
-                                            data-action="save_without_pay">
-                                        Cancel
-                                    </button>
+                                    {{-- "Cancel Payment" button removed per request:
+                                         it was submitting data even on a successful payment. --}}
                                 </div>
                             </div>
                             <input type="hidden" name="save_but" id="save_but" value="">
@@ -633,23 +628,9 @@
             postPaymentForm(selectedAction);
         });
 
-        $('#btn-cancel-payment').on('click', function () {
-            selectedAction = 'save_without_pay';
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: 'This will mark the order as unpaid / missing payment.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#8fc445',
-                confirmButtonText: 'Yes, Cancel Payment'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    postPaymentForm(selectedAction);
-                }
-            });
-        });
+        // "Cancel Payment" button and its handler were removed per request — it was
+        // submitting order data (and triggering the booking email) even on successful
+        // payment. Customers can now only submit WITH payment via #btn-submit-payment.
     });
 </script>
 

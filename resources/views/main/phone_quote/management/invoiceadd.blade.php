@@ -54,9 +54,9 @@
                                     <label class="form-label">Site</label>
                                     <select name="site" id="siteSelector" class="form-control" required>
                                         <option value="">Select Site</option>
-                                        <option value="Ship A1">Ship A1</option>
-                                        <option value="Ship A1(Broker)">Ship A1 (Broker)</option>
-                                        <option value="All State To State">All State To State</option>
+                                        <option value="Ship A1">Hello Transport</option>
+                                        <option value="Ship A1(Broker)">Hello Transport (Broker)</option>
+                                        <option value="All State To State">Hello Transport (All State to State)</option>
                                     </select>
                                 </div>
                             </div>

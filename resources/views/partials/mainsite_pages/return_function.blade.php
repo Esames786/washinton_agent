@@ -417,17 +417,17 @@ if (!function_exists('get_panel_name')) {
             $ptype = $query['penal_type'];
         }
         if ($ptype == '1') {
-            $penaltypename = 'Auction';
+            $penaltypename = 'Panel 1';
         } elseif ($ptype == '2') {
-            $penaltypename = 'ProMax';
+            $penaltypename = 'Panel 2';
         } elseif ($ptype == '3') {
-            $penaltypename = 'Testing Quote';
+            $penaltypename = 'Panel 3';
         } elseif ($ptype == '4') {
-            $penaltypename = 'Website Quote';
+            $penaltypename = 'Panel 4';
         } elseif ($ptype == '5') {
-            $penaltypename = 'Panel Type 5 Quote';
+            $penaltypename = 'Panel 5';
         } elseif ($ptype == '6') {
-            $penaltypename = 'Panel Type 6 Quote';
+            $penaltypename = 'Panel 6';
         } else {
             $penaltypename = 'Unknown Quote Type';
         }

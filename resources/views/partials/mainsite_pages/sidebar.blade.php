@@ -450,6 +450,7 @@
                         </a>
                     </li>
                 @endif
+                {{-- Hidden per request: Price Per Mile, Offer Price
                 @if (in_array('33', $phoneaccess))
                     <li>
                         <a class="side-menu__item" href="{{ url('mile-price') }}">
@@ -468,6 +469,7 @@
                         </a>
                     </li>
                 @endif
+                --}}
                 @if (false) {{-- Commission Range hidden per request --}}
                     <li>
                         <a class="side-menu__item" href="{{ url('commission_range') }}">
@@ -508,6 +510,7 @@
                     <!--    </a>-->
                     <!--</li>-->
                 @endif
+                {{-- Hidden per request: Show Data, Transfer Quotes, Port Price, Revenue, Dispatch Report
                 @if (in_array('37', $phoneaccess))
                     <li>
                         <a class="side-menu__item" href="{{ url('show-data') }}">
@@ -550,6 +553,7 @@
                         </a>
                     </li>
                 @endif
+                --}}
                 @if (in_array('57', $phoneaccess))
                     <li>
                         <a class="side-menu__item" href="{{ url('performance_report') }}">
@@ -670,6 +674,7 @@
                         </a>
                     </li>
                 @endif
+                {{-- Hidden per request: Demand Order, Sell Invoice, Port Tracking, Message Chats
                 @if (in_array('90', $phoneaccess))
                     <li>
                         <a class="side-menu__item" href="{{ url('demand_order') }}">
@@ -705,6 +710,7 @@
                         </a>
                     </li>
                 @endif
+                --}}
 
                 @if (in_array('124', $phoneaccess))
                     <li>
@@ -715,7 +721,7 @@
                     </li>
                 @endif
 
-                @if (in_array('123', $phoneaccess))
+                @if (false) {{-- Request Price hidden per request --}}
                     <li>
                         <a class="side-menu__item" href="{{ route('requestPrice.index') }}">
                             <span class="js-search-result-thumbnail responsive-img img_border fa fa-file"></span>
@@ -724,6 +730,7 @@
                     </li>
                 @endif
 
+                {{-- Hidden per request: Employee Revenue (OT/DB/DIS/Private OT)
                 @if (Auth::user()->userRole->name == 'Admin' || in_array('128', $phoneaccess))
                     <li>
                         <a class="side-menu__item" href="{{ route('view_employee_revenue') }}">
@@ -756,6 +763,7 @@
                         </a>
                     </li>
                 @endif
+                --}}
                 @if (Auth::user()->userRole->name == 'Admin' || in_array('132', $phoneaccess))
                     <li>
                         <a class="side-menu__item" href="{{ route('agentReportNew') }}">
@@ -764,6 +772,7 @@
                         </a>
                     </li>
                 @endif
+                {{-- Hidden per request: Customer Reviews, Customer Nature List/Filter
                 @if (Auth::user()->userRole->name == 'Admin' || in_array('133', $phoneaccess))
                     <li>
                         <a class="side-menu__item" href="{{ route('customer.reviews') }}">
@@ -782,6 +791,7 @@
                         </a>
                     </li>
                 @endif
+                --}}
                 @if (Auth::user()->userRole->name == 'Admin' || Auth::user()->userRole->name == 'Manager')
                     <li>
                         <a class="side-menu__item" href="{{ route('flagUsers') }}">
@@ -826,7 +836,7 @@
                     </li>
                 @endif
                 {{-- @if (Auth::user()->id === 1) --}}
-                @if (optional(Auth::user()->userRole)->name == 'Admin' || in_array('94', $phoneaccess))
+                @if (false) {{-- Autos Approach hidden per request (#7) --}}
                     <li>
                         <a style="background: #2dd1ba8c" class="side-menu__item"
                             href="{{ route('autos.approach') }}">
