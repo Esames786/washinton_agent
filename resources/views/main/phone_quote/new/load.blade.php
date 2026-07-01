@@ -317,6 +317,11 @@ if (isset($_GET['titlee'])) {
                         @endif
                         <b> Miles: </b> <span>{{ $val->miles > 0 ? $val->miles : 'N/A' }}</span>
                         <br>
+                        @php $vprices = array_filter(array_map('trim', explode('*^', $val->vehicle_price ?? ''))); @endphp
+                        @if (count($vprices))
+                            <b> Vehicle Price: </b> <span>{{ implode(', ', $vprices) }}</span>
+                            <br>
+                        @endif
                         <b> Order ID# </b> <span><?php echo $val->id; ?></span>
                         <br>
                         <b> Creator:</b>

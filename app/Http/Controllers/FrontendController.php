@@ -124,6 +124,9 @@ class FrontendController extends Controller
         }
         $ymk = trim("{$year} {$make} {$model}");
 
+        // Per-vehicle price from the public quote form (single vehicle here).
+        $vehiclePrice = $request->Vehicle_Price ?? null;
+
         // Transport / shipping mode
         // Cars/Motorcycles/ATV/Golf Cart → Carrier_Type (Open/Enclosed/Drive Away)
         // Heavy Equipment & Dryvan      → Shipping_Mode (FTL/LTL)
@@ -192,6 +195,7 @@ class FrontendController extends Controller
                 'year'             => $year,
                 'make'             => $make,
                 'model'            => $model,
+                'vehicle_price'    => $vehiclePrice,
                 'type'             => $type,
                 'condition'        => $request->Carrier_Condition ?? null,
                 'transport'        => $transport,

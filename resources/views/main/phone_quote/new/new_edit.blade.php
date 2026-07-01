@@ -1903,6 +1903,7 @@
                               $arrayv_car_link = explode('*^', $data->car_link);
                               $arrayv_car_info = explode('*^', $data->car_info);
                               $arrayv_car_image = explode('*^', $data->car_image);
+                              $arrayvehicleprice = explode('*^', $data->vehicle_price ?? '');
                                $countt2 = empty($data->countt) ? count($arrayyear)  : $data->countt;
                                $countt = empty($data->countt) ? count($arrayyear)  : $data->countt;
                         @endphp
@@ -1925,6 +1926,7 @@
                                 $arrayv_car_link[$i] = isset($arrayv_car_link[$i]) ? $arrayv_car_link[$i] : '';
                                 $arrayv_car_info[$i] = isset($arrayv_car_info[$i]) ? $arrayv_car_info[$i] : '';
                                 $arrayv_car_image[$i] = isset($arrayv_car_image[$i]) ? $arrayv_car_image[$i] : '';
+                                $arrayvehicleprice[$i] = isset($arrayvehicleprice[$i]) ? $arrayvehicleprice[$i] : '';
                             @endphp
                             <div @if ($i > 0) class="vehicle_add" @endif>
                                 <div class='flex_ gap_new flex_space vichle__Information'>
@@ -2125,6 +2127,16 @@
                                                 <?php if ($arrayopt2[$i] == 'vin') {
                                                     echo 'readonly';
                                                 } ?> type="text"
+                                                onkeypress="$(this).css('border-color', 'rgb(92 166 242)');">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6 col-md-6">
+                                        <div class="form-group icon-relative">
+                                            <label class=" form-label font-boldd">Vehicle Price</label>
+                                            <input type="text" class="form-control this_save vehicle_price numeric_price"
+                                                id='vehicle_price{{ $i }}' name='vehicle_price[]'
+                                                value="{{ $arrayvehicleprice[$i] }}" placeholder="Enter Vehicle Price"
                                                 onkeypress="$(this).css('border-color', 'rgb(92 166 242)');">
                                         </div>
                                     </div>
@@ -8387,6 +8399,14 @@
                                         class='form-control this_save  model0 vmodel'
                                         onkeypress="$(this).css('border-color', 'rgb(92 166 242)');"
                                         placeholder='Enter Model' required>
+                            </div>
+                        </div>
+                        <div class='col-sm-6 col-md-6'>
+                            <div class='form-group'><label class=' form-label font-boldd'>Vehicle Price</label>
+                                <input type='text' class='form-control this_save vehicle_price numeric_price'
+                                        id='vehicle_price${vehicle_count}' name='vehicle_price[]'
+                                        placeholder='Enter Vehicle Price'
+                                        onkeypress="$(this).css('border-color', 'rgb(92 166 242)');">
                             </div>
                         </div>
                         <div class='col-sm-6 col-md-6'>

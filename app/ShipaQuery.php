@@ -14,7 +14,7 @@ class ShipaQuery extends Model
         // Destination
         'destinationcity', 'destinationstate', 'destinationzip', 'destinationzsc', 'dterminal',
         // Vehicle
-        'ymk', 'year', 'make', 'model', 'type', 'condition', 'transport',
+        'ymk', 'year', 'make', 'model', 'vehicle_price', 'type', 'condition', 'transport',
         'vehicle_opt', 'car_type', 'car_info',
         // Dimensions
         'length_ft', 'length_in', 'width_ft', 'width_in',

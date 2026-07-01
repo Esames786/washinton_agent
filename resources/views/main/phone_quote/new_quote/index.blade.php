@@ -1164,6 +1164,16 @@
 
                                                 <div class="col-sm-6 col-md-6">
                                                     <div class="form-group">
+                                                        <label class="form-label font-boldd">Vehicle Price</label>
+                                                        <input class="form-control this_save vehicle_price numeric_price"
+                                                            id="vehicle_price0" name="vehicle_price[]"
+                                                            onkeypress="$(this).css('border-color', 'rgb(92 166 242)');"
+                                                            placeholder="Enter Vehicle Price" type="text" />
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-6 col-md-6">
+                                                    <div class="form-group">
                                                         @if ($label[130 - 1]->status == 1)
                                                             <div class="Terminal-error">
                                                                 <label class="form-label parsley-error font-boldd">Vehicle
@@ -1548,6 +1558,16 @@
                                                             id="model0" name="vmodel[]" placeholder="Enter Model"
                                                             onkeypress="$(this).css('border-color', 'rgb(92 166 242)');"
                                                             type="text" />
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-6 col-md-6">
+                                                    <div class="form-group">
+                                                        <label class="form-label font-boldd">Vehicle Price</label>
+                                                        <input class="form-control this_save vehicle_price numeric_price"
+                                                            id="vehicle_price0" name="vehicle_price[]"
+                                                            onkeypress="$(this).css('border-color', 'rgb(92 166 242)');"
+                                                            placeholder="Enter Vehicle Price" type="text" />
                                                     </div>
                                                 </div>
 
@@ -8183,6 +8203,14 @@
                                 </div>
                             </div>
                             <div class="col-sm-6 col-md-6">
+                                <div class="form-group"><label class="form-label font-boldd">Vehicle Price</label>
+                                    <input type="text" id="vehicle_price${vehicle_count}" name="vehicle_price[]"
+                                           onkeypress="$(this).css('border-color', 'rgb(92 166 242)');"
+                                           class="form-control this_save vehicle_price numeric_price"
+                                           placeholder="Enter Vehicle Price">
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-md-6">
                                 <div class="form-group"><label class="form-label font-boldd">Equipment Type</label>
                                     <select id="vehType${vehicle_count}" name="vehType[]" required="" class="form-control this_save vehicle-type">
                                         <option selected="" value="">Select Type</option>
@@ -8394,6 +8422,14 @@
                                            class='form-control this_save  model0 vmodel'
                                            onkeypress="$(this).css('border-color', 'rgb(92 166 242)');"
                                            placeholder='Enter Model' required>
+                                </div>
+                            </div>
+                            <div class='col-sm-6 col-md-6'>
+                                <div class='form-group'><label class=' form-label font-boldd'>Vehicle Price</label>
+                                    <input type='text' id='vehicle_price${vehicle_count}' name='vehicle_price[]'
+                                           class='form-control this_save vehicle_price numeric_price'
+                                           onkeypress="$(this).css('border-color', 'rgb(92 166 242)');"
+                                           placeholder='Enter Vehicle Price'>
                                 </div>
                             </div>
                             <div class='col-sm-6 col-md-6'>

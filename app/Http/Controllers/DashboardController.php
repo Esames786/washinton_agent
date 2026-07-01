@@ -2954,6 +2954,7 @@ class DashboardController extends Controller
         $order->year            = $query->year;
         $order->make            = $query->make;
         $order->model           = $query->model;
+        $order->vehicle_price   = $query->vehicle_price ?? '';
         $order->type            = $query->type;
         $order->vehicle_opt     = $query->vehicle_opt;
         $order->condition       = $query->condition;

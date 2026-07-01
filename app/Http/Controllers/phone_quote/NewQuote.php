@@ -954,6 +954,15 @@ class NewQuote extends Controller
             } else {
                 $autoorder->car_link = '';
             }
+            // Per-vehicle price (vehicle information section) — stored '*^'-delimited,
+            // one price per vehicle, same pattern as year/make/model/car_link.
+            if (!empty($request->vehicle_price)) {
+                $autoorder->vehicle_price = is_array($request->vehicle_price)
+                    ? implode('*^', $request->vehicle_price)
+                    : $request->vehicle_price;
+            } else {
+                $autoorder->vehicle_price = '';
+            }
             if ($request->hasFile('car_image')) {
                 $uploadedImages = $request->file('car_image');
                 $existingImages = $autoorder->car_image ? explode('*^', $autoorder->car_image) : [];
@@ -4280,6 +4289,7 @@ class NewQuote extends Controller
             $data->vehicle_opt = $request['vehicle_opt'];
             $data->model = $request['model'];
             $data->make = $request['make'];
+            $data->vehicle_price = $request['vehicle_price'] ?? '';
             $data->condition = $request['condition'];
             $data->originzsc = $request['originzsc'];
             $data->originzip = $request['originzip'];
@@ -4630,6 +4640,7 @@ class NewQuote extends Controller
         $data->vehicle_opt = $request['vehicle_opt'];
         $data->model = $request['model'];
         $data->make = $request['make'];
+        $data->vehicle_price = $request['vehicle_price'] ?? '';
         $data->condition = $request['condition'];
         $data->originzsc = $request['originzsc'];
         $data->originzip = $request['originzip'];
@@ -4777,6 +4788,7 @@ class NewQuote extends Controller
         $data->vehicle_opt = $request['vehicle_opt'];
         $data->model = $request['model'];
         $data->make = $request['make'];
+        $data->vehicle_price = $request['vehicle_price'] ?? '';
         $data->condition = $request['condition'];
         $data->originzsc = $request['originzsc'];
         $data->originzip = $request['originzip'];
@@ -4923,6 +4935,7 @@ class NewQuote extends Controller
         $data->vehicle_opt = $request['vehicle_opt'];
         $data->model = $request['model'];
         $data->make = $request['make'];
+        $data->vehicle_price = $request['vehicle_price'] ?? '';
         $data->condition = $request['condition'];
         $data->originzsc = $request['originzsc'];
         $data->originzip = $request['originzip'];
@@ -6655,6 +6668,7 @@ class NewQuote extends Controller
             $data->vehicle_opt = $request['vehicle_opt'];
             $data->model = $request['model'];
             $data->make = $request['make'];
+            $data->vehicle_price = $request['vehicle_price'] ?? '';
             $data->condition = $request['condition'];
             $data->originzsc = $request['originzsc'];
             $data->originzip = $request['originzip'];

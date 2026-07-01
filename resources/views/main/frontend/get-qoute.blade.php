@@ -198,6 +198,14 @@
                             <ul class="suggestion-list" id="model_list"></ul>
                         </div>
                     </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <input type="text" id="car_price" name="Vehicle_Price"
+                                   class="form-control"
+                                   placeholder="Vehicle Price"
+                                   value="{{ old('Vehicle_Price') }}">
+                        </div>
+                    </div>
                 </div>
             @endif
 
