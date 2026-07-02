@@ -142,7 +142,10 @@ class ManagementController extends Controller
 
         if (!$instruction) {
             $instruction = new Guide();
-            $instruction->guide_type    = 'instruction';
+            // guide_type is an INT column (1-8 = guide categories). Auction
+            // Instructions is standalone (its own menu item), so leave it null —
+            // that keeps it out of the /guides category listing.
+            $instruction->guide_type    = null;
             $instruction->page_name     = 'Auction Instructions';
             $instruction->page_route    = 'auction-instructions';
             $instruction->thumbnail     = '';
@@ -171,7 +174,7 @@ class ManagementController extends Controller
 
         if (!$instruction) {
             $instruction = new Guide();
-            $instruction->guide_type = 'instruction';
+            $instruction->guide_type = null;
             $instruction->page_name  = 'Auction Instructions';
             $instruction->page_route = 'auction-instructions';
             $instruction->thumbnail  = '';
