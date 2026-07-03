@@ -775,6 +775,45 @@
                                     </button>
                                 </div>
                                 <div class="modal-body pd-20">
+                                    {{-- #6 client request: editable Auction Instructions. Admin/manager
+                                         edit via the WYSIWYG page; everyone can view + copy the same content. --}}
+                                    @php $__auctionInstr = \App\Guide::where('page_route', 'auction-instructions')->first(); @endphp
+                                    <div class="border rounded p-3 mb-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <b>Editable Instructions</b>
+                                            <div>
+                                                @if ($__auctionInstr && trim(strip_tags($__auctionInstr->guide_content)))
+                                                    <button type="button" class="btn btn-sm btn-primary"
+                                                            onclick="copyAuctionInstr()">Copy</button>
+                                                @endif
+                                                @if (in_array((int) Auth::user()->role, [1, 9], true))
+                                                    <a href="{{ url('/auction-instructions') }}" target="_blank"
+                                                       class="btn btn-sm btn-secondary">{{ $__auctionInstr && trim(strip_tags($__auctionInstr->guide_content)) ? 'Edit' : 'Add / Edit' }}</a>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div id="auctionInstrContent">
+                                            @if ($__auctionInstr && trim(strip_tags($__auctionInstr->guide_content)))
+                                                {!! $__auctionInstr->guide_content !!}
+                                            @else
+                                                <span class="text-muted">No instructions have been added yet.</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <script>
+                                        function copyAuctionInstr() {
+                                            var el = document.getElementById('auctionInstrContent');
+                                            var text = el ? (el.innerText || el.textContent || '') : '';
+                                            if (navigator.clipboard && navigator.clipboard.writeText) {
+                                                navigator.clipboard.writeText(text);
+                                            } else {
+                                                var t = document.createElement('textarea');
+                                                t.value = text; document.body.appendChild(t); t.select();
+                                                document.execCommand('copy'); document.body.removeChild(t);
+                                            }
+                                        }
+                                    </script>
+
                                     <h5 class=" lh-3 mg-b-20">Select and Copy Instructions from list</h5>
                                     <ul class="nav nav-tabs Navtabs" role="tablist"
                                         style=" padding: 10px; flex-wrap: wrap;">

@@ -262,18 +262,18 @@ function typeCondition($value, $key)
                                     ? 'primary'
                                     : 'secondary'))))) }} text-light">
                                     {{ $value->paneltype == 1
-                                    ? 'Phone Quote'
+                                    ? 'Panel 1'
                                     : ($value->paneltype == 2
-                                    ? 'Website Quote'
+                                    ? 'Panel 2'
                                     : ($value->paneltype == 3
-                                    ? 'Testing Quote'
+                                    ? 'Testing'
                                     : ($value->paneltype == 4
-                                    ? 'Panel Type 4 Quote'
+                                    ? 'Website'
                                     : ($value->paneltype == 5
-                                    ? 'Panel Type 5 Quote'
+                                    ? 'Panel 5'
                                     : ($value->paneltype == 6
-                                    ? 'Panel Type 6 Quote'
-                                    : 'Phone Quote'))))) }}
+                                    ? 'Panel 6'
+                                    : 'Panel 1'))))) }}
                                 </span>
                             </dd>
                         @endif

@@ -421,9 +421,9 @@ if (!function_exists('get_panel_name')) {
         } elseif ($ptype == '2') {
             $penaltypename = 'Panel 2';
         } elseif ($ptype == '3') {
-            $penaltypename = 'Panel 3';
+            $penaltypename = 'Testing';
         } elseif ($ptype == '4') {
-            $penaltypename = 'Panel 4';
+            $penaltypename = 'Website';
         } elseif ($ptype == '5') {
             $penaltypename = 'Panel 5';
         } elseif ($ptype == '6') {

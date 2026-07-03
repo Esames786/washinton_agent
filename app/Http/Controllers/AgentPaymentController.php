@@ -127,18 +127,24 @@ class AgentPaymentController extends Controller
             'details'           => 'nullable|string|max:1000',
         ]);
 
-        // Verify order exists and belongs to this agent
-        $order = AutoOrder::where('id', $request->order_ref)
-            ->orWhere(function ($q) use ($request) {
-                $q->whereRaw("FIND_IN_SET(?, IFNULL(u_id,''))", [Auth::id()])
-                  ->orWhere('order_taker_id', Auth::id());
-            })
-            ->where('id', $request->order_ref)
-            ->first();
+        // Verify the order exists.
+        $order = AutoOrder::find($request->order_ref);
 
-        // If not found by ID, try by Ref_ID-like search — just use order_id directly
+        // #9 client request: an "own quotes only" agent may ONLY submit payment for
+        // their own orders (created by them, they are the manager, or assigned via u_id).
+        // Admin / managers (order_taker_quote != 1) can submit for any order.
+        if ($order && Auth::user()->order_taker_quote == 1) {
+            $uid   = (int) Auth::id();
+            $owns  = ((int) $order->order_taker_id === $uid)
+                  || ((int) $order->manager_id === $uid)
+                  || in_array((string) $uid, array_filter(explode(',', (string) $order->u_id)), true);
+            if (!$owns) {
+                $order = null;
+            }
+        }
+
         if (!$order) {
-            $order = AutoOrder::find($request->order_ref);
+            return back()->with('error', 'Order not found or it does not belong to you.')->withInput();
         }
 
         DB::beginTransaction();
@@ -355,6 +361,17 @@ class AgentPaymentController extends Controller
 
         if (!$order) {
             return response()->json(['error' => 'Order not found.'], 404);
+        }
+
+        // #9 client request: an "own quotes only" agent may only look up their OWN orders.
+        if (Auth::user()->order_taker_quote == 1) {
+            $uid  = (int) Auth::id();
+            $owns = ((int) $order->order_taker_id === $uid)
+                 || ((int) $order->manager_id === $uid)
+                 || in_array((string) $uid, array_filter(explode(',', (string) $order->u_id)), true);
+            if (!$owns) {
+                return response()->json(['error' => 'This order does not belong to you.'], 403);
+            }
         }
 
         // Check if payment already exists for this order by this agent

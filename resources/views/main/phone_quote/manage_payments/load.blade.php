@@ -54,17 +54,17 @@ if (isset($_GET['titlee'])) {
                         <span class="badge badge-pill badge-default mt-2">Payment: <?php echo pay_status($val->paid_status); ?></span>
                         <br>
                         @if ($val->paneltype == 1)
-                            <span class="badge badge-pill badge-default mt-2">Type: Phone Quote</span>
+                            <span class="badge badge-pill badge-default mt-2">Type: Panel 1</span>
                         @elseif($val->paneltype == 3)
-                            <span class="badge badge-pill badge-default mt-2">Type: Testing Quote</span>
+                            <span class="badge badge-pill badge-default mt-2">Type: Testing</span>
                         @elseif($val->paneltype == 4)
-                            <span class="badge badge-pill badge-default mt-2">Type: Panel Type 4 Quote</span>
+                            <span class="badge badge-pill badge-default mt-2">Type: Website</span>
                         @elseif($val->paneltype == 5)
-                            <span class="badge badge-pill badge-default mt-2">Type: Panel Type 5 Quote</span>
+                            <span class="badge badge-pill badge-default mt-2">Type: Panel 5</span>
                         @elseif($val->paneltype == 6)
-                            <span class="badge badge-pill badge-default mt-2">Type: Panel Type 6 Quote</span>
+                            <span class="badge badge-pill badge-default mt-2">Type: Panel 6</span>
                         @else
-                            <span class="badge badge-pill badge-default mt-2">Type: Website Quote</span>
+                            <span class="badge badge-pill badge-default mt-2">Type: Panel 2</span>
                         @endif
                     </td>
                     <td>

@@ -79,22 +79,22 @@
                                         name="panel_type2" id="panel_type2">
                                     <option selected="selected" value="">All Panels</option>
                                     <optgroup label="Select Panel Type">
-                                        <option value="1">Phone Quote</option>
+                                        <option value="1">Panel 1</option>
 
 
-                                        <option value="2">Website Quote</option>
+                                        <option value="2">Panel 2</option>
 
 
-                                        <option value="3">Testing Quote</option>
+                                        <option value="3">Testing</option>
 
 
-                                        <option value="4">Panel Type 4 Quote</option>
+                                        <option value="4">Website</option>
 
 
-                                        <option value="5">Panel Type 5 Quote</option>
+                                        <option value="5">Panel 5</option>
 
 
-                                        <option value="6">Panel Type 6 Quote</option>
+                                        <option value="6">Panel 6</option>
 
                                     </optgroup>
                                 </select>

@@ -1402,17 +1402,17 @@
                             </div>
                         <div class="col-sm-12 col-md-12 mt-3">
                             <div class="form-group">
-                                <input type="radio" checked name="penalytype" value="1"> Phone Quotes
+                                <input type="radio" checked name="penalytype" value="1"> Panel 1
                                 <br>
-                                <input type="radio" name="penalytype" value="2"> Website Quotes
+                                <input type="radio" name="penalytype" value="2"> Panel 2
                                 <br>
-                                <input type="radio" name="penalytype" value="3"> Test Quotes
+                                <input type="radio" name="penalytype" value="3"> Testing
                                 <br>
-                                <input type="radio" name="penalytype" value="4"> Panel Type 4
+                                <input type="radio" name="penalytype" value="4"> Website
                                 <br>
-                                <input type="radio" name="penalytype" value="5"> Panel Type 5
+                                <input type="radio" name="penalytype" value="5"> Panel 5
                                 <br>
-                                <input type="radio" name="penalytype" value="6"> Panel Type 6
+                                <input type="radio" name="penalytype" value="6"> Panel 6
                             </div>
                         </div>
                         <div class="col-md-12">

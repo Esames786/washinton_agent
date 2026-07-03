@@ -41,7 +41,19 @@
 
                     $date = date('Y-m-d');
 
-                    $data1 = \App\report::orderBy('created_at', 'desc')->paginate(50);
+                    // #10 client request: an "own quotes only" agent must see notifications
+                    // for their OWN orders only, not other agents'. Admin / managers
+                    // (order_taker_quote != 1) keep the full notification feed.
+                    $__notifQuery = \App\report::orderBy('created_at', 'desc');
+                    if (\Auth::check() && \Auth::user()->order_taker_quote == 1) {
+                        $__uid = \Auth::user()->id;
+                        $__notifQuery->whereIn('orderId', function ($q) use ($__uid) {
+                            $q->select('id')->from('order')
+                              ->where('order_taker_id', $__uid)
+                              ->orWhere('manager_id', $__uid);
+                        });
+                    }
+                    $data1 = $__notifQuery->paginate(50);
                     ?>
                     @foreach($data1 as $val2)
                         <a href="#" class="dropdown-item border-bottom d-flex pl-4">

@@ -58,12 +58,13 @@ class ChatController extends Controller
 
         $data = $data1->merge($data2);
 
-        // dd('sad', $data->toArray(), $userIds);
-
-
-        // if (Auth::user()->role != 1) {
-        //     $data = $data->where('role', Auth::user()->role)->orWhere('role', 1);
-        // }
+        // #11 client request: an agent may only chat with admin (role 1) and manager
+        // (role 9). Admin/manager keep the full user list.
+        if (!in_array((int) Auth::user()->role, [1, 9], true)) {
+            $data = $data->filter(function ($u) {
+                return in_array((int) $u->role, [1, 9], true);
+            })->values();
+        }
 
         $group = Group::select(['id', 'name', 'logo'])
             ->with(['chatOne:message,group_id,user_id,created_at,type', 'chatOne.user:id,slug,name,last_name'])
@@ -132,6 +133,13 @@ class ChatController extends Controller
 
         $data = $data1->merge($data2);
 
+        // #11: agents may only chat with admin (role 1) and manager (role 9).
+        if (!in_array((int) Auth::user()->role, [1, 9], true)) {
+            $data = $data->filter(function ($u) {
+                return in_array((int) $u->role, [1, 9], true);
+            })->values();
+        }
+
         $group = Group::select(['id', 'name', 'logo'])
             ->with(['chatOne:message,group_id,user_id,created_at,type', 'chatOne.user:id,slug,name,last_name'])
             ->whereHas('users', function ($q) use ($id) {
@@ -192,9 +200,12 @@ class ChatController extends Controller
 
         $data = $data1->merge($data2);
 
-        // if (Auth::user()->role != 1) {
-        //     $data = $data->where('role', Auth::user()->role)->orWhere('role', 1);
-        // }
+        // #11: agents may only chat with admin (role 1) and manager (role 9).
+        if (!in_array((int) Auth::user()->role, [1, 9], true)) {
+            $data = $data->filter(function ($u) {
+                return in_array((int) $u->role, [1, 9], true);
+            })->values();
+        }
 
         // $data = $data->orderBy('is_login', 'DESC')->orderBy('updated_at', 'DESC')->get();
 
@@ -376,6 +387,14 @@ class ChatController extends Controller
 
     public function save_chat(Request $request)
     {
+        // #11: an agent may only message admin (role 1) / manager (role 9).
+        if (!in_array((int) Auth::user()->role, [1, 9], true)) {
+            $recipient = User::find($request->to_user_id);
+            if (!$recipient || !in_array((int) $recipient->role, [1, 9], true)) {
+                return response()->json(['status' => false, 'message' => 'You can only chat with admin or manager.'], 403);
+            }
+        }
+
         $status = 0;
         $settings = SiteSetting::find(1);
         if ($settings->groupChatCheck == 0) {

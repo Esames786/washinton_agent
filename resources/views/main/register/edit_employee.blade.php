@@ -1937,22 +1937,22 @@
                                     @endphp
 
                                     <input type="radio" @if ($pt == 1) checked @endif
-                                    name="penalytype" value="1"> Auction
+                                    name="penalytype" value="1"> Panel 1
                                     <br>
                                     <input type="radio" @if ($pt == 2) checked @endif
-                                    name="penalytype" value="2"> ProMax
+                                    name="penalytype" value="2"> Panel 2
                                     <br>
                                     <input type="radio" @if ($pt == 3) checked @endif
-                                    name="penalytype" value="3"> Testing Quote
+                                    name="penalytype" value="3"> Testing
                                     <br>
                                     <input type="radio" @if ($pt == 4) checked @endif
-                                    name="penalytype" value="4"> Website Quote
+                                    name="penalytype" value="4"> Website
                                     <br>
                                     <input type="radio" @if ($pt == 5) checked @endif
-                                    name="penalytype" value="5"> Panel Type 5 Quote
+                                    name="penalytype" value="5"> Panel 5
                                     <br>
                                     <input type="radio" @if ($pt == 6) checked @endif
-                                    name="penalytype" value="6"> Panel Type 6 Quote
+                                    name="penalytype" value="6"> Panel 6
                                 </div>
                             </div>
                             <div class="col-md-12">

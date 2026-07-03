@@ -5852,6 +5852,14 @@
             </div>
         </div>
         <div class="col-sm-6 col-md-6">
+            <div class="form-group"><label class="form-label font-boldd">Vehicle Price</label>
+                <input type="text" id="vehicle_price${vehicle_count}" name="vehicle_price[]"
+                       class="form-control this_save vehicle_price numeric_price"
+                       onkeypress="$(this).css('border-color', 'rgb(92 166 242)');"
+                       placeholder="Enter Vehicle Price">
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-6">
             <div class="form-group"><label class="form-label font-boldd">Equipment Type </label>
                 <select id="vehType${vehicle_count}" name="vehType[]"  class="form-control this_save vehicle-type">
                     <option selected="" value="">Select Type</option>

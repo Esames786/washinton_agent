@@ -520,10 +520,10 @@ if (!function_exists('get_user_name123')) {
                                     <option value="2">Panel 2</option>
                                 @endif
                                 @if (in_array("110", $phoneaccess) && in_array('3', $emp_panel_access))
-                                    <option value="3">Panel 3</option>
+                                    <option value="3">Testing</option>
                                 @endif
                                 @if (in_array('4', $emp_panel_access))
-                                    <option value="4">Panel 4</option>
+                                    <option value="4">Website</option>
                                 @endif
                                 @if (in_array('5', $emp_panel_access))
                                     <option value="5">Panel 5</option>

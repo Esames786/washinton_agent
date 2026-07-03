@@ -258,12 +258,12 @@
                                         ($order->paneltype == 6 ? 'primary' : 'secondary'))))) 
                                     }} text-light">
                                         {{ 
-                                            $order->paneltype == 1 ? 'Phone Quote' : 
-                                            ($order->paneltype == 2 ? 'Website Quote' : 
-                                            ($order->paneltype == 3 ? 'Testing Quote' : 
-                                            ($order->paneltype == 4 ? 'Panel Type 4 Quote' : 
-                                            ($order->paneltype == 5 ? 'Panel Type 5 Quote' : 
-                                            ($order->paneltype == 6 ? 'Panel Type 6 Quote' : 'Phone Quote'))))) 
+                                            $order->paneltype == 1 ? 'Panel 1' :
+                                            ($order->paneltype == 2 ? 'Panel 2' :
+                                            ($order->paneltype == 3 ? 'Testing' :
+                                            ($order->paneltype == 4 ? 'Website' :
+                                            ($order->paneltype == 5 ? 'Panel 5' :
+                                            ($order->paneltype == 6 ? 'Panel 6' : 'Panel 1')))))
                                         }}
                                     </span>
                                 </dd>

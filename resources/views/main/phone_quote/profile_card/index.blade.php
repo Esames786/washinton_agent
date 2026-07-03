@@ -72,22 +72,22 @@
                                             <option selected="selected" value=""><?php echo get_panel_name(); ?></option>
                                             <optgroup label="Select Panel Type">
                                                 @if (in_array('1', $emp_panel_access))
-                                                    <option value="1">Auction</option>
+                                                    <option value="1">Panel 1</option>
                                                 @endif
                                                 @if (in_array('2', $emp_panel_access))
-                                                    <option value="2">ProMax</option>
+                                                    <option value="2">Panel 2</option>
                                                 @endif
                                                 @if (in_array("110", $phoneaccess) && in_array('3', $emp_panel_access))
-                                                    <option value="3">Testing Quote</option>
+                                                    <option value="3">Testing</option>
                                                 @endif
                                                 @if (in_array('4', $emp_panel_access))
-                                                    <option value="4">Website Quote</option>
+                                                    <option value="4">Website</option>
                                                 @endif
                                                 @if (in_array('5', $emp_panel_access))
-                                                    <option value="5">Panel Type 5 Quote</option>
+                                                    <option value="5">Panel 5</option>
                                                 @endif
                                                 @if (in_array('6', $emp_panel_access))
-                                                    <option value="6">Panel Type 6 Quote</option>
+                                                    <option value="6">Panel 6</option>
                                                 @endif
                                             </optgroup>
                                         </select>

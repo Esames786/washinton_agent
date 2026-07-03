@@ -949,6 +949,14 @@
                         </div>
                     </div>
 
+                    <div class="col-sm-6 col-md-6">
+                        <div class="form-group">
+                            <label class="form-label font-boldd">Vehicle Price</label>
+                            <input class="form-control this_save vehicle_price numeric_price" id="vehicle_price0"
+                                name="vehicle_price[]" placeholder="Enter Vehicle Price"
+                                onkeypress="$(this).css('border-color', 'rgb(92 166 242)');" type="text">
+                        </div>
+                    </div>
 
                     <div class="col-sm-6 col-md-6">
                         <div class="form-group">
@@ -5867,6 +5875,14 @@
                                                                                     onkeypress="$(this).css('border-color', 'rgb(92 166 242)');"
                                                                                     class="form-control this_save  model0 vmodel"
                                                                                     placeholder="Enter Model" required>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-6">
+            <div class="form-group"><label class="form-label font-boldd">Vehicle Price</label>
+                <input type="text" id="vehicle_price${vehicle_count}" name="vehicle_price[]"
+                       class="form-control this_save vehicle_price numeric_price"
+                       onkeypress="$(this).css('border-color', 'rgb(92 166 242)');"
+                       placeholder="Enter Vehicle Price">
             </div>
         </div>
         <div class="col-sm-6 col-md-6">

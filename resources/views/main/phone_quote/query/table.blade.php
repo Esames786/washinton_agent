@@ -165,18 +165,18 @@ if (isset($_GET['titlee'])) {
                         }
                         ?>">
                             {{ $val->paneltype == 1
-                                ? 'Auction'
+                                ? 'Panel 1'
                                 : ($val->paneltype == 2
-                                    ? 'ProMax'
+                                    ? 'Panel 2'
                                     : ($val->paneltype == 3
-                                        ? 'Testing Quote'
+                                        ? 'Testing'
                                         : ($val->paneltype == 4
-                                            ? 'Website Quote'
+                                            ? 'Website'
                                             : ($val->paneltype == 5
-                                                ? 'Panel Type 5 Quote'
+                                                ? 'Panel 5'
                                                 : ($val->paneltype == 6
-                                                    ? 'Panel Type 6 Quote'
-                                                    : 'Auction'))))) }}
+                                                    ? 'Panel 6'
+                                                    : 'Panel 1'))))) }}
                         </span>
 
                         @if ($val->user)

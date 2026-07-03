@@ -2,6 +2,12 @@
     <a href="#top" id="back-to-top"><i class="fe fe-chevrons-up"></i></a>
 @endif
 
+{{-- #4 client request: remove View Old Prices / Previous Driver Price / Previous Msg Chats
+     buttons from the quote forms (all variants use this shared layout). --}}
+<style>
+    #getOldPrice, #previousBookPrice, #showMsgChats { display: none !important; }
+</style>
+
 <!-- Jquery js-->
 
 <script src="{{ url('assets/js/jquery-3.5.1.min.js') }}"></script>
@@ -303,7 +309,10 @@
 
                 function req() {
                     var orderID = $('#orderid_find').val();
-                    var priceBtn = $('.priceReq');
+                    // "Request Price" button removed from the quote form per client request (#4).
+                    // Point the injection target at an empty set so no button is appended.
+                    var priceBtn = $();
+                    return;
                     $.ajax({
                         url: '{{ url('/get-request-order') }}',
                         type: 'GET',

@@ -919,8 +919,7 @@
                         </div>
                         <div>
                             <div class=" ">
-                                <a href="javascript:void(0)" id='getOldPrice' class="btn  btn-primary">View Old
-                                    Prices</a>
+                                {{-- "View Old Prices" button removed per client request (#4) --}}
                             </div>
                         </div>
                     </div>
@@ -2783,14 +2782,10 @@
                                 Weather</a>
                             <a href="https://gasprices.aaa.com/" target="_blank" class="btn btn-primary">Fuel
                                 Price</a>
-                            <a href="javascript:void(0)" id="previousBookPrice"
-                                class="btn btn-primary mg-r-10">Previous
-                                Driver Price</a>
+                            {{-- "Previous Driver Price" button removed per client request (#4) --}}
                             <a href="javascript:void(0)" id="showOldCustomerNature"
                                 class="btn btn-primary mg-r-10">Nature of Customer</a>
-                            <a href="javascript:void(0)" id="showMsgChats" class="btn btn-primary mg-r-10">Previous
-                                Msg
-                                Chats</a>
+                            {{-- "Previous Msg Chats" button removed per client request (#4) --}}
                             <a class="btn btn-primary mg-r-10" onclick="history('0',$('#ophone').val())"
                                 target="_blank">History</a>
                         </div>

@@ -1,5 +1,11 @@
 <a href="#top" id="back-to-top"><i class="fe fe-chevrons-up"></i></a>
 
+{{-- #4 client request: remove View Old Prices / Previous Driver Price / Previous Msg Chats
+     buttons from the quote forms (all variants use this shared layout). --}}
+<style>
+    #getOldPrice, #previousBookPrice, #showMsgChats { display: none !important; }
+</style>
+
 <!-- Jquery js-->
 <script src="{{ url('assets/js/jquery-3.5.1.min.js') }}"></script>
 <script src="{{ url('assets/js/htmlCanva.min.js') }}"></script>
@@ -508,7 +514,8 @@
                 var roleChecker = "{{ Auth::user()->role }}";
 
                 function req() {
-                    alert();
+                    // "Request Price" button removed from the quote form per client request (#4).
+                    return;
                     var orderID = $('#orderid_find').val();
                     var priceBtn = $('.priceReq');
                     $.ajax({
