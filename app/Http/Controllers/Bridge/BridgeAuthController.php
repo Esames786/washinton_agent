@@ -142,6 +142,10 @@ class BridgeAuthController extends Controller
             }
             $user->order_taker_quote = 1;
 
+            // #18: guarantee default New->Delivered folder access on every signup path
+            // (merges into the columns just copied; persisted by the save() below).
+            $user->applyDefaultFolderAccess(false);
+
             $user->save();
 
             // user_settings

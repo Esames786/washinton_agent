@@ -21,6 +21,8 @@ use Webklex\PHPIMAP\IMAP;
  */
 class MailboxController extends Controller
 {
+    use \App\Http\Controllers\Concerns\ResolvesMailboxAccount;
+
     private function currentUser()
     {
         return Auth::user();
@@ -28,10 +30,8 @@ class MailboxController extends Controller
 
     private function mailboxOrNull(): ?EmailAccount
     {
-        $u = $this->currentUser();
-        return EmailAccount::where('user_id', $u->id)
-            ->where('status', 'active')
-            ->first();
+        // #7: resolves to the supervisor's "view as" account when set, else own mailbox.
+        return $this->resolveMailboxAccount();
     }
 
     private function imapClient(EmailAccount $acc)
@@ -79,7 +79,38 @@ class MailboxController extends Controller
             'Junk'   => 'Junk',
             'Trash'  => 'Trash',
         ];
-        return view('main.mailbox.index', compact('mailbox', 'folders'));
+
+        // #7: supervisor "view as" controls.
+        $isSupervisor   = $this->isMailboxSupervisor();
+        $switchAccounts = $isSupervisor ? $this->switchableMailboxAccounts() : collect();
+        $viewingAsId    = $isSupervisor ? session('mailbox_view_as') : null;
+
+        return view('main.mailbox.index', compact('mailbox', 'folders', 'isSupervisor', 'switchAccounts', 'viewingAsId'));
+    }
+
+    /**
+     * #7: supervisor switches the mailbox they are viewing. Passing an empty account_id
+     * returns them to their own mailbox. Non-supervisors are forbidden.
+     */
+    public function switchAccount(Request $request)
+    {
+        abort_unless($this->isMailboxSupervisor(), 403);
+
+        $request->validate(['account_id' => 'nullable|integer']);
+        $accountId = $request->input('account_id');
+
+        if (!$accountId) {
+            session()->forget('mailbox_view_as');
+            return redirect()->route('mailbox.index')->with('success', 'Back to your own mailbox.');
+        }
+
+        $acc = EmailAccount::with('user')->where('id', $accountId)->where('status', 'active')->first();
+        abort_if(!$acc, 404, 'Mailbox not found.');
+
+        session(['mailbox_view_as' => $acc->id]);
+        $owner = $acc->user->name ?? $acc->email;
+
+        return redirect()->route('mailbox.index')->with('success', "Now viewing {$owner}'s mailbox ({$acc->email}).");
     }
 
     public function folders()

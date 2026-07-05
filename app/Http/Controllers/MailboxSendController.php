@@ -22,6 +22,8 @@ use Webklex\PHPIMAP\ClientManager;
 
 class MailboxSendController extends Controller
 {
+    use \App\Http\Controllers\Concerns\ResolvesMailboxAccount;
+
     private function currentUser()
     {
         return Auth::user();
@@ -29,8 +31,8 @@ class MailboxSendController extends Controller
 
     private function mailboxOrFail(): EmailAccount
     {
-        $u   = $this->currentUser();
-        $acc = EmailAccount::where('user_id', $u->id)->where('status', 'active')->first();
+        // #7: send-as — resolves to the supervisor's "view as" account when set, else own.
+        $acc = $this->resolveMailboxAccount();
         abort_if(!$acc, 403, 'No mailbox assigned.');
         return $acc;
     }

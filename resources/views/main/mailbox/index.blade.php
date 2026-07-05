@@ -66,6 +66,34 @@
     </div>
 </div>
 
+{{-- #7: supervisor (admin/manager) unified-mailbox switcher — view any agent's inbox --}}
+@if(!empty($isSupervisor))
+    <div class="card mb-3" style="border:1px solid #e01f26;border-radius:12px;">
+        <div class="card-body py-2">
+            <form method="POST" action="{{ route('mailbox.switch_account') }}" id="mailboxSwitchForm"
+                  class="d-flex flex-wrap align-items-center" style="gap:10px;margin:0;">
+                @csrf
+                <span class="font-weight-bold text-primary" style="white-space:nowrap;">
+                    <i class="fa fa-user-shield mr-1"></i> Viewing mailbox:
+                </span>
+                <select name="account_id" class="form-control" style="max-width:420px;width:auto;"
+                        onchange="document.getElementById('mailboxSwitchForm').submit();">
+                    <option value="">— My own mailbox —</option>
+                    @foreach($switchAccounts as $acc)
+                        <option value="{{ $acc->id }}" {{ (string)$viewingAsId === (string)$acc->id ? 'selected' : '' }}>
+                            {{ optional($acc->user)->name ? $acc->user->name.' — ' : '' }}{{ $acc->email }}
+                        </option>
+                    @endforeach
+                </select>
+                @if(!empty($viewingAsId))
+                    <span class="badge badge-danger" style="font-size:12px;">Viewing another agent's mailbox — actions (including send) apply to that mailbox</span>
+                @endif
+                <noscript><button type="submit" class="btn btn-sm btn-primary">Switch</button></noscript>
+            </form>
+        </div>
+    </div>
+@endif
+
 @if(!$mailbox)
     <div class="alert alert-warning">
         <strong>No mailbox assigned!</strong> Please contact admin to assign an email account to your user.

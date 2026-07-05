@@ -30,7 +30,8 @@ class HrPortalRedirectController extends Controller
 
         $payload = base64_encode(json_encode([
             'employee_id'   => $hrEmployee->id,
-            'redirect_path' => '/admin/employees/show/' . $hrEmployee->id,
+            // #8/#9: HR admin URI renamed employees -> subcontractors (deploy both projects together).
+            'redirect_path' => '/admin/subcontractors/show/' . $hrEmployee->id,
             'expires_at'    => now()->addMinutes(3)->timestamp,
         ]));
 

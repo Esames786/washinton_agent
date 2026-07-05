@@ -214,6 +214,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     // ── Mailbox (permission 163) ──────────────────────────────────────────
     Route::get('/mailbox', 'MailboxController@index')->name('mailbox.index');
+    // #7: supervisor (admin/manager) "view as" another agent's mailbox
+    Route::post('/mailbox/switch-account', 'MailboxController@switchAccount')->name('mailbox.switch_account');
     Route::get('/mailbox/folders', 'MailboxController@folders')->name('mailbox.folders');
     Route::get('/mailbox/folder/{folder}', 'MailboxController@folder')->name('mailbox.folder');
     Route::get('/mailbox/message/{folder}/{uid}', 'MailboxController@message')->name('mailbox.message');
