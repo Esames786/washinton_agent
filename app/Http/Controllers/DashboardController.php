@@ -1016,6 +1016,11 @@ class DashboardController extends Controller
         $emp->sheet_access = $total_sheet_access;
         $emp->emp_panel_access = $total_emp_panel_access;
         $emp->emp_access_guide = $total_emp_access_guide;
+        // #5: persist per-agent guide-video assignment on EDIT too (save_employee already did
+        // this for create; update_employee was missing it, so edits silently dropped the picks).
+        $emp->emp_access_guide_video = $request->emp_access_guide_video != null
+            ? implode(",", $request->emp_access_guide_video)
+            : "";
         if ($emp->role == 3) {
             $emp->auto_assign = $request->auto_assign ?? 0;
             $emp->shipment_status_quote_assign = $request->shipment_status_quote_assign ?? 0;
