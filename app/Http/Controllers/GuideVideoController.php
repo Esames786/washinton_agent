@@ -194,7 +194,18 @@ class GuideVideoController extends Controller
     {
         abort_unless($this->hasAccess(self::PERMISSION_VIEW), 403);
 
-        $videos = GuideVideo::with('user')->latest()->get();
+        // #5 (2026-07-03): guide videos are now assigned to agents selectively, same
+        // as guides. Admin (1) / manager (9) see all; agents see only assigned videos.
+        $user  = \Auth::user();
+        $query = GuideVideo::with('user')->latest();
+        if (!in_array((int) $user->role, [1, 9], true)) {
+            $assigned = array_values(array_filter(explode(',', (string) $user->emp_access_guide_video), function ($v) {
+                return $v !== '' && $v !== null;
+            }));
+            $query->whereIn('id', empty($assigned) ? [0] : $assigned);
+        }
+
+        $videos = $query->get();
         return view('main.guide_videos.viewer', compact('videos'));
     }
 

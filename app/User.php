@@ -327,4 +327,35 @@ class User extends Authenticatable
     {
         return $this->hasMany(ShipperDetailsPhoneCarrier::class, 'userId')->where('type',2);
     }
+
+    /**
+     * #18 (2026-07-03): default folder access from New through Delivered for every
+     * agent. Folder permission IDs (from the panel-access map):
+     *   0 New, 1 Interested, 2 Follow More, 3 Asking Low, 4 Not Interested,
+     *   5 No Response, 6 Time Quote, 7 Payment Missing, 8 Booked, 66 Double Booking,
+     *   9 Listed, 10 Schedule, 11 Pickup, 12 Delivered.
+     */
+    public static function defaultFolderAccessIds(): array
+    {
+        return [0, 1, 2, 3, 4, 5, 6, 7, 8, 66, 9, 10, 11, 12];
+    }
+
+    /**
+     * Merge the default New→Delivered folder IDs into every panel-access column so
+     * the folders show regardless of which panel the agent is assigned. Idempotent.
+     */
+    public function applyDefaultFolderAccess(bool $save = true): void
+    {
+        $cols = ['emp_access_phone', 'emp_access_web', 'emp_access_test', 'panel_type_4', 'panel_type_5', 'panel_type_6'];
+        $defaults = array_map('strval', self::defaultFolderAccessIds());
+        foreach ($cols as $col) {
+            $existing = array_filter(explode(',', (string) ($this->$col ?? '')), function ($v) {
+                return $v !== '' && $v !== null;
+            });
+            $this->$col = implode(',', array_values(array_unique(array_merge($existing, $defaults))));
+        }
+        if ($save) {
+            $this->save();
+        }
+    }
 }

@@ -42,6 +42,10 @@
                 <input type="text" name="search" class="form-control form-control-sm" placeholder="Name / Email / Phone" value="{{ request('search') }}" style="min-width:200px;">
                 <button type="submit" class="btn btn-sm btn-primary">Filter</button>
                 <a href="{{ route('cr-applications.index') }}" class="btn btn-sm btn-secondary">Reset</a>
+                {{-- #15 (2026-07-03): show application count for the selected campaign/status filter --}}
+                <span class="badge badge-dark px-3 py-2 ml-2" style="font-size:13px;">
+                    Total: {{ $applications->total() }}
+                </span>
             </form>
         </div>
     </div>

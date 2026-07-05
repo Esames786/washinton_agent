@@ -58,8 +58,9 @@
                 ['4. Return of Company Property', 'Upon termination of employment or engagement, the Recipient shall immediately return all company property, documents, files, equipment, passwords, and confidential materials.', []],
                 ['5. Non-Solicitation', 'The Recipient agrees not to directly solicit or divert Company clients, customers, carriers, employees, or business opportunities during employment and for a period of 12 months after separation.', []],
                 ['6. Breach of Agreement', 'Any breach of this Agreement may result in disciplinary action, termination of employment, legal action, and claims for damages as permitted by applicable law.', []],
-                ['7. Termination', 'The confidentiality obligations contained in this Agreement shall survive the termination of employment and remain in effect indefinitely unless otherwise required by law.', []],
-                ['8. Acknowledgment', 'I acknowledge that I have read, understood, and agree to comply with the terms of this NDA & Confidentiality Agreement and understand the consequences of violating its provisions.', []],
+                ['7. Account Suspension', 'Crazy Rays Solutions reserves the right to suspend or terminate the Recipient\'s account and access at any time, without prior notice, upon detection of any suspicious, unauthorized, or fraudulent activity.', []],
+                ['8. Termination', 'The confidentiality obligations contained in this Agreement shall survive the termination of employment and remain in effect indefinitely unless otherwise required by law.', []],
+                ['9. Acknowledgment', 'I acknowledge that I have read, understood, and agree to comply with the terms of this NDA & Confidentiality Agreement and understand the consequences of violating its provisions.', []],
             ] as [$heading, $body, $items])
             <div style="margin-bottom:14px;">
                 <div style="color:#c0392b; font-weight:700; font-size:13px; text-transform:uppercase; margin-bottom:5px;">{{ $heading }}</div>

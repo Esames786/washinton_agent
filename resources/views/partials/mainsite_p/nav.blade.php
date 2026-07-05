@@ -525,7 +525,9 @@ if (!function_exists('get_user_name123')) {
                                     @if (in_array("134", $phoneaccess))
                                         <option value="134">Call App</option>
                                     @endif
+                                    {{-- #16 (2026-07-03): Zoom Call hidden per client request
                                     <option value="158">Zoom Call</option>
+                                    --}}
 
                                 </optgroup>
                             </select>
@@ -737,9 +739,18 @@ if (!function_exists('get_user_name123')) {
                         <div class="notify-menu" style="overflow: scroll !important; height: 250px">
                             <?php
                             $date = date('Y-m-d');
-                            $data = \App\report::with('user')->where('created_at', 'like', "%$date%")->orderBy('created_at', 'desc')->get();
-
-
+                            // #2 (2026-07-03): an "own quotes only" agent must only see
+                            // notifications for their OWN orders in the dashboard bell too.
+                            $__notif = \App\report::with('user')->where('created_at', 'like', "%$date%")->orderBy('created_at', 'desc');
+                            if (\Auth::check() && \Auth::user()->order_taker_quote == 1) {
+                                $__uid = \Auth::user()->id;
+                                $__notif->whereIn('orderId', function ($q) use ($__uid) {
+                                    $q->select('id')->from('order')
+                                      ->where('order_taker_id', $__uid)
+                                      ->orWhere('manager_id', $__uid);
+                                });
+                            }
+                            $data = $__notif->get();
                             ?>
                             @foreach($data as $val2)
                                 <a href="/all_notification" class="dropdown-item border-bottom d-flex pl-4">
@@ -839,17 +850,19 @@ if (!function_exists('get_user_name123')) {
                                 <span class="text-center user-semi-title">Commission {{ $commission }} </span>
                             @endif
 
+                            {{-- #17 (2026-07-03): Change Password hidden per client request
                             <a class="dropdown-item d-flex" href="{{url('/update_password')}}">
                                 <i class="fa fa-key pr-1 mt-1 ml-1"></i>
                                 <div class="">Change Password</div>
                             </a>
+                            --}}
                             @if(Auth::user()->role == 1)
                                 <a class="dropdown-item d-flex" href="{{url('/other_pass')}}">
                                     <i class="fa fa-lock pr-1 mt-1 ml-1"></i>
                                     <div class="">Other Password</div>
                                 </a>
                             @endif
-                            @if(in_array("79", $phoneaccess))
+                            @if(false) {{-- #17 (2026-07-03): Profile hidden per client request --}}
                                 <a class="dropdown-item d-flex" href="{{url('/profile')}}">
                                     <i class="fa fa-user pr-1 mt-1 ml-1"></i>
                                     <div class="">Profile</div>

@@ -110,6 +110,9 @@ class PublicSignupController extends Controller
 
             $user->save();
 
+            // #18: every new agent gets default folder access New -> Delivered.
+            $user->applyDefaultFolderAccess();
+
             $penal_type = $request->signup_type === 'agent'
                 ? 1
                 : ($this->getReferenceUserPanelType($referenceUserId) ?? 1);

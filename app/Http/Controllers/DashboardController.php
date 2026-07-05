@@ -523,6 +523,7 @@ class DashboardController extends Controller
         $data2 = User::with(['userRole', 'ot_manager', 'assignedData'])->where('id', $id)->first();
         $data = role::all();
         $guide = Guide::all();
+        $guideVideos = \App\GuideVideo::latest()->get(); // #5: per-agent video assignment
         $penaltype = user_setting::where('user_id', $id)->first();
 
         $no = $this->number();
@@ -545,7 +546,7 @@ class DashboardController extends Controller
             ->orderBy('is_login', 'DESC')->get();
         $sheet_data = sheet_data::orderby('id', 'desc')->get();
         if (Auth::check()) {
-            return view('main.register.edit_employee', compact('data', 'data2', 'penaltype', 'no', 'all_ot', 'access', 'managers', 'disableNo', 'diabledAccess', 'sheet_data', 'guide'));
+            return view('main.register.edit_employee', compact('data', 'data2', 'penaltype', 'no', 'all_ot', 'access', 'managers', 'disableNo', 'diabledAccess', 'sheet_data', 'guide', 'guideVideos'));
         } else {
             return redirect('/loginn/');
         }
@@ -789,6 +790,11 @@ class DashboardController extends Controller
         if ($request->emp_panel_access <> null) {
             $total_emp_panel_access = implode(",", $emp_panel_access);
         }
+        // #5: per-agent guide-video assignment
+        $total_emp_access_guide_video = "";
+        if ($request->emp_access_guide_video != null) {
+            $total_emp_access_guide_video = implode(",", $request->emp_access_guide_video);
+        }
         $phone = str_replace("-", "", $request->phone_number);
         $usrChk = User::where('email', $request->email)->first();
         if ($usrChk == '') {
@@ -825,6 +831,7 @@ class DashboardController extends Controller
             $emp->sheet_access = $total_sheet_access;
             $emp->emp_panel_access = $total_emp_panel_access;
             $emp->emp_access_guide = $total_emp_access_guide;
+            $emp->emp_access_guide_video = $total_emp_access_guide_video;
             if ($emp->role == 3) {
                 $emp->auto_assign = $request->auto_assign ?? 0;
                 $emp->shipment_status_quote_assign = $request->shipment_status_quote_assign ?? 0;

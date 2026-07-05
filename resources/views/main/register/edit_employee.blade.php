@@ -439,6 +439,8 @@
                             //user access guide
                             $emp_access_guide = $data2->emp_access_guide;
                             $emp_access_guide = explode(',', $emp_access_guide);
+                            //user access guide videos (#5)
+                            $emp_access_guide_video = explode(',', $data2->emp_access_guide_video ?? '');
                             //panel type access
                             $emp_panel_access = $data2->emp_panel_access;
                             $emp_panel_access = explode(',', $emp_panel_access);
@@ -1914,6 +1916,21 @@
                                                                        id="emp_access_guide{{ $row->id }}"
                                                                        value="{{ $row->id }}"><label class="ml-2"
                                                                                                      for="emp_access_guide{{ $row->id }}">{{ $row->page_name }}</label>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+
+                                                    {{-- #5 (2026-07-03): per-agent Guide Video assignment (same as guides) --}}
+                                                    <hr>
+                                                    <label class="font-weight-bold">Guide Videos</label>
+                                                    <div class="row">
+                                                        @foreach ($guideVideos as $vrow)
+                                                            <div class="col-sm-12">
+                                                                <input type="checkbox" name="emp_access_guide_video[]"
+                                                                       @if (in_array($vrow->id, $emp_access_guide_video)) {{ 'checked' }} @endif
+                                                                       id="emp_access_guide_video{{ $vrow->id }}"
+                                                                       value="{{ $vrow->id }}"><label class="ml-2"
+                                                                                                     for="emp_access_guide_video{{ $vrow->id }}">{{ $vrow->title }}</label>
                                                             </div>
                                                         @endforeach
                                                     </div>

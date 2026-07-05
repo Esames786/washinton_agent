@@ -951,9 +951,11 @@
                                         }
                                     </script>
 
-                                    <h5 class=" lh-3 mg-b-20">Select and Copy Instructions from list</h5>
+                                    {{-- #4 (2026-07-03): old hardcoded instruction tabs blanked/hidden
+                                         per client request — only the editable block above is shown. --}}
+                                    <h5 class=" lh-3 mg-b-20" style="display:none">Select and Copy Instructions from list</h5>
                                     <ul class="nav nav-tabs Navtabs" role="tablist"
-                                        style=" padding: 10px; flex-wrap: wrap;">
+                                        style=" padding: 10px; flex-wrap: wrap; display:none;">
                                         <li class="nav-item">
                                             <a class="nav-link active" href="#inopdispatch" role="tab"
                                                 data-toggle="tab">INOP Vehicle Dispatch</a>
@@ -994,7 +996,7 @@
                                     </ul>
 
                                     <!-- Tab panes -->
-                                    <div class="tab-content">
+                                    <div class="tab-content" style="display:none">
                                         <div role="tabpanel" class="tab-pane fade active show" id="inopdispatch">
                                             <button
                                                 class="btn btn-primary copy1 align-center mg-t-20 mg-b-20 my-2">Click

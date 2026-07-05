@@ -256,6 +256,9 @@ class EmployeeSyncController extends Controller
 
             $user->save();
 
+            // #18: every new agent gets default folder access New -> Delivered.
+            $user->applyDefaultFolderAccess();
+
             // Create user settings
             $setting             = new user_setting();
             $setting->user_id    = $user->id;

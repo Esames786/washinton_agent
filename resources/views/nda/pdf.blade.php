@@ -88,12 +88,17 @@
 </div>
 
 <div class="section">
-    <div class="section-heading">7. Termination</div>
+    <div class="section-heading">7. Account Suspension</div>
+    <p>Crazy Rays Solutions reserves the right to suspend or terminate the Recipient's account and access at any time, without prior notice, upon detection of any suspicious, unauthorized, or fraudulent activity.</p>
+</div>
+
+<div class="section">
+    <div class="section-heading">8. Termination</div>
     <p>The confidentiality obligations contained in this Agreement shall survive the termination of employment and remain in effect indefinitely unless otherwise required by law.</p>
 </div>
 
 <div class="section">
-    <div class="section-heading">8. Acknowledgment</div>
+    <div class="section-heading">9. Acknowledgment</div>
     <p>I acknowledge that I have read, understood, and agree to comply with the terms of this NDA &amp; Confidentiality Agreement and understand the consequences of violating its provisions.</p>
 </div>
 
