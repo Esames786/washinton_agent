@@ -12,9 +12,15 @@
                 ->where('employee_status_id', 1) // active only
                 ->first();
             if ($__hrEmp) {
+                // Match HR markAttendance()'s date logic EXACTLY (shared DB): the shift date is
+                // Asia/Karachi and anything before 6 AM belongs to the previous day's overnight
+                // shift. A naive date('Y-m-d') queried a different day than HR check-in wrote, so
+                // on a night shift after midnight this gate never cleared. (fix)
+                $__now   = \Carbon\Carbon::now('Asia/Karachi');
+                $__today = $__now->hour < 6 ? $__now->copy()->subDay()->toDateString() : $__now->toDateString();
                 $__att = \Illuminate\Support\Facades\DB::table('hr_employee_attendances')
                     ->where('employee_id', $__hrEmp->id)
-                    ->whereDate('attendance_date', date('Y-m-d'))
+                    ->whereDate('attendance_date', $__today)
                     ->first();
                 $__needCheckin = !($__att && $__att->check_in);
             }
