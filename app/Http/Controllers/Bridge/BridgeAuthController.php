@@ -369,6 +369,16 @@ class BridgeAuthController extends Controller
         // #11: capture the login IP (source = crazyrays) for admin/manager visibility.
         \App\UserLoginActivity::record($user->id, $request->ip(), 'crazyrays', $request->userAgent());
 
+        // #12: enforce the same per-user IP restriction as hello. A CrazyRays user whose IP
+        // check is on can only log in from an allowed IP; otherwise block and send them back.
+        if ($ipErr = \App\Support\IpRestriction::enforce($user, $request->ip())) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            $back = rtrim((string) config('bridge.daydispatch.base_url', ''), '/');
+            return redirect()->away(($back ?: url('/login')) . '?ip_error=' . urlencode($ipErr));
+        }
+
         // Tag session so logout and landing page know this user came from CrazyRays
         if (!empty($payload['cr_origin'])) {
             $request->session()->put('cr_origin', 'crazyrays');

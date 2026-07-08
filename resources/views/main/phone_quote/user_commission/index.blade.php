@@ -63,7 +63,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label class="form-label">Employee</label>
+                                    <label class="form-label">Subcontractor</label>
 
                                     <select class="form-control select2" name="user_name" id="user_name"
                                             required>

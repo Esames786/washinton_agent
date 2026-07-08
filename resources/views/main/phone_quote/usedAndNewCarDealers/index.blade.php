@@ -534,7 +534,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    {{-- <h5 class="modal-title" id="exampleModalLabel7">Employee Access (Assign
+                    {{-- <h5 class="modal-title" id="exampleModalLabel7">Subcontractor Access (Assign
                         Data)</h5> --}}
 
                     <h5 class="modal-title" id="exampleModalLabel">Add New Company <span class="history_id"></span>

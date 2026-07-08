@@ -195,7 +195,7 @@
                 <div class="card-body">
                     <p class="mb-1">User ID: <strong>#{{ $application->agent_id }}</strong></p>
                     <a href="{{ url('/edit_employee/' . $application->agent_id) }}" class="btn btn-sm btn-success w-100">
-                        <i class="fas fa-user-edit mr-1"></i> Edit Employee
+                        <i class="fas fa-user-edit mr-1"></i> Edit Subcontractor
                     </a>
                 </div>
             </div>

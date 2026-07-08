@@ -376,7 +376,7 @@
 
     <script>
         $(document).ready(function() {
-            // Add Employee AJAX
+            // Add Subcontractor AJAX
             $('#addForm').on('submit', function(e) {
                 e.preventDefault();
                 $.ajax({
@@ -393,7 +393,7 @@
                 });
             });
 
-            // Edit Employee AJAX
+            // Edit Subcontractor AJAX
             $('.editMile').on('click', function() {
                 var id = $(this).closest('tr').find('.id').val();
                 $.ajax({

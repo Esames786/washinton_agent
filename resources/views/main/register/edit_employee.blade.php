@@ -1,12 +1,47 @@
 @extends('layouts.innerpages')
 
 @section('template_title')
-    Edit Employee
+    Edit Subcontractor
 @endsection
 
 @section('content')
     @include('partials.mainsite_pages.return_function')
     <style>
+        /* ================= #9 SOFT-HIDE (Batch 5) =================
+           Items below are HIDDEN (kept in the DOM, still functional if already granted).
+           Documented in SOFT_HIDE_MANIFEST.md. Remove a selector to re-show an item. */
+        /* D. Action modal items */
+        .col-sm-6:has(> #emp_access_action11),
+        .col-sm-6:has(> #emp_access_action12),
+        .col-sm-6:has(> #emp_access_action13),
+        .col-sm-6:has(> #emp_access_action15),
+        .col-sm-6:has(> #emp_access_action16),
+        .col-sm-6:has(> #emp_access_action18),
+        .col-sm-6:has(> #emp_access_action19),
+        .col-sm-6:has(> #emp_access_action109),
+        .col-sm-6:has(> #emp_access_action110) { display: none !important; }
+        /* E. Subcontractor Access tabs: Show Data, Profile Access, Subcontractor Report */
+        button[data-target="#exampleModal3"],
+        button[data-target="#exampleModal5"],
+        button[data-target="#exampleModal7"] { display: none !important; }
+        /* C. Shipment Status modal items */
+        div:has(> input#emp_access_ship20),
+        div:has(> input#emp_access_ship21),
+        div:has(> input#emp_access_ship22),
+        div:has(> input#emp_access_ship23),
+        div:has(> input#emp_access_ship24),
+        div:has(> input#emp_access_ship25),
+        div:has(> input#emp_access_ship26),
+        div:has(> input#emp_access_ship27),
+        div:has(> input#emp_access_ship28),
+        div:has(> input#emp_access_ship29),
+        div:has(> input#emp_access_ship33) { display: none !important; }
+        /* E (rest). Assign Daily Quotes field, CSRs & Seller Agents block, "All Quotes" radio */
+        #assign_daily_qoute,
+        #all_ot,
+        .col-sm-4:has(#all_qoute) { display: none !important; }
+        /* ========================================================== */
+
         .lg3-div {
 
             -ms-flex: 0 0 25%;
@@ -27,7 +62,7 @@
     </style>
     <div class="page-header">
         <div class="text-secondary text-center text-uppercase w-100">
-            <h1 class="my-4"><b>Edit Employee</b></h1>
+            <h1 class="my-4"><b>Edit Subcontractor</b></h1>
         </div>
     </div>
     <!--End Page header-->
@@ -62,7 +97,10 @@
                                             🌐 Login Activity
                                         </button>
                                         @endif
-                                        <a href="{{ url('/hr-portal/' . $data2->id) }}"
+                                        {{-- Admin opens the employee in the HR ADMIN panel (admin-view SSO),
+                                             not the agent-login SSO which logged the admin's browser in AS the
+                                             employee and bounced straight back to this screen. --}}
+                                        <a href="{{ url('/hr-portal/admin/employee/' . $data2->id) }}"
                                            target="_blank"
                                            class="btn btn-sm btn-success"
                                            style="white-space:nowrap;">
@@ -101,9 +139,9 @@
                                     </div>
                                 </div>
                                 @endif
-                                @if (session('hr_portal_error'))
+                                @if (session('hr_portal_error') || session('error'))
                                     <div class="alert alert-danger py-1 px-3 mt-1">
-                                        <small>{{ session('hr_portal_error') }}</small>
+                                        <small>{{ session('hr_portal_error') ?: session('error') }}</small>
                                     </div>
                                 @endif
                             </div>
@@ -237,6 +275,25 @@
                                 </div>
                             @endif
 
+                            {{-- #12: per-user IP restriction — available for ANY role. When enabled, this
+                                 user can only log in (hello OR crazy) from one of the allowed IPs below. --}}
+                            <div class="col-md-12 mt-2">
+                                <div class="form-group border rounded p-3" style="background:#f8fafc;">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <input type="checkbox" value="1"
+                                               @if (!empty($data2->ip_check_enabled)) checked @endif
+                                               name="ip_check_enabled" id="ip_check_enabled" />
+                                        <label class="form-label my-auto mx-2 font-weight-bold" for="ip_check_enabled">
+                                            🔒 Enable IP Restriction (login only from allowed IPs)
+                                        </label>
+                                    </div>
+                                    <label class="form-label mb-1">Allowed IP Addresses <small class="text-muted">(one per line, or comma-separated)</small></label>
+                                    <textarea name="allowed_ips" class="form-control" rows="3"
+                                              placeholder="e.g.&#10;203.0.113.10&#10;203.0.113.11">{{ $data2->allowed_ips }}</textarea>
+                                    <small class="text-muted">Tip: use the <strong>Login Activity</strong> button above to see the IPs this user has logged in from.</small>
+                                </div>
+                            </div>
+
                             @php
                                 //panel type access
                                 $emp_panel_access = $data2->emp_panel_access;
@@ -245,7 +302,7 @@
 
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label class="form-label">Employee Access</label>
+                                    <label class="form-label">Subcontractor Access</label>
                                     <div class="btn-group">
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                                 data-target="#exampleModa28">Panel Type Access</button>
@@ -282,7 +339,7 @@
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                                 data-target="#exampleModal6">Action Access</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                data-target="#exampleModal7">Employee Report</button>
+                                                data-target="#exampleModal7">Subcontractor Report</button>
                                         {{-- <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModal8">Assigned Data</button> --}}
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
@@ -490,14 +547,14 @@
                             $options_phone = [
                             0=>'New',1=>'Interested',2=>'Follow More',3=>'Asking Low',4=>'Not Interested',5=>'No Response',6=>'Time Quote',7=>'Paymen tMissing',
                             8=>'Booked',66=>'Double Booking',9=>'Listed',10=>'Schedule',11=>'Pickup',12=>'Delivered',13=>'Completed',14=>'Cancel',15=>'Deleted',
-                            16=>'Owes Money',17=>'Carrier Update',18=>'Car Quote',19=>'Heavy Quote',92=>'Freight Quote',20=>'Add/Edit Employee',21=>'Admin Issues',
+                            16=>'Owes Money',17=>'Carrier Update',18=>'Car Quote',19=>'Heavy Quote',92=>'Freight Quote',20=>'Add/Edit Subcontractor',21=>'Admin Issues',
                             22=>'Old Quotes',23=>'Transportation Invoice',73=>'Roro Invoice',24=>'Carriers',25=>'View Emails',26=>'Show Data',27=>'Sheets',
-                            28=>'On Approval',29=>'OnApproval Cancel',30=>'Approaching',31=>'Payment System',32=>'Employee Reports',33=>'Price Per Mile',
+                            28=>'On Approval',29=>'OnApproval Cancel',30=>'Approaching',31=>'Payment System',32=>'Subcontractor Reports',33=>'Price Per Mile',
                             34=>'Filtered Data',35=>'Group',36=>'Questions/Answers',37=>'New Show Data',38=>'Customer',
-                            41=>'Update Phone Digits',42=>'Show Customer Number',60=>'Show Driver Number',43=>'Flag Employees',44=>'Transfer Quotes',46=>'Revenue',
+                            41=>'Update Phone Digits',42=>'Show Customer Number',60=>'Show Driver Number',43=>'Flag Subcontractors',44=>'Transfer Quotes',46=>'Revenue',
                             47=>'Coupons',48=>'Website Links',49=>'Feedbacks',
                             50=>'Managers Group',51=>'Last Activity',52=>'Login Ip Address',53=>'Storage',54=>'Shipment Status',55=>'Dispatch Report',
-                            56=>'Employee Rating',57=>'Performance Report',
+                            56=>'Subcontractor Rating',57=>'Performance Report',
                             62=>'QA Report',63=>'Roles',64=>'Update QA History',65=>'View QA History',
                             68=>'Approaching Number Phone',69=>'Approaching Number Website',
                             70=>'Approaching Assign <span class="badge badge-warning">New</span>',
@@ -508,7 +565,7 @@
                             111=>'Achievement Sheet Add/Edit',107=>'Achievement Sheet View Full Screen ',
                             75=>'Port Price',76=>'Assign To Dispatcher',77=>'Move OnApprovalCancel To Cancel',
                             79=>'Profile',
-                            85=>'Commission Range',86=>'Employee Profile Filter',87=>'Break Time',88=>'Freeze Time History',
+                            85=>'Commission Range',86=>'Subcontractor Profile Filter',87=>'Break Time',88=>'Freeze Time History',
                             89=>'Payment System Advance Filter',90=>'Demand Order',91=>'Sell Invoice',93=>'Freight Price checker',
                             94=>'Access Auto Approach',100=>'Field Labels',101=>'Carrier Approaching Update',102=>'Carrier Approaching View',
                             103=>'Carrier Blocking',104=>'Whatsapp Access',105=>'Customer Nature (View/Update)',106=>'Customer Nature List/Filter',
@@ -517,8 +574,8 @@
                             116=>'Logout Questions (Show Logout Questions)',117=>'Logout Questions Answer View',118=>'Logout Questions Comments',
                             120=>'Logout Questions View & Add',121=>'Show Pickup Phone ',122=>'Show Delivery Phone ',123=>'Request Price Page ',
                             124=>'Block Phone View ',125=>'Block Phone Approve ',
-                            128=>'Employee Revenue (OT) ',127=>'Employee Revenue (DB) ',129=>'Employee Revenue (DIS) ',
-                            130=>'Employee Revenue (Private OT)',131=>'Cpanel Emails',132=>'Agents Reports',133=>'Customer Reviews',
+                            128=>'Subcontractor Revenue (OT) ',127=>'Subcontractor Revenue (DB) ',129=>'Subcontractor Revenue (DIS) ',
+                            130=>'Subcontractor Revenue (Private OT)',131=>'Cpanel Emails',132=>'Agents Reports',133=>'Customer Reviews',
                             134=>'Call/SMS With App',135=>'Call/SMS Old',
                             143=>'Day Dispatch C|S|B | Assign<span class="badge badge-warning">New</span>',
                             136=>'Day Dispatch C|S|B | Filter <span class="badge badge-warning">New</span>',
@@ -553,12 +610,22 @@
                             169=>'R-Dialer (RingCentral Phone)<span class="badge badge-primary">R-Dialer</span>',
                             ];
 
+                            // #9 SOFT-HIDE (Batch 5): permission IDs hidden (display:none) in ALL panel-type
+                            // access modals per the client's screenshot pointers. Kept in the DOM so any
+                            // already-granted permission still functions — just not shown/editable.
+                            // See SOFT_HIDE_MANIFEST.md sections A + B.
+                            $hiddenPermIds = [
+                                15,21,22,24,25,26,31,32,33,35,37,38,44,46,47,48,49,50,52,53,55,57,68,69,70,
+                                72,73,74,75,76,79,85,86,87,89,90,91,93,94,104,105,106,107,111,112,123,127,
+                                128,129,130,131,133,135,136,137,138,139,140,141,142,143,144,145,146,152,153,
+                                156,157,158,159,161,
+                            ];
 
                             // ===== MODALS CONFIG (mapping exactly as you requested) =====
                             $modals = [
                             [
                             'id'=>'exampleModal1',
-                            'title'=>'Employee Access (Phone Qoutes)',
+                            'title'=>'Subcontractor Access (Phone Qoutes)',
                             'name'=>'emp_access_phone',
                             'selected'=>$emp_access_phone,
                             'prefix'=>'emp_access_phone',
@@ -567,7 +634,7 @@
                             ],
                             [
                             'id'=>'exampleModal2',
-                            'title'=>'Employee Access (Webiste Qoutes)',
+                            'title'=>'Subcontractor Access (Webiste Qoutes)',
                             'name'=>'emp_access_web',
                             'selected'=>$emp_access_web,
                             'prefix'=>'emp_access_web',
@@ -576,7 +643,7 @@
                             ],
                             [
                             'id'=>'exampleModa20',
-                            'title'=>'Employee Access (Test Qoutes)',
+                            'title'=>'Subcontractor Access (Test Qoutes)',
                             'name'=>'emp_access_test',
                             'selected'=>$emp_access_test,
                             'prefix'=>'emp_access_test',
@@ -638,8 +705,10 @@
                                                                 @php
                                                                     $id = $m['prefix'] . $val; // e.g., emp_access_phone0
                                                                     $isChecked = in_array((string)$val, $m['selected'] ?? [], true);
+                                                                    // #9 soft-hide: hidden across ALL panel-type modals, kept in DOM
+                                                                    $hideThis = in_array((int)$val, $hiddenPermIds, true);
                                                                 @endphp
-                                                                <div class="col-sm-6">
+                                                                <div class="col-sm-6 soft-hidden-perm" @if ($hideThis) style="display:none" @endif>
                                                                     <input type="checkbox"
                                                                            name="{{ $m['name'] }}[]"
                                                                            id="{{ $id }}"
@@ -666,7 +735,7 @@
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel3">Employee Access (Show Data)
+                                            <h5 class="modal-title" id="exampleModalLabel3">Subcontractor Access (Show Data)
                                             </h5>
                                             <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
@@ -860,7 +929,7 @@
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel4">Employee Access (Shipment
+                                            <h5 class="modal-title" id="exampleModalLabel4">Subcontractor Access (Shipment
                                                 Status)</h5>
                                             <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
@@ -1098,7 +1167,7 @@
                                 <div class="modal-dialog" role="document" style="max-width: 55%;">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel5">Employee Access (Profile)
+                                            <h5 class="modal-title" id="exampleModalLabel5">Subcontractor Access (Profile)
                                             </h5>
                                             <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
@@ -1286,7 +1355,7 @@
                                 <div class="modal-dialog" role="document" style="max-width: 55%;">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel6">Employee Access (Action)
+                                            <h5 class="modal-title" id="exampleModalLabel6">Subcontractor Access (Action)
                                             </h5>
                                             <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
@@ -1539,21 +1608,21 @@
                                                                    @if (in_array('4', $emp_panel_access)) {{ 'checked' }} @endif
                                                                    name="emp_panel_access[]" id="emp_panel_access4"
                                                                    value="4"><label class="ml-2"
-                                                                                    for="emp_panel_access4">Website Quote</label>
+                                                                                    for="emp_panel_access4">Website</label>
                                                         </div>
                                                         <div class="col-sm-4">
                                                             <input type="checkbox"
                                                                    @if (in_array('5', $emp_panel_access)) {{ 'checked' }} @endif
                                                                    name="emp_panel_access[]" id="emp_panel_access5"
                                                                    value="5"><label class="ml-2"
-                                                                                    for="emp_panel_access5">Panel Type 5</label>
+                                                                                    for="emp_panel_access5">Panel 5</label>
                                                         </div>
                                                         <div class="col-sm-4">
                                                             <input type="checkbox"
                                                                    @if (in_array('6', $emp_panel_access)) {{ 'checked' }} @endif
                                                                    name="emp_panel_access[]" id="emp_panel_access6"
                                                                    value="6"><label class="ml-2"
-                                                                                    for="emp_panel_access6">Panel Type 6</label>
+                                                                                    for="emp_panel_access6">Panel 6</label>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1571,7 +1640,7 @@
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel7">Employee Access (Employee
+                                            <h5 class="modal-title" id="exampleModalLabel7">Subcontractor Access (Employee
                                                 Report)</h5>
                                             <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
@@ -1835,7 +1904,7 @@
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel7">Employee Access (Assign
+                                            <h5 class="modal-title" id="exampleModalLabel7">Subcontractor Access (Assign
                                                 Data)</h5>
                                             <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
@@ -1938,7 +2007,7 @@
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel4">Employee Access (Guides)
+                                            <h5 class="modal-title" id="exampleModalLabel4">Subcontractor Access (Guides)
                                             </h5>
                                             <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
@@ -1995,6 +2064,8 @@
 
                                     <input type="radio" @if ($pt == 1) checked @endif
                                     name="penalytype" value="1"> Panel 1
+                                    {{-- #9 soft-hide (Batch 5): keep only Panel 1; Panel 2/Testing/Website/Panel 5/6 hidden (kept in code) --}}
+                                    <span style="display:none;">
                                     <br>
                                     <input type="radio" @if ($pt == 2) checked @endif
                                     name="penalytype" value="2"> Panel 2
@@ -2010,6 +2081,7 @@
                                     <br>
                                     <input type="radio" @if ($pt == 6) checked @endif
                                     name="penalytype" value="6"> Panel 6
+                                    </span>
                                 </div>
                             </div>
                             <div class="col-md-12">

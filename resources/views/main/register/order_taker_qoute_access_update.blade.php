@@ -9,11 +9,11 @@
     @include('partials.mainsite_pages.return_function')
     <div class="page-header">
         <!--<div class="page-leftheader">-->
-        <!--    {{--<h4 class="page-title mb-0">Add Employee</h4>--}}-->
+        <!--    {{--<h4 class="page-title mb-0">Add Subcontractor</h4>--}}-->
         <!--    <ol class="breadcrumb">-->
         <!--        <li class="breadcrumb-item"><a href="#"><i class="fe fe-layers mr-2 fs-14"></i>Home</a>-->
         <!--        </li>-->
-        <!--        <li class="breadcrumb-item active" aria-current="page"><a href="#">Add Employee</a></li>-->
+        <!--        <li class="breadcrumb-item active" aria-current="page"><a href="#">Add Subcontractor</a></li>-->
         <!--    </ol>-->
         <!--</div>-->
         <!--{{--<div class="page-rightheader">--}}-->

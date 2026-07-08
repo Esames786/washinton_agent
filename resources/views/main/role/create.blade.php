@@ -186,7 +186,7 @@
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModal6">Action Access</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModal7">Employee Report</button>
+                                            data-target="#exampleModal7">Subcontractor Report</button>
                                     </div>
                                 </div>
                             </div>
@@ -319,7 +319,7 @@
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_phone[]"
                                                             id="emp_access_phone20" value="20"><label class="ml-2"
-                                                            for="emp_access_phone20">Add/Edit Employee</label>
+                                                            for="emp_access_phone20">Add/Edit Subcontractor</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_phone[]"
@@ -384,7 +384,7 @@
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_phone[]"
                                                             id="emp_access_phone32" value="32"><label class="ml-2"
-                                                            for="emp_access_phone32">Employee Reports</label>
+                                                            for="emp_access_phone32">Subcontractor Reports</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_phone[]"
@@ -446,7 +446,7 @@
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_phone[]"
                                                             id="emp_access_phone43" value="43"><label class="ml-2"
-                                                            for="emp_access_phone43">Flag Employees</label>
+                                                            for="emp_access_phone43">Flag Subcontractors</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_phone[]"
@@ -509,7 +509,7 @@
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_phone[]"
                                                             id="emp_access_phone56" value="56"><label class="ml-2"
-                                                            for="emp_access_phone56">Employee Rating</label>
+                                                            for="emp_access_phone56">Subcontractor Rating</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_phone[]"
@@ -619,7 +619,7 @@
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_phone[]"
                                                             id="emp_access_phone86" value="86"><label class="ml-2"
-                                                            for="emp_access_phone86">Employee Profile Filter</label>
+                                                            for="emp_access_phone86">Subcontractor Profile Filter</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_phone[]"
@@ -785,7 +785,7 @@
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_web[]"
                                                             id="emp_access_web20" value="20"><label class="ml-2"
-                                                            for="emp_access_web20">Add/Edit Employee</label>
+                                                            for="emp_access_web20">Add/Edit Subcontractor</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_web[]"
@@ -850,7 +850,7 @@
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_web[]"
                                                             id="emp_access_web32" value="32"><label class="ml-2"
-                                                            for="emp_access_web32">Employee Reports</label>
+                                                            for="emp_access_web32">Subcontractor Reports</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_web[]"
@@ -912,7 +912,7 @@
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_web[]"
                                                             id="emp_access_web43" value="43"><label class="ml-2"
-                                                            for="emp_access_web43">Flag Employees</label>
+                                                            for="emp_access_web43">Flag Subcontractors</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_web[]"
@@ -975,7 +975,7 @@
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_web[]"
                                                             id="emp_access_web56" value="56"><label class="ml-2"
-                                                            for="emp_access_web56">Employee Rating</label>
+                                                            for="emp_access_web56">Subcontractor Rating</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_web[]"
@@ -1084,7 +1084,7 @@
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_web[]"
                                                             id="emp_access_web86" value="86"><label class="ml-2"
-                                                            for="emp_access_web86">Employee Profile Filter</label>
+                                                            for="emp_access_web86">Subcontractor Profile Filter</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_web[]"
@@ -1580,7 +1580,7 @@
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="emp_access_test[]"
                                                             id="emp_access_test86" value="86"><label
-                                                            class="ml-2" for="emp_access_test86">Employee Profile
+                                                            class="ml-2" for="emp_access_test86">Subcontractor Profile
                                                             Filter</label>
                                                     </div>
                                                     <div class="col-sm-6">
@@ -2079,7 +2079,7 @@
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="panel_type_4[]"
                                                             id="panel_type_486" value="86"><label
-                                                            class="ml-2" for="panel_type_486">Employee Profile
+                                                            class="ml-2" for="panel_type_486">Subcontractor Profile
                                                             Filter</label>
                                                     </div>
                                                     <div class="col-sm-6">
@@ -2578,7 +2578,7 @@
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="panel_type_5[]"
                                                             id="panel_type_586" value="86"><label
-                                                            class="ml-2" for="panel_type_586">Employee Profile
+                                                            class="ml-2" for="panel_type_586">Subcontractor Profile
                                                             Filter</label>
                                                     </div>
                                                     <div class="col-sm-6">
@@ -3077,7 +3077,7 @@
                                                     <div class="col-sm-6">
                                                         <input type="checkbox" name="panel_type_6[]"
                                                             id="panel_type_686" value="86"><label
-                                                            class="ml-2" for="panel_type_686">Employee Profile
+                                                            class="ml-2" for="panel_type_686">Subcontractor Profile
                                                             Filter</label>
                                                     </div>
                                                     <div class="col-sm-6">
@@ -3469,7 +3469,7 @@
                             <div class="modal-dialog" role="document" style="max-width: 55%;">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel5">Employee Access (Profile)</h5>
+                                        <h5 class="modal-title" id="exampleModalLabel5">Subcontractor Access (Profile)</h5>
                                         <button type="button" class="close" data-dismiss="modal"
                                             aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
@@ -3619,7 +3619,7 @@
                             <div class="modal-dialog" role="document" style="max-width: 55%;">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel6">Employee Access (Action)</h5>
+                                        <h5 class="modal-title" id="exampleModalLabel6">Subcontractor Access (Action)</h5>
                                         <button type="button" class="close" data-dismiss="modal"
                                             aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
@@ -3770,7 +3770,7 @@
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel7">Employee Access (Employee
+                                        <h5 class="modal-title" id="exampleModalLabel7">Subcontractor Access (Employee
                                             Report)</h5>
                                         <button type="button" class="close" data-dismiss="modal"
                                             aria-label="Close">

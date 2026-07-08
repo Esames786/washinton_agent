@@ -1,6 +1,6 @@
 @extends('layouts.innerpages')
 @section('template_title')
-    Employee Reports
+    Subcontractor Reports
 @endsection
 @section('content')
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />

@@ -1,6 +1,6 @@
 @extends('layouts.innerpages')
 @section('template_title')
-    Employee Reports
+    Subcontractor Reports
 @endsection
 @section('content')
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
@@ -106,7 +106,7 @@
             <!--div-->
             <div class="page-header">
                 <div class="text-secondary text-center text-uppercase w-100">
-                    <h1 class="my-4"><b>Employee Reports</b></h1>
+                    <h1 class="my-4"><b>Subcontractor Reports</b></h1>
                 </div>
             </div>
             <div class="card mt-5">

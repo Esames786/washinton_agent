@@ -15,7 +15,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 
     <!-- Title -->
-    <title>View Employees</title>
+    <title>View Subcontractors</title>
 
 
 
@@ -707,11 +707,11 @@
 
                 <div class="page-header mb-0">
                     <!--<div class="page-leftheader">-->
-                    <!--    {{-- <h4 class="page-title mb-0">Add Employee</h4> --}}-->
+                    <!--    {{-- <h4 class="page-title mb-0">Add Subcontractor</h4> --}}-->
                     <!--    <ol class="breadcrumb">-->
                     <!--        <li class="breadcrumb-item"><a href="#"><i class="fe fe-layers mr-2 fs-14"></i>Home</a>-->
                     <!--        </li>-->
-                    <!--        <li class="breadcrumb-item active" aria-current="page"><a href="#">Add Employee</a></li>-->
+                    <!--        <li class="breadcrumb-item active" aria-current="page"><a href="#">Add Subcontractor</a></li>-->
                     <!--    </ol>-->
                     <!--</div>-->
                     <!--{{-- <div class="page-rightheader"> --}}-->

@@ -54,7 +54,7 @@
                         <thead style="background:#062e39;color:#fff;">
                             <tr>
                                 <th>#</th>
-                                <th>Employee</th>
+                                <th>Subcontractor</th>
                                 <th class="text-center">Completed Orders</th>
                                 <th class="text-right">Total Payment</th>
                                 <th class="text-right">Total Profit</th>

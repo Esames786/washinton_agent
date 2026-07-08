@@ -186,7 +186,7 @@
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModal6">Action Access</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModal7">Employee Report</button>
+                                            data-target="#exampleModal7">Subcontractor Report</button>
                                     </div>
                                 </div>
                             </div>
@@ -420,7 +420,7 @@
                                                             @if (in_array('20', $emp_access_phone)) {{ 'checked' }} @endif
                                                             name="emp_access_phone[]" id="emp_access_phone20"
                                                             value="20"><label class="ml-2"
-                                                            for="emp_access_phone20">Add/Edit Employee</label>
+                                                            for="emp_access_phone20">Add/Edit Subcontractor</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -511,7 +511,7 @@
                                                             @if (in_array('32', $emp_access_phone)) {{ 'checked' }} @endif
                                                             name="emp_access_phone[]" id="emp_access_phone32"
                                                             value="32"><label class="ml-2"
-                                                            for="emp_access_phone32">Employee Reports</label>
+                                                            for="emp_access_phone32">Subcontractor Reports</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -593,7 +593,7 @@
                                                             @if (in_array('43', $emp_access_phone)) {{ 'checked' }} @endif
                                                             name="emp_access_phone[]" id="emp_access_phone43"
                                                             value="43"><label class="ml-2"
-                                                            for="emp_access_phone43">Flag Employees</label>
+                                                            for="emp_access_phone43">Flag Subcontractors</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -680,7 +680,7 @@
                                                             @if (in_array('56', $emp_access_phone)) {{ 'checked' }} @endif
                                                             name="emp_access_phone[]" id="emp_access_phone56"
                                                             value="56"><label class="ml-2"
-                                                            for="emp_access_phone56">Employee Rating</label>
+                                                            for="emp_access_phone56">Subcontractor Rating</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -824,7 +824,7 @@
                                                             @if (in_array('86', $emp_access_phone)) {{ 'checked' }} @endif
                                                             name="emp_access_phone[]" id="emp_access_phone86"
                                                             value="86"><label class="ml-2"
-                                                            for="emp_access_phone86">Employee Profile Filter</label>
+                                                            for="emp_access_phone86">Subcontractor Profile Filter</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -1044,7 +1044,7 @@
                                                             @if (in_array('20', $emp_access_web)) {{ 'checked' }} @endif
                                                             name="emp_access_web[]" id="emp_access_web20"
                                                             value="20"><label class="ml-2"
-                                                            for="emp_access_web20">Add/Edit Employee</label>
+                                                            for="emp_access_web20">Add/Edit Subcontractor</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -1135,7 +1135,7 @@
                                                             @if (in_array('32', $emp_access_web)) {{ 'checked' }} @endif
                                                             name="emp_access_web[]" id="emp_access_web32"
                                                             value="32"><label class="ml-2"
-                                                            for="emp_access_web32">Employee Reports</label>
+                                                            for="emp_access_web32">Subcontractor Reports</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -1217,7 +1217,7 @@
                                                             @if (in_array('43', $emp_access_web)) {{ 'checked' }} @endif
                                                             name="emp_access_web[]" id="emp_access_web43"
                                                             value="43"><label class="ml-2"
-                                                            for="emp_access_web43">Flag Employees</label>
+                                                            for="emp_access_web43">Flag Subcontractors</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -1304,7 +1304,7 @@
                                                             @if (in_array('56', $emp_access_web)) {{ 'checked' }} @endif
                                                             name="emp_access_web[]" id="emp_access_web56"
                                                             value="56"><label class="ml-2"
-                                                            for="emp_access_web56">Employee Rating</label>
+                                                            for="emp_access_web56">Subcontractor Rating</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -1447,7 +1447,7 @@
                                                             @if (in_array('86', $emp_access_web)) {{ 'checked' }} @endif
                                                             name="emp_access_web[]" id="emp_access_web86"
                                                             value="86"><label class="ml-2"
-                                                            for="emp_access_web86">Employee Profile Filter</label>
+                                                            for="emp_access_web86">Subcontractor Profile Filter</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -1670,7 +1670,7 @@
                                                             @if (in_array('20', $emp_access_test)) {{ 'checked' }} @endif
                                                             name="emp_access_test[]" id="emp_access_test20"
                                                             value="20"><label class="ml-2"
-                                                            for="emp_access_test20">Add/Edit Employee</label>
+                                                            for="emp_access_test20">Add/Edit Subcontractor</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -1761,7 +1761,7 @@
                                                             @if (in_array('32', $emp_access_test)) {{ 'checked' }} @endif
                                                             name="emp_access_test[]" id="emp_access_test32"
                                                             value="32"><label class="ml-2"
-                                                            for="emp_access_test32">Employee Reports</label>
+                                                            for="emp_access_test32">Subcontractor Reports</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -1843,7 +1843,7 @@
                                                             @if (in_array('43', $emp_access_test)) {{ 'checked' }} @endif
                                                             name="emp_access_test[]" id="emp_access_test43"
                                                             value="43"><label class="ml-2"
-                                                            for="emp_access_test43">Flag Employees</label>
+                                                            for="emp_access_test43">Flag Subcontractors</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -1930,7 +1930,7 @@
                                                             @if (in_array('56', $emp_access_test)) {{ 'checked' }} @endif
                                                             name="emp_access_test[]" id="emp_access_test56"
                                                             value="56"><label class="ml-2"
-                                                            for="emp_access_test56">Employee Rating</label>
+                                                            for="emp_access_test56">Subcontractor Rating</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -2074,7 +2074,7 @@
                                                             @if (in_array('86', $emp_access_test)) {{ 'checked' }} @endif
                                                             name="emp_access_test[]" id="emp_access_test86"
                                                             value="86"><label class="ml-2"
-                                                            for="emp_access_test86">Employee Profile Filter</label>
+                                                            for="emp_access_test86">Subcontractor Profile Filter</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -2297,7 +2297,7 @@
                                                             @if (in_array('20', $panel_type_4)) {{ 'checked' }} @endif
                                                             name="panel_type_4[]" id="panel_type_420"
                                                             value="20"><label class="ml-2"
-                                                            for="panel_type_420">Add/Edit Employee</label>
+                                                            for="panel_type_420">Add/Edit Subcontractor</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -2388,7 +2388,7 @@
                                                             @if (in_array('32', $panel_type_4)) {{ 'checked' }} @endif
                                                             name="panel_type_4[]" id="panel_type_432"
                                                             value="32"><label class="ml-2"
-                                                            for="panel_type_432">Employee Reports</label>
+                                                            for="panel_type_432">Subcontractor Reports</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -2470,7 +2470,7 @@
                                                             @if (in_array('43', $panel_type_4)) {{ 'checked' }} @endif
                                                             name="panel_type_4[]" id="panel_type_443"
                                                             value="43"><label class="ml-2"
-                                                            for="panel_type_443">Flag Employees</label>
+                                                            for="panel_type_443">Flag Subcontractors</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -2557,7 +2557,7 @@
                                                             @if (in_array('56', $panel_type_4)) {{ 'checked' }} @endif
                                                             name="panel_type_4[]" id="panel_type_456"
                                                             value="56"><label class="ml-2"
-                                                            for="panel_type_456">Employee Rating</label>
+                                                            for="panel_type_456">Subcontractor Rating</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -2701,7 +2701,7 @@
                                                             @if (in_array('86', $panel_type_4)) {{ 'checked' }} @endif
                                                             name="panel_type_4[]" id="panel_type_486"
                                                             value="86"><label class="ml-2"
-                                                            for="panel_type_486">Employee Profile Filter</label>
+                                                            for="panel_type_486">Subcontractor Profile Filter</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -2924,7 +2924,7 @@
                                                             @if (in_array('20', $panel_type_5)) {{ 'checked' }} @endif
                                                             name="panel_type_5[]" id="panel_type_520"
                                                             value="20"><label class="ml-2"
-                                                            for="panel_type_520">Add/Edit Employee</label>
+                                                            for="panel_type_520">Add/Edit Subcontractor</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -3015,7 +3015,7 @@
                                                             @if (in_array('32', $panel_type_5)) {{ 'checked' }} @endif
                                                             name="panel_type_5[]" id="panel_type_532"
                                                             value="32"><label class="ml-2"
-                                                            for="panel_type_532">Employee Reports</label>
+                                                            for="panel_type_532">Subcontractor Reports</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -3097,7 +3097,7 @@
                                                             @if (in_array('43', $panel_type_5)) {{ 'checked' }} @endif
                                                             name="panel_type_5[]" id="panel_type_543"
                                                             value="43"><label class="ml-2"
-                                                            for="panel_type_543">Flag Employees</label>
+                                                            for="panel_type_543">Flag Subcontractors</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -3184,7 +3184,7 @@
                                                             @if (in_array('56', $panel_type_5)) {{ 'checked' }} @endif
                                                             name="panel_type_5[]" id="panel_type_556"
                                                             value="56"><label class="ml-2"
-                                                            for="panel_type_556">Employee Rating</label>
+                                                            for="panel_type_556">Subcontractor Rating</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -3328,7 +3328,7 @@
                                                             @if (in_array('86', $panel_type_5)) {{ 'checked' }} @endif
                                                             name="panel_type_5[]" id="panel_type_586"
                                                             value="86"><label class="ml-2"
-                                                            for="panel_type_586">Employee Profile Filter</label>
+                                                            for="panel_type_586">Subcontractor Profile Filter</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -3551,7 +3551,7 @@
                                                             @if (in_array('20', $panel_type_6)) {{ 'checked' }} @endif
                                                             name="panel_type_6[]" id="panel_type_620"
                                                             value="20"><label class="ml-2"
-                                                            for="panel_type_620">Add/Edit Employee</label>
+                                                            for="panel_type_620">Add/Edit Subcontractor</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -3642,7 +3642,7 @@
                                                             @if (in_array('32', $panel_type_6)) {{ 'checked' }} @endif
                                                             name="panel_type_6[]" id="panel_type_632"
                                                             value="32"><label class="ml-2"
-                                                            for="panel_type_632">Employee Reports</label>
+                                                            for="panel_type_632">Subcontractor Reports</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -3724,7 +3724,7 @@
                                                             @if (in_array('43', $panel_type_6)) {{ 'checked' }} @endif
                                                             name="panel_type_6[]" id="panel_type_643"
                                                             value="43"><label class="ml-2"
-                                                            for="panel_type_643">Flag Employees</label>
+                                                            for="panel_type_643">Flag Subcontractors</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -3811,7 +3811,7 @@
                                                             @if (in_array('56', $panel_type_6)) {{ 'checked' }} @endif
                                                             name="panel_type_6[]" id="panel_type_656"
                                                             value="56"><label class="ml-2"
-                                                            for="panel_type_656">Employee Rating</label>
+                                                            for="panel_type_656">Subcontractor Rating</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -3955,7 +3955,7 @@
                                                             @if (in_array('86', $panel_type_6)) {{ 'checked' }} @endif
                                                             name="panel_type_6[]" id="panel_type_686"
                                                             value="86"><label class="ml-2"
-                                                            for="panel_type_686">Employee Profile Filter</label>
+                                                            for="panel_type_686">Subcontractor Profile Filter</label>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <input type="checkbox"
@@ -4431,7 +4431,7 @@
                             <div class="modal-dialog" role="document" style="max-width: 55%;">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel5">Employee Access (Profile)</h5>
+                                        <h5 class="modal-title" id="exampleModalLabel5">Subcontractor Access (Profile)</h5>
                                         <button type="button" class="close" data-dismiss="modal"
                                             aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
@@ -4618,7 +4618,7 @@
                             <div class="modal-dialog" role="document" style="max-width: 55%;">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel6">Employee Access (Action)</h5>
+                                        <h5 class="modal-title" id="exampleModalLabel6">Subcontractor Access (Action)</h5>
                                         <button type="button" class="close" data-dismiss="modal"
                                             aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
@@ -4797,7 +4797,7 @@
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel7">Employee Access (Employee
+                                        <h5 class="modal-title" id="exampleModalLabel7">Subcontractor Access (Employee
                                             Report)</h5>
                                         <button type="button" class="close" data-dismiss="modal"
                                             aria-label="Close">

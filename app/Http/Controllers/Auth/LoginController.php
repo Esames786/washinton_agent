@@ -41,9 +41,17 @@ class LoginController extends Controller
 
     /**
      * #11: capture the login IP so admins/managers can see an employee's login activity.
+     * #12: if IP restriction is enabled for this user, block logins from non-allowed IPs.
      */
     protected function authenticated(Request $request, $user)
     {
         UserLoginActivity::record($user->id, $request->ip(), 'hello', $request->userAgent());
+
+        if ($resp = \App\Support\IpRestriction::enforce($user, $request->ip())) {
+            \Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect()->route('login')->withErrors(['email' => $resp]);
+        }
     }
 }

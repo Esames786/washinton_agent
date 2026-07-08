@@ -365,6 +365,25 @@
         }
 
     </style>
+
+    {{-- #4 Responsive (Batch 5): viewport was missing + responsive layer. Desktop unaffected. --}}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        img { max-width: 100%; height: auto; }
+        @media (max-width: 991.98px) {
+            body { overflow-x: hidden; }
+            .table-responsive { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+            table { width: 100% !important; }
+            .modal-dialog { max-width: 96% !important; width: 96% !important; margin: 0.5rem auto !important; }
+            .container, .container-fluid { padding-left: 10px !important; padding-right: 10px !important; }
+            .slim-mainpanel .container { max-width: 100% !important; }
+        }
+        @media (max-width: 767.98px) {
+            h1, .h1 { font-size: 1.5rem; }
+            .card-body { padding: 12px !important; }
+            .d-flex.justify-content-between { flex-wrap: wrap; gap: 6px; }
+        }
+    </style>
 </head>
 
 <body class="app sidebar-mini">
@@ -2672,6 +2691,7 @@ Agent: Thank you for your cooperation. We appreciate your attention to these det
     </script>
 
     @include('layouts.partials.contract-block-modal')
+    @include('partials.inspect_guard')
 </body>
 
 </html>

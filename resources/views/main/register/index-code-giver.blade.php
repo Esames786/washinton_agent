@@ -14,7 +14,7 @@
 <meta name="csrf-token" content="{{ csrf_token() }}" />
 
 <!-- Title -->
-<title>View Employees</title>
+<title>View Subcontractors</title>
 
 
 
@@ -701,7 +701,7 @@
                         <!--div-->
                         <div class="page-header">
                             <div class="text-secondary text-center text-uppercase w-100">
-                                <h1 class="my-4"><b>View Employees</b></h1>
+                                <h1 class="my-4"><b>View Subcontractors</b></h1>
                             </div>
                         </div>
                         <div class="card mt-5">

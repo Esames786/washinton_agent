@@ -477,7 +477,7 @@ if (isset($_GET['titlee'])) {
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    {{-- <h5 class="modal-title" id="exampleModalLabel7">Employee Access (Assign
+                    {{-- <h5 class="modal-title" id="exampleModalLabel7">Subcontractor Access (Assign
                         Data)</h5> --}}
 
                     <h5 class="modal-title" id="exampleModalLabel">Add History For: <span class="history_id"></span>
@@ -590,7 +590,7 @@ if (isset($_GET['titlee'])) {
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    {{-- <h5 class="modal-title" id="exampleModalLabel7">Employee Access (Assign
+                    {{-- <h5 class="modal-title" id="exampleModalLabel7">Subcontractor Access (Assign
                         Data)</h5> --}}
 
                     <h5 class="modal-title" id="exampleModalLabel">Email History For: <span

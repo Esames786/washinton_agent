@@ -132,12 +132,12 @@
                 <ul class="nav nav-pills-circle">
 
                     @if (in_array('20', $phoneaccess))
-                        {{-- <li class="nav-item" data-placement="top" data-toggle="tooltip" title="Add Employee"> --}}
+                        {{-- <li class="nav-item" data-placement="top" data-toggle="tooltip" title="Add Subcontractor"> --}}
                         {{-- <a class="icon" href="{{url('add_employee')}}"> --}}
                         {{-- <i class="las la-user header-icons"></i> --}}
                         {{-- </a> --}}
                         {{-- </li> --}}
-                        {{-- <li class="nav-item" data-placement="top" data-toggle="tooltip" title="View/Edit Employee"> --}}
+                        {{-- <li class="nav-item" data-placement="top" data-toggle="tooltip" title="View/Edit Subcontractor"> --}}
                         {{-- <a class="icon" href="{{url('view_employee')}}"> --}}
                         {{-- <i class="las  la-edit header-icons"></i> --}}
                         {{-- </a> --}}
@@ -661,7 +661,7 @@
                     <li>
                         <a class="side-menu__item" href="{{ url('/user_rating') }}">
                             <span class="js-search-result-thumbnail responsive-img img_border fa fa-star"></span>
-                            <span class="side-menu__label">Employee Rating</span>
+                            <span class="side-menu__label">Subcontractor Rating</span>
                         </a>
                     </li>
                 @endif
@@ -730,12 +730,12 @@
                     </li>
                 @endif
 
-                {{-- Hidden per request: Employee Revenue (OT/DB/DIS/Private OT)
+                {{-- Hidden per request: Subcontractor Revenue (OT/DB/DIS/Private OT)
                 @if (Auth::user()->userRole->name == 'Admin' || in_array('128', $phoneaccess))
                     <li>
                         <a class="side-menu__item" href="{{ route('view_employee_revenue') }}">
                             <span class="js-search-result-thumbnail responsive-img img_border fa fa-file"></span>
-                            <span class="side-menu__label">Employee Revenue (OT)</span>
+                            <span class="side-menu__label">Subcontractor Revenue (OT)</span>
                         </a>
                     </li>
                 @endif
@@ -743,7 +743,7 @@
                     <li>
                         <a class="side-menu__item" href="{{ route('view_employee_revenue_deliveryBoy') }}">
                             <span class="js-search-result-thumbnail responsive-img img_border fa fa-file"></span>
-                            <span class="side-menu__label">Employee Revenue (DB)</span>
+                            <span class="side-menu__label">Subcontractor Revenue (DB)</span>
                         </a>
                     </li>
                 @endif
@@ -751,7 +751,7 @@
                     <li>
                         <a class="side-menu__item" href="{{ route('view_employee_revenue_Dispatcher') }}">
                             <span class="js-search-result-thumbnail responsive-img img_border fa fa-file"></span>
-                            <span class="side-menu__label">Employee Revenue (DIS)</span>
+                            <span class="side-menu__label">Subcontractor Revenue (DIS)</span>
                         </a>
                     </li>
                 @endif
@@ -759,7 +759,7 @@
                     <li>
                         <a class="side-menu__item" href="{{ route('view_employee_revenue_PrivateOT') }}">
                             <span class="js-search-result-thumbnail responsive-img img_border fa fa-file"></span>
-                            <span class="side-menu__label">Employee Revenue (Private OT)</span>
+                            <span class="side-menu__label">Subcontractor Revenue (Private OT)</span>
                         </a>
                     </li>
                 @endif
@@ -821,7 +821,7 @@
                     <li>
                         <a style="background: #2dd1ba8c" class="side-menu__item" href="{{ url('reports/get') }}">
                             <span class="js-search-result-thumbnail responsive-img img_border fa fa-file"></span>
-                            <span class="side-menu__label">Employee Report</span>
+                            <span class="side-menu__label">Subcontractor Report</span>
                             <span class="badge badge-warning side-badge" style="font-size: 15px"></span>
                         </a>
                     </li>

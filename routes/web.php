@@ -203,6 +203,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/user_active_new/{id}', 'DashboardController@user_active');
     Route::get('/user_deactive_new/{id}', 'DashboardController@user_deactive');
     Route::post('/freeze-unfreeze-new/{id}', 'DashboardController@freezeUnfreeze');
+    // #10: self-freeze on repeated unauthorized DevTools/Inspect access
+    Route::post('/devtools-freeze', 'DashboardController@devtoolsFreeze')->name('security.devtools_freeze');
     Route::get('/reset/{id}', 'DashboardController@reset');
     Route::get('/delete_subcontractor/{id}', 'DashboardController@delete_employee')->name('delete_subcontractor');
     Route::get('/delete_employee/{id}', 'DashboardController@delete_employee'); // legacy alias

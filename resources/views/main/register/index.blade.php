@@ -17,11 +17,11 @@
     </style>
     <div class="page-header">
         <!--<div class="page-leftheader">-->
-        <!--    {{-- <h4 class="page-title mb-0">Add Employee</h4> --}}-->
+        <!--    {{-- <h4 class="page-title mb-0">Add Subcontractor</h4> --}}-->
         <!--    <ol class="breadcrumb">-->
         <!--        <li class="breadcrumb-item"><a href="#"><i class="fe fe-layers mr-2 fs-14"></i>Home</a>-->
         <!--        </li>-->
-        <!--        <li class="breadcrumb-item active" aria-current="page"><a href="#">Add Employee</a></li>-->
+        <!--        <li class="breadcrumb-item active" aria-current="page"><a href="#">Add Subcontractor</a></li>-->
         <!--    </ol>-->
         <!--</div>-->
         <!--{{-- <div class="page-rightheader"> --}}-->
@@ -32,7 +32,7 @@
         <!--    {{-- </div> --}}-->
         <!--{{-- </div> --}}-->
         <div class="text-secondary text-center text-uppercase w-100">
-            <h1 class="my-4"><b>Add Employee</b></h1>
+            <h1 class="my-4"><b>Add Subcontractor</b></h1>
         </div>
     </div>
     <!--End Page header-->
@@ -43,7 +43,7 @@
             <div class="col-xl-12 col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">Add Employee</div>
+                        <div class="card-title">Add Subcontractor</div>
                     </div>
                     <div class="card-body">
                         <div class="card-title font-weight-bold">Basic info:</div>
@@ -146,7 +146,7 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label class="form-label">Employee Access</label>
+                                    <label class="form-label">Subcontractor Access</label>
                                     <div class="btn-group">
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModa28">Panel Type Access</button>
@@ -171,7 +171,7 @@
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModal6">Action Access</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModal7">Employee Report</button>
+                                            data-target="#exampleModal7">Subcontractor Report</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModal9">Guides</button>
                                     </div>
@@ -294,14 +294,14 @@
                             $options_phone = [
                             0=>'New',1=>'Interested',2=>'Follow More',3=>'Asking Low',4=>'Not Interested',5=>'No Response',6=>'Time Quote',7=>'Paymen tMissing',
                             8=>'Booked',66=>'Double Booking',9=>'Listed',10=>'Schedule',11=>'Pickup',12=>'Delivered',13=>'Completed',14=>'Cancel',15=>'Deleted',
-                            16=>'Owes Money',17=>'Carrier Update',18=>'Car Quote',19=>'Heavy Quote',92=>'Freight Quote',20=>'Add/Edit Employee',21=>'Admin Issues',
+                            16=>'Owes Money',17=>'Carrier Update',18=>'Car Quote',19=>'Heavy Quote',92=>'Freight Quote',20=>'Add/Edit Subcontractor',21=>'Admin Issues',
                             22=>'Old Quotes',23=>'Transportation Invoice',73=>'Roro Invoice',24=>'Carriers',25=>'View Emails',26=>'Show Data',27=>'Sheets',
-                            28=>'On Approval',29=>'OnApproval Cancel',30=>'Approaching',31=>'Payment System',32=>'Employee Reports',33=>'Price Per Mile',
+                            28=>'On Approval',29=>'OnApproval Cancel',30=>'Approaching',31=>'Payment System',32=>'Subcontractor Reports',33=>'Price Per Mile',
                             34=>'Filtered Data',35=>'Group',36=>'Questions/Answers',37=>'New Show Data',38=>'Customer',
-                            41=>'Update Phone Digits',42=>'Show Customer Number',60=>'Show Driver Number',43=>'Flag Employees',44=>'Transfer Quotes',46=>'Revenue',
+                            41=>'Update Phone Digits',42=>'Show Customer Number',60=>'Show Driver Number',43=>'Flag Subcontractors',44=>'Transfer Quotes',46=>'Revenue',
                             47=>'Coupons',48=>'Website Links',49=>'Feedbacks',
                             50=>'Managers Group',51=>'Last Activity',52=>'Login Ip Address',53=>'Storage',54=>'Shipment Status',55=>'Dispatch Report',
-                            56=>'Employee Rating',57=>'Performance Report',
+                            56=>'Subcontractor Rating',57=>'Performance Report',
                             62=>'QA Report',63=>'Roles',64=>'Update QA History',65=>'View QA History',
                             68=>'Approaching Number Phone',69=>'Approaching Number Website',
                             70=>'Approaching Assign <span class="badge badge-warning">New</span>',
@@ -312,7 +312,7 @@
                             111=>'Achievement Sheet Add/Edit',107=>'Achievement Sheet View Full Screen ',
                             75=>'Port Price',76=>'Assign To Dispatcher',77=>'Move OnApprovalCancel To Cancel',
                             79=>'Profile',
-                            85=>'Commission Range',86=>'Employee Profile Filter',87=>'Break Time',88=>'Freeze Time History',
+                            85=>'Commission Range',86=>'Subcontractor Profile Filter',87=>'Break Time',88=>'Freeze Time History',
                             89=>'Payment System Advance Filter',90=>'Demand Order',91=>'Sell Invoice',93=>'Freight Price checker',
                             94=>'Access Auto Approach',100=>'Field Labels',101=>'Carrier Approaching Update',102=>'Carrier Approaching View',
                             103=>'Carrier Blocking',104=>'Whatsapp Access',105=>'Customer Nature (View/Update)',106=>'Customer Nature List/Filter',
@@ -321,8 +321,8 @@
                             116=>'Logout Questions (Show Logout Questions)',117=>'Logout Questions Answer View',118=>'Logout Questions Comments',
                             120=>'Logout Questions View & Add',121=>'Show Pickup Phone ',122=>'Show Delivery Phone ',123=>'Request Price Page ',
                             124=>'Block Phone View ',125=>'Block Phone Approve ',
-                            128=>'Employee Revenue (OT) ',127=>'Employee Revenue (DB) ',129=>'Employee Revenue (DIS) ',
-                            130=>'Employee Revenue (Private OT)',131=>'Cpanel Emails',132=>'Agents Reports',133=>'Customer Reviews',
+                            128=>'Subcontractor Revenue (OT) ',127=>'Subcontractor Revenue (DB) ',129=>'Subcontractor Revenue (DIS) ',
+                            130=>'Subcontractor Revenue (Private OT)',131=>'Cpanel Emails',132=>'Agents Reports',133=>'Customer Reviews',
                             134=>'Call/SMS With App',135=>'Call/SMS Old',
                             143=>'Day Dispatch C|S|B | Assign<span class="badge badge-warning">New</span>',
                             136=>'Day Dispatch C|S|B | Filter <span class="badge badge-warning">New</span>',
@@ -356,7 +356,7 @@
                             $modals_dynamic = [
                             [
                             'id'=>'exampleModal1',
-                            'title'=>'Employee Access (Phone Qoutes)',
+                            'title'=>'Subcontractor Access (Phone Qoutes)',
                             'name'=>'emp_access_phone',
                             'selected'=>[],
                             'prefix'=>'emp_access_phone',
@@ -365,7 +365,7 @@
                             ],
                             [
                             'id'=>'exampleModal2',
-                            'title'=>'Employee Access (Webiste Qoutes)',
+                            'title'=>'Subcontractor Access (Webiste Qoutes)',
                             'name'=>'emp_access_web',
                             'selected'=>[],
                             'prefix'=>'emp_access_web',
@@ -374,7 +374,7 @@
                             ],
                             [
                             'id'=>'exampleModa20',
-                            'title'=>'Employee Access (Test Qoutes)',
+                            'title'=>'Subcontractor Access (Test Qoutes)',
                             'name'=>'emp_access_test',
                             'selected'=>[],
                             'prefix'=>'emp_access_test',
@@ -453,7 +453,7 @@
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel3">Employee Access (Show Data)</h5>
+                                        <h5 class="modal-title" id="exampleModalLabel3">Subcontractor Access (Show Data)</h5>
                                         <button type="button" class="close" data-dismiss="modal"
                                             aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
@@ -600,7 +600,7 @@
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel4">Employee Access (Shipment
+                                        <h5 class="modal-title" id="exampleModalLabel4">Subcontractor Access (Shipment
                                             Status)</h5>
                                         <button type="button" class="close" data-dismiss="modal"
                                             aria-label="Close">
@@ -799,7 +799,7 @@
                             <div class="modal-dialog" role="document" style="max-width: 55%;">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel5">Employee Access (Profile)</h5>
+                                        <h5 class="modal-title" id="exampleModalLabel5">Subcontractor Access (Profile)</h5>
                                         <button type="button" class="close" data-dismiss="modal"
                                             aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
@@ -949,7 +949,7 @@
                             <div class="modal-dialog" role="document" style="max-width: 55%;">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel6">Employee Access (Action)</h5>
+                                        <h5 class="modal-title" id="exampleModalLabel6">Subcontractor Access (Action)</h5>
                                         <button type="button" class="close" data-dismiss="modal"
                                             aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
@@ -1111,7 +1111,7 @@
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel7">Employee Access (Employee
+                                        <h5 class="modal-title" id="exampleModalLabel7">Subcontractor Access (Employee
                                             Report)</h5>
                                         <button type="button" class="close" data-dismiss="modal"
                                             aria-label="Close">
@@ -1347,15 +1347,15 @@
                                                         </div>
                                                         <div class="col-sm-4">
                                                             <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access4" value="4">
-                                                            <label class="ml-2" for="emp_panel_access4">Website Quote</label>
+                                                            <label class="ml-2" for="emp_panel_access4">Website</label>
                                                         </div>
                                                         <div class="col-sm-4">
                                                             <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access5" value="5">
-                                                            <label class="ml-2" for="emp_panel_access5">Panel Type 5</label>
+                                                            <label class="ml-2" for="emp_panel_access5">Panel 5</label>
                                                         </div>
                                                         <div class="col-sm-4">
                                                             <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access6" value="6">
-                                                            <label class="ml-2" for="emp_panel_access6">Panel Type 6</label>
+                                                            <label class="ml-2" for="emp_panel_access6">Panel 6</label>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1373,7 +1373,7 @@
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel9">Employee Access (Guides)</h5>
+                                            <h5 class="modal-title" id="exampleModalLabel9">Subcontractor Access (Guides)</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>

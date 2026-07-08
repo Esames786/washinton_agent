@@ -156,7 +156,7 @@
                             </div>
                         </div>
                         <div class="col-sm-3 my-auto">
-                            <label class="form-label">Employees</label>
+                            <label class="form-label">Subcontractors</label>
                             <select class="form-control select2" id="user">
                                 <option value="" selected>All</option>
                                 @foreach($users as $key => $val)

@@ -65,6 +65,7 @@ class CrApplicationApiController extends Controller
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
+        try {
         // Store resume
         $resumePath = null;
         if ($request->hasFile('resume') && $request->file('resume')->isValid()) {
@@ -149,6 +150,20 @@ class CrApplicationApiController extends Controller
             'message' => 'Application received successfully. You will be contacted by CrazyRays Solutions after review.',
             'id'      => $application->id,
         ], 201);
+        } catch (\Throwable $e) {
+            // #11: never let this endpoint return a raw 500 HTML page — the CrazyRays apply form
+            // only shows a generic "Submission failed" for that. Return the real reason as JSON
+            // (and log it) so the actual cause surfaces to the applicant and to us.
+            Log::error('CrApplicationApiController@store failed', [
+                'error' => $e->getMessage(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not save your application. ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function contactNotify(Request $request): JsonResponse

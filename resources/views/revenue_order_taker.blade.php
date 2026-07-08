@@ -315,7 +315,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addModalLabel">Add Employee</h5>
+                    <h5 class="modal-title" id="addModalLabel">Add Subcontractor</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -387,7 +387,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Edit Employee</h5>
+                    <h5 class="modal-title" id="editModalLabel">Edit Subcontractor</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -454,7 +454,7 @@
 
     <script>
         $(document).ready(function() {
-            // Add Employee AJAX
+            // Add Subcontractor AJAX
             $('#addForm').on('submit', function(e) {
                 e.preventDefault();
                 $.ajax({
@@ -470,7 +470,7 @@
                 });
             });
 
-            // Edit Employee AJAX
+            // Edit Subcontractor AJAX
             $('.editMile').on('click', function() {
                 var id = $(this).closest('tr').find('.id').val();
                 $.ajax({

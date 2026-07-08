@@ -76,11 +76,11 @@
             <!--div-->
             <div class="page-header">
                 <!--<div class="page-leftheader">-->
-                <!--    {{-- <h4 class="page-title mb-0">Add Employee</h4> --}}-->
+                <!--    {{-- <h4 class="page-title mb-0">Add Subcontractor</h4> --}}-->
                 <!--    <ol class="breadcrumb">-->
                 <!--        <li class="breadcrumb-item"><a href="#"><i class="fe fe-layers mr-2 fs-14"></i>Home</a>-->
                 <!--        </li>-->
-                <!--        <li class="breadcrumb-item active" aria-current="page"><a href="#">Add Employee</a></li>-->
+                <!--        <li class="breadcrumb-item active" aria-current="page"><a href="#">Add Subcontractor</a></li>-->
                 <!--    </ol>-->
                 <!--</div>-->
                 <!--{{-- <div class="page-rightheader"> --}}-->
@@ -91,13 +91,14 @@
                 <!--    {{-- </div> --}}-->
                 <!--{{-- </div> --}}-->
                 <div class="text-secondary text-center text-uppercase w-100">
-                    <h1 class="my-4"><b>View Employees</b></h1>
+                    <h1 class="my-4"><b>View Subcontractors</b></h1>
                 </div>
             </div>
             <div class="card mt-5">
                 <div class="card-header">
+                    {{-- #9 soft-hide (Batch 5): Add Subcontractor button hidden (kept in code) --}}
                     <div class="card-title"><a type="button" href="{{ url('add_employee') }}"
-                            class="btn btn-icon btn-primary">Add
+                            class="btn btn-icon btn-primary" style="display:none;">Add
                             Employee<i class="fe fe-plus"></i></a></div>
                 </div>
                 <div class="card-body">

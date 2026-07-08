@@ -840,6 +840,9 @@ class DashboardController extends Controller
             $emp->emp_panel_access = $total_emp_panel_access;
             $emp->emp_access_guide = $total_emp_access_guide;
             $emp->emp_access_guide_video = $total_emp_access_guide_video;
+            // #12: per-user IP restriction (available for any role)
+            $emp->ip_check_enabled = $request->has('ip_check_enabled') ? 1 : 0;
+            $emp->allowed_ips      = $request->allowed_ips;
             if ($emp->role == 3) {
                 $emp->auto_assign = $request->auto_assign ?? 0;
                 $emp->shipment_status_quote_assign = $request->shipment_status_quote_assign ?? 0;
@@ -1029,6 +1032,9 @@ class DashboardController extends Controller
         $emp->emp_access_guide_video = $request->emp_access_guide_video != null
             ? implode(",", $request->emp_access_guide_video)
             : "";
+        // #12: per-user IP restriction (available for any role)
+        $emp->ip_check_enabled = $request->has('ip_check_enabled') ? 1 : 0;
+        $emp->allowed_ips      = $request->allowed_ips;
         if ($emp->role == 3) {
             $emp->auto_assign = $request->auto_assign ?? 0;
             $emp->shipment_status_quote_assign = $request->shipment_status_quote_assign ?? 0;
@@ -1795,6 +1801,30 @@ class DashboardController extends Controller
             $msg = ($data->slug ?? $data->name . ' ' . $data->last_name) . ' is successfully active!';
             return back()->with('msg', $msg);
         }
+    }
+
+    /**
+     * #10: self-freeze the current user after repeated unauthorized DevTools/Inspect attempts.
+     * Reuses the existing freeze mechanism (user.freeze=1 + FreezeUser log); the layout's freeze
+     * block then locks the UI on reload. Admin must unfreeze.
+     */
+    public function devtoolsFreeze(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['success' => false], 401);
+        }
+        if ((int) $user->freeze !== 1) {
+            $user->freeze = 1;
+            $user->freeze_reason = 'Auto-frozen: repeated unauthorized DevTools / Inspect access.';
+            $user->save();
+
+            $log = new FreezeUser;
+            $log->user_id = $user->id;
+            $log->freeze_time = date('Y-m-d h:i:s');
+            $log->save();
+        }
+        return response()->json(['success' => true]);
     }
 
     public function getChatsForApprover()

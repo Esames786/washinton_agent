@@ -1,5 +1,25 @@
 {{--@include('partials.mainsite_pages.return_function')--}}
 
+{{-- #9 SOFT-HIDE (Batch 5): nav items hidden (kept in code). See SOFT_HIDE_MANIFEST.md F/G/H. --}}
+<style>
+    /* F. Management dropdown items */
+    .dropdown-item[href*="cpanelemails"],
+    .dropdown-item[href*="invoice_list_roro"],
+    .dropdown-item[href*="add_guide_list"],
+    .dropdown-item[href*="field_labels"],
+    .dropdown-item[href*="email-templates"],
+    .dropdown-item[href*="view_template"],
+    .dropdown-item[href*="profile_card_data"],
+    .dropdown-item[href*="price_request_assign_dispatcher"],
+    .dropdown-item[href*="/commission"],
+    /* G. User dropdown items */
+    .dropdown-item[href$="/guides"],
+    .dropdown-item[href$="/r/portal"] { display: none !important; }
+    /* H. Header people icons (Add / View Subcontractor) */
+    li.nav-item:has(> a.icon[href*="add_subcontractor"]),
+    li.nav-item:has(> a.icon[href*="view_subcontractor"]) { display: none !important; }
+</style>
+
 @php
 $check_panel = check_panel();
 
@@ -274,7 +294,7 @@ if (!function_exists('get_user_name123')) {
                     </li>
                 @endif
                 @if (in_array("43", $phoneaccess))
-                    <li class="nav-item" data-placement="top" data-toggle="tooltip" title="Flag Employee">
+                    <li class="nav-item" data-placement="top" data-toggle="tooltip" title="Flag Subcontractor">
                         <a class="icon"   href="{{url('flag_employee')}}">
                             <i class="fa fa-flag-o header-icons" ></i>
                         </a>
@@ -578,7 +598,7 @@ if (!function_exists('get_user_name123')) {
                 <div class="header_ri">
                     <div class="dropdown header-fullscreen">
                         <a class="nav-link icon full-screen-link p-0" href="{{ route('ringcentral.portal') }}" target="RingCentralPortal" title="Open R-Dialer">
-                            <button class="btn-sm text-white border-0" style="background:#705ec8; border-color:transparent;">Access Dialer</button>
+                            <button class="btn-sm text-white border-0" style="background:#705ec8; border-color:transparent; display:none;">Access Dialer</button>{{-- #9 soft-hide --}}
                         </a>
                     </div>
                 </div>
