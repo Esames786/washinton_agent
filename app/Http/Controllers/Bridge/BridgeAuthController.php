@@ -366,6 +366,9 @@ class BridgeAuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
+        // #11: capture the login IP (source = crazyrays) for admin/manager visibility.
+        \App\UserLoginActivity::record($user->id, $request->ip(), 'crazyrays', $request->userAgent());
+
         // Tag session so logout and landing page know this user came from CrazyRays
         if (!empty($payload['cr_origin'])) {
             $request->session()->put('cr_origin', 'crazyrays');

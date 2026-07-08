@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\UserLoginActivity;
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
@@ -35,5 +37,13 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+
+    /**
+     * #11: capture the login IP so admins/managers can see an employee's login activity.
+     */
+    protected function authenticated(Request $request, $user)
+    {
+        UserLoginActivity::record($user->id, $request->ip(), 'hello', $request->userAgent());
     }
 }

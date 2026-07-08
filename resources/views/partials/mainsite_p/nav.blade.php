@@ -228,16 +228,16 @@ if (!function_exists('get_user_name123')) {
 
                 @if (in_array("20", $phoneaccess))
                     <li class="nav-item"
-                       data-placement="top" data-toggle="tooltip" title="Add Employee">
-                        <a class="icon"  href="{{url('add_employee')}}">
+                       data-placement="top" data-toggle="tooltip" title="Add Subcontractor">
+                        <a class="icon"  href="{{url('add_subcontractor')}}">
                             <i class="fa fa-users header-icons"></i>
                         </a>
                     </li>
                 @endif
 
                 @if (in_array("20", $phoneaccess))
-                    <li class="nav-item" data-placement="top" data-toggle="tooltip" title="View Employee">
-                        <a class="icon"   href="{{url('view_employee')}}">
+                    <li class="nav-item" data-placement="top" data-toggle="tooltip" title="View Subcontractor">
+                        <a class="icon"   href="{{url('view_subcontractor')}}">
                             <i class="fa fa-street-view header-icons" ></i>
                         </a>
                     </li>

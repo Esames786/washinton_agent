@@ -124,7 +124,11 @@ class AgentPaymentController extends Controller
             'carrier_price'     => 'required|numeric|min:0',
             'confirmation_date' => 'required|date',
             'screenshot_path'   => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            // #3: booking/authorization form is mandatory
+            'booking_form_path' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
             'details'           => 'nullable|string|max:1000',
+        ], [
+            'booking_form_path.required' => 'The booking / authorization form is required to submit a payment.',
         ]);
 
         // Verify the order exists.
@@ -175,6 +179,19 @@ class AgentPaymentController extends Controller
                 $file->move($folder, $filename);
 
                 $payment->screenshot_path = "Uploads/PaymentScreenShot/{$payment->id}/{$filename}";
+                $payment->save();
+            }
+
+            // #3: handle mandatory booking / authorization form upload
+            if ($request->hasFile('booking_form_path')) {
+                $folder = public_path("Uploads/PaymentBookingForm/{$payment->id}");
+                if (!file_exists($folder)) mkdir($folder, 0777, true);
+
+                $file     = $request->file('booking_form_path');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move($folder, $filename);
+
+                $payment->booking_form_path = "Uploads/PaymentBookingForm/{$payment->id}/{$filename}";
                 $payment->save();
             }
 

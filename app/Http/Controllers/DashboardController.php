@@ -545,8 +545,16 @@ class DashboardController extends Controller
             })
             ->orderBy('is_login', 'DESC')->get();
         $sheet_data = sheet_data::orderby('id', 'desc')->get();
+
+        // #11: login activity (IP history) — visible to admin (1) / manager (9) only.
+        $loginActivities = collect();
+        if (Auth::check() && in_array((int) Auth::user()->role, [1, 9], true)) {
+            $loginActivities = \App\UserLoginActivity::where('user_id', $id)
+                ->orderByDesc('logged_in_at')->limit(50)->get();
+        }
+
         if (Auth::check()) {
-            return view('main.register.edit_employee', compact('data', 'data2', 'penaltype', 'no', 'all_ot', 'access', 'managers', 'disableNo', 'diabledAccess', 'sheet_data', 'guide', 'guideVideos'));
+            return view('main.register.edit_employee', compact('data', 'data2', 'penaltype', 'no', 'all_ot', 'access', 'managers', 'disableNo', 'diabledAccess', 'sheet_data', 'guide', 'guideVideos', 'loginActivities'));
         } else {
             return redirect('/loginn/');
         }
@@ -2927,14 +2935,18 @@ class DashboardController extends Controller
     {
         $request->validate(['query_id' => 'required|integer', 'user_id' => 'required|integer']);
 
-        $query = ShipaQuery::find($request->query_id);
-        if (!$query) {
-            return response()->json(['success' => false, 'message' => 'Query not found'], 404);
-        }
-
         $user = User::find($request->user_id);
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'User not found'], 404);
+        }
+
+        // #6: wrap in a transaction and LOCK the query row so two near-simultaneous "assign"
+        // clicks can't both pass the "no order yet" check and each create an order — that race
+        // previously showed the same website quote twice (consecutive IDs) in the New folder.
+        return \DB::transaction(function () use ($request, $user) {
+        $query = ShipaQuery::where('id', $request->query_id)->lockForUpdate()->first();
+        if (!$query) {
+            return response()->json(['success' => false, 'message' => 'Query not found'], 404);
         }
 
         // If an order already exists for this query, reassign it instead of creating a duplicate
@@ -3050,5 +3062,6 @@ class DashboardController extends Controller
         $query->save();
 
         return response()->json(['success' => true, 'assigned_to' => $user->name, 'order_id' => $order->id]);
+        }); // #6: end transaction (query row locked for the duration)
     }
 }

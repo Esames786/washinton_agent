@@ -265,10 +265,11 @@ html, body { height: 100%; margin: 0; }
                         <div class="field-error" id="err_father_name"></div>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Date of Birth</label>
+                        <label class="form-label">Date of Birth <span class="text-danger">*</span> <small class="text-muted">(must be 18+)</small></label>
                         <div class="input-icon-wrap">
                             <i class="fas fa-calendar field-icon"></i>
-                            <input type="date" name="dob" class="form-control" max="{{ date('Y-m-d') }}">
+                            {{-- #13: must be at least 18 years old --}}
+                            <input type="date" name="dob" class="form-control" required max="{{ date('Y-m-d', strtotime('-18 years')) }}">
                         </div>
                         <div class="field-error" id="err_dob"></div>
                     </div>

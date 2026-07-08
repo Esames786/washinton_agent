@@ -210,7 +210,7 @@
                                                                                 <i class="fe fe-user mr-1"></i> View / Review
                                                                             </a>
                                                                             <a class="dropdown-item"
-                                                                                href="{{ url('edit_employee' . '/' . $val->id) }}">
+                                                                                href="{{ url('edit_subcontractor' . '/' . $val->id) }}">
                                                                                 <i class="fe fe-edit mr-1"></i> Edit
                                                                             </a>
                                                                             @if ($val->status == 0)
@@ -274,7 +274,7 @@
                                                                                 <i class="fe fe-user mr-1"></i> View / Review
                                                                             </a>
                                                                             <a class="dropdown-item"
-                                                                                href="{{ url('edit_employee' . '/' . $val->id) }}">
+                                                                                href="{{ url('edit_subcontractor' . '/' . $val->id) }}">
                                                                                 <i class="fe fe-edit mr-1"></i> Edit
                                                                             </a>
                                                                             @if ($val->status == 0)
@@ -383,7 +383,7 @@
                                                         </button>
                                                         <div class="dropdown-menu">
                                                             <a class="dropdown-item"
-                                                                href="{{ url('edit_employee' . '/' . $val->id) }}">Edit</a>
+                                                                href="{{ url('edit_subcontractor' . '/' . $val->id) }}">Edit</a>
                                                             @if ($val->status == 0)
                                                                 <a class="dropdown-item review-employee-btn" href="#"
                                                                     data-toggle="modal" data-target="#employeeReviewModal"
@@ -475,7 +475,7 @@
                                                         </button>
                                                         <div class="dropdown-menu">
                                                             <a class="dropdown-item"
-                                                                href="{{ url('edit_employee' . '/' . $val->id) }}">Edit</a>
+                                                                href="{{ url('edit_subcontractor' . '/' . $val->id) }}">Edit</a>
                                                             @if ($val->status == 0)
                                                                 <a class="dropdown-item review-employee-btn" href="#"
                                                                     data-toggle="modal" data-target="#employeeReviewModal"

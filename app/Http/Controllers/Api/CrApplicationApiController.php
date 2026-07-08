@@ -26,11 +26,14 @@ class CrApplicationApiController extends Controller
     {
         $campaign = $request->input('campaign');
 
+        // #13: applicants must be at least 18 years old (dob on/before this date).
+        $maxDob = \Carbon\Carbon::now()->subYears(18)->format('Y-m-d');
+
         $validator = Validator::make($request->all(), [
             'full_name'            => ['required', 'string', 'max:100'],
             'father_name'          => ['nullable', 'string', 'max:100'],
             'national_id'          => ['nullable', 'string', 'max:50'],
-            'dob'                  => ['nullable', 'date'],
+            'dob'                  => ['required', 'date', 'before_or_equal:' . $maxDob],
             'gender'               => ['nullable', 'in:male,female,other'],
             'marital_status'       => ['nullable', 'in:single,married,divorced,widowed'],
             'email'                => [
@@ -53,6 +56,9 @@ class CrApplicationApiController extends Controller
             'documents'            => ['nullable', 'array'],
             'documents.*.doc_id'   => ['required_with:documents', 'integer'],
             'documents.*.title'    => ['required_with:documents', 'string'],
+        ], [
+            'dob.required'         => 'Date of birth is required.',
+            'dob.before_or_equal'  => 'You must be at least 18 years old to apply.',
         ]);
 
         if ($validator->fails()) {

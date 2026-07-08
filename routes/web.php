@@ -166,8 +166,12 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::post('/auto_screenshot', 'phone_quote\customer\CustomerController@auto_screenshot');
     Route::get('/time_user', 'phone_quote\customer\CustomerController@time_user');
-    Route::get('/edit_employee/{id}', 'DashboardController@edit_employee');
-    Route::post('/update_employee', 'DashboardController@update_employee')->name('update_employee');
+    // #2/#5: subcontractor URLs are canonical; the old employee URIs stay as working aliases
+    // (same controller) so existing links/bookmarks never break.
+    Route::get('/edit_subcontractor/{id}', 'DashboardController@edit_employee')->name('edit_subcontractor');
+    Route::get('/edit_employee/{id}', 'DashboardController@edit_employee'); // legacy alias
+    Route::post('/update_subcontractor', 'DashboardController@update_employee')->name('update_subcontractor');
+    Route::post('/update_employee', 'DashboardController@update_employee')->name('update_employee'); // legacy alias
     Route::get('/hr-portal/{userId}', 'HrPortalRedirectController@redirect')->name('hr.portal.redirect');
     Route::get('/hr-portal/admin/employee/{userId}', 'HrPortalRedirectController@adminRedirect')->name('hr.admin.employee');
 
@@ -200,7 +204,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/user_deactive_new/{id}', 'DashboardController@user_deactive');
     Route::post('/freeze-unfreeze-new/{id}', 'DashboardController@freezeUnfreeze');
     Route::get('/reset/{id}', 'DashboardController@reset');
-    Route::get('/delete_employee/{id}', 'DashboardController@delete_employee');
+    Route::get('/delete_subcontractor/{id}', 'DashboardController@delete_employee')->name('delete_subcontractor');
+    Route::get('/delete_employee/{id}', 'DashboardController@delete_employee'); // legacy alias
     Route::get('/screen_shots/{id}', 'DashboardController@screen_shots');
     Route::post('/role-access', 'DashboardController@roleAccess');
 
@@ -362,15 +367,21 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/freeze_user', 'WelcomeController@freeze_user');
         Route::get('/get-users-by-role', 'WelcomeController@getUsersByRole');
         Route::get('/break_time', 'WelcomeController@break_time');
-        Route::get('/add_employee', 'DashboardController@add_employee');
-        Route::post('/save_employee', 'DashboardController@save_employee')->name('save_employee');
-        Route::get('/view_employee', 'DashboardController@view_employee');
+        // #2/#5: subcontractor canonical URIs + legacy employee aliases (same controllers)
+        Route::get('/add_subcontractor', 'DashboardController@add_employee')->name('add_subcontractor');
+        Route::get('/add_employee', 'DashboardController@add_employee'); // legacy alias
+        Route::post('/save_subcontractor', 'DashboardController@save_employee')->name('save_subcontractor');
+        Route::post('/save_employee', 'DashboardController@save_employee')->name('save_employee'); // legacy alias
+        Route::get('/view_subcontractor', 'DashboardController@view_employee')->name('view_subcontractor');
+        Route::get('/view_employee', 'DashboardController@view_employee'); // legacy alias
         Route::post('/show_own_order', 'DashboardController@show_own_order');
         Route::post('/user-ss', 'DashboardController@user_ss');
-        Route::get('/flag_employee', 'DashboardController@flag_employee');
+        Route::get('/flag_subcontractor', 'DashboardController@flag_employee')->name('flag_subcontractor');
+        Route::get('/flag_employee', 'DashboardController@flag_employee'); // legacy alias
         Route::post('/remove_employee_flag', 'DashboardController@removeFlag')->name('remove_employee_flag');
         Route::post('/add_employee_flag', 'DashboardController@redFlag')->name('add_employee_flag');
-        Route::get('/recover_employee/{id}', 'DashboardController@recover_employee');
+        Route::get('/recover_subcontractor/{id}', 'DashboardController@recover_employee')->name('recover_subcontractor');
+        Route::get('/recover_employee/{id}', 'DashboardController@recover_employee'); // legacy alias
         Route::get('/update_password', 'DashboardController@update_password')->name('update_password');
         Route::post('/update_password_post', 'DashboardController@update_password_post')->name('update_password_post');
         Route::get('/other_pass', 'DashboardController@other_pass')->name('other_pass');
@@ -1056,7 +1067,8 @@ Route::group(['middleware' => ['auth']], function () {
     });
 
     Route::group(['middleware' => ['code-giver']], function () {
-        Route::get('/employees', 'DashboardController@employees')->name('employees');
+        Route::get('/subcontractors', 'DashboardController@employees')->name('subcontractors');
+        Route::get('/employees', 'DashboardController@employees')->name('employees'); // legacy alias
         Route::get('/update_password2', 'DashboardController@update_password2')->name('update_password2');
         Route::post('/update_password_post2', 'DashboardController@update_password_post')->name('update_password_post2');
         Route::post('/increase_quotes', 'DashboardController@increase_quotes');

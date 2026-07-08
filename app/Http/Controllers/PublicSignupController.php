@@ -56,13 +56,17 @@ class PublicSignupController extends Controller
             'shift_type_id'  => 'required|integer|min:1',
             'account_type_id'=> 'required|integer|in:1,2,3',
             'father_name'    => 'nullable|string|max:100',
-            'dob'            => 'nullable|date|before_or_equal:today',
+            // #13: must be at least 18 years old
+            'dob'            => 'required|date|before_or_equal:' . \Carbon\Carbon::now()->subYears(18)->format('Y-m-d'),
             'gender'         => 'nullable|in:male,female,other',
             'marital_status' => 'nullable|in:single,married,divorced,widowed',
             'cnic'           => 'nullable|string|max:20',
             'city'           => 'nullable|string|max:100',
             'state'          => 'nullable|string|max:100',
             'country'        => 'nullable|string|max:100',
+        ], [
+            'dob.required'        => 'Date of birth is required.',
+            'dob.before_or_equal' => 'You must be at least 18 years old to sign up.',
         ]);
 
         if ($validator->fails()) {

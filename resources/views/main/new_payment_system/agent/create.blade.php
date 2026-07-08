@@ -129,6 +129,14 @@
                         <small class="text-muted">Accepted: JPG, PNG, PDF. Max 5MB.</small>
                     </div>
 
+                    {{-- #3: booking / authorization form is mandatory (separate from the transaction screenshot) --}}
+                    <div class="form-group">
+                        <label class="font-weight-bold">Booking Form / Authorization Form <span class="text-danger">*</span></label>
+                        <input type="file" name="booking_form_path" class="form-control-file"
+                               accept=".jpg,.jpeg,.png,.pdf" required>
+                        <small class="text-muted">Required — attach the paid booking form or authorization form summary (JPG, PNG, PDF). Max 5MB.</small>
+                    </div>
+
                     <div class="form-group">
                         <label class="font-weight-bold">Details / Notes</label>
                         <textarea name="details" class="form-control" rows="3"

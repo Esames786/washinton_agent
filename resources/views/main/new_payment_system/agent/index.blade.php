@@ -102,6 +102,7 @@
                         <th>Profit</th>
                         <th>Conf. Date</th>
                         <th>Screenshot</th>
+                        <th>Booking Form</th>
                         <th>Status</th>
                         <th>Admin Remarks</th>
                         <th>Submitted</th>
@@ -128,6 +129,14 @@
                                      alt="Screenshot">
                             @else
                                 <span class="text-muted small">None</span>
+                            @endif
+                        </td>
+                        {{-- #3: green = booking/authorization form submitted, yellow = not submitted --}}
+                        <td>
+                            @if($p->booking_form_path)
+                                <a href="{{ asset($p->booking_form_path) }}" target="_blank" class="badge-confirmed" style="text-decoration:none;">Submitted</a>
+                            @else
+                                <span class="badge-pending">Not Submitted</span>
                             @endif
                         </td>
                         <td>

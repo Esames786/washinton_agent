@@ -1196,6 +1196,10 @@ if (isset($_GET['titlee'])) {
 
     // When a user row is clicked — assign (namespaced so off() removes only this)
     $(document).on('click.assignOtItem', '.ot-select-item', function () {
+        // #6: prevent a double-click from firing two assign requests (which created duplicate orders)
+        if (window.__otAssignInProgress) return;
+        window.__otAssignInProgress = true;
+
         var userId   = $(this).data('user-id');
         var userName = $(this).data('user-name');
         var queryId  = $('#assignOtQueryId').val();
@@ -1207,6 +1211,7 @@ if (isset($_GET['titlee'])) {
             url: '{{ route("shipa1_query.assign_direct") }}',
             type: 'POST',
             data: { query_id: queryId, user_id: userId, _token: '{{ csrf_token() }}' },
+            complete: function () { window.__otAssignInProgress = false; },
             success: function (res) {
                 if (res.success) {
                     $result.html('<div class="alert alert-success py-1 mb-0">Assigned to <strong>' +

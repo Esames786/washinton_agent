@@ -1335,11 +1335,11 @@
                                                     <div class="row">
                                                         <div class="col-sm-4">
                                                             <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access1" value="1">
-                                                            <label class="ml-2" for="emp_panel_access1">Auction</label>
+                                                            <label class="ml-2" for="emp_panel_access1">Panel 1</label>
                                                         </div>
                                                         <div class="col-sm-4">
                                                             <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access2" value="2">
-                                                            <label class="ml-2" for="emp_panel_access2">ProMAx</label>
+                                                            <label class="ml-2" for="emp_panel_access2">Panel 2</label>
                                                         </div>
                                                         <div class="col-sm-4">
                                                             <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access3" value="3">

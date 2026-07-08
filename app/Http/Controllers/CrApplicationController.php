@@ -80,6 +80,13 @@ class CrApplicationController extends Controller
                   ->orWhere('phone', 'like', "%{$s}%");
             });
         }
+        // #9: filter by the date the application was submitted (created_at).
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
 
         $applications = $query->paginate(20)->withQueryString();
         $campaigns    = CrApplication::$campaigns;

@@ -54,13 +54,53 @@
                                         <span class="badge badge-secondary ml-1" style="font-size:14px;">{{ $data2->id }}</span>
                                         <small class="text-muted ml-2">— Use this as <strong>Agent ID</strong> when linking in the HR portal (<code>hr_employees.agent_id</code>)</small>
                                     </div>
-                                    <a href="{{ url('/hr-portal/' . $data2->id) }}"
-                                       target="_blank"
-                                       class="btn btn-sm btn-success ml-3"
-                                       style="white-space:nowrap;">
-                                        🔗 Open HR Portal
-                                    </a>
+                                    <div class="d-flex ml-3" style="gap:8px;">
+                                        {{-- #11: admin/manager can view this employee's login IP history --}}
+                                        @if(in_array((int) Auth::user()->role, [1,9], true))
+                                        <button type="button" class="btn btn-sm btn-info" data-toggle="modal"
+                                                data-target="#loginActivityModal" style="white-space:nowrap;">
+                                            🌐 Login Activity
+                                        </button>
+                                        @endif
+                                        <a href="{{ url('/hr-portal/' . $data2->id) }}"
+                                           target="_blank"
+                                           class="btn btn-sm btn-success"
+                                           style="white-space:nowrap;">
+                                            🔗 Open HR Portal
+                                        </a>
+                                    </div>
                                 </div>
+
+                                {{-- #11: login activity (IP) modal — admin/manager only --}}
+                                @if(in_array((int) Auth::user()->role, [1,9], true))
+                                <div class="modal fade" id="loginActivityModal" tabindex="-1" role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">🌐 Login Activity — {{ $data2->name }} {{ $data2->last_name }}</h5>
+                                                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <table class="table table-sm table-bordered mb-0">
+                                                    <thead><tr><th>#</th><th>IP Address</th><th>Source</th><th>Date &amp; Time</th></tr></thead>
+                                                    <tbody>
+                                                    @forelse($loginActivities as $i => $la)
+                                                        <tr>
+                                                            <td>{{ $i + 1 }}</td>
+                                                            <td><code>{{ $la->ip_address ?? '—' }}</code></td>
+                                                            <td><span class="badge badge-{{ $la->source === 'crazyrays' ? 'warning' : 'primary' }}">{{ ucfirst($la->source) }}</span></td>
+                                                            <td>{{ optional($la->logged_in_at)->format('d M Y, h:i A') ?? '—' }}</td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr><td colspan="4" class="text-center text-muted">No login activity recorded yet.</td></tr>
+                                                    @endforelse
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
                                 @if (session('hr_portal_error'))
                                     <div class="alert alert-danger py-1 px-3 mt-1">
                                         <small>{{ session('hr_portal_error') }}</small>
@@ -1478,14 +1518,14 @@
                                                                    @if (in_array('1', $emp_panel_access)) {{ 'checked' }} @endif
                                                                    name="emp_panel_access[]" id="emp_panel_access1"
                                                                    value="1"><label class="ml-2"
-                                                                                    for="emp_panel_access1">Auction</label>
+                                                                                    for="emp_panel_access1">Panel 1</label>
                                                         </div>
                                                         <div class="col-sm-4">
                                                             <input type="checkbox"
                                                                    @if (in_array('2', $emp_panel_access)) {{ 'checked' }} @endif
                                                                    name="emp_panel_access[]" id="emp_panel_access2"
                                                                    value="2"><label class="ml-2"
-                                                                                    for="emp_panel_access2">ProMAx</label>
+                                                                                    for="emp_panel_access2">Panel 2</label>
                                                         </div>
                                                         <div class="col-sm-4">
                                                             <input type="checkbox"

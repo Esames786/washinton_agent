@@ -40,6 +40,11 @@
                     <option value="rejected" @selected(request('status') === 'rejected')>Rejected</option>
                 </select>
                 <input type="text" name="search" class="form-control form-control-sm" placeholder="Name / Email / Phone" value="{{ request('search') }}" style="min-width:200px;">
+                {{-- #9: filter by application submitted date --}}
+                <label class="mb-0 small text-muted">From</label>
+                <input type="date" name="date_from" class="form-control form-control-sm" value="{{ request('date_from') }}" title="Applied from">
+                <label class="mb-0 small text-muted">To</label>
+                <input type="date" name="date_to" class="form-control form-control-sm" value="{{ request('date_to') }}" title="Applied to">
                 <button type="submit" class="btn btn-sm btn-primary">Filter</button>
                 <a href="{{ route('cr-applications.index') }}" class="btn btn-sm btn-secondary">Reset</a>
                 {{-- #15 (2026-07-03): show application count for the selected campaign/status filter --}}

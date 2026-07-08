@@ -1359,35 +1359,10 @@ Agent: Thank you for your cooperation. We appreciate your attention to these det
                                                                                 </div>
                                                                             @endif
                                                                         </div>
-                                                                        @if ($value->make_sure == 1 || $value->accident_vehicle == 1)
-                                                                            <span style="font-style: italic;">
-                                                                                @if ($value->make_sure == 1 && $value->accident_vehicle == 1)
-                                                                                    (MAKE SURE ADDRESS &amp; NO INOP OR
-                                                                                    ACCIDENT VEHICLE)
-                                                                                @elseif($value->make_sure == 1)
-                                                                                    (MAKE SURE ADDRESS)
-                                                                                @elseif($value->accident_vehicle == 1)
-                                                                                    (NO INOP OR ACCIDENT VEHICLE)
-                                                                                @endif
-                                                                            </span>
-                                                                        @endif
+                                                                        {{-- #7 (2026-07-08): show only port name + state; all other details removed --}}
                                                                         <br>
-                                                                        @if ($value->terminal)
-                                                                            {{ $value->terminal }}<br>
-                                                                        @endif
-                                                                        @if ($value->address)
-                                                                            {{ $value->address }}<br>
-                                                                        @endif
-                                                                        @if ($value->zsc)
-                                                                            {{ $value->zsc }}<br>
-                                                                        @endif
-                                                                        @if ($value->tel)
-                                                                            Tel: {{ $value->tel }}<br>
-                                                                        @endif
-                                                                        @if ($value->twic_card != 0)
-                                                                            <span style="font-style: italic;">TWIC card
-                                                                                required for entry
-                                                                                {{ $value->twic_card == 2 ? '(Optional)' : '' }}</span>
+                                                                        @if ($value->state)
+                                                                            {{ $value->state }}<br>
                                                                         @endif
                                                                         <hr>
                                                                     @endforeach
@@ -1427,35 +1402,10 @@ Agent: Thank you for your cooperation. We appreciate your attention to these det
                                                                                 </div>
                                                                             @endif
                                                                         </div>
-                                                                        @if ($value->make_sure == 1 || $value->accident_vehicle == 1)
-                                                                            <span style="font-style: italic;">
-                                                                                @if ($value->make_sure == 1 && $value->accident_vehicle == 1)
-                                                                                    (MAKE SURE ADDRESS &amp; NO INOP OR
-                                                                                    ACCIDENT VEHICLE)
-                                                                                @elseif($value->make_sure == 1)
-                                                                                    (MAKE SURE ADDRESS)
-                                                                                @elseif($value->accident_vehicle == 1)
-                                                                                    (NO INOP OR ACCIDENT VEHICLE)
-                                                                                @endif
-                                                                            </span>
-                                                                        @endif
+                                                                        {{-- #7 (2026-07-08): show only port name + state; all other details removed --}}
                                                                         <br>
-                                                                        @if ($value->terminal)
-                                                                            {{ $value->terminal }}<br>
-                                                                        @endif
-                                                                        @if ($value->address)
-                                                                            {{ $value->address }}<br>
-                                                                        @endif
-                                                                        @if ($value->zsc)
-                                                                            {{ $value->zsc }}<br>
-                                                                        @endif
-                                                                        @if ($value->tel)
-                                                                            Tel: {{ $value->tel }}<br>
-                                                                        @endif
-                                                                        @if ($value->twic_card != 0)
-                                                                            <span style="font-style: italic;">TWIC card
-                                                                                required for entry
-                                                                                {{ $value->twic_card == 2 ? '(Optional)' : '' }}</span>
+                                                                        @if ($value->state)
+                                                                            {{ $value->state }}<br>
                                                                         @endif
                                                                         <hr>
                                                                     @endforeach
