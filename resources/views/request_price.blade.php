@@ -3265,8 +3265,8 @@ New Quote
                                 <input  class="form-control this_save  " autocomplete="off" type="text" name="dshipment_no" id="dacutionphoNo" value="">
                             </div>
                         </div>
-                        
-                        
+
+
                         <div class="col-lg-12">
                             <div class="form-group">
                                      <div class="Terminal-error">
@@ -3280,14 +3280,14 @@ New Quote
                                                 <div class="popover-content">{{ $label[19 - 1]->display }}</div>
                                             </div>
                               <select class="form-control  this_save"name="dockRec_createdBy" id="dockRec_createdBy" onkeypress="$(this).css('border-color', 'rgb(92 166 242)');">
-                                               
+
                                                 <option value="">Select an Option</option>
                                                 <option value="us">Us</option>
                                                 <option value="other">others</option>
                              </select>
                             </div>
                         </div>
-                        
+
                       <div class="col-lg-12">
                             <div class="form-group">
                                      <div class="Terminal-error">
@@ -3303,7 +3303,7 @@ New Quote
                                 <input  class="form-control this_save  " autocomplete="off" type="text" name="dockRec_company" id="dockRec_company" value="">
                             </div>
                         </div>
-                        
+
                         <div class="col-lg-12">
                             <div class="form-group">
                                 <label class="label font-boldd tx-black">Terminal</label>
@@ -4044,7 +4044,7 @@ New Quote
                 if (test2 == text) {
                     $('#success').html(data);
                     $('#modaldemo4').modal('show');
-                    window.location.href = "/view_employee";
+                    window.location.href = "/view_subcontractor";
                 } else {
                     $('#not_success').html(data);
                     $('#modaldemo5').modal('show');
@@ -4718,12 +4718,12 @@ New Quote
             $('#change_oterminal_name').html('{{ $label[114 - 1]->name }}');
             $('#change_oterminal_display').html('{{ $label[114 - 1]->display }}');
         }
-        // else if (oterminalselectedOption == 10) 
+        // else if (oterminalselectedOption == 10)
         // {
         //     $('#change_oterminal_name').html('{{ $label[124 - 1]->name }}');
         //     $('#change_oterminal_display').html('{{ $label[124 - 1]->display }}');
         // }
-        // else if (oterminalselectedOption == 8) 
+        // else if (oterminalselectedOption == 8)
         // {
         //     $('#change_oterminal_name').html('{{ $label[125 - 1]->name }}');
         //     $('#change_oterminal_display').html('{{ $label[125 - 1]->display }}');
@@ -5332,7 +5332,7 @@ New Quote
             var origin = $('#o_zip1').val();
             var destination = $('#d_zip1').val();
             var orderID = $('#orderid_find').val();
-    
+
             var vehicleInfo = $('.vehicle-info').val();
             var year = $(".vyear");
             var model = $(".vmodel");
@@ -5342,7 +5342,7 @@ New Quote
             var vehicleType = $(".vehicle-type option:selected");
             var vehicleCondition = $(".vehicle-condition option:selected");
             var trailerType = $(".trailer-type option:selected");
-    
+
             var years = [];
             $.each(year, function () {
                 years.push(this.value);
@@ -5375,10 +5375,10 @@ New Quote
             $.each(trailerType, function () {
                 trailerTypes.push(this.value);
             });
-    
+
             var roleChecker = "{{Auth::user()->role}}";
             var user = "{{Auth::user()->id}}";
-            
+
             if (!(year.val() == '' || model.val() == '' || make.val() == '' || type.val() == '' || vehicleType.val() == '' || vehicleCondition.val() == '' || trailerType.val() == '')) {
                 $(this).attr('disabled', true);
                 $.ajax({
@@ -5407,12 +5407,12 @@ New Quote
                                 '<span aria-hidden="true">&times;</span>' +
                                 '</button>' +
                                 '</div>');
-                                
+
                             $('.priceReq').html('');
                             var html = `<input type="hidden" class="orderID">
                             <a href="javascript:void(0)" class="btn btn-success mg-r-10 completeReq">Request Price</a>`;
                             $('.priceReq').html(html);
-                            
+
                             $('.completeReq').click(function () {
                                 var url = `/complete-request/${orderID}`;
                                 window.open(url, 'View Request Prices',

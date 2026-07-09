@@ -139,7 +139,7 @@
                             {{-- </a> --}}
                             {{-- </li> --}}
                             {{-- <li class="nav-item" data-placement="top" data-toggle="tooltip" title="View/Edit Subcontractor"> --}}
-                            {{-- <a class="icon" href="{{url('view_employee')}}"> --}}
+                            {{-- <a class="icon" href="{{url('view_subcontractor')}}"> --}}
                             {{-- <i class="las  la-edit header-icons"></i> --}}
                             {{-- </a> --}}
                             {{-- </li> --}}
@@ -730,7 +730,7 @@
                     @endif
                     @if (Auth::user()->userRole->name == 'Admin' || in_array('128', $phoneaccess))
                         <li>
-                            <a class="side-menu__item" href="{{ route('view_employee_revenue') }}">
+                            <a class="side-menu__item" href="{{ route('view_subcontractor_revenue') }}">
                                 <span class="js-search-result-thumbnail responsive-img img_border fa fa-file"></span>
                                 <span class="side-menu__label">Subcontractor Revenue (OT)</span>
                             </a>
@@ -738,7 +738,7 @@
                     @endif
                     @if (Auth::user()->userRole->name == 'Admin' || in_array('127', $phoneaccess))
                         <li>
-                            <a class="side-menu__item" href="{{ route('view_employee_revenue_deliveryBoy') }}">
+                            <a class="side-menu__item" href="{{ route('view_subcontractor_revenue_deliveryBoy') }}">
                                 <span class="js-search-result-thumbnail responsive-img img_border fa fa-file"></span>
                                 <span class="side-menu__label">Subcontractor Revenue (DB)</span>
                             </a>
@@ -746,7 +746,7 @@
                     @endif
                     @if (Auth::user()->userRole->name == 'Admin' || in_array('129', $phoneaccess))
                         <li>
-                            <a class="side-menu__item" href="{{ route('view_employee_revenue_Dispatcher') }}">
+                            <a class="side-menu__item" href="{{ route('view_subcontractor_revenue_Dispatcher') }}">
                                 <span class="js-search-result-thumbnail responsive-img img_border fa fa-file"></span>
                                 <span class="side-menu__label">Subcontractor Revenue (DIS)</span>
                             </a>
@@ -754,7 +754,7 @@
                     @endif
                     @if (Auth::user()->userRole->name == 'Admin' || in_array('130', $phoneaccess))
                         <li>
-                            <a class="side-menu__item" href="{{ route('view_employee_revenue_PrivateOT') }}">
+                            <a class="side-menu__item" href="{{ route('view_subcontractor_revenue_PrivateOT') }}">
                                 <span class="js-search-result-thumbnail responsive-img img_border fa fa-file"></span>
                                 <span class="side-menu__label">Subcontractor Revenue (Private OT)</span>
                             </a>

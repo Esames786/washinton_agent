@@ -2246,7 +2246,7 @@
                             if ("{{ Auth::user()->userRole->name }}" == 'Code Giver') {
                                 window.location.href = "/employees";
                             } else {
-                                window.location.href = "/view_employee";
+                                window.location.href = "/view_subcontractor";
                             }
                         } else {
                             $('#not_success').html(data);

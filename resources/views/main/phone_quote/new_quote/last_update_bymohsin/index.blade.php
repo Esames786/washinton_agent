@@ -2500,7 +2500,7 @@
                     if (test2 == text) {
                         $('#success').html(data);
                         $('#modaldemo4').modal('show');
-                        window.location.href = "/view_employee";
+                        window.location.href = "/view_subcontractor";
                     } else {
                         $('#not_success').html(data);
                         $('#modaldemo5').modal('show');
