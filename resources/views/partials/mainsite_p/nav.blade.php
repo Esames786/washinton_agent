@@ -16,8 +16,7 @@
     .dropdown-item[href$="/guides"],
     .dropdown-item[href$="/r/portal"] { display: none !important; }
     /* H. Header people icons (Add / View Subcontractor) */
-    li.nav-item:has(> a.icon[href*="add_subcontractor"]),
-    li.nav-item:has(> a.icon[href*="view_subcontractor"]) { display: none !important; }
+    li.nav-item:has(> a.icon[href*="add_subcontractor"]){ display: none !important; }
 </style>
 
 @php
