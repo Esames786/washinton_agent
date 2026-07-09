@@ -316,11 +316,11 @@
                                         @endif
                                         @if (in_array('3', $emp_panel_access))
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#exampleModa20">Panel 3</button>
+                                                    data-target="#exampleModa20">Testing</button>
                                         @endif
                                         @if (in_array('4', $emp_panel_access))
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#exampleModa24">Panel 4</button>
+                                                    data-target="#exampleModa24">Website</button>
                                         @endif
                                         @if (in_array('5', $emp_panel_access))
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
@@ -2065,7 +2065,7 @@
                                     <input type="radio" @if ($pt == 1) checked @endif
                                     name="penalytype" value="1"> Panel 1
                                     {{-- #9 soft-hide (Batch 5): keep only Panel 1; Panel 2/Testing/Website/Panel 5/6 hidden (kept in code) --}}
-                                    <span style="display:none;">
+
                                     <br>
                                     <input type="radio" @if ($pt == 2) checked @endif
                                     name="penalytype" value="2"> Panel 2
@@ -2081,7 +2081,6 @@
                                     <br>
                                     <input type="radio" @if ($pt == 6) checked @endif
                                     name="penalytype" value="6"> Panel 6
-                                    </span>
                                 </div>
                             </div>
                             <div class="col-md-12">
