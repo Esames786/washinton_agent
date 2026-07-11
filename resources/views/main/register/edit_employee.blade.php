@@ -2057,12 +2057,12 @@
                                         }
                                     @endphp
 
-                                    {{-- B6: dynamic panel list (city names + new panels 7+). --}}
-                                    @foreach (\App\PanelType::listActive() as $pt2)
-                                        <input type="radio" @if ($pt == $pt2->id) checked @endif
-                                        name="penalytype" value="{{ $pt2->id }}"> {{ $pt2->name }}
-                                        <br>
-                                    @endforeach
+                                    {{-- B6: dynamic panel list as a dropdown (city names + new panels 7+). --}}
+                                    <select name="penalytype" class="form-control">
+                                        @foreach (\App\PanelType::listActive() as $pt2)
+                                            <option value="{{ $pt2->id }}" @if ($pt == $pt2->id) selected @endif>{{ $pt2->name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-12">
