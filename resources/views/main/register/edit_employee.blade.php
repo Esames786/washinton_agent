@@ -311,11 +311,11 @@
                                                 data-target="#exampleModa28">Panel Type Access</button>
                                         @if (in_array('1', $emp_panel_access))
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#exampleModal1">Panel 1</button>
+                                                    data-target="#exampleModal1">{{ \App\PanelType::nameFor(1) }}</button>
                                         @endif
                                         @if (in_array('2', $emp_panel_access))
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#exampleModal2">Panel 2</button>
+                                                    data-target="#exampleModal2">{{ \App\PanelType::nameFor(2) }}</button>
                                         @endif
                                         @if (in_array('3', $emp_panel_access))
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
@@ -327,11 +327,11 @@
                                         @endif
                                         @if (in_array('5', $emp_panel_access))
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#exampleModa25">Panel 5</button>
+                                                    data-target="#exampleModa25">{{ \App\PanelType::nameFor(5) }}</button>
                                         @endif
                                         @if (in_array('6', $emp_panel_access))
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#exampleModa26">Panel 6</button>
+                                                    data-target="#exampleModa26">{{ \App\PanelType::nameFor(6) }}</button>
                                         @endif
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                                 data-target="#exampleModal3">Show Data</button>
@@ -2033,25 +2033,12 @@
                                         }
                                     @endphp
 
-                                    <input type="radio" @if ($pt == 1) checked @endif
-                                    name="penalytype" value="1"> Panel 1
-                                    {{-- #9 soft-hide (Batch 5): keep only Panel 1; Panel 2/Testing/Website/Panel 5/6 hidden (kept in code) --}}
-
-                                    <br>
-                                    <input type="radio" @if ($pt == 2) checked @endif
-                                    name="penalytype" value="2"> Panel 2
-                                    <br>
-                                    <input type="radio" @if ($pt == 3) checked @endif
-                                    name="penalytype" value="3"> Testing
-                                    <br>
-                                    <input type="radio" @if ($pt == 4) checked @endif
-                                    name="penalytype" value="4"> Website
-                                    <br>
-                                    <input type="radio" @if ($pt == 5) checked @endif
-                                    name="penalytype" value="5"> Panel 5
-                                    <br>
-                                    <input type="radio" @if ($pt == 6) checked @endif
-                                    name="penalytype" value="6"> Panel 6
+                                    {{-- B6: dynamic panel list (city names + new panels 7+). --}}
+                                    @foreach (\App\PanelType::listActive() as $pt2)
+                                        <input type="radio" @if ($pt == $pt2->id) checked @endif
+                                        name="penalytype" value="{{ $pt2->id }}"> {{ $pt2->name }}
+                                        <br>
+                                    @endforeach
                                 </div>
                             </div>
                             <div class="col-md-12">

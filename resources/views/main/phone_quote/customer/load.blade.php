@@ -123,19 +123,8 @@ if (isset($_GET['titlee'])) {
                                 {{ $val->destinationzsc }}
                             </td>
                             <td>
-                                @if ($val->paneltype == 1)
-                                    <span class="badge badge-secondary">Phone Customer</span>
-                                @elseif ($val->paneltype == 3)
-                                    <span class="badge badge-primary">Testing Customer</span>
-                                @elseif ($val->paneltype == 4)
-                                    <span class="badge badge-primary">Panel Type 4 Customer</span>
-                                @elseif ($val->paneltype == 5)
-                                    <span class="badge badge-primary">Panel Type 5 Customer</span>
-                                @elseif ($val->paneltype == 6)
-                                    <span class="badge badge-primary">Panel Type 6 Customer</span>
-                                @else
-                                    <span class="badge badge-primary">Website Customer</span>
-                                @endif
+                                {{-- B6: dynamic panel label --}}
+                                <span class="badge badge-primary">{{ \App\PanelType::nameFor($val->paneltype) }} Customer</span>
                             </td>
                             <td>
                                 {{-- <button type="button" onclick="historyUpdateKaro({{ $val->id }})"
