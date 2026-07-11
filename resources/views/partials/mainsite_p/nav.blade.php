@@ -869,6 +869,11 @@ if (!function_exists('get_user_name123')) {
                                     <i class="fa fa-lock pr-1 mt-1 ml-1"></i>
                                     <div class="">Other Password</div>
                                 </a>
+                                {{-- B6: dynamic panel types admin --}}
+                                <a class="dropdown-item d-flex" href="{{url('/panel-types')}}">
+                                    <i class="fa fa-th-large pr-1 mt-1 ml-1"></i>
+                                    <div class="">Panel Types</div>
+                                </a>
                             @endif
                             @if(false) {{-- #17 (2026-07-03): Profile hidden per client request --}}
                                 <a class="dropdown-item d-flex" href="{{url('/profile')}}">
