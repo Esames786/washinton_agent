@@ -2060,7 +2060,7 @@
                                     {{-- B6: dynamic panel list as a dropdown (city names + new panels 7+). --}}
                                     <select name="penalytype" class="form-control">
                                         @foreach (\App\PanelType::listActive() as $pt2)
-                                            <option value="{{ $pt2->id }}" @if ($pt == $pt2->id) selected @endif>{{ $pt2->name }}</option>
+                                            <option value="{{ $pt2->id }}" @if ($pt == $pt2->id) selected @endif>{{ $pt2->name }}@if ($pt2->is_default) (Default){{-- default fallback panel --}}@endif</option>
                                         @endforeach
                                     </select>
                                 </div>
