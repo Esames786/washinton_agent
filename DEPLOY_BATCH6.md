@@ -100,15 +100,22 @@ Both seeders are idempotent (safe to re-run).
 - Panel switcher + order badges show city names.
 - A new signup from a known city lands on that city's panel (check `user_setting.penal_type`).
 
-### ⛔ Still DEFERRED (one piece, high-risk — NOT in this deploy)
-**Granular per-panel PERMISSION editing for the NEW panels 7-10** (Bahawalpur, Jhang,
-Peshawar, Karachi). New panels are named / assignable / routable / switchable, but the
-`check_panel()` permission source for 7-10 still needs to read `user_panel_access`
-(6 hot controller switches + edit_employee save wiring + `B6UserPanelAccessSeeder`).
-Because that touches every-request permission loading across ~600 sites, it must be a
-separate, tested rollout. City-based signup deliberately assigns **only functional panels
-1-6**, so nothing lands on an unwired panel. `B6UserPanelAccessSeeder` is for THAT future
-step — not needed for this deploy.
+### ✅ DECISION LOCKED (2026-07-11): new panels 7-10 = Website-permission default
+Investigation showed the panel-access read logic (`$phoneaccess = explode(',', …)`) is
+inlined + INCONSISTENT across ~40 files (the nav uses `web` for panels 2/4/5/6; the page
+controllers use their own `panel_type_N` columns). There is no single central switch.
+
+New panels 7-10 (Bahawalpur, Jhang, Peshawar, Karachi) already work end-to-end —
+named, assignable, switchable, and orders route by `paneltype` — and inherit the
+**Website panel's permission set** via the existing `else` branch (a sensible default,
+no crash). 
+
+**Client accepted web-default.** So the full "move access to `user_panel_access` + custom
+per-panel permissions for 7-10" is NOT being done (it would rewrite every-request
+permission loading across ~40 inconsistent hot files and change existing 4/5/6 behaviour —
+high risk, low reward). `user_panel_access` + `B6UserPanelAccessSeeder` remain as unused
+foundation should a *specific* new panel ever need custom permissions (done per-screen,
+tested, at that time). Nothing further to deploy for panels.
 
 ---
 
