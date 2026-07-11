@@ -100,22 +100,36 @@ Both seeders are idempotent (safe to re-run).
 - Panel switcher + order badges show city names.
 - A new signup from a known city lands on that city's panel (check `user_setting.penal_type`).
 
-### ✅ DECISION LOCKED (2026-07-11): new panels 7-10 = Website-permission default
-Investigation showed the panel-access read logic (`$phoneaccess = explode(',', …)`) is
-inlined + INCONSISTENT across ~40 files (the nav uses `web` for panels 2/4/5/6; the page
-controllers use their own `panel_type_N` columns). There is no single central switch.
+### ✅ FINAL (2026-07-12): dynamic per-panel access implemented — 1-6 columns, 7+ link table
+Decision: **panels 1-6 keep their legacy `user` columns ("old fashion"); NEW panels 7+
+store their access in `user_panel_access` (a separate link table = unlimited panels).**
 
-New panels 7-10 (Bahawalpur, Jhang, Peshawar, Karachi) already work end-to-end —
-named, assignable, switchable, and orders route by `paneltype` — and inherit the
-**Website panel's permission set** via the existing `else` branch (a sensible default,
-no crash). 
+What was built (on `main`):
+- `UserPanelAccess` model + `User` accessor layer: the 6 columns become accessors that
+  read `user_panel_access` (fallback to the raw column until the seeder runs, so it is
+  safe pre-migration); after every save the changed columns are mirrored into the link
+  table. `accessForPanel($id)` / `setPanelAccess($id, ...)` handle panels 7+.
+- Read-routing: every `$phoneaccess` switch gets a `elseif ($panel >= 7)` branch that
+  reads `accessForPanel($panel)` — **panels 1-6 are left EXACTLY as they were** (zero
+  behaviour change), only 7+ read the link table. Done in nav ×2, sidebar ×2, layouts
+  (innerpages/mainsite), and controllers ProfileController / NewOrder / DashboardController
+  / LogoutQA. *(Minor display-only badge views still default 7+ to Website — cosmetic.)*
+- Editor: `edit_subcontractor` shows dynamic permission modals + buttons for any assigned
+  panel 7+; `update_employee` saves `panel_access_{id}[]` into `user_panel_access`.
+- Signups + HR add-employee need no change — the User "saved" event mirrors the 6 columns
+  into the link table automatically.
 
-**Client accepted web-default.** So the full "move access to `user_panel_access` + custom
-per-panel permissions for 7-10" is NOT being done (it would rewrite every-request
-permission loading across ~40 inconsistent hot files and change existing 4/5/6 behaviour —
-high risk, low reward). `user_panel_access` + `B6UserPanelAccessSeeder` remain as unused
-foundation should a *specific* new panel ever need custom permissions (done per-screen,
-tested, at that time). Nothing further to deploy for panels.
+**Deploy is safe with or without the seeder** (reads fall back to the columns). Running
+`B6UserPanelAccessSeeder` backfills every user's 1-6 access into the link table at once.
+
+```bash
+# washinton_agent — run WITH the code deploy
+php artisan migrate --force          # (panel tables already migrated earlier — no-op if so)
+composer dump-autoload               # so database/seeds/B6* classes resolve
+php artisan db:seed --class="\B6UserPanelAccessSeeder" --force   # copies 6 columns → link table (idempotent)
+php artisan optimize:clear
+```
+> Note the leading backslash: `--class="\B6UserPanelAccessSeeder"` (global class, no namespace).
 
 ---
 
