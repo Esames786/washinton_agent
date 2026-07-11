@@ -115,8 +115,8 @@ class User extends Authenticatable
 
     /**
      * Access-id string for ANY panel id. Panels 1-6 use their column/link value;
-     * new panels (7+) read the link table, defaulting to Website (panel 2) access
-     * when no custom row has been set yet.
+     * new panels (7+) read the link table, defaulting to the primary phone-panel
+     * access when no custom row has been set yet.
      */
     public function accessForPanel($panelId): string
     {
@@ -128,7 +128,9 @@ class User extends Authenticatable
         if (array_key_exists($panelId, $map)) {
             return (string) $map[$panelId];
         }
-        return (string) $this->emp_access_web; // sensible default for a brand-new panel
+        // New city panels are order-taking panels → default to the primary (phone) access
+        // until an admin customises this panel's permissions in edit_subcontractor.
+        return (string) $this->emp_access_phone;
     }
 
     /** Set access for a new panel (7+) directly in the link table. */

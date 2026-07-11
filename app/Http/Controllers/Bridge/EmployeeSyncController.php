@@ -108,6 +108,7 @@ class EmployeeSyncController extends Controller
                     'last_name'      => $lastName,
                     'email'          => $email,
                     'phone'          => $request->input('phone', ''),
+                    'city'           => $request->input('city', ''), // B6: for city-based panel assignment
                 ],
                 $roleId
             );

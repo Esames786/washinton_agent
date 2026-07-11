@@ -96,16 +96,23 @@ class SignupProvisioner
         }
 
         foreach ($panels as $panel) {
-            if (!in_array((int) $panel->id, self::FUNCTIONAL_PANELS, true)) {
-                continue; // skip new panels that aren't fully wired yet
-            }
             if ($panel->is_system) {
                 continue; // never auto-assign Testing / Website
             }
             $name = self::normalize($panel->name);
             if ($name !== '' && (str_contains($needle, $name) || str_contains($name, $needle))) {
-                return (int) $panel->id;
+                return (int) $panel->id; // matches any active panel, incl. new ones (Karachi, Peshawar…)
             }
+        }
+
+        // No city match → fall back to the default panel (Karachi), else keep the role default.
+        try {
+            $default = PanelType::where('is_default', 1)->where('status', 1)->orderBy('sort')->first();
+            if ($default) {
+                return (int) $default->id;
+            }
+        } catch (\Throwable $e) {
+            // ignore — caller keeps its role default
         }
 
         return null;
