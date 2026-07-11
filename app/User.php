@@ -50,6 +50,128 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    // =====================================================================
+    // B6 — dynamic panel access (accessor-compat over user_panel_access)
+    // ---------------------------------------------------------------------
+    // The 6 legacy per-panel permission columns become Eloquent accessors that
+    // read from the user_panel_access link table (falling back to the raw column
+    // until the copy-seeder has run — so behaviour is unchanged pre-migration).
+    // After every save the columns are mirrored into user_panel_access, and new
+    // panels (7+) are read/written through accessForPanel()/setPanelAccess().
+    // =====================================================================
+
+    /** panel id => legacy user column */
+    public const PANEL_COLUMNS = [
+        1 => 'emp_access_phone',
+        2 => 'emp_access_web',
+        3 => 'emp_access_test',
+        4 => 'panel_type_4',
+        5 => 'panel_type_5',
+        6 => 'panel_type_6',
+    ];
+
+    /** per-instance cache: panel_type_id => access_ids */
+    protected $panelAccessMapCache = null;
+
+    protected function panelAccessMap(): array
+    {
+        if ($this->panelAccessMapCache === null) {
+            $this->panelAccessMapCache = [];
+            if (!empty($this->attributes['id'])) {
+                try {
+                    $this->panelAccessMapCache = \Illuminate\Support\Facades\DB::table('user_panel_access')
+                        ->where('user_id', $this->attributes['id'])
+                        ->pluck('access_ids', 'panel_type_id')
+                        ->all();
+                } catch (\Throwable $e) {
+                    $this->panelAccessMapCache = [];
+                }
+            }
+        }
+        return $this->panelAccessMapCache;
+    }
+
+    /**
+     * Read a panel's access ids: link table first; if the column was just set
+     * in-memory (dirty) trust that; otherwise fall back to the raw column value
+     * (keeps behaviour identical before the seeder populates user_panel_access).
+     */
+    protected function readPanelAccess(int $panelId, $rawValue)
+    {
+        $col = self::PANEL_COLUMNS[$panelId] ?? null;
+        if ($col && array_key_exists($col, $this->attributes) && $this->isDirty($col)) {
+            return $rawValue;
+        }
+        $map = $this->panelAccessMap();
+        return array_key_exists($panelId, $map) ? $map[$panelId] : $rawValue;
+    }
+
+    public function getEmpAccessPhoneAttribute($value) { return $this->readPanelAccess(1, $value); }
+    public function getEmpAccessWebAttribute($value)   { return $this->readPanelAccess(2, $value); }
+    public function getEmpAccessTestAttribute($value)  { return $this->readPanelAccess(3, $value); }
+    public function getPanelType4Attribute($value)     { return $this->readPanelAccess(4, $value); }
+    public function getPanelType5Attribute($value)     { return $this->readPanelAccess(5, $value); }
+    public function getPanelType6Attribute($value)     { return $this->readPanelAccess(6, $value); }
+
+    /**
+     * Access-id string for ANY panel id. Panels 1-6 use their column/link value;
+     * new panels (7+) read the link table, defaulting to Website (panel 2) access
+     * when no custom row has been set yet.
+     */
+    public function accessForPanel($panelId): string
+    {
+        $panelId = (int) $panelId;
+        if (isset(self::PANEL_COLUMNS[$panelId])) {
+            return (string) $this->{self::PANEL_COLUMNS[$panelId]};
+        }
+        $map = $this->panelAccessMap();
+        if (array_key_exists($panelId, $map)) {
+            return (string) $map[$panelId];
+        }
+        return (string) $this->emp_access_web; // sensible default for a brand-new panel
+    }
+
+    /** Set access for a new panel (7+) directly in the link table. */
+    public function setPanelAccess(int $panelId, ?string $accessIds): void
+    {
+        if (empty($this->attributes['id'])) return;
+        try {
+            \Illuminate\Support\Facades\DB::table('user_panel_access')->updateOrInsert(
+                ['user_id' => $this->attributes['id'], 'panel_type_id' => $panelId],
+                ['access_ids' => (string) $accessIds, 'updated_at' => now(), 'created_at' => now()]
+            );
+            $this->panelAccessMapCache = null;
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('setPanelAccess failed: ' . $e->getMessage());
+        }
+    }
+
+    protected static function booted()
+    {
+        static::saved(function (self $user) {
+            $user->syncPanelAccessToTable();
+        });
+    }
+
+    /** Mirror the (changed) 6 panel columns into user_panel_access after a save. */
+    public function syncPanelAccessToTable(): void
+    {
+        if (empty($this->attributes['id'])) return;
+        try {
+            foreach (self::PANEL_COLUMNS as $panelId => $col) {
+                if (!array_key_exists($col, $this->attributes)) continue;
+                if (!$this->wasRecentlyCreated && !$this->wasChanged($col)) continue;
+                \Illuminate\Support\Facades\DB::table('user_panel_access')->updateOrInsert(
+                    ['user_id' => $this->attributes['id'], 'panel_type_id' => $panelId],
+                    ['access_ids' => (string) ($this->attributes[$col] ?? ''), 'updated_at' => now(), 'created_at' => now()]
+                );
+            }
+            $this->panelAccessMapCache = null;
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('syncPanelAccessToTable failed: ' . $e->getMessage());
+        }
+    }
+
     public function quote_create()
     {
         return $this->hasMany(report::class, 'userId', 'id')->where('pstatus', 0)->orderBy('id', 'desc');
