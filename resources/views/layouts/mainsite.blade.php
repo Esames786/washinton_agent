@@ -370,6 +370,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         img { max-width: 100%; height: auto; }
+        /* B6: soft-hide the Port Details icon(s) + modal */
+        a[data-target="#portmodal"], #portmodal { display: none !important; }
         @media (max-width: 991.98px) {
             body { overflow-x: hidden; }
             .table-responsive { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }

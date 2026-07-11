@@ -532,24 +532,14 @@ if (!function_exists('get_user_name123')) {
 
                             <option selected="selected" value=""><?php echo get_panel_name(); ?></option>
                             <optgroup label="Select Panel Type">
-                                @if (in_array('1', $emp_panel_access))
-                                    <option value="1">Panel 1</option>
-                                @endif
-                                @if (in_array('2', $emp_panel_access))
-                                    <option value="2">Panel 2</option>
-                                @endif
-                                @if (in_array("110", $phoneaccess) && in_array('3', $emp_panel_access))
-                                    <option value="3">Testing</option>
-                                @endif
-                                @if (in_array('4', $emp_panel_access))
-                                    <option value="4">Website</option>
-                                @endif
-                                @if (in_array('5', $emp_panel_access))
-                                    <option value="5">Panel 5</option>
-                                @endif
-                                @if (in_array('6', $emp_panel_access))
-                                    <option value="6">Panel 6</option>
-                                @endif
+                                {{-- B6: dynamic panel list (city names + new panels 7+). Access gated by
+                                     $emp_panel_access; Testing(3) still needs phone permission 110. --}}
+                                @foreach (\App\PanelType::listActive() as $pt)
+                                    @if (in_array((string) $pt->id, $emp_panel_access)
+                                        && ($pt->id != 3 || in_array("110", $phoneaccess)))
+                                        <option value="{{ $pt->id }}">{{ $pt->name }}</option>
+                                    @endif
+                                @endforeach
                             </optgroup>
                         </select>
                     </form>
@@ -1103,6 +1093,11 @@ if (!function_exists('get_user_name123')) {
                                 <a class="dropdown-item d-flex" href="{{url('/other_pass')}}">
                                     <i class="fa fa-lock pr-1 mt-1 ml-1"></i>
                                     <div class="">Other Password</div>
+                                </a>
+                                {{-- B6: dynamic panel types admin --}}
+                                <a class="dropdown-item d-flex" href="{{url('/panel-types')}}">
+                                    <i class="fa fa-th-large pr-1 mt-1 ml-1"></i>
+                                    <div class="">Panel Types</div>
                                 </a>
                             @endif
                             @if(false) {{-- #17 (2026-07-03): Profile hidden per client request --}}

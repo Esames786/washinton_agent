@@ -113,7 +113,10 @@
                                     <select class="form-control select2" name="job_type">
                                         {{-- <optgroup label="Select Job Type"> --}}
                                         <option value="" selected="" disabled="">Select Job Type</option>
-                                        @foreach ($data as $val) ?>
+                                        {{-- B6: only whitelisted roles selectable --}}
+                                        @php $roleWhitelist = ['Admin','Order Taker','Dispatcher','Manager','QA']; @endphp
+                                        @foreach ($data as $val)
+                                            @if (!in_array($val->name, $roleWhitelist, true)) @continue @endif
                                             <option value="{{ $val->id }}">{{ $val->name }}</option>
                                         @endforeach
                                         {{-- </optgroup> --}}
@@ -159,9 +162,9 @@
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModa24">Website Quote</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModa25">Panel Type 5 Quote</button>
+                                            data-target="#exampleModa25">{{ \App\PanelType::nameFor(5) }} Quote</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModa26">Panel Type 6 Quote</button>
+                                            data-target="#exampleModa26">{{ \App\PanelType::nameFor(6) }} Quote</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModal3">Show Data</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
@@ -383,7 +386,7 @@
                             ],
                             [
                             'id'=>'exampleModa24',
-                            'title'=>'Panel Type 4',
+                            'title'=>'Subcontractor Access ('.\App\PanelType::nameFor(4).')',
                             'name'=>'panel_type_4',
                             'selected'=>[],
                             'prefix'=>'panel_type_4',
@@ -392,7 +395,7 @@
                             ],
                             [
                             'id'=>'exampleModa25',
-                            'title'=>'Panel Type 5',
+                            'title'=>'Subcontractor Access ('.\App\PanelType::nameFor(5).')',
                             'name'=>'panel_type_5',
                             'selected'=>[],
                             'prefix'=>'panel_type_5',
@@ -401,7 +404,7 @@
                             ],
                             [
                             'id'=>'exampleModa26',
-                            'title'=>'Panel Type 6',
+                            'title'=>'Subcontractor Access ('.\App\PanelType::nameFor(6).')',
                             'name'=>'panel_type_6',
                             'selected'=>[],
                             'prefix'=>'panel_type_6',
@@ -1333,30 +1336,13 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <div class="row">
-                                                        <div class="col-sm-4">
-                                                            <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access1" value="1">
-                                                            <label class="ml-2" for="emp_panel_access1">Panel 1</label>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access2" value="2">
-                                                            <label class="ml-2" for="emp_panel_access2">Panel 2</label>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access3" value="3">
-                                                            <label class="ml-2" for="emp_panel_access3">Testing</label>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access4" value="4">
-                                                            <label class="ml-2" for="emp_panel_access4">Website</label>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access5" value="5">
-                                                            <label class="ml-2" for="emp_panel_access5">Panel 5</label>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access6" value="6">
-                                                            <label class="ml-2" for="emp_panel_access6">Panel 6</label>
-                                                        </div>
+                                                        {{-- B6: dynamic panel-access list (city names + new panels 7+). --}}
+                                                        @foreach (\App\PanelType::listActive() as $pt)
+                                                            <div class="col-sm-4">
+                                                                <input type="checkbox" name="emp_panel_access[]" id="emp_panel_access{{ $pt->id }}" value="{{ $pt->id }}">
+                                                                <label class="ml-2" for="emp_panel_access{{ $pt->id }}">{{ $pt->name }}</label>
+                                                            </div>
+                                                        @endforeach
                                                     </div>
                                                 </div>
                                             </div>

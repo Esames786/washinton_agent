@@ -79,23 +79,10 @@
                                         name="panel_type2" id="panel_type2">
                                     <option selected="selected" value="">All Panels</option>
                                     <optgroup label="Select Panel Type">
-                                        <option value="1">Panel 1</option>
-
-
-                                        <option value="2">Panel 2</option>
-
-
-                                        <option value="3">Testing</option>
-
-
-                                        <option value="4">Website</option>
-
-
-                                        <option value="5">Panel 5</option>
-
-
-                                        <option value="6">Panel 6</option>
-
+                                        {{-- B6: dynamic panel filter (city names + new panels 7+). --}}
+                                        @foreach (\App\PanelType::listActive() as $pt)
+                                            <option value="{{ $pt->id }}">{{ $pt->name }}</option>
+                                        @endforeach
                                     </optgroup>
                                 </select>
                             </div>

@@ -211,7 +211,7 @@ class FrontendController extends Controller
                 'add_info'         => $addInfo,
 
                 // Meta — car_type tells order taker which pipeline to use
-                'paneltype'        => 2,
+                'paneltype'        => 4, // Batch 6: Hello website quotes land on Website Quote panel (4), not Panel 2
                 'pstatus'          => 0,
                 'source'           => 'Website',
                 'car_type'         => $carType,
@@ -257,7 +257,7 @@ class FrontendController extends Controller
                 'oemail'     => $request->Lead_Email,
                 'ophone'     => $request->Lead_Phone,
                 'add_info'   => ($request->Lead_Subject ? $request->Lead_Subject . ': ' : '') . ($request->Lead_Message ?? ''),
-                'paneltype'  => 2,
+                'paneltype'  => 4, // Batch 6: Hello website quotes land on Website Quote panel (4)
                 'pstatus'    => 0,
                 'source'     => 'Website',
             ]);

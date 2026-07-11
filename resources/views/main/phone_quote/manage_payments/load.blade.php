@@ -53,19 +53,7 @@ if (isset($_GET['titlee'])) {
                         <br>
                         <span class="badge badge-pill badge-default mt-2">Payment: <?php echo pay_status($val->paid_status); ?></span>
                         <br>
-                        @if ($val->paneltype == 1)
-                            <span class="badge badge-pill badge-default mt-2">Type: Panel 1</span>
-                        @elseif($val->paneltype == 3)
-                            <span class="badge badge-pill badge-default mt-2">Type: Testing</span>
-                        @elseif($val->paneltype == 4)
-                            <span class="badge badge-pill badge-default mt-2">Type: Website</span>
-                        @elseif($val->paneltype == 5)
-                            <span class="badge badge-pill badge-default mt-2">Type: Panel 5</span>
-                        @elseif($val->paneltype == 6)
-                            <span class="badge badge-pill badge-default mt-2">Type: Panel 6</span>
-                        @else
-                            <span class="badge badge-pill badge-default mt-2">Type: Panel 2</span>
-                        @endif
+                        <span class="badge badge-pill badge-default mt-2">Type: {{ \App\PanelType::nameFor($val->paneltype) }}</span>{{-- B6: dynamic panel label --}}
                     </td>
                     <td>
 

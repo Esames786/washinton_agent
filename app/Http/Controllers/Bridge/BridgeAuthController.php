@@ -137,21 +137,34 @@ class BridgeAuthController extends Controller
             $user->slug      = $slug;
             $user->is_crazyrays = 1; // Originated from crazyrayssolutions.com.pk — drives branding/redirects
 
-            foreach (self::PERMISSION_COLUMNS as $col) {
-                $user->$col = $referenceUser->$col;
-            }
+            // B6: fill permission/access columns from the admin-editable signup_defaults
+            // table; falls back to cloning the reference user if the row isn't seeded yet.
+            $roleKey = ($referenceUserId === self::CARRIER_REFERENCE_USER_ID) ? 'dispatcher' : 'order_taker';
+            \App\Support\SignupProvisioner::applyDefaults($user, $roleKey, self::PERMISSION_COLUMNS, $referenceUser);
             $user->order_taker_quote = 1;
 
             // #18: guarantee default New->Delivered folder access on every signup path
             // (merges into the columns just copied; persisted by the save() below).
             $user->applyDefaultFolderAccess(false);
 
-            $user->save();
-
-            // user_settings
+            // Base panel: agent → 1 (Lahore), carrier → its default.
             $penal_type = ($referenceUserId === self::AGENT_REFERENCE_USER_ID)
                 ? 1
                 : ($this->getReferenceUserPanelType($referenceUserId) ?? 1);
+
+            // B6: city-based panel assignment. If the signup city (entered or IP) maps to a
+            // functional city panel (1..6), land the user there and grant working access.
+            // Unmatched / new-panel cities keep the safe default above.
+            $cityPanel = \App\Support\SignupProvisioner::resolveCityPanelId(
+                $request->input('city'),
+                $request->ip()
+            );
+            if ($cityPanel !== null) {
+                $penal_type = $cityPanel;
+                \App\Support\SignupProvisioner::grantCityPanel($user, $cityPanel);
+            }
+
+            $user->save();
 
             $setting             = new user_setting();
             $setting->user_id    = $user->id;
@@ -366,18 +379,8 @@ class BridgeAuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        // #11: capture the login IP (source = crazyrays) for admin/manager visibility.
-        \App\UserLoginActivity::record($user->id, $request->ip(), 'crazyrays', $request->userAgent());
-
-        // #12: enforce the same per-user IP restriction as hello. A CrazyRays user whose IP
-        // check is on can only log in from an allowed IP; otherwise block and send them back.
-        if ($ipErr = \App\Support\IpRestriction::enforce($user, $request->ip())) {
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-            $back = rtrim((string) config('bridge.daydispatch.base_url', ''), '/');
-            return redirect()->away(($back ?: url('/login')) . '?ip_error=' . urlencode($ipErr));
-        }
+        // #11/#12: login-IP capture + IP enforcement are now global (Login event listener +
+        // EnforceUserSecurity middleware) — fires here too via Auth::login($user) above.
 
         // Tag session so logout and landing page know this user came from CrazyRays
         if (!empty($payload['cr_origin'])) {

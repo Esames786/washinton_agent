@@ -104,26 +104,32 @@
                 <div class="card-body">
                     <div class="">
                         <div class="table-responsive">
+                            {{-- B6: only these roles are shown; the rest are hidden (kept in code). --}}
+                            @php $roleWhitelist = ['Admin','Order Taker','Dispatcher','Manager','QA']; @endphp
                             <!-- Tab links -->
                             <div class="tab">
                                 @foreach ($roles as $key => $val)
+                                    @if (in_array($val->name, $roleWhitelist, true))
                                     <button class="tablinks"
                                         onclick="openCity(event, '{{ str_replace(' ', '_', $val->name) }}')"
                                         @if ($val->name == 'Admin') id="defaultOpen" @endif>{{ $val->name }}
                                         ({{ $val->users_count }})
                                     </button>
+                                    @endif
                                 @endforeach
                                 <?php
                                 $user = \App\User::where('role', null)->where('deleted', 0)->get();
                                 ?>
-                                <button class="tablinks" onclick="openCity(event, 'No_Roles')">No Roles
+                                {{-- B6: No Roles + Deleted tabs hidden --}}
+                                <button class="tablinks" style="display:none;" onclick="openCity(event, 'No_Roles')">No Roles
                                     ({{ count($user) }})</button>
-                                <button class="tablinks" onclick="openCity(event, 'Deleted')">Deleted
+                                <button class="tablinks" style="display:none;" onclick="openCity(event, 'Deleted')">Deleted
                                     ({{ count($deleted) }})</button>
                             </div>
 
                             <!-- Tab content -->
                             @foreach ($roles as $key2 => $val2)
+                                @if (!in_array($val2->name, $roleWhitelist, true)) @continue @endif
                                 <div id="{{ str_replace(' ', '_', $val2->name) }}" class="tabcontent">
                                     <table id="example{{ $key2 }}"
                                         class="table table-bordered table-striped text-nowrap key-buttons"

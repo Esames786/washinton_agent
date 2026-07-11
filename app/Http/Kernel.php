@@ -35,6 +35,8 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            // Batch 6 (D2): single-session + per-user IP restriction (fail-open).
+            \App\Http\Middleware\EnforceUserSecurity::class,
         ],
 
         'api' => [

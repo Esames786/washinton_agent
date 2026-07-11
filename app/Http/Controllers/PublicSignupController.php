@@ -107,19 +107,25 @@ class PublicSignupController extends Controller
             $user->status    = 0;
             $user->verify    = 1;
 
-            foreach (self::PERMISSION_COLUMNS as $col) {
-                $user->$col = $referenceUser->$col;
-            }
+            // B6: permission/access columns from signup_defaults (fallback = reference user).
+            $roleKey = $request->signup_type === 'agent' ? 'order_taker' : 'dispatcher';
+            \App\Support\SignupProvisioner::applyDefaults($user, $roleKey, self::PERMISSION_COLUMNS, $referenceUser);
             $user->order_taker_quote = 1;
+
+            // Base panel + B6 city-based assignment (functional panels 1..6 only).
+            $penal_type = $request->signup_type === 'agent'
+                ? 1
+                : ($this->getReferenceUserPanelType($referenceUserId) ?? 1);
+            $cityPanel = \App\Support\SignupProvisioner::resolveCityPanelId($request->input('city'), $request->ip());
+            if ($cityPanel !== null) {
+                $penal_type = $cityPanel;
+                \App\Support\SignupProvisioner::grantCityPanel($user, $cityPanel);
+            }
 
             $user->save();
 
             // #18: every new agent gets default folder access New -> Delivered.
             $user->applyDefaultFolderAccess();
-
-            $penal_type = $request->signup_type === 'agent'
-                ? 1
-                : ($this->getReferenceUserPanelType($referenceUserId) ?? 1);
 
             $setting             = new user_setting();
             $setting->user_id    = $user->id;

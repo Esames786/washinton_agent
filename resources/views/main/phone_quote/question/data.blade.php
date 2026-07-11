@@ -261,19 +261,7 @@ function typeCondition($value, $key)
                                     : ($value->paneltype == 6
                                     ? 'primary'
                                     : 'secondary'))))) }} text-light">
-                                    {{ $value->paneltype == 1
-                                    ? 'Panel 1'
-                                    : ($value->paneltype == 2
-                                    ? 'Panel 2'
-                                    : ($value->paneltype == 3
-                                    ? 'Testing'
-                                    : ($value->paneltype == 4
-                                    ? 'Website'
-                                    : ($value->paneltype == 5
-                                    ? 'Panel 5'
-                                    : ($value->paneltype == 6
-                                    ? 'Panel 6'
-                                    : 'Panel 1'))))) }}
+                                    {{ \App\PanelType::nameFor($value->paneltype) }}
                                 </span>
                             </dd>
                         @endif

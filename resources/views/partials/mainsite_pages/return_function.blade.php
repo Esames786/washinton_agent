@@ -416,23 +416,9 @@ if (!function_exists('get_panel_name')) {
         if (!empty($query)) {
             $ptype = $query['penal_type'];
         }
-        if ($ptype == '1') {
-            $penaltypename = 'Panel 1';
-        } elseif ($ptype == '2') {
-            $penaltypename = 'Panel 2';
-        } elseif ($ptype == '3') {
-            $penaltypename = 'Testing';
-        } elseif ($ptype == '4') {
-            $penaltypename = 'Website';
-        } elseif ($ptype == '5') {
-            $penaltypename = 'Panel 5';
-        } elseif ($ptype == '6') {
-            $penaltypename = 'Panel 6';
-        } else {
-            $penaltypename = 'Unknown Quote Type';
-        }
-
-        return $penaltypename;
+        // B6: panel names are now dynamic (city names) via panel_types; falls back
+        // to "Panel N" until the seeder runs, so behaviour degrades gracefully.
+        return \App\PanelType::nameFor($ptype);
     }
 }
 

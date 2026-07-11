@@ -257,14 +257,7 @@
                                         ($order->paneltype == 5 ? 'primary' : 
                                         ($order->paneltype == 6 ? 'primary' : 'secondary'))))) 
                                     }} text-light">
-                                        {{ 
-                                            $order->paneltype == 1 ? 'Panel 1' :
-                                            ($order->paneltype == 2 ? 'Panel 2' :
-                                            ($order->paneltype == 3 ? 'Testing' :
-                                            ($order->paneltype == 4 ? 'Website' :
-                                            ($order->paneltype == 5 ? 'Panel 5' :
-                                            ($order->paneltype == 6 ? 'Panel 6' : 'Panel 1')))))
-                                        }}
+                                        {{ \App\PanelType::nameFor($order->paneltype) }}
                                     </span>
                                 </dd>
                             </td>

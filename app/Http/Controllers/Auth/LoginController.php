@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\UserLoginActivity;
-use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
@@ -39,19 +37,7 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    /**
-     * #11: capture the login IP so admins/managers can see an employee's login activity.
-     * #12: if IP restriction is enabled for this user, block logins from non-allowed IPs.
-     */
-    protected function authenticated(Request $request, $user)
-    {
-        UserLoginActivity::record($user->id, $request->ip(), 'hello', $request->userAgent());
-
-        if ($resp = \App\Support\IpRestriction::enforce($user, $request->ip())) {
-            \Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-            return redirect()->route('login')->withErrors(['email' => $resp]);
-        }
-    }
+    // #11/#12 login-activity capture + IP enforcement moved to the global Login event listener
+    // (App\Listeners\RecordLoginActivity) + EnforceUserSecurity middleware — fires for every login
+    // path (hello + crazy), so it no longer depends on this per-controller hook.
 }

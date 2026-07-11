@@ -16,6 +16,10 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\Event' => [
             'App\Listeners\EventListener',
         ],
+        // Batch 6 (D1): capture login IP for every successful login (hello + crazy).
+        \Illuminate\Auth\Events\Login::class => [
+            \App\Listeners\RecordLoginActivity::class,
+        ],
     ];
 
     /**

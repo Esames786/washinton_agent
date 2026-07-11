@@ -526,6 +526,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/role/update/{id}', 'RoleController@update');
         Route::get('/role/destroy/{id}', 'RoleController@destroy');
 
+        // B6: dynamic panel types (city names) — admin only
+        Route::get('/panel-types', 'PanelTypeController@index')->name('panel_types.index');
+        Route::post('/panel-types', 'PanelTypeController@store')->name('panel_types.store');
+        Route::post('/panel-types/{id}', 'PanelTypeController@update')->name('panel_types.update');
+
         Route::get('/ip_address', 'phone_quote\Ip\IpController@index');
         Route::post('/ip_address/store', 'phone_quote\Ip\IpController@store');
         Route::get('/ip_address/edit', 'phone_quote\Ip\IpController@edit');

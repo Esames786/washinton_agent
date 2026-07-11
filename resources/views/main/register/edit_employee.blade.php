@@ -235,7 +235,10 @@
                                     <label class="form-label" required>JOB TYPE</label>
                                     <select class="form-control select2" name="job_type">
                                         <option value="" selected disabled="">Select Job Type</option>
+                                        {{-- B6: only whitelisted roles selectable (keep the employee's current role visible) --}}
+                                        @php $roleWhitelist = ['Admin','Order Taker','Dispatcher','Manager','QA']; @endphp
                                         @foreach ($data as $val)
+                                            @if (!in_array($val->name, $roleWhitelist, true) && $data2->role != $val->id) @continue @endif
                                             <option @if ($data2->role == $val->id) selected @endif
                                             value="{{ $val->id }}">{{ $val->name }}</option>
                                         @endforeach
@@ -652,7 +655,7 @@
                             ],
                             [
                             'id'=>'exampleModa24',
-                            'title'=>'Panel Type 4',
+                            'title'=>'Subcontractor Access ('.\App\PanelType::nameFor(4).')',
                             'name'=>'panel_type_4',
                             'selected'=>$panel_type_4,
                             'prefix'=>'panel_type_4',
@@ -661,7 +664,7 @@
                             ],
                             [
                             'id'=>'exampleModa25',
-                            'title'=>'Panel Type 5',
+                            'title'=>'Subcontractor Access ('.\App\PanelType::nameFor(5).')',
                             'name'=>'panel_type_5',
                             'selected'=>$panel_type_5,
                             'prefix'=>'panel_type_5',
@@ -670,7 +673,7 @@
                             ],
                             [
                             'id'=>'exampleModa26',
-                            'title'=>'Panel Type 6',
+                            'title'=>'Subcontractor Access ('.\App\PanelType::nameFor(6).')',
                             'name'=>'panel_type_6',
                             'selected'=>$panel_type_6,
                             'prefix'=>'panel_type_6',
@@ -1582,48 +1585,16 @@
                                                                 for="emp_access_ship_all6">All Options</label>
                                                         </div> --}}
                                                         <br>
-                                                        <div class="col-sm-4">
-                                                            <input type="checkbox"
-                                                                   @if (in_array('1', $emp_panel_access)) {{ 'checked' }} @endif
-                                                                   name="emp_panel_access[]" id="emp_panel_access1"
-                                                                   value="1"><label class="ml-2"
-                                                                                    for="emp_panel_access1">Panel 1</label>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <input type="checkbox"
-                                                                   @if (in_array('2', $emp_panel_access)) {{ 'checked' }} @endif
-                                                                   name="emp_panel_access[]" id="emp_panel_access2"
-                                                                   value="2"><label class="ml-2"
-                                                                                    for="emp_panel_access2">Panel 2</label>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <input type="checkbox"
-                                                                   @if (in_array('3', $emp_panel_access)) {{ 'checked' }} @endif
-                                                                   name="emp_panel_access[]" id="emp_panel_access3"
-                                                                   value="3"><label class="ml-2"
-                                                                                    for="emp_panel_access3">Testing</label>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <input type="checkbox"
-                                                                   @if (in_array('4', $emp_panel_access)) {{ 'checked' }} @endif
-                                                                   name="emp_panel_access[]" id="emp_panel_access4"
-                                                                   value="4"><label class="ml-2"
-                                                                                    for="emp_panel_access4">Website</label>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <input type="checkbox"
-                                                                   @if (in_array('5', $emp_panel_access)) {{ 'checked' }} @endif
-                                                                   name="emp_panel_access[]" id="emp_panel_access5"
-                                                                   value="5"><label class="ml-2"
-                                                                                    for="emp_panel_access5">Panel 5</label>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <input type="checkbox"
-                                                                   @if (in_array('6', $emp_panel_access)) {{ 'checked' }} @endif
-                                                                   name="emp_panel_access[]" id="emp_panel_access6"
-                                                                   value="6"><label class="ml-2"
-                                                                                    for="emp_panel_access6">Panel 6</label>
-                                                        </div>
+                                                        {{-- B6: dynamic panel-access list (city names + new panels 7+); pre-checks existing access. --}}
+                                                        @foreach (\App\PanelType::listActive() as $pt)
+                                                            <div class="col-sm-4">
+                                                                <input type="checkbox"
+                                                                       @if (in_array((string) $pt->id, $emp_panel_access)) {{ 'checked' }} @endif
+                                                                       name="emp_panel_access[]" id="emp_panel_access{{ $pt->id }}"
+                                                                       value="{{ $pt->id }}"><label class="ml-2"
+                                                                                        for="emp_panel_access{{ $pt->id }}">{{ $pt->name }}</label>
+                                                            </div>
+                                                        @endforeach
                                                     </div>
                                                 </div>
                                             </div>

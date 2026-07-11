@@ -163,19 +163,7 @@ if (isset($_GET['titlee'])) {
                             $days = $to->diffInDays($from);
                         @endphp
                         {{ $days }} Days <br />
-                        @if ($val->paneltype == 2)
-                            <span class="badge badge-primary">Panel 2</span>
-                        @elseif($val->paneltype == 3)
-                            <span class="badge badge-primary">Testing</span>
-                        @elseif($val->paneltype == 4)
-                            <span class="badge badge-primary">Website</span>
-                        @elseif($val->paneltype == 5)
-                            <span class="badge badge-primary">Panel 5</span>
-                        @elseif($val->paneltype == 6)
-                            <span class="badge badge-primary">Panel 6</span>
-                        @else
-                            <span class="badge badge-secondary">Panel 1</span>
-                        @endif
+                        <span class="badge badge-primary">{{ \App\PanelType::nameFor($val->paneltype) }}</span>{{-- B6: dynamic panel label --}}
 
                         <br>
 

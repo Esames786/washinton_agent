@@ -172,11 +172,11 @@
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModal20">Testing Quotes</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModa4">Panel Type 4</button>
+                                            data-target="#exampleModa4">{{ \App\PanelType::nameFor(4) }}</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModa5">Panel Type 5</button>
+                                            data-target="#exampleModa5">{{ \App\PanelType::nameFor(5) }}</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModa6">Panel Type 6</button>
+                                            data-target="#exampleModa6">{{ \App\PanelType::nameFor(6) }}</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModal3">Show Data</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"

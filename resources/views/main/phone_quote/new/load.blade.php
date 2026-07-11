@@ -380,19 +380,7 @@ if (isset($_GET['titlee'])) {
                             echo 'badge-secondary my-2';
                         }
                         ?>">
-                            {{ $val->paneltype == 1
-                                ? 'Panel 1'
-                                : ($val->paneltype == 2
-                                    ? 'Panel 2'
-                                    : ($val->paneltype == 3
-                                        ? 'Testing'
-                                        : ($val->paneltype == 4
-                                            ? 'Website'
-                                            : ($val->paneltype == 5
-                                                ? 'Panel 5'
-                                                : ($val->paneltype == 6
-                                                    ? 'Panel 6'
-                                                    : 'Panel 1'))))) }}
+                            {{ \App\PanelType::nameFor($val->paneltype) }}
                         </span>
 
                         <div class="message-feed media m-0 p-0">

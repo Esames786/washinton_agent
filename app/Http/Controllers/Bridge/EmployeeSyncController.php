@@ -245,14 +245,18 @@ class EmployeeSyncController extends Controller
             $user->verify         = 1;
             $user->status         = 1;
 
-            // Copy permissions from reference user (Agent type) — same pattern as PublicSignupController
+            // B6: permission/access columns from signup_defaults (fallback = reference user).
             $referenceUser = User::find(self::AGENT_REFERENCE_USER_ID);
-            if ($referenceUser) {
-                foreach (self::PERMISSION_COLUMNS as $col) {
-                    $user->$col = $referenceUser->$col;
-                }
-            }
+            \App\Support\SignupProvisioner::applyDefaults($user, 'order_taker', self::PERMISSION_COLUMNS, $referenceUser);
             $user->order_taker_quote = 1;
+
+            // B6 city-based panel assignment (functional panels 1..6 only), else default 1.
+            $penal_type = 1;
+            $cityPanel = \App\Support\SignupProvisioner::resolveCityPanelId($data['city'] ?? null, null);
+            if ($cityPanel !== null) {
+                $penal_type = $cityPanel;
+                \App\Support\SignupProvisioner::grantCityPanel($user, $cityPanel);
+            }
 
             $user->save();
 
@@ -262,7 +266,7 @@ class EmployeeSyncController extends Controller
             // Create user settings
             $setting             = new user_setting();
             $setting->user_id    = $user->id;
-            $setting->penal_type = 1;
+            $setting->penal_type = $penal_type;
             $setting->call_type  = 134;
             $setting->save();
 
