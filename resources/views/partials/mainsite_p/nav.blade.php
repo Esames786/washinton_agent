@@ -29,6 +29,9 @@ elseif($check_panel == 3)
 {
     $phoneaccess = explode(',',Auth::user()->emp_access_test);
 }
+elseif($check_panel >= 7){ /* B6: new dynamic panels read their own access (default Website) */
+    $phoneaccess = explode(',', Auth::user()->accessForPanel($check_panel));
+}
 else{
 $phoneaccess=explode(',',Auth::user()->emp_access_web);
 }
