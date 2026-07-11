@@ -62,6 +62,8 @@ class ProfileController extends Controller
                 $phoneaccess = explode(',', Auth::user()->panel_type_5);
             } elseif ($paneltype == 6) {
                 $phoneaccess = explode(',', Auth::user()->panel_type_6);
+            } elseif ($paneltype >= 7) { // B6: new dynamic panels read their own link-table access
+                $phoneaccess = explode(',', Auth::user()->accessForPanel($paneltype));
             } else {
                 $phoneaccess = explode(',', Auth::user()->emp_access_web);
             }

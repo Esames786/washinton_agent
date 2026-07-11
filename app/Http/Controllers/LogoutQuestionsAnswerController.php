@@ -56,6 +56,10 @@ class LogoutQuestionsAnswerController extends Controller
         {
             $phoneaccess = explode(',',Auth::user()->emp_access_phone);
         }
+        elseif($paneltype >= 7)
+        {
+            $phoneaccess = explode(',',Auth::user()->accessForPanel($paneltype));
+        }
         else
         {
             $phoneaccess = explode(',',Auth::user()->emp_access_web);
@@ -176,6 +180,10 @@ class LogoutQuestionsAnswerController extends Controller
         if($paneltype == 1)
         {
             $phoneaccess = explode(',',Auth::user()->emp_access_phone);
+        }
+        elseif($paneltype >= 7)
+        {
+            $phoneaccess = explode(',',Auth::user()->accessForPanel($paneltype));
         }
         else
         {

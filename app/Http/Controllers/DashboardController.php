@@ -2669,6 +2669,8 @@ class DashboardController extends Controller
                 $phoneaccess = explode(',', Auth::user()->panel_type_5);
             } elseif ($ptype == 6) {
                 $phoneaccess = explode(',', Auth::user()->panel_type_6);
+            } elseif ($ptype >= 7) {
+                $phoneaccess = explode(',', Auth::user()->accessForPanel($ptype));
             } else {
                 $phoneaccess = [];
             }

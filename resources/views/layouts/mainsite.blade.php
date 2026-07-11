@@ -578,6 +578,8 @@
                             $phoneaccess = explode(',', Auth::user()->panel_type_5);
                         } elseif ($check_panel == 6) {
                             $phoneaccess = explode(',', Auth::user()->panel_type_6);
+                        } elseif ($check_panel >= 7) {
+                            $phoneaccess = explode(',', Auth::user()->accessForPanel($check_panel));
                         } else {
                             $phoneaccess = [];
                         }

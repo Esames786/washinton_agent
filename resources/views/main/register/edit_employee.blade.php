@@ -333,6 +333,13 @@
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
                                                     data-target="#exampleModa26">{{ \App\PanelType::nameFor(6) }}</button>
                                         @endif
+                                        {{-- B6: buttons for NEW dynamic panels (7+) the subcontractor is assigned to --}}
+                                        @foreach (\App\PanelType::where('id', '>', 6)->where('status', 1)->orderBy('sort')->get() as $b6btn)
+                                            @if (in_array((string) $b6btn->id, $emp_panel_access))
+                                                <button type="button" class="btn btn-primary" data-toggle="modal"
+                                                        data-target="#panelModal{{ $b6btn->id }}">{{ $b6btn->name }}</button>
+                                            @endif
+                                        @endforeach
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                                 data-target="#exampleModal3">Show Data</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
@@ -681,6 +688,23 @@
                             'options'=>$options_phone,
                             ],
                             ];
+
+                            // B6: append permission modals for NEW dynamic panels (7+) the
+                            // subcontractor is assigned to. Access is stored in user_panel_access
+                            // and read via accessForPanel(); options are the same as other panels.
+                            $b6AssignedPanels = array_filter(array_map('trim', explode(',', (string) ($data2->emp_panel_access ?? ''))));
+                            foreach (\App\PanelType::where('id', '>', 6)->where('status', 1)->orderBy('sort')->get() as $b6np) {
+                                if (!in_array((string) $b6np->id, $b6AssignedPanels, true)) { continue; }
+                                $modals[] = [
+                                    'id'       => 'panelModal' . $b6np->id,
+                                    'title'    => 'Subcontractor Access (' . $b6np->name . ')',
+                                    'name'     => 'panel_access_' . $b6np->id,
+                                    'selected' => explode(',', (string) $data2->accessForPanel($b6np->id)),
+                                    'prefix'   => 'panel_access_' . $b6np->id . '_',
+                                    'all_id'   => 'panel_access_all_' . $b6np->id,
+                                    'options'  => $options_phone,
+                                ];
+                            }
                             @endphp
 
                             @foreach ($modals as $m)

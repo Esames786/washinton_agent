@@ -93,6 +93,8 @@ class NewOrder extends Controller
             $pstatus = explode(',', Auth::user()->panel_type_5);
         } elseif ($ptype == 6) {
             $pstatus = explode(',', Auth::user()->panel_type_6);
+        } elseif ($ptype >= 7) {
+            $pstatus = explode(',', Auth::user()->accessForPanel($ptype));
         } else {
             $pstatus = [];
         }
@@ -349,6 +351,8 @@ class NewOrder extends Controller
             $pstatus = explode(',', $user->panel_type_5);
         } elseif ($ptype == 6) {
             $pstatus = explode(',', $user->panel_type_6);
+        } elseif ($ptype >= 7) {
+            $pstatus = explode(',', $user->accessForPanel($ptype));
         } else {
             $pstatus = [];
         }
@@ -1059,6 +1063,8 @@ class NewOrder extends Controller
                     $phoneaccess = explode(',', Auth::user()->panel_type_5);
                 } elseif ($ptype == 6) {
                     $phoneaccess = explode(',', Auth::user()->panel_type_6);
+                } elseif ($ptype >= 7) {
+                    $phoneaccess = explode(',', Auth::user()->accessForPanel($ptype));
                 } else {
                     $phoneaccess = [];
                 }
@@ -3570,6 +3576,8 @@ class NewOrder extends Controller
                     $phoneaccess = explode(',', Auth::user()->panel_type_5);
                 } elseif ($ptype == 6) {
                     $phoneaccess = explode(',', Auth::user()->panel_type_6);
+                } elseif ($ptype >= 7) {
+                    $phoneaccess = explode(',', Auth::user()->accessForPanel($ptype));
                 } else {
                     $phoneaccess = [];
                 }
@@ -7948,6 +7956,8 @@ class NewOrder extends Controller
                 $phoneaccess = explode(',', Auth::user()->panel_type_5);
             } elseif ($ptype == 6) {
                 $phoneaccess = explode(',', Auth::user()->panel_type_6);
+            } elseif ($ptype >= 7) {
+                $phoneaccess = explode(',', Auth::user()->accessForPanel($ptype));
             } else {
                 $phoneaccess = [];
             }
@@ -8478,6 +8488,8 @@ class NewOrder extends Controller
                 $phoneaccess = explode(',', Auth::user()->panel_type_5);
             } elseif ($ptype == 6) {
                 $phoneaccess = explode(',', Auth::user()->panel_type_6);
+            } elseif ($ptype >= 7) {
+                $phoneaccess = explode(',', Auth::user()->accessForPanel($ptype));
             } else {
                 $phoneaccess = [];
             }
@@ -8667,6 +8679,8 @@ class NewOrder extends Controller
                 $phoneaccess = explode(',', Auth::user()->panel_type_5);
             } elseif ($ptype == 6) {
                 $phoneaccess = explode(',', Auth::user()->panel_type_6);
+            } elseif ($ptype >= 7) {
+                $phoneaccess = explode(',', Auth::user()->accessForPanel($ptype));
             } else {
                 $phoneaccess = [];
             }
@@ -9431,6 +9445,8 @@ class NewOrder extends Controller
                 $phoneaccess = explode(',', Auth::user()->panel_type_5);
             } elseif ($ptype == 6) {
                 $phoneaccess = explode(',', Auth::user()->panel_type_6);
+            } elseif ($ptype >= 7) {
+                $phoneaccess = explode(',', Auth::user()->accessForPanel($ptype));
             } else {
                 $phoneaccess = [];
             }
