@@ -1040,6 +1040,16 @@ class DashboardController extends Controller
             $emp->shipment_status_quote_assign = $request->shipment_status_quote_assign ?? 0;
         }
         $emp->save();
+
+        // B6: save NEW dynamic-panel (7+) permissions into user_panel_access.
+        // (Panels 1-6 stay in their legacy columns above; only 7+ go to the link table.)
+        foreach (\App\PanelType::where('id', '>', 6)->get() as $b6np) {
+            $field = 'panel_access_' . $b6np->id;
+            if ($request->has($field)) {
+                $emp->setPanelAccess($b6np->id, implode(',', (array) $request->input($field)));
+            }
+        }
+
         $usersetting = user_setting::where('user_id', $request->user_id)->first();
         if (!empty($usersetting)) {
             $usersetting->penal_type = $request->penalytype;
