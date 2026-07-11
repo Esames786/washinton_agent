@@ -628,7 +628,7 @@
                             $modals = [
                             [
                             'id'=>'exampleModal1',
-                            'title'=>'Subcontractor Access (Phone Qoutes)',
+                            'title'=>'Subcontractor Access ('.\App\PanelType::nameFor(1).')',
                             'name'=>'emp_access_phone',
                             'selected'=>$emp_access_phone,
                             'prefix'=>'emp_access_phone',
@@ -637,7 +637,7 @@
                             ],
                             [
                             'id'=>'exampleModal2',
-                            'title'=>'Subcontractor Access (Webiste Qoutes)',
+                            'title'=>'Subcontractor Access ('.\App\PanelType::nameFor(2).')',
                             'name'=>'emp_access_web',
                             'selected'=>$emp_access_web,
                             'prefix'=>'emp_access_web',
@@ -646,7 +646,7 @@
                             ],
                             [
                             'id'=>'exampleModa20',
-                            'title'=>'Subcontractor Access (Test Qoutes)',
+                            'title'=>'Subcontractor Access ('.\App\PanelType::nameFor(3).')',
                             'name'=>'emp_access_test',
                             'selected'=>$emp_access_test,
                             'prefix'=>'emp_access_test',

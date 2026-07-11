@@ -154,13 +154,13 @@
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModa28">Panel Type Access</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModal1">Phone Quotes</button>
+                                            data-target="#exampleModal1">{{ \App\PanelType::nameFor(1) }} Quote</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModal2">Website Quotes</button>
+                                            data-target="#exampleModal2">{{ \App\PanelType::nameFor(2) }} Quote</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModa20">Testing Quote</button>
+                                            data-target="#exampleModa20">{{ \App\PanelType::nameFor(3) }} Quote</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModa24">Website Quote</button>
+                                            data-target="#exampleModa24">{{ \App\PanelType::nameFor(4) }} Quote</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModa25">{{ \App\PanelType::nameFor(5) }} Quote</button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
@@ -359,7 +359,7 @@
                             $modals_dynamic = [
                             [
                             'id'=>'exampleModal1',
-                            'title'=>'Subcontractor Access (Phone Qoutes)',
+                            'title'=>'Subcontractor Access ('.\App\PanelType::nameFor(1).')',
                             'name'=>'emp_access_phone',
                             'selected'=>[],
                             'prefix'=>'emp_access_phone',
@@ -368,7 +368,7 @@
                             ],
                             [
                             'id'=>'exampleModal2',
-                            'title'=>'Subcontractor Access (Webiste Qoutes)',
+                            'title'=>'Subcontractor Access ('.\App\PanelType::nameFor(2).')',
                             'name'=>'emp_access_web',
                             'selected'=>[],
                             'prefix'=>'emp_access_web',
@@ -377,7 +377,7 @@
                             ],
                             [
                             'id'=>'exampleModa20',
-                            'title'=>'Subcontractor Access (Test Qoutes)',
+                            'title'=>'Subcontractor Access ('.\App\PanelType::nameFor(3).')',
                             'name'=>'emp_access_test',
                             'selected'=>[],
                             'prefix'=>'emp_access_test',
