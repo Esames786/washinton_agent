@@ -118,6 +118,7 @@
                         <th>Profit</th>
                         <th>Conf. Date</th>
                         <th>Screenshot</th>
+                        <th>Booking Form</th>
                         <th>Status</th>
                         <th>Submitted</th>
                         <th>Actions</th>
@@ -150,6 +151,17 @@
                                      class="screenshot-thumb"
                                      onclick="window.open('{{ asset($p->screenshot_path) }}','_blank')"
                                      alt="Screenshot">
+                            @else
+                                <span class="text-muted small">None</span>
+                            @endif
+                        </td>
+                        <td>
+                            {{-- #4: show the submitted booking / authorization form image too --}}
+                            @if($p->booking_form_path)
+                                <img src="{{ asset($p->booking_form_path) }}"
+                                     class="screenshot-thumb"
+                                     onclick="window.open('{{ asset($p->booking_form_path) }}','_blank')"
+                                     alt="Booking Form">
                             @else
                                 <span class="text-muted small">None</span>
                             @endif
