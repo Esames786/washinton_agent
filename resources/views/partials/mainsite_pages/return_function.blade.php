@@ -300,7 +300,8 @@ if (! function_exists('pay_status')) {
         } elseif ($id == 1) {
             return '<span class="badge badge-info">Updated</span>';
         } elseif ($id == 2) {
-            return '<span class="badge badge-success">Received</span>';
+            // #8: customer submitted card = awaiting admin confirmation, not yet confirmed
+            return '<span class="badge badge-warning">Confirmation Pending</span>';
         }
     }
 }
