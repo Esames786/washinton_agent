@@ -111,6 +111,7 @@
                                     <option value="">ALL</option>
                                     <option value="0">Pending</option>
                                     <option value="1">Updated</option>
+                                    <option value="3">Confirmation Pending</option>
                                     <option value="2">Received</option>
                                 </select>
                             </div>

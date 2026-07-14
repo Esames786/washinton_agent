@@ -2679,7 +2679,7 @@ class NewQuote extends Controller
                 $last_status = $this->get_pstatuss($autoorder->pstatus);
 
                 $autoorder->payment_status = 'Paid';
-                $autoorder->paid_status = 2;
+                $autoorder->paid_status = 3; // #8: Confirmation Pending — admin sets 'Received' (2) after confirming
                 $autoorder->pstatus = 8;
                 $autoorder->pay_comments = 'Customer Card Updated';
                 $autoorder->save();
@@ -3386,7 +3386,7 @@ class NewQuote extends Controller
 
         $orderpayment = orderpayment::where('orderId', '=', $request->orderid2)->first();
         if (!empty($orderpayment)) {
-            $orderpayment->payment_status = ($request->payment_status == 0 ? 'Unpaid' : ($request->payment_status == 1 ? 'Update' : ($request->payment_status == 2 ? 'Paid' : 'Unpaid')));
+            $orderpayment->payment_status = ($request->payment_status == 0 ? 'Unpaid' : ($request->payment_status == 1 ? 'Update' : (in_array($request->payment_status, ['2', '3', 2, 3]) ? 'Paid' : 'Unpaid'))); // #8: 3=Confirmation Pending also 'Paid'
             $orderpayment->profit = $request->profit;
             $orderpayment->save();
         }
@@ -5739,7 +5739,7 @@ class NewQuote extends Controller
                 $order = AutoOrder::findOrFail($request->id);
                 $last_status = $this->get_pstatuss($order->pstatus);
                 $order->pstatus = 8; // Booked
-                $order->paid_status = 2;
+                $order->paid_status = 3; // #8: Confirmation Pending — admin sets 'Received' (2) after confirming
                 $order->pay_comments = "Customer Card Updated";
                 $order->save();
 
