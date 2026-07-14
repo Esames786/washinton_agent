@@ -125,11 +125,7 @@
                     <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" style="max-height:70px;width:auto;" alt="Hello Transport">
                 </div>
                 <div class="card-body">
-                    <div style="margin-top: -25px">
-                        <h5>201 International Cir STE 230, Hunt Valley, MD, 21030</h5>
-                        <h5>Tel No: (240) 489-2730</h5>
-                        <h5>Email: info@hellotransport.com</h5>
-                    </div>
+                    {{-- #2: company address / tel / email removed from transportation invoice --}}
                     <h4 class="c_heading" style=" margin-top: 21px; ">INVOICE INFORMATION</h4>
                     <ul class="list-group">
                         <li class="list-group-item" style=" height: 50px; ">

@@ -153,17 +153,7 @@
             <div class="row">
                 <div class="col-md-6 logo">
                     <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Hello Transport" style="max-height:70px;width:auto;background:#fff;border-radius:50%;padding:4px;">
-                    <div class="contact-info mt-3">
-                        <p><i class="fas fa-phone"></i>
-                            <span>Tel No: (240) 489-2730</span>
-                        </p>
-                        <p><i class="fas fa-globe"></i>
-                            <span>Email: info@hellotransport.com</span>
-                        </p>
-                        <p><i class="fas fa-map-marker-alt"></i>
-                            201 International Cir STE 230, Hunt Valley, MD, 21030
-                        </p>
-                    </div>
+                    {{-- #2: company address / tel / email removed from transportation invoice --}}
                 </div>
 
                 <div class="col-md-6 invoice-title">

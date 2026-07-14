@@ -1749,7 +1749,7 @@ if (!function_exists('getNewQuoteTickerHtml')) {
                 return "
                 <div class='ticker-wrapper'>
                     <div class='ticker-message'>
-                        🚨 New Order ID <strong>{$order->id}</strong> launched from <strong>SHIPA1 WEBSITE</strong>. Please check.
+                        🚨 New Order ID <strong>{$order->id}</strong> launched from the <strong>WEBSITE</strong>. Please check.
                     </div>
                 </div>
             ";

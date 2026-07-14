@@ -12,6 +12,7 @@
     .dropdown-item[href*="profile_card_data"],
     .dropdown-item[href*="price_request_assign_dispatcher"],
     .dropdown-item[href*="/commission"],
+    .dropdown-item[href$="/quote_listing"], /* #3: Show Data */
     /* G. User dropdown items */
     .dropdown-item[href$="/guides"],
     .dropdown-item[href$="/r/portal"] { display: none !important; }
