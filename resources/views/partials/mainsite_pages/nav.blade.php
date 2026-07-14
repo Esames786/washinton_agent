@@ -588,11 +588,12 @@ if (!function_exists('get_user_name123')) {
 
                 @if(Auth::user()->role==1 || in_array('169', $phoneaccess))
                 <div class="header_ri">
-                    {{-- #9 soft-hide: hide the WHOLE R-Dialer link (anchor), not just the inner
-                         button — otherwise the invisible icon area still opened the R portal. --}}
-                    <div class="dropdown header-fullscreen" style="display:none;">
-                        <a class="nav-link icon full-screen-link p-0" href="{{ route('ringcentral.portal') }}" target="RingCentralPortal" title="Open R-Dialer" style="display:none; pointer-events:none;">
-                            <button class="btn-sm text-white border-0" style="background:#705ec8; border-color:transparent; display:none;">Access Dialer</button>{{-- #9 soft-hide --}}
+                    {{-- R-Dialer: visible ONLY to users with dialer access (permission 169 / admin).
+                         The @if above already hides it for everyone else, so there is no stray
+                         clickable area for non-permitted users. --}}
+                    <div class="dropdown header-fullscreen">
+                        <a class="nav-link icon full-screen-link p-0" href="{{ route('ringcentral.portal') }}" target="RingCentralPortal" title="Open R-Dialer">
+                            <button class="btn-sm text-white border-0" style="background:#705ec8; border-color:transparent; display:none;">Access Dialer</button>
                         </a>
                     </div>
                 </div>
