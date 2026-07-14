@@ -589,12 +589,14 @@ if (!function_exists('get_user_name123')) {
 
                 @if(Auth::user()->role==1 || in_array('169', $phoneaccess))
                 <div class="header_ri">
-                    {{-- R-Dialer: visible ONLY to users with dialer access (permission 169 / admin).
-                         The @if above already hides it for everyone else, so there is no stray
-                         clickable area for non-permitted users. --}}
+                    {{-- R-Dialer: shown ONLY to users with dialer access (permission 169 / admin)
+                         via the @if above. A real visible icon inside the anchor (the old hidden
+                         <button> left an invisible-but-clickable area). Not permitted = no anchor
+                         at all → neither visible nor clickable. --}}
                     <div class="dropdown header-fullscreen">
-                        <a class="nav-link icon full-screen-link p-0" href="{{ route('ringcentral.portal') }}" target="RingCentralPortal" title="Open R-Dialer">
-                            <button class="btn-sm text-white border-0" style="background:#705ec8; border-color:transparent; display:none;">Access Dialer</button>
+                        <a class="nav-link icon p-0" href="{{ route('ringcentral.portal') }}" target="RingCentralPortal" title="Open R-Dialer"
+                           style="display:inline-flex;align-items:center;justify-content:center;">
+                            <i class="fa fa-phone" style="font-size:20px;color:#705ec8;line-height:1;"></i>
                         </a>
                     </div>
                 </div>
