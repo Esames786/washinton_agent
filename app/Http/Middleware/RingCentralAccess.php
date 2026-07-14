@@ -24,6 +24,8 @@ class RingCentralAccess
             $access = $user->emp_access_phone;
         } elseif ($ptype == 3) {
             $access = $user->emp_access_test;
+        } elseif ($ptype >= 7) {
+            $access = $user->accessForPanel($ptype); // B6: new dynamic panels read their own access
         } else {
             $access = $user->emp_access_web;
         }

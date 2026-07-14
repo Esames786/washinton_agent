@@ -48,16 +48,8 @@ class CrApplicationController extends Controller
         $setting = \App\user_setting::where('user_id', $user->id)->first();
         $ptype   = $setting ? (int) $setting->penal_type : 1;
 
-        $col = match ($ptype) {
-            2 => 'emp_access_web',
-            3 => 'emp_access_test',
-            4 => 'panel_type_4',
-            5 => 'panel_type_5',
-            6 => 'panel_type_6',
-            default => 'emp_access_phone',
-        };
-
-        return in_array(self::PERMISSION_CODE, explode(',', $user->$col ?? ''));
+        // B6: accessForPanel() = same column for panels 1-6, link table for new panels (7+).
+        return in_array(self::PERMISSION_CODE, explode(',', (string) $user->accessForPanel($ptype)));
     }
 
     public function index(Request $request)

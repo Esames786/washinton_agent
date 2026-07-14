@@ -53,7 +53,7 @@ class AgentPaymentController extends Controller
             4 => $user->panel_type_4,
             5 => $user->panel_type_5,
             6 => $user->panel_type_6,
-            default => '',
+            default => (string) $user->accessForPanel($check_panel), // B6: new dynamic panels (7+)
         };
 
         return in_array('165', explode(',', $access ?? ''));

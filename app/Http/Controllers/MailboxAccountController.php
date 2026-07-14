@@ -135,16 +135,8 @@ class MailboxAccountController extends Controller
 
         // Check active panel permission
         $ptype   = \App\user_setting::where('user_id', $user->id)->value('penal_type') ?? 1;
-        $column  = match ((int) $ptype) {
-            2       => 'emp_access_web',
-            3       => 'emp_access_test',
-            4       => 'panel_type_4',
-            5       => 'panel_type_5',
-            6       => 'panel_type_6',
-            default => 'emp_access_phone',
-        };
-
-        $access = array_filter(explode(',', (string) ($user->$column ?? '')));
+        // B6: accessForPanel() = same column for panels 1-6, link table for new panels (7+).
+        $access = array_filter(explode(',', (string) $user->accessForPanel((int) $ptype)));
 
         if (!in_array((string) $permission, $access, true)) {
             abort(403, 'You do not have permission to access this page.');
