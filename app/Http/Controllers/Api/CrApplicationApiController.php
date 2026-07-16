@@ -19,7 +19,7 @@ class CrApplicationApiController extends Controller
     private const CR_ADMIN_EMAIL = 'careers@crazyrayssolutions.com.pk';
 
     private const VALID_CAMPAIGNS = [
-        'healthcare', 'home_security', 'real_estate', 'dme', 'logistics', 'software', 'amazon', 'general',
+        'healthcare', 'home_security', 'real_estate', 'dme', 'logistics', 'software', 'amazon', 'inhouse', 'general',
     ];
 
     public function store(Request $request): JsonResponse

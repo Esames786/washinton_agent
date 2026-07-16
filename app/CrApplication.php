@@ -30,6 +30,7 @@ class CrApplication extends Model
         'logistics'     => 'Logistics / Trucking Dispatch',
         'software'      => 'Software Development',
         'amazon'        => 'Amazon',
+        'inhouse'       => 'In-house',
     ];
 
     public function getCampaignLabelAttribute(): string
