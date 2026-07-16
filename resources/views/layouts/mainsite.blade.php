@@ -533,12 +533,8 @@
                                             value="{{ $getTime }}" />
                                         <a href="{{ url('/end_time') }}" class="badge badge-danger mr-3"
                                             id="end_time">00:00</a>
-                                    @else
-                                        <a href="{{ url('/start_time') }}" class="badge badge-success mr-3"
-                                            id="start_time">Start Time</a>
                                     @endif
-                                    <a href="{{ url('/clear_cache') }}" class="badge badge-danger"
-                                        id="clear_cache">Clear Cache</a>
+                                    {{-- #13: "Start Time" and "Clear Cache" removed from dashboard header --}}
                                 </div>
                             </div>
                         @endif

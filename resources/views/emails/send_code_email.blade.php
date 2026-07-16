@@ -121,15 +121,7 @@
                                                                                     &nbsp;
                                                                                 </td>
                                                                             </tr>
-                                                                            <tr>
-                                                                                <td align="left"
-                                                                                    style="font-size:15px; mso-line-height-rule:exactly; line-height:15px; color:#2c3e50; font-weight:bold; font-family: Open Sans, sans-serif;">
-                                                                                    HELLO, ADMIN!
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td height="15">&nbsp;</td>
-                                                                            </tr>
+                                                                            {{-- #15: "HELLO, ADMIN!" greeting removed --}}
                                                                             <tr>
                                                                                 <td style="font-size:13px; line-height: 20px; mso-line-height-rule:exactly; color:#414848; font-weight:normal; font-family: Open Sans, sans-serif;"
                                                                                     align="left">
