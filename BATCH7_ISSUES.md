@@ -5,19 +5,26 @@ Status legend: 🔴 bug/urgent · 🟡 change · ❓ needs decision. Investigate
 ---
 
 ## ‼️ P0 — Payment stuck at "Confirmation Pending" after admin confirms (Hello / washinton_agent)
-**Screenshot:** order #214 → `Payment: Confirmation Pending` even though admin confirmed.
-**Root cause (from Batch-6 #8 work):** booking submit now sets `autoorder.paid_status = 3`
-(=Confirmation Pending) — `NewQuote.php:2682` + `:5742`. It only becomes "Received" when an
-admin sets `paid_status = 2` via the **payment-status dropdown** (`NewQuote@store_payment_status`).
-But the admin's usual "confirm" flow is the **AgentOrderPayment / Admin-Payments confirm**
-(`NewPaymentSystemController@confirm`) which sets `AgentOrderPayment.payment_status='Payment
-Confirmed'` and does **NOT** touch `autoorder.paid_status` → order stays at 3.
-**Fix options:** (a) in the admin payment-confirm action, also set the order's `paid_status = 2`;
-or (b) show "Received" when `paid_status ∈ {2,3}` AND the linked AgentOrderPayment is confirmed;
-or (c) revert to the old single-state and just relabel. **Needs decision on which confirm action
-is the source of truth.** Files: `NewQuote.php` (2682/5742/store_payment_status ~3381),
-`NewPaymentSystemController@confirm`, `return_function.blade.php` pay_status() (~296),
-`CallHistory.php` pay_status() (~2017).
+**CONFIRMED from code** (prod DB not reachable — MariaDB host blocks this machine's IP, so
+verified via source, which is conclusive here).
+
+**Two independent payment flows exist:**
+- **Order-level dropdown** — `NewQuote@store_payment_status` (NewQuote.php:3381): admin picks a
+  value → writes `autoorder.paid_status` **directly** (+ legacy `orderpayments`). If admin uses
+  THIS and picks "Received"(2) it already works.
+- **New payment system** — `NewPaymentSystemController@confirm` (line 141-145): admin confirms an
+  agent-submitted payment → sets `order_payments.payment_status='Payment Confirmed'` **but never
+  touches `autoorder.paid_status`.** ← this is the disconnect the client is hitting.
+
+**Root cause:** booking now writes `autoorder.paid_status = 3` (Confirmation Pending) at
+`NewQuote.php:2682` + `:5742` (my Batch-6 #8). The order badge reads `paid_status`. Admin confirms
+in the **new payment system**, which flips only `order_payments` → order badge stays at 3.
+
+**CHOSEN FIX (option a):** in `NewPaymentSystemController@confirm()`, after saving, also flip the
+linked order: `AutoOrder::where('id',$payment->order_id)->update(['paid_status'=>2])` **and** sync
+the legacy `orderpayments.payment_status='Paid'` (mirror `store_payment_status`). Symmetrically in
+`returnPayment()` set the order back to `paid_status=3`. Order-level dropdown keeps working
+independently. Files: `NewPaymentSystemController@confirm` (~145) + `@returnPayment` (~201).
 
 ---
 
@@ -74,18 +81,26 @@ Form: `resources/views/partials/apply-modal.blade.php`; submit proxy: `routes/we
 19. 🟡 **Until the account is fully Active, every status label must contain "Pending".** Review all
     non-Active status labels (Document Verification → …Pending, Pending Contract, etc.).
 21. 🟡 **Remove Leaves + Gratuity + Tax for subcontractors** (only valid for in-house employees).
-    Hide those wizard steps/fields + skip their logic when the record is a *subcontractor* (vs
-    in-house). Needs a way to distinguish subcontractor vs in-house (account/employment type, or
-    the new "in-house" flag from CrazyRays #5). Files: `add_employee.blade.php` /
-    `edit_employee.blade.php` (Leaves step, Gratuity, Tax Slab fields) + `AdminEmployeeController`
-    store/update validation + payroll/gratuity jobs.
+    **Existing schema (checked):** `hr_employment_types` = Permanent/Contract/Probation (lifecycle,
+    not inhouse-vs-sub); `hr_employee_account_types` = Salary Only / Commission Only /
+    Salary+Commission (pay structure, = CrazyRays #7). **Neither cleanly encodes inhouse vs
+    subcontractor.** CrazyRays signups arrive via `HrBridgeController` (sets `employment_type_id=3`
+    Probation).
+    **RECOMMENDED — Option B: add an explicit `worker_type` enum (`inhouse` | `subcontractor`),
+    default `inhouse`, on `hr_employees`.** One migration. `HrBridgeController` sets new CrazyRays
+    signups = `subcontractor`; admin add/edit gets an inhouse/subcontractor selector. #21 becomes a
+    single switch `$employee->worker_type === 'subcontractor'` → hide Leaves step + Gratuity + Tax
+    Slab (blade) and skip their store/update + payroll/gratuity logic. Cleanest, future-proof,
+    matches the client's own words, and ties to CrazyRays #5 "in-house" option.
+    *Rejected:* overloading `employment_type` (a subcontractor can also be on probation) or
+    `account_type` = Commission-Only (an inhouse commission employee would wrongly lose leaves/tax).
+    Files: `add_employee.blade.php`/`edit_employee.blade.php` (Leaves/Gratuity/Tax sections),
+    `AdminEmployeeController` store/update, `HrBridgeController` (~244), payroll/gratuity jobs,
+    + migration + `Employee` model helper `isSubcontractor()`.
 
 ## D. Cross-project
-20. ❓ **reCAPTCHA on every page (CrazyRays + HR dashboard).** **This is a joint task:** I can add
-    the reCAPTCHA widget + server-side verification, **but you must provide the Google reCAPTCHA
-    v2/v3 site-key + secret** (from your Google reCAPTCHA account) and confirm which pages.
-    Note: crazyrays already has some recaptcha infra (`recaptchaSecret` used in the shipa1 quote
-    flow) — may already have keys in config. **Confirm keys + scope before I wire it.**
+20. ⏸️ **DEFERRED per user (2026-07-16) — ignore for now.** reCAPTCHA on every page. Revisit later;
+    will need Google reCAPTCHA site-key + secret from the user.
 
 ---
 
