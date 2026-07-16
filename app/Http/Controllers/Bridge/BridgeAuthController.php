@@ -268,8 +268,9 @@ class BridgeAuthController extends Controller
         $user->save();
 
         try {
-            Mail::to(config('custom.SEND_MAIL'))
-                ->cc([$user->email, config('custom.CODE_GIVER')])
+            // #16: send the verification code to the actual user (was going to a test inbox).
+            Mail::to($user->email)
+                ->cc([config('custom.CODE_GIVER')])
                 ->send(new SendCodeMail($user->name, $user->code, \App\Support\Brand::for($user)));
         } catch (\Throwable $e) {
             Log::warning('BridgeAuthController: OTP email failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);

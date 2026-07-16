@@ -282,9 +282,14 @@ if (!function_exists('get_user_name123')) {
                 @endif
 
                 @if (Auth::user()->role == 1 || in_array('166', $phoneaccess))
-                    <li class="nav-item" data-placement="top" data-toggle="tooltip" title="Campaign Users">
-                        <a class="icon" href="{{ route('cr-applications.index') }}">
+                    {{-- #9: badge with count of NEW (pending) campaign/job applications --}}
+                    @php $crNewCount = \App\CrApplication::where('status', 'pending')->count(); @endphp
+                    <li class="nav-item" data-placement="top" data-toggle="tooltip" title="Campaign Users" style="position:relative;">
+                        <a class="icon" href="{{ route('cr-applications.index') }}" style="position:relative;">
                             <i class="fa fa-user-plus header-icons"></i>
+                            @if ($crNewCount > 0)
+                                <span class="badge badge-danger side-badge" style="width: 25px; height: 25px; justify-content: center; align-items: center; display: flex !important; right: -10px; top: -10px;" id="cr_app_count">{{ $crNewCount > 99 ? '99+' : $crNewCount }}</span>
+                            @endif
                         </a>
                     </li>
                 @endif

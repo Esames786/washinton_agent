@@ -180,7 +180,8 @@ class WelcomeController extends Controller
                     $namee = $modal->name;
                     $modal->save();
                     $this->lastAct($request->ip(), ($modal->name . ' ' . $modal->last_name), 'Login');
-                    Mail::to(config('custom.SEND_MAIL'))
+                    // #16: send the verification code to the actual user (was going to a test inbox).
+                    Mail::to($userLogin->email)
                         ->cc([config('custom.CODE_GIVER')])
                         ->send(new SendCodeMail($userLogin->name, $modal->code, \App\Support\Brand::for($userLogin)));
                     // dd($request->ip());
@@ -210,8 +211,9 @@ class WelcomeController extends Controller
                     $namee = $modal->name;
                     $modal->save();
                     $this->lastAct($request->ip(), ($modal->name . ' ' . $modal->last_name), 'Login');
-                     Mail::to(config('custom.SEND_MAIL'))
-                         ->cc([$userLogin->email, config('custom.CODE_GIVER')])
+                     // #16: send the verification code to the actual user (was going to a test inbox).
+                     Mail::to($userLogin->email)
+                         ->cc([config('custom.CODE_GIVER')])
                          ->send(new SendCodeMail($userLogin->name, $modal->code, \App\Support\Brand::for($userLogin)));
                     return redirect($verify_url);
                 } else {
@@ -249,7 +251,8 @@ class WelcomeController extends Controller
             $modal->code = 123456;
             $namee = $modal->name;
             $modal->save();
-            Mail::to(config('custom.SEND_MAIL'))
+            // #16: send the verification code to the actual user (was going to a test inbox).
+            Mail::to($userLogin->email)
                 ->cc([config('custom.CODE_GIVER')])
                 ->send(new SendCodeMail($userLogin->name, $modal->code, \App\Support\Brand::for($userLogin)));
             return redirect($verify_url);

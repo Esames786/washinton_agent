@@ -143,8 +143,9 @@
                 <div class="card-header"><strong>Resume</strong></div>
                 <div class="card-body">
                     @if($application->resume_path)
+                        {{-- #10: View (opens in a new tab) instead of Download --}}
                         <a href="{{ asset('storage/' . $application->resume_path) }}" target="_blank" class="btn btn-sm btn-outline-primary w-100">
-                            <i class="fas fa-download mr-1"></i> Download Resume
+                            <i class="fas fa-eye mr-1"></i> View Resume
                         </a>
                     @else
                         <p class="text-muted mb-0">No resume uploaded.</p>
@@ -152,39 +153,48 @@
                 </div>
             </div>
 
-            {{-- Documents --}}
+            {{-- Documents — #11: list ALL expected documents (required + optional), whether
+                 submitted or not. #12: received = green, not received = yellow/pending. --}}
+            @php
+                // Documents the CrazyRays application asks for (mirrors the apply form set).
+                $crDocIds = [3, 10, 11];
+                $submittedByDocId = collect($application->documents ?? [])->keyBy(fn ($d) => (int) ($d['doc_id'] ?? 0));
+                $docSettings = \Illuminate\Support\Facades\DB::table('hr_document_settings')
+                    ->whereIn('id', $crDocIds)
+                    ->orderByDesc('is_required')->orderBy('title')
+                    ->get(['id', 'title', 'is_required']);
+            @endphp
             <div class="card mb-3">
-                <div class="card-header"><strong>Submitted Documents</strong></div>
+                <div class="card-header"><strong>Documents</strong></div>
                 <div class="card-body p-0">
-                    @if($application->documents && count($application->documents))
-                        <ul class="list-group list-group-flush">
-                            @foreach($application->documents as $doc)
+                    <ul class="list-group list-group-flush">
+                        @foreach($docSettings as $ds)
                             @php
-                                // Prefer the stored title; if missing or the generic "Document"
-                                // fallback, resolve the real name from hr_document_settings by id.
-                                $docTitle = $doc['title'] ?? null;
-                                if ((empty($docTitle) || $docTitle === 'Document') && !empty($doc['doc_id'])) {
-                                    $docTitle = \Illuminate\Support\Facades\DB::table('hr_document_settings')
-                                        ->where('id', (int) $doc['doc_id'])
-                                        ->value('title') ?: ($docTitle ?: 'Document');
-                                }
+                                $received = $submittedByDocId->has((int) $ds->id);
+                                $doc      = $received ? $submittedByDocId->get((int) $ds->id) : null;
                             @endphp
-                            <li class="list-group-item d-flex justify-content-between align-items-center py-2">
+                            <li class="list-group-item d-flex justify-content-between align-items-center py-2 {{ $received ? 'list-group-item-success' : 'list-group-item-warning' }}">
                                 <span>
-                                    {{ $docTitle }}
-                                    @if(!empty($doc['is_required']))
+                                    {{ $ds->title }}
+                                    @if($ds->is_required)
                                         <span class="badge badge-danger ml-1">Required</span>
+                                    @else
+                                        <span class="badge badge-secondary ml-1">Optional</span>
                                     @endif
                                 </span>
-                                <a href="{{ asset('storage/' . $doc['path']) }}" target="_blank" class="btn btn-xs btn-outline-secondary">
-                                    <i class="fas fa-download"></i>
-                                </a>
+                                <span class="d-flex align-items-center">
+                                    @if($received)
+                                        <span class="badge badge-success mr-2"><i class="fas fa-check"></i> Received</span>
+                                        <a href="{{ asset('storage/' . $doc['path']) }}" target="_blank" class="btn btn-xs btn-outline-secondary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    @else
+                                        <span class="badge badge-warning"><i class="fas fa-clock"></i> Pending</span>
+                                    @endif
+                                </span>
                             </li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <p class="text-muted mb-0 p-3">No documents uploaded.</p>
-                    @endif
+                        @endforeach
+                    </ul>
                 </div>
             </div>
 

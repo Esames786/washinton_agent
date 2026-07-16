@@ -174,12 +174,12 @@ class MailboxController extends Controller
         $messages = $query->orderByDesc('date_at')->paginate($limit, ['*'], 'page', $page);
 
         $items = $messages->getCollection()->map(function ($m) use ($folder) {
-            $fromDisplay = $m->from_name ?: ($m->from_email ?: ($folder === 'Sent' ? 'Me' : '-'));
+            $fromDisplay = $this->decodeHeader($m->from_name) ?: ($m->from_email ?: ($folder === 'Sent' ? 'Me' : '-'));
             return [
                 'uid'             => $m->uid,
                 'from'            => $fromDisplay,
                 'from_email'      => $m->from_email,
-                'subject'         => $m->subject ?: '(no subject)',
+                'subject'         => $this->decodeHeader($m->subject) ?: '(no subject)',
                 'date'            => optional($m->date_at)->format('Y-m-d H:i') ?? '',
                 'seen'            => (bool) $m->seen,
                 'has_attachments' => (bool) $m->has_attachments,
@@ -262,10 +262,10 @@ class MailboxController extends Controller
                 'ok'        => true,
                 'uid'       => $uid,
                 'folder'    => $folder,
-                'from'      => $fromName ?: $fromEmail,
+                'from'      => $this->decodeHeader($fromName) ?: $fromEmail,
                 'from_email'=> $fromEmail,
                 'to'        => $toEmail,
-                'subject'   => (string) ($m->getSubject() ?? '(no subject)'),
+                'subject'   => $this->decodeHeader((string) ($m->getSubject() ?? '')) ?: '(no subject)',
                 'date'      => $msgDate,
                 'seen'      => true,
                 'body_html' => $bodyHtml,
@@ -285,10 +285,10 @@ class MailboxController extends Controller
             'ok'         => true,
             'uid'        => $uid,
             'folder'     => $folder,
-            'from'       => $cached->from_name ?: ($cached->from_email ?: ($folder === 'Sent' ? 'Me' : '-')),
+            'from'       => $this->decodeHeader($cached->from_name) ?: ($cached->from_email ?: ($folder === 'Sent' ? 'Me' : '-')),
             'from_email' => $cached->from_email,
             'to'         => $cached->to_email ?: '-',
-            'subject'    => $cached->subject ?: '(no subject)',
+            'subject'    => $this->decodeHeader($cached->subject) ?: '(no subject)',
             'date'       => optional($cached->date_at)->format('Y-m-d H:i') ?? '',
             'seen'       => (bool) $cached->seen,
             'body_html'  => $cached->body_html ?: nl2br(e($cached->snippet ?: 'No cached body available.')),
@@ -514,6 +514,22 @@ class MailboxController extends Controller
     {
         [$email] = $this->extractAddressData($value);
         return $email;
+    }
+
+    /**
+     * #14: decode MIME-encoded-word headers (e.g. "=?utf-8?Q?=E2=80=94?=") so the
+     * subject / sender name render as real text instead of the raw encoded string.
+     * Safe on already-decoded values (returned unchanged).
+     */
+    private function decodeHeader(?string $value): string
+    {
+        if ($value === null || $value === '') return '';
+        try {
+            $decoded = mb_decode_mimeheader($value);
+            return $decoded !== '' ? $decoded : $value;
+        } catch (\Throwable $e) {
+            return $value;
+        }
     }
 
     /**
