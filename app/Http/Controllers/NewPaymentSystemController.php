@@ -164,6 +164,15 @@ class NewPaymentSystemController extends Controller
                 'note'               => 'Status changed to Payment Confirmed',
             ]);
 
+            // P0: keep the ORDER badge in sync. Booking sets order.paid_status=3
+            // (Confirmation Pending); confirming the payment here must flip it to
+            // 2 (Received) — otherwise the order stays "Confirmation Pending".
+            // Mirror the legacy orderpayments row the same way store_payment_status does.
+            if ($payment->order_id) {
+                AutoOrder::where('id', $payment->order_id)->update(['paid_status' => 2]);
+                \App\orderpayment::where('orderId', $payment->order_id)->update(['payment_status' => 'Paid']);
+            }
+
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Payment confirmed successfully.']);
 
@@ -217,6 +226,13 @@ class NewPaymentSystemController extends Controller
                 'action_type'        => 'status_change',
                 'note'               => 'Returned: ' . $request->remarks,
             ]);
+
+            // P0: a returned payment is NOT received — keep the order at Confirmation
+            // Pending (3) and mark the legacy row Unpaid so the badge never shows Received.
+            if ($payment->order_id) {
+                AutoOrder::where('id', $payment->order_id)->update(['paid_status' => 3]);
+                \App\orderpayment::where('orderId', $payment->order_id)->update(['payment_status' => 'Unpaid']);
+            }
 
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Payment returned for correction.']);
