@@ -2805,7 +2805,7 @@ class NewQuote extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'Order payment processed successfully.',
+                'message' => 'Order booked successfully.',
                 'redirect_url' => url('/order-payment-success') // or any success page
             ]);
         } catch (\Throwable $e) {

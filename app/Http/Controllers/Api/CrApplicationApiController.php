@@ -81,6 +81,12 @@ class CrApplicationApiController extends Controller
             if ($empType === 'work_from_home' && $request->input('pay_type') !== 'commission_only') {
                 $v->errors()->add('pay_type', 'Work From Home applicants are Commission Only.');
             }
+
+            // #1: enforce the 300-word cap on campaign experience server-side too.
+            $exp = trim((string) $request->input('campaign_experience', ''));
+            if ($exp !== '' && str_word_count($exp) > 300) {
+                $v->errors()->add('campaign_experience', 'Relevant experience must be 300 words or fewer.');
+            }
         });
 
         if ($validator->fails()) {

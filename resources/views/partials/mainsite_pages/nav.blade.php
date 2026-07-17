@@ -1125,7 +1125,9 @@ if (!function_exists('get_user_name123')) {
                                     <i class="fa fa-th-large pr-1 mt-1 ml-1"></i>
                                     <div class="">Panel Types</div>
                                 </a>
-                                {{-- Employment-split: manage CrazyRays campaigns / in-house jobs --}}
+                            @endif
+                            {{-- Campaign Management: admin OR permission 166 (managers can be granted 166) --}}
+                            @if(Auth::user()->role == 1 || in_array('166', $phoneaccess))
                                 <a class="dropdown-item d-flex" href="{{ route('cr-campaigns.index') }}">
                                     <i class="fa fa-bullhorn pr-1 mt-1 ml-1"></i>
                                     <div class="">Campaign Management</div>

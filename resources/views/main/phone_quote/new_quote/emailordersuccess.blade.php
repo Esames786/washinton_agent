@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Payment Successful</title>
+    <title>Order Booked Successfully</title>
     <style>
         * {
             box-sizing: border-box;
@@ -227,15 +227,15 @@
             <span>👍</span>
         </div>
 
-        <h1 class="success-title">Order Payment Successful</h1>
+        <h1 class="success-title">Order Booked Successfully</h1>
 
         <p class="success-text">
-            Your payment has been processed successfully and your order has been saved in our system.
-            Thank you for completing your transaction with us.
+            Your order has been booked successfully and saved in our system.
+            Thank you for completing your booking with us.
         </p>
 
         <div class="highlight-box">
-            <strong>Status:</strong> Payment Received Successfully<br>
+            <strong>Status:</strong> Order Booked Successfully<br>
             <strong>Order:</strong> Saved and confirmed for further processing
         </div>
 
