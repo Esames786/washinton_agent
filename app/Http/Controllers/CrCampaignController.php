@@ -31,6 +31,33 @@ class CrCampaignController extends Controller
         return in_array(self::PERMISSION_CODE, explode(',', (string) $user->accessForPanel($ptype)));
     }
 
+    /**
+     * PUBLIC — active campaigns for the CrazyRays application form.
+     * Optional ?employment_type=work_from_home|in_house filter.
+     */
+    public function publicList(Request $request)
+    {
+        $query = CrCampaign::active()->orderBy('sort_order')->orderBy('name');
+
+        $type = $request->query('employment_type');
+        if (in_array($type, [CrCampaign::CATEGORY_WFH, CrCampaign::CATEGORY_IN_HOUSE], true)) {
+            $query->forCategory($type);
+        }
+
+        $campaigns = $query->get(['id', 'key', 'name', 'description', 'icon', 'employment_category', 'default_pay_type'])
+            ->map(fn ($c) => [
+                'id'                  => $c->id,
+                'key'                 => $c->key,
+                'name'                => $c->name,
+                'description'         => $c->description,
+                'icon'                => $c->icon,
+                'employment_category' => $c->employment_category,
+                'default_pay_type'    => $c->default_pay_type,
+            ]);
+
+        return response()->json(['campaigns' => $campaigns]);
+    }
+
     public function index()
     {
         abort_unless($this->hasAccess(), 403);

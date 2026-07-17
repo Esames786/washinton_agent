@@ -23,6 +23,9 @@ use App\Http\Controllers\Api\CrApplicationApiController;
 // Public: default contract/T&C (used by CrazyRays signup form)
 Route::get('/default-contract', 'EmployeeReviewController@publicDefaultContract')->middleware('throttle:60,1');
 
+// Public: active campaigns/jobs for the CrazyRays application form (filter by employment_type)
+Route::get('/campaigns', 'CrCampaignController@publicList')->middleware(['crazyrays.cors', 'throttle:60,1']);
+
 // CrazyRays campaign application submission (public, browser-direct, CORS enabled)
 Route::options('/cr-application', function () { return response('', 200); })->middleware('crazyrays.cors');
 Route::post('/cr-application', [CrApplicationApiController::class, 'store'])->middleware(['crazyrays.cors', 'throttle:20,1']);

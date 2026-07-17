@@ -45,9 +45,13 @@ class CrApplicationApiController extends Controller
             'city'                 => ['nullable', 'string', 'max:100'],
             'state'                => ['nullable', 'string', 'max:100'],
             'address'              => ['nullable', 'string', 'max:255'],
-            'campaign'             => ['required', 'in:' . implode(',', self::VALID_CAMPAIGNS)],
-            'shift_type'           => ['nullable', 'string', 'max:100'],
-            'pay_type'             => ['nullable', 'string', 'max:50'],
+            // Employment-split: employment_type + a valid, active campaign of that category.
+            'employment_type'      => ['required', 'in:work_from_home,in_house'],
+            'campaign_id'          => ['required', 'integer', 'exists:cr_campaigns,id'],
+            'campaign'             => ['nullable', 'string', 'max:60'],
+            // "Work From Home" is an employment type, never a shift.
+            'shift_type'           => ['required', 'string', 'max:100', 'not_in:Work From Home'],
+            'pay_type'             => ['required', 'in:salary_only,commission_only,salary_and_commission'],
             'additional_info'      => ['nullable', 'string'],
             'campaign_experience'  => ['nullable', 'string'],
             'contract_accepted_at' => ['nullable', 'date'],
@@ -59,11 +63,33 @@ class CrApplicationApiController extends Controller
         ], [
             'dob.required'         => 'Date of birth is required.',
             'dob.before_or_equal'  => 'You must be at least 18 years old to apply.',
+            'shift_type.not_in'    => 'Work From Home is an employment type, not a shift.',
         ]);
+
+        // Cross-field rules: campaign category must match employment_type, and pay
+        // type must be valid for the employment type (prevents API manipulation).
+        $validator->after(function ($v) use ($request) {
+            $campaignRow = \App\CrCampaign::find($request->input('campaign_id'));
+            $empType     = $request->input('employment_type');
+
+            if ($campaignRow && $empType && $campaignRow->employment_category !== $empType) {
+                $v->errors()->add('campaign_id', 'Selected campaign does not match the chosen employment type.');
+            }
+            if ($campaignRow && !$campaignRow->status) {
+                $v->errors()->add('campaign_id', 'Selected campaign is not active.');
+            }
+            if ($empType === 'work_from_home' && $request->input('pay_type') !== 'commission_only') {
+                $v->errors()->add('pay_type', 'Work From Home applicants are Commission Only.');
+            }
+        });
 
         if ($validator->fails()) {
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
+
+        // Resolve the campaign key from the id (keeps the legacy string column consistent).
+        $campaignRow = \App\CrCampaign::find($request->input('campaign_id'));
+        $campaign    = $campaignRow->key ?? $campaign;
 
         try {
         // Store resume
@@ -111,7 +137,9 @@ class CrApplicationApiController extends Controller
             'city'                 => $request->city,
             'state'                => $request->state,
             'address'              => $request->address,
-            'campaign'             => $request->campaign,
+            'campaign'             => $campaign,
+            'employment_type'      => $request->employment_type,
+            'campaign_id'          => $request->campaign_id,
             'shift_type'           => $request->shift_type,
             'pay_type'             => $request->pay_type,
             'additional_info'      => $request->additional_info,
