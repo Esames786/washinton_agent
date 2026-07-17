@@ -1397,6 +1397,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/cr-applications/{id}', 'CrApplicationController@show')->name('cr-applications.show');
     Route::post('/cr-applications/{id}/approve', 'CrApplicationController@approve')->name('cr-applications.approve');
     Route::post('/cr-applications/{id}/reject', 'CrApplicationController@reject')->name('cr-applications.reject');
+
+    // Campaign / job management (employment-split). Access = role 1 or permission 166.
+    Route::get('/cr-campaigns', 'CrCampaignController@index')->name('cr-campaigns.index');
+    Route::post('/cr-campaigns', 'CrCampaignController@store')->name('cr-campaigns.store');
+    Route::post('/cr-campaigns/{id}', 'CrCampaignController@update')->name('cr-campaigns.update');
+    Route::post('/cr-campaigns/{id}/toggle', 'CrCampaignController@toggle')->name('cr-campaigns.toggle');
 });
 
 // Guide Videos (permission 167 = manage, 168 = view)

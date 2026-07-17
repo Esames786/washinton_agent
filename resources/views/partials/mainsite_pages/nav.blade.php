@@ -1113,6 +1113,11 @@ if (!function_exists('get_user_name123')) {
                                     <i class="fa fa-th-large pr-1 mt-1 ml-1"></i>
                                     <div class="">Panel Types</div>
                                 </a>
+                                {{-- Employment-split: manage CrazyRays campaigns / in-house jobs --}}
+                                <a class="dropdown-item d-flex" href="{{ route('cr-campaigns.index') }}">
+                                    <i class="fa fa-bullhorn pr-1 mt-1 ml-1"></i>
+                                    <div class="">Campaign Management</div>
+                                </a>
                             @endif
                             @if(false) {{-- #17 (2026-07-03): Profile hidden per client request --}}
                                 <a class="dropdown-item d-flex" href="{{url('/profile')}}">
