@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
-date_default_timezone_set('America/New_York');
+date_default_timezone_set('Asia/Karachi');
 /*
 |--------------------------------------------------------------------------
 | Web Routes

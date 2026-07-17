@@ -235,11 +235,23 @@ if (!function_exists('get_user_name123')) {
 
 
              <ul class="header_social m-0 ml-2">
-                <!--<li class="nav-item" data-placement="top" data-toggle="tooltip" title="Global Search">-->
-                <!--    <a class="icon"  href="{{url('searchData')}}" >-->
-                <!--        <i class="fa fa-search header-icons" ></i>-->
-                <!--    </a>-->
-                <!--</li>-->
+                {{-- Live Pakistan (server) time — small running clock --}}
+                <li class="nav-item" data-placement="top" data-toggle="tooltip" title="Pakistan Standard Time" style="display:flex;align-items:center;">
+                    <span style="font-size:13px;font-weight:600;color:#705ec8;font-variant-numeric:tabular-nums;white-space:nowrap;">
+                        <i class="fa fa-clock-o" style="margin-right:4px;"></i><span id="pkClockAgent">--:--:--</span> <span style="font-size:10px;color:#8a93a6;">PKT</span>
+                    </span>
+                </li>
+                <script>
+                (function () {
+                    var el = document.getElementById('pkClockAgent');
+                    function tick() {
+                        if (el) el.textContent = new Intl.DateTimeFormat('en-GB', {
+                            timeZone: 'Asia/Karachi', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+                        }).format(new Date());
+                    }
+                    tick(); setInterval(tick, 1000);
+                })();
+                </script>
 
                 @if (in_array("18", $phoneaccess))
                     <li class="nav-item" data-placement="top" data-toggle="tooltip" title="New Car Quote">

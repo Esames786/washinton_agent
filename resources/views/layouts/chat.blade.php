@@ -122,7 +122,7 @@
                             <div class="d-flex">
                                 {{-- @if(Auth::user()->break_time == 1) --}}
                                 <?php
-                                    date_default_timezone_set('America/New_York');
+                                    date_default_timezone_set('Asia/Karachi');
                                     $timeFirst  = strtotime(Auth::user()->updated_at);
                                     $timeSecond = strtotime(now());
                                     $differenceInSeconds = $timeSecond - $timeFirst;

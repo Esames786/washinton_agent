@@ -1,5 +1,5 @@
 <?php
-date_default_timezone_set('America/New_York');
+date_default_timezone_set('Asia/Karachi');
 //  $setting = 	App\general_setting::first();
 ///  ->where('created_at','>=',\Carbon\Carbon::today()->subDays($setting->no_days))
 ///  25 feb 2020 > show

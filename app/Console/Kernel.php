@@ -23,27 +23,27 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('session:cron')
             ->dailyAt('18:00')
-            ->timezone('America/New_York');
+            ->timezone('Asia/Karachi');
 
         $schedule->command('app:send-template-email')
             ->everyFifteenMinutes()
-            ->timezone('America/New_York');
+            ->timezone('Asia/Karachi');
 
         // Sync all active mailboxes every 30 minutes
         $schedule->command('mailbox:sync')
             ->everyFiveMinutes()
             ->runInBackground()
             ->withoutOverlapping()
-            ->timezone('America/New_York');
+            ->timezone('Asia/Karachi');
 
         $schedule->command('ringcentral:sync-history')
             ->dailyAt('10:00')
-            ->timezone('America/New_York')
+            ->timezone('Asia/Karachi')
             ->withoutOverlapping();
 
         $schedule->command('ringcentral:cleanup-old-media --days=30')
             ->dailyAt('02:00')
-            ->timezone('America/New_York')
+            ->timezone('Asia/Karachi')
             ->withoutOverlapping();
     }
 
