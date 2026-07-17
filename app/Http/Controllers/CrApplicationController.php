@@ -172,6 +172,14 @@ class CrApplicationController extends Controller
 
             // Mirror to HR portal — pass contract_accepted_at so no blocking modal
             try {
+                // Employment-split: map canonical pay type → HR account type
+                // (1=Salary, 2=Commission, 3=Salary+Commission). WFH is always Commission.
+                $accountTypeId = [
+                    'salary_only'           => 1,
+                    'commission_only'       => 2,
+                    'salary_and_commission' => 3,
+                ][$application->pay_type] ?? ($application->isInHouse() ? 3 : 2);
+
                 $this->hrBridge->createEmployee([
                     'name'                 => $application->full_name,
                     'email'                => $application->email,
@@ -181,8 +189,9 @@ class CrApplicationController extends Controller
                     'country'              => $application->country,
                     'user_type'            => 'agent',
                     'agent_id'             => $user->id,
+                    'employment_type'      => $application->employment_type,
                     'shift_type_id'        => 1,
-                    'account_type_id'      => 3,
+                    'account_type_id'      => $accountTypeId,
                     'father_name'          => $application->father_name,
                     'dob'                  => $application->dob?->format('Y-m-d'),
                     'gender'               => $application->gender,
