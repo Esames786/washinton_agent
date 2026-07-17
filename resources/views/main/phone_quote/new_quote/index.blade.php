@@ -5550,8 +5550,9 @@
                     let data = response.data;
                     let write = response.write; // 0 = placeholder, 1 = set value
 
+                    // #9: Profile Card popup (with Customer Type) removed per client request.
                     // if (write == 0) {
-                        $('#ProfileCard').modal('show');
+                    //     $('#ProfileCard').modal('show');
                     // }
 
                     function setField(selector, value) {
