@@ -37,12 +37,13 @@ class CrCampaignController extends Controller
      */
     public function publicList(Request $request)
     {
-        $query = CrCampaign::active()->orderBy('sort_order')->orderBy('name');
+        $type = trim((string) $request->input('employment_type', ''));
 
-        $type = $request->query('employment_type');
-        if (in_array($type, [CrCampaign::CATEGORY_WFH, CrCampaign::CATEGORY_IN_HOUSE], true)) {
-            $query->forCategory($type);
+        $query = CrCampaign::query()->where('status', 1);
+        if ($type === CrCampaign::CATEGORY_WFH || $type === CrCampaign::CATEGORY_IN_HOUSE) {
+            $query->where('employment_category', $type);
         }
+        $query->orderBy('sort_order')->orderBy('name');
 
         $campaigns = $query->get(['id', 'key', 'name', 'description', 'icon', 'employment_category', 'default_pay_type'])
             ->map(fn ($c) => [
