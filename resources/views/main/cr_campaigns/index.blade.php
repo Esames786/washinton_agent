@@ -2,6 +2,9 @@
 
 @section('template_title', 'Campaign Management')
 
+{{-- Defines check_panel()/pay_status() etc. used by the shared nav — required, like other innerpages screens. --}}
+@include('partials.mainsite_pages.return_function')
+
 @section('content')
 <div class="container-fluid">
 
