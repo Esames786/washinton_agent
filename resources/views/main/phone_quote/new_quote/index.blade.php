@@ -2786,9 +2786,19 @@
                             <a href="javascript:void(0)" id="showOldCustomerNature"
                                 class="btn btn-primary mg-r-10">Nature of Customer</a>
                             {{-- "Previous Msg Chats" button removed per client request (#4) --}}
-                            <a class="btn btn-primary mg-r-10" onclick="history('0',$('#ophone').val())"
+                            <a class="btn btn-primary mg-r-10" id="historyBtn" onclick="history('0',$('#ophone').val())"
                                 target="_blank">History</a>
                         </div>
+                        {{-- #6 soft-hide legacy buttons; #7 remove coupon (kept in DOM so JS/handlers don't break) --}}
+                        <style>
+                            #checkPrice, #previousCheckPrice, #previousRecord, #showOldCustomerNature, #historyBtn { display:none !important; }
+                        </style>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                var c = document.getElementById('coupon_number');
+                                if (c && c.parentElement) c.parentElement.style.display = 'none';
+                            });
+                        </script>
                         <div class="row reqPrice"></div>
                     </div>
                 </div>
