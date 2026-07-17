@@ -271,6 +271,15 @@
                                                 <div class="invalid-feedback">Enter a valid CVC.</div>
                                             </div>
                                         </div>
+                                        {{-- #10: card is OPTIONAL — remove native 'required' so an order can be
+                                             booked without a card. The server still enforces card details only when
+                                             "Save with Payment" is used (required_if:save_but,save_with_pay). --}}
+                                        <script>
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            ['firstname','lastname','billing_address','o_zip1','card_type','card_number','cardexpirydate','csvno']
+                                                .forEach(function (id) { var el = document.getElementById(id); if (el) el.removeAttribute('required'); });
+                                        });
+                                        </script>
                                     </div>
                                 </div>
 
