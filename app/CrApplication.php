@@ -8,10 +8,14 @@ class CrApplication extends Model
 {
     protected $table = 'cr_applications';
 
+    public const EMPLOYMENT_WFH      = 'work_from_home';
+    public const EMPLOYMENT_IN_HOUSE = 'in_house';
+
     protected $fillable = [
         'full_name', 'father_name', 'national_id', 'dob', 'gender', 'marital_status',
         'email', 'phone', 'country', 'city', 'state', 'address',
-        'campaign', 'shift_type', 'pay_type', 'additional_info', 'campaign_experience',
+        'campaign', 'employment_type', 'campaign_id', 'shift_type', 'pay_type',
+        'additional_info', 'campaign_experience',
         'resume_path', 'documents', 'contract_accepted_at', 'password',
         'status', 'rejection_note', 'agent_id',
     ];
@@ -35,13 +39,27 @@ class CrApplication extends Model
 
     public function getCampaignLabelAttribute(): string
     {
-        return static::$campaigns[$this->campaign] ?? ucfirst($this->campaign);
+        // Prefer the managed campaign name; fall back to the legacy static map.
+        if ($this->relationLoaded('campaign_ref') || $this->campaign_id) {
+            $name = optional($this->campaign_ref)->name;
+            if ($name) return $name;
+        }
+        return static::$campaigns[$this->campaign] ?? ucfirst((string) $this->campaign);
     }
 
     public function agent()
     {
         return $this->belongsTo(User::class, 'agent_id');
     }
+
+    /** Managed campaign/job this application belongs to. */
+    public function campaign_ref()
+    {
+        return $this->belongsTo(CrCampaign::class, 'campaign_id');
+    }
+
+    public function isWorkFromHome(): bool { return $this->employment_type === self::EMPLOYMENT_WFH; }
+    public function isInHouse(): bool      { return $this->employment_type === self::EMPLOYMENT_IN_HOUSE; }
 
     public function isPending(): bool   { return $this->status === 'pending'; }
     public function isApproved(): bool  { return $this->status === 'approved'; }
