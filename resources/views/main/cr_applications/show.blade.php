@@ -98,8 +98,17 @@
                 <div class="card-header"><strong>Employment Information</strong></div>
                 <div class="card-body">
                     <table class="table table-sm table-borderless mb-0">
-                        <tr><td class="text-muted" style="width:160px;">Shift Type</td><td>{{ $application->shift_type ?? '—' }}</td></tr>
-                        <tr><td class="text-muted">Pay Type</td><td>{{ $application->pay_type ?? '—' }}</td></tr>
+                        <tr><td class="text-muted" style="width:160px;">Application Source</td>
+                            <td>
+                                @if($application->isInHouse())
+                                    <span class="badge badge-primary">In-House / On-Site Applicant</span>
+                                @else
+                                    <span class="badge badge-info">Work From Home Campaign Applicant</span>
+                                @endif
+                            </td></tr>
+                        <tr><td class="text-muted">Employment Type</td><td>{{ $application->employment_type_label }}</td></tr>
+                        <tr><td class="text-muted">Shift Type</td><td>{{ $application->shift_type ?? '—' }}</td></tr>
+                        <tr><td class="text-muted">Pay Type</td><td>{{ $application->pay_type_label }}</td></tr>
                     </table>
                 </div>
             </div>

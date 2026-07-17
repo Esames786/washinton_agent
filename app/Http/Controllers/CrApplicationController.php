@@ -56,8 +56,12 @@ class CrApplicationController extends Controller
     {
         abort_unless($this->hasAccess(), 403);
 
-        $query = CrApplication::latest();
+        $query = CrApplication::with('campaign_ref')->latest();
 
+        // Employment-split: filter by Work From Home vs In-House applicants.
+        if ($request->filled('employment_type') && in_array($request->employment_type, ['work_from_home', 'in_house'], true)) {
+            $query->where('employment_type', $request->employment_type);
+        }
         if ($request->filled('campaign')) {
             $query->where('campaign', $request->campaign);
         }

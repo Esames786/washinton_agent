@@ -61,6 +61,25 @@ class CrApplication extends Model
     public function isWorkFromHome(): bool { return $this->employment_type === self::EMPLOYMENT_WFH; }
     public function isInHouse(): bool      { return $this->employment_type === self::EMPLOYMENT_IN_HOUSE; }
 
+    public function getEmploymentTypeLabelAttribute(): string
+    {
+        return [
+            self::EMPLOYMENT_WFH      => 'Work From Home',
+            self::EMPLOYMENT_IN_HOUSE => 'In-House / On-Site',
+        ][$this->employment_type] ?? '—';
+    }
+
+    /** Handles both canonical values (commission_only) and legacy display strings. */
+    public function getPayTypeLabelAttribute(): string
+    {
+        $map = [
+            'salary_only'           => 'Salary Only',
+            'commission_only'       => 'Commission Only',
+            'salary_and_commission' => 'Salary + Commission',
+        ];
+        return $map[$this->pay_type] ?? ($this->pay_type ?: '—');
+    }
+
     public function isPending(): bool   { return $this->status === 'pending'; }
     public function isApproved(): bool  { return $this->status === 'approved'; }
     public function isRejected(): bool  { return $this->status === 'rejected'; }
