@@ -95,7 +95,18 @@ class SignupProvisioner
             // rejects an empty string for an int column (1366 Incorrect integer value).
             $user->$col = in_array($col, self::INTEGER_PERMISSION_COLUMNS, true) ? 0 : '';
         }
-        // NOTE: the panel assignment lives on the `user_setting` table
+
+        // #4: the "No Access" panel must be explicitly ASSIGNED to the user, not just
+        // set as their active panel. The Panel Type Access checkboxes read
+        // `emp_panel_access` (a comma list of panel ids); if it's blank, nothing shows
+        // checked — not even "No Access" — even though penal_type points at it. Assign
+        // the No Access panel here so the admin UI reflects the real state and the
+        // active panel matches an assigned panel.
+        $noAccessId = self::noAccessPanelId();
+        if ($noAccessId) {
+            $user->emp_panel_access = (string) $noAccessId;
+        }
+        // NOTE: the ACTIVE panel lives on the `user_setting` table
         // (user_setting.penal_type), NOT on the `user` table. Each caller writes
         // it via `$setting->penal_type = SignupProvisioner::noAccessPanelId()`.
         // Do NOT set $user->penal_type here — the `user` table has no such column
