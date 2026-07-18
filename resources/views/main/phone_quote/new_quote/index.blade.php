@@ -2791,7 +2791,10 @@
                         </div>
                         {{-- #6 soft-hide legacy buttons; #7 remove coupon (kept in DOM so JS/handlers don't break) --}}
                         <style>
+                            /* #6 legacy buttons */
                             #checkPrice, #previousCheckPrice, #previousRecord, #showOldCustomerNature, #historyBtn { display:none !important; }
+                            /* #5 hide all previous records on customer-number entry (old customers too) */
+                            #ophoneResult, #show_previous_orders, #last_5, .show_hide[data-content="toggle-text"] { display:none !important; }
                         </style>
                         <script>
                             document.addEventListener('DOMContentLoaded', function () {
