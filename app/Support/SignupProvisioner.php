@@ -84,10 +84,11 @@ class SignupProvisioner
         foreach ($columns as $col) {
             $user->$col = '';
         }
-        $panelId = self::noAccessPanelId();
-        if ($panelId) {
-            $user->penal_type = $panelId;
-        }
+        // NOTE: the panel assignment lives on the `user_setting` table
+        // (user_setting.penal_type), NOT on the `user` table. Each caller writes
+        // it via `$setting->penal_type = SignupProvisioner::noAccessPanelId()`.
+        // Do NOT set $user->penal_type here — the `user` table has no such column
+        // and doing so throws SQLSTATE[42S22] Unknown column 'penal_type' on save.
     }
 
     /**

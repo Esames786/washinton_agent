@@ -30,8 +30,9 @@ class CrApplicationApiController extends Controller
         $maxDob = \Carbon\Carbon::now()->subYears(18)->format('Y-m-d');
 
         $validator = Validator::make($request->all(), [
-            'full_name'            => ['required', 'string', 'max:100'],
-            'father_name'          => ['nullable', 'string', 'max:100'],
+            // Names: alphabets (and spaces) only, up to 30 characters.
+            'full_name'            => ['required', 'string', 'max:30', 'regex:/^[A-Za-z ]+$/'],
+            'father_name'          => ['nullable', 'string', 'max:30', 'regex:/^[A-Za-z ]*$/'],
             'national_id'          => ['nullable', 'string', 'max:50'],
             'dob'                  => ['required', 'date', 'before_or_equal:' . $maxDob],
             'gender'               => ['nullable', 'in:male,female,other'],
