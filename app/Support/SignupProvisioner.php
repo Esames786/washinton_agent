@@ -63,6 +63,33 @@ class SignupProvisioner
         return false;
     }
 
+    /** #4: id of the "No Access" onboarding panel (null if not created yet). */
+    public static function noAccessPanelId(): ?int
+    {
+        try {
+            $id = PanelType::where('name', 'No Access')->value('id');
+            return $id ? (int) $id : null;
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    /**
+     * #4: give a brand-new user NO access — clears every permission column and puts
+     * them on the "No Access" panel, so they only see basic screens (dashboard) until
+     * an admin assigns proper access. Used by every signup channel.
+     */
+    public static function applyNoAccess(User $user, array $columns): void
+    {
+        foreach ($columns as $col) {
+            $user->$col = '';
+        }
+        $panelId = self::noAccessPanelId();
+        if ($panelId) {
+            $user->penal_type = $panelId;
+        }
+    }
+
     /**
      * Resolve a functional panel id from the signup city (or IP), else null.
      * Returns null when no functional panel matches (caller keeps its default).

@@ -139,30 +139,30 @@ class BridgeAuthController extends Controller
 
             // B6: fill permission/access columns from the admin-editable signup_defaults
             // table; falls back to cloning the reference user if the row isn't seeded yet.
-            $roleKey = ($referenceUserId === self::CARRIER_REFERENCE_USER_ID) ? 'dispatcher' : 'order_taker';
-            \App\Support\SignupProvisioner::applyDefaults($user, $roleKey, self::PERMISSION_COLUMNS, $referenceUser);
+            // ── OLD (kept for record; replaced by #4 no-access default) ──
+            // $roleKey = ($referenceUserId === self::CARRIER_REFERENCE_USER_ID) ? 'dispatcher' : 'order_taker';
+            // \App\Support\SignupProvisioner::applyDefaults($user, $roleKey, self::PERMISSION_COLUMNS, $referenceUser);
+
+            // #4: new signups get NO access until an admin assigns it — empty permissions + "No Access" panel.
+            \App\Support\SignupProvisioner::applyNoAccess($user, self::PERMISSION_COLUMNS);
             $user->order_taker_quote = 1;
 
             // #18: guarantee default New->Delivered folder access on every signup path
             // (merges into the columns just copied; persisted by the save() below).
             $user->applyDefaultFolderAccess(false);
 
-            // Base panel: agent → 1 (Lahore), carrier → its default.
-            $penal_type = ($referenceUserId === self::AGENT_REFERENCE_USER_ID)
-                ? 1
-                : ($this->getReferenceUserPanelType($referenceUserId) ?? 1);
+            // ── OLD panel logic (kept for record; replaced by #4 no-access default) ──
+            // $penal_type = ($referenceUserId === self::AGENT_REFERENCE_USER_ID)
+            //     ? 1
+            //     : ($this->getReferenceUserPanelType($referenceUserId) ?? 1);
+            // $cityPanel = \App\Support\SignupProvisioner::resolveCityPanelId($request->input('city'), $request->ip());
+            // if ($cityPanel !== null) {
+            //     $penal_type = $cityPanel;
+            //     \App\Support\SignupProvisioner::grantCityPanel($user, $cityPanel);
+            // }
 
-            // B6: city-based panel assignment. If the signup city (entered or IP) maps to a
-            // functional city panel (1..6), land the user there and grant working access.
-            // Unmatched / new-panel cities keep the safe default above.
-            $cityPanel = \App\Support\SignupProvisioner::resolveCityPanelId(
-                $request->input('city'),
-                $request->ip()
-            );
-            if ($cityPanel !== null) {
-                $penal_type = $cityPanel;
-                \App\Support\SignupProvisioner::grantCityPanel($user, $cityPanel);
-            }
+            // #4: land the user on the "No Access" panel until an admin assigns access.
+            $penal_type = \App\Support\SignupProvisioner::noAccessPanelId() ?? 1;
 
             $user->save();
 
@@ -172,23 +172,22 @@ class BridgeAuthController extends Controller
             $setting->call_type  = 134; // Default Call App type for navbar
             $setting->save();
 
-            // Also grant ProMax (penal_type=2) access so user is eligible for website quote assignment
-            if ($penal_type !== 2) {
-                $promax             = new user_setting();
-                $promax->user_id    = $user->id;
-                $promax->penal_type = 2;
-                $promax->call_type  = 134;
-                $promax->save();
-            }
-
-            // Also grant Website Quote (penal_type=4) access so autohaul leads land here
-            if ($penal_type !== 4) {
-                $website             = new user_setting();
-                $website->user_id    = $user->id;
-                $website->penal_type = 4;
-                $website->call_type  = 134;
-                $website->save();
-            }
+            // ── #4: extra panel grants (2 & 4) removed for no-access signups (kept for record) ──
+            // if ($penal_type !== 2) {
+            //     $promax             = new user_setting();
+            //     $promax->user_id    = $user->id;
+            //     $promax->penal_type = 2;
+            //     $promax->call_type  = 134;
+            //     $promax->save();
+            // }
+            //
+            // if ($penal_type !== 4) {
+            //     $website             = new user_setting();
+            //     $website->user_id    = $user->id;
+            //     $website->penal_type = 4;
+            //     $website->call_type  = 134;
+            //     $website->save();
+            // }
 
             DB::commit();
 

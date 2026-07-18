@@ -150,17 +150,19 @@ class CrApplicationController extends Controller
             $user->verify   = 1;
             $user->is_crazyrays = 1; // Originated from a CrazyRays campaign application
 
-            // B6: permission/access columns from signup_defaults (fallback = reference user).
-            \App\Support\SignupProvisioner::applyDefaults($user, 'order_taker', self::PERMISSION_COLUMNS, $referenceUser);
-            $user->order_taker_quote = 1; // Own quotes default
+            // ── OLD panel logic (kept for record; replaced by #4 no-access default) ──
+            // \App\Support\SignupProvisioner::applyDefaults($user, 'order_taker', self::PERMISSION_COLUMNS, $referenceUser);
+            // $penal_type = 1;
+            // $cityPanel = \App\Support\SignupProvisioner::resolveCityPanelId($application->city ?? null, null);
+            // if ($cityPanel !== null) {
+            //     $penal_type = $cityPanel;
+            //     \App\Support\SignupProvisioner::grantCityPanel($user, $cityPanel);
+            // }
 
-            // B6 city-based panel assignment (functional panels 1..6 only), else default 1.
-            $penal_type = 1;
-            $cityPanel = \App\Support\SignupProvisioner::resolveCityPanelId($application->city ?? null, null);
-            if ($cityPanel !== null) {
-                $penal_type = $cityPanel;
-                \App\Support\SignupProvisioner::grantCityPanel($user, $cityPanel);
-            }
+            // #4: new signups get NO access until an admin assigns it — empty permissions + "No Access" panel.
+            \App\Support\SignupProvisioner::applyNoAccess($user, self::PERMISSION_COLUMNS);
+            $user->order_taker_quote = 1; // Own quotes default
+            $penal_type = \App\Support\SignupProvisioner::noAccessPanelId() ?? 1;
 
             $user->save();
 

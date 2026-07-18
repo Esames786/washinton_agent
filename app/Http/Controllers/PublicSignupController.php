@@ -107,20 +107,22 @@ class PublicSignupController extends Controller
             $user->status    = 0;
             $user->verify    = 1;
 
-            // B6: permission/access columns from signup_defaults (fallback = reference user).
-            $roleKey = $request->signup_type === 'agent' ? 'order_taker' : 'dispatcher';
-            \App\Support\SignupProvisioner::applyDefaults($user, $roleKey, self::PERMISSION_COLUMNS, $referenceUser);
-            $user->order_taker_quote = 1;
+            // ── OLD panel logic (kept for record; replaced by #4 no-access default) ──
+            // $roleKey = $request->signup_type === 'agent' ? 'order_taker' : 'dispatcher';
+            // \App\Support\SignupProvisioner::applyDefaults($user, $roleKey, self::PERMISSION_COLUMNS, $referenceUser);
+            // $penal_type = $request->signup_type === 'agent'
+            //     ? 1
+            //     : ($this->getReferenceUserPanelType($referenceUserId) ?? 1);
+            // $cityPanel = \App\Support\SignupProvisioner::resolveCityPanelId($request->input('city'), $request->ip());
+            // if ($cityPanel !== null) {
+            //     $penal_type = $cityPanel;
+            //     \App\Support\SignupProvisioner::grantCityPanel($user, $cityPanel);
+            // }
 
-            // Base panel + B6 city-based assignment (functional panels 1..6 only).
-            $penal_type = $request->signup_type === 'agent'
-                ? 1
-                : ($this->getReferenceUserPanelType($referenceUserId) ?? 1);
-            $cityPanel = \App\Support\SignupProvisioner::resolveCityPanelId($request->input('city'), $request->ip());
-            if ($cityPanel !== null) {
-                $penal_type = $cityPanel;
-                \App\Support\SignupProvisioner::grantCityPanel($user, $cityPanel);
-            }
+            // #4: new signups get NO access until an admin assigns it — empty permissions + "No Access" panel.
+            \App\Support\SignupProvisioner::applyNoAccess($user, self::PERMISSION_COLUMNS);
+            $user->order_taker_quote = 1;
+            $penal_type = \App\Support\SignupProvisioner::noAccessPanelId() ?? 1;
 
             $user->save();
 
@@ -133,23 +135,22 @@ class PublicSignupController extends Controller
             $setting->call_type  = 134;
             $setting->save();
 
-            // Also grant ProMax (penal_type=2) access so user is eligible for website quote assignment
-            if ($penal_type !== 2) {
-                $promax             = new user_setting();
-                $promax->user_id    = $user->id;
-                $promax->penal_type = 2;
-                $promax->call_type  = 134;
-                $promax->save();
-            }
-
-            // Also grant Website Quote (penal_type=4) access so autohaul leads land here
-            if ($penal_type !== 4) {
-                $website             = new user_setting();
-                $website->user_id    = $user->id;
-                $website->penal_type = 4;
-                $website->call_type  = 134;
-                $website->save();
-            }
+            // ── #4: extra panel grants (2 & 4) removed for no-access signups (kept for record) ──
+            // if ($penal_type !== 2) {
+            //     $promax             = new user_setting();
+            //     $promax->user_id    = $user->id;
+            //     $promax->penal_type = 2;
+            //     $promax->call_type  = 134;
+            //     $promax->save();
+            // }
+            //
+            // if ($penal_type !== 4) {
+            //     $website             = new user_setting();
+            //     $website->user_id    = $user->id;
+            //     $website->penal_type = 4;
+            //     $website->call_type  = 134;
+            //     $website->save();
+            // }
 
             DB::commit();
 

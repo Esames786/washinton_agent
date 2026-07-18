@@ -248,16 +248,19 @@ class EmployeeSyncController extends Controller
 
             // B6: permission/access columns from signup_defaults (fallback = reference user).
             $referenceUser = User::find(self::AGENT_REFERENCE_USER_ID);
-            \App\Support\SignupProvisioner::applyDefaults($user, 'order_taker', self::PERMISSION_COLUMNS, $referenceUser);
-            $user->order_taker_quote = 1;
+            // ── OLD panel logic (kept for record; replaced by #4 no-access default) ──
+            // \App\Support\SignupProvisioner::applyDefaults($user, 'order_taker', self::PERMISSION_COLUMNS, $referenceUser);
+            // $penal_type = 1;
+            // $cityPanel = \App\Support\SignupProvisioner::resolveCityPanelId($data['city'] ?? null, null);
+            // if ($cityPanel !== null) {
+            //     $penal_type = $cityPanel;
+            //     \App\Support\SignupProvisioner::grantCityPanel($user, $cityPanel);
+            // }
 
-            // B6 city-based panel assignment (functional panels 1..6 only), else default 1.
-            $penal_type = 1;
-            $cityPanel = \App\Support\SignupProvisioner::resolveCityPanelId($data['city'] ?? null, null);
-            if ($cityPanel !== null) {
-                $penal_type = $cityPanel;
-                \App\Support\SignupProvisioner::grantCityPanel($user, $cityPanel);
-            }
+            // #4: new signups get NO access until an admin assigns it — empty permissions + "No Access" panel.
+            \App\Support\SignupProvisioner::applyNoAccess($user, self::PERMISSION_COLUMNS);
+            $user->order_taker_quote = 1;
+            $penal_type = \App\Support\SignupProvisioner::noAccessPanelId() ?? 1;
 
             $user->save();
 
@@ -271,19 +274,20 @@ class EmployeeSyncController extends Controller
             $setting->call_type  = 134;
             $setting->save();
 
-            // Also grant ProMax (penal_type=2) access so user is eligible for website quote assignment
-            $promax             = new user_setting();
-            $promax->user_id    = $user->id;
-            $promax->penal_type = 2;
-            $promax->call_type  = 134;
-            $promax->save();
-
-            // Also grant Website Quote (penal_type=4) access so autohaul leads land here
-            $website             = new user_setting();
-            $website->user_id    = $user->id;
-            $website->penal_type = 4;
-            $website->call_type  = 134;
-            $website->save();
+            // ── #4: ProMax + Website Quote grants removed for no-access signups (kept for record) ──
+            // // Also grant ProMax (penal_type=2) access so user is eligible for website quote assignment
+            // $promax             = new user_setting();
+            // $promax->user_id    = $user->id;
+            // $promax->penal_type = 2;
+            // $promax->call_type  = 134;
+            // $promax->save();
+            //
+            // // Also grant Website Quote (penal_type=4) access so autohaul leads land here
+            // $website             = new user_setting();
+            // $website->user_id    = $user->id;
+            // $website->penal_type = 4;
+            // $website->call_type  = 134;
+            // $website->save();
 
             Log::info('EmployeeSyncController: New user created', [
                 'user_id'        => $user->id,
