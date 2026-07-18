@@ -181,6 +181,24 @@
                         Dashboard</a></li>
             </ol>
         </div>
+        {{-- Live Pakistan (server) time --}}
+        <div class="page-rightheader">
+            <span style="display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:30px;background:#f3f1fb;border:1px solid #e2ddf5;color:#705ec8;font-weight:700;font-size:16px;font-variant-numeric:tabular-nums;">
+                <i class="fa fa-clock-o"></i><span id="pkClockDash">--:--:--</span>
+                <span style="font-size:11px;color:#8a93a6;font-weight:600;">PKT · Pakistan Time</span>
+            </span>
+        </div>
+        <script>
+        (function () {
+            var el = document.getElementById('pkClockDash');
+            function tick() {
+                if (el) el.textContent = new Intl.DateTimeFormat('en-GB', {
+                    timeZone: 'Asia/Karachi', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+                }).format(new Date());
+            }
+            tick(); setInterval(tick, 1000);
+        })();
+        </script>
         <!--<div class="page-rightheader">-->
         <!--    <div class="btn btn-list">-->
         <!--        {{--<a href="{{url('report_terminal')}}" class="btn btn-success btn_animation " data-toggle="tooltip" data-placement="top" title="Terminal Report"><i--}}-->

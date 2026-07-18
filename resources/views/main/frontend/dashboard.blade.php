@@ -240,24 +240,6 @@
 <!-- Services Area Start Here  -->
 {{-- <section class="services__area ">
     <div class="container">
-        {{-- Live Pakistan (server) time --}}
-        <div style="text-align:center;margin:18px 0 6px;">
-            <span style="display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:30px;background:#f3f1fb;border:1px solid #e2ddf5;color:#705ec8;font-weight:700;font-size:16px;font-variant-numeric:tabular-nums;">
-                <i class="fa fa-clock-o"></i><span id="pkClockAgent">--:--:--</span>
-                <span style="font-size:11px;color:#8a93a6;font-weight:600;">PKT · Pakistan Time</span>
-            </span>
-        </div>
-        <script>
-        (function () {
-            var el = document.getElementById('pkClockAgent');
-            function tick() {
-                if (el) el.textContent = new Intl.DateTimeFormat('en-GB', {
-                    timeZone: 'Asia/Karachi', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
-                }).format(new Date());
-            }
-            tick(); setInterval(tick, 1000);
-        })();
-        </script>
         <div class="services-one">
             <div class="services__box services__box--space wow fadeInUp" data-wow-duration="1.5s" data-wow-delay=".3s">
                 <div class="row">

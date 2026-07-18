@@ -267,9 +267,12 @@ if (!function_exists('get_user_name123')) {
                 @endif
 
                 @if (Auth::user()->role == 1 || in_array('166', $phoneaccess))
-                    <li class="nav-item" data-placement="top" data-toggle="tooltip" title="Campaign Users">
-                        <a class="icon" href="{{ route('cr-applications.index') }}">
+                    {{-- #2: badge with count of NEW (pending) applications (polled every 60s) --}}
+                    @php $crNewCount = \App\CrApplication::where('status', 'pending')->count(); @endphp
+                    <li class="nav-item" data-placement="top" data-toggle="tooltip" title="Campaign Users" style="position:relative;">
+                        <a class="icon" href="{{ route('cr-applications.index') }}" style="position:relative;">
                             <i class="fa fa-user-plus header-icons"></i>
+                            <span class="badge badge-danger side-badge" style="width:25px;height:25px;justify-content:center;align-items:center;display:{{ $crNewCount > 0 ? 'flex' : 'none' }} !important;right:-10px;top:-10px;" id="cr_app_count">{{ $crNewCount > 99 ? '99+' : $crNewCount }}</span>
                         </a>
                     </li>
                 @endif
@@ -1036,5 +1039,20 @@ if (!function_exists('get_user_name123')) {
                 }, 3000);
             }
         });
+    });
+</script>
+<script>
+    // #2/#12: poll live badge counts every 60s (dashboard nav — matches inner nav).
+    $(function () {
+        function fetchNavCounts() {
+            $.getJSON("{{ route('nav.counts') }}", function (d) {
+                var cr = parseInt(d.cr_pending || 0, 10);
+                $('#cr_app_count').text(cr > 99 ? '99+' : cr).css('display', cr > 0 ? 'flex' : 'none');
+                var pay = parseInt(d.payment_pending || 0, 10);
+                $('#payment_pending_count').text(pay > 99 ? '99+' : pay).toggle(pay > 0);
+            });
+        }
+        setInterval(fetchNavCounts, 60000);
+        fetchNavCounts();
     });
 </script>
