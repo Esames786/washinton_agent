@@ -2096,7 +2096,8 @@ class DashboardController extends Controller
     public function show_own_order(Request $request)
     {
         $user = User::find($request->id);
-        $user->order_taker_quote = $request->order_taker_quote;
+        // Cast to int so strict-mode MySQL never sees '' for this tinyint column.
+        $user->order_taker_quote = (int) ($request->order_taker_quote ?? 0);
         $user->save();
 
         $name = $user->slug ?? $user->name . ' ' . $user->last_name;

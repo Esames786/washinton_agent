@@ -28,6 +28,15 @@ class SignupProvisioner
     public const FUNCTIONAL_PANELS = [1, 2, 3, 4, 5, 6];
 
     /**
+     * Permission columns that are INTEGER types on the `user` table
+     * (order_taker_quote = tinyint, assign_daily_qoute = int). These must be
+     * cleared to 0 — never '' — because the production DB runs in STRICT SQL
+     * mode and rejects an empty string for an integer column
+     * (SQLSTATE[22007] 1366 Incorrect integer value: '').
+     */
+    public const INTEGER_PERMISSION_COLUMNS = ['order_taker_quote', 'assign_daily_qoute'];
+
+    /**
      * Apply the default permission/access columns for a role onto a new user.
      * Returns true if seeded defaults were used, false if it fell back to the reference user.
      */
@@ -82,7 +91,9 @@ class SignupProvisioner
     public static function applyNoAccess(User $user, array $columns): void
     {
         foreach ($columns as $col) {
-            $user->$col = '';
+            // Integer permission columns must be 0, not '' — strict-mode MySQL
+            // rejects an empty string for an int column (1366 Incorrect integer value).
+            $user->$col = in_array($col, self::INTEGER_PERMISSION_COLUMNS, true) ? 0 : '';
         }
         // NOTE: the panel assignment lives on the `user_setting` table
         // (user_setting.penal_type), NOT on the `user` table. Each caller writes
