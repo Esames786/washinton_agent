@@ -2443,7 +2443,7 @@ if (isset($_GET['titlee'])) {
                 additional: additional,
                 vehicle_condition: vehicle_condition
             }, // data in json format
-            async: false, // enable or disable async (optional, but suggested as false if you need to populate data afterwards)
+            async: true, // async so a slow save never freezes the whole tab (result is only used in the success callback)
             success: function(response) {
                 if (response === 'true') {
                     Swal.fire(
@@ -2514,7 +2514,7 @@ if (isset($_GET['titlee'])) {
                 vehicle_position: vehicle_position,
                 additional: additional
             }, // data in json format
-            async: false, // enable or disable async (optional, but suggested as false if you need to populate data afterwards)
+            async: true, // async so a slow save never freezes the whole tab (result is only used in the success callback)
             success: function(response) {
                 if (response === 'true') {
                     Swal.fire(
@@ -2575,7 +2575,7 @@ if (isset($_GET['titlee'])) {
                 payment: payment,
                 additional: additional
             }, // data in json format
-            async: false, // enable or disable async (optional, but suggested as false if you need to populate data afterwards)
+            async: true, // async so a slow save never freezes the whole tab (result is only used in the success callback)
             success: function(response) {
                 if (response === 'true') {
                     Swal.fire(
@@ -2612,7 +2612,7 @@ if (isset($_GET['titlee'])) {
                 auction_status: auction_status,
                 additional: additional
             }, // data in json format
-            async: false, // enable or disable async (optional, but suggested as false if you need to populate data afterwards)
+            async: true, // async so a slow save never freezes the whole tab (result is only used in the success callback)
             success: function(response) {
                 if (response === 'true') {
                     Swal.fire(
@@ -2667,7 +2667,7 @@ if (isset($_GET['titlee'])) {
                 owes_status: owes_status,
                 additional: additional
             }, // data in json format
-            async: false, // enable or disable async (optional, but suggested as false if you need to populate data afterwards)
+            async: true, // async so a slow save never freezes the whole tab (result is only used in the success callback)
             success: function(response) {
                 if (response === 'true') {
                     Swal.fire(
@@ -2708,7 +2708,7 @@ if (isset($_GET['titlee'])) {
                 client_rating: client_rating,
                 additional: additional
             }, // data in json format
-            async: false, // enable or disable async (optional, but suggested as false if you need to populate data afterwards)
+            async: true, // async so a slow save never freezes the whole tab (result is only used in the success callback)
             success: function(response) {
                 if (response === 'true') {
                     Swal.fire(

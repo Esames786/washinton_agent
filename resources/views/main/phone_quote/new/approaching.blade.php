@@ -1009,7 +1009,7 @@
                     price: price,
                     additional: additional
                 }, // data in json format
-                async: false, // enable or disable async (optional, but suggested as false if you need to populate data afterwards)
+                async: true, // async so a slow save never freezes the whole tab (result is only used in the success callback)
                 success: function (response) {
                     if (response === 'true') {
                         Swal.fire(
@@ -1048,7 +1048,7 @@
                     vehicle_position: vehicle_position,
                     additional: additional
                 }, // data in json format
-                async: false, // enable or disable async (optional, but suggested as false if you need to populate data afterwards)
+                async: true, // async so a slow save never freezes the whole tab (result is only used in the success callback)
                 success: function (response) {
                     if (response === 'true') {
                         Swal.fire(
@@ -1089,7 +1089,7 @@
                     payment: payment,
                     additional: additional
                 }, // data in json format
-                async: false, // enable or disable async (optional, but suggested as false if you need to populate data afterwards)
+                async: true, // async so a slow save never freezes the whole tab (result is only used in the success callback)
                 success: function (response) {
                     if (response === 'true') {
                         Swal.fire(
@@ -1130,7 +1130,7 @@
                     owes_status: owes_status,
                     additional: additional
                 }, // data in json format
-                async: false, // enable or disable async (optional, but suggested as false if you need to populate data afterwards)
+                async: true, // async so a slow save never freezes the whole tab (result is only used in the success callback)
                 success: function (response) {
                     if (response === 'true') {
                         Swal.fire(
@@ -1163,7 +1163,7 @@
                     client_rating: client_rating,
                     additional: additional
                 }, // data in json format
-                async: false, // enable or disable async (optional, but suggested as false if you need to populate data afterwards)
+                async: true, // async so a slow save never freezes the whole tab (result is only used in the success callback)
                 success: function (response) {
                     if (response === 'true') {
                         Swal.fire(
