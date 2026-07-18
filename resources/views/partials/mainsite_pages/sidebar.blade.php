@@ -597,6 +597,8 @@
                            style="background: #2dd1ba8c">
                             <span class="js-search-result-thumbnail responsive-img img_border fa fa-credit-card"></span>
                             <span class="side-menu__label">Admin Payments</span>
+                            {{-- #12: new payments badge (polled every 60s) --}}
+                            <span class="badge badge-danger ml-auto" id="payment_pending_count" style="display:none;"></span>
                         </a>
                     </li>
                 @endif

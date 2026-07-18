@@ -1398,6 +1398,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cr-applications/{id}/approve', 'CrApplicationController@approve')->name('cr-applications.approve');
     Route::post('/cr-applications/{id}/reject', 'CrApplicationController@reject')->name('cr-applications.reject');
 
+    // #2/#12: live nav badge counts (polled every 60s by the nav).
+    Route::get('/nav-counts', function () {
+        return response()->json([
+            'cr_pending'      => \App\CrApplication::where('status', 'pending')->count(),
+            'payment_pending' => \App\AgentOrderPayment::where('payment_status', 'Payment Pending')->count(),
+        ]);
+    })->name('nav.counts');
+
     // Campaign / job management (employment-split). Access = role 1 or permission 166.
     Route::get('/cr-campaigns', 'CrCampaignController@index')->name('cr-campaigns.index');
     Route::post('/cr-campaigns', 'CrCampaignController@store')->name('cr-campaigns.store');

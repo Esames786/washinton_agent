@@ -1323,5 +1323,17 @@ if (!function_exists('get_user_name123')) {
 
         // Initial fetch when the page loads
         fetchNotifications();
+
+        // #2/#12: poll live badge counts (CR applications + admin payments) every 60s.
+        function fetchNavCounts() {
+            $.getJSON("{{ route('nav.counts') }}", function (d) {
+                var cr = parseInt(d.cr_pending || 0, 10);
+                $('#cr_app_count').text(cr > 99 ? '99+' : cr).toggle(cr > 0);
+                var pay = parseInt(d.payment_pending || 0, 10);
+                $('#payment_pending_count').text(pay > 99 ? '99+' : pay).toggle(pay > 0);
+            });
+        }
+        setInterval(fetchNavCounts, 60000);
+        fetchNavCounts();
     });
 </script>
