@@ -238,9 +238,10 @@
                                         {{-- B6: only whitelisted roles selectable (keep the employee's current role visible).
                                              #13: managers (role 9, non-admin) may only set Order Taker / Dispatcher. --}}
                                         @php
+                                            // #16: Onsite selectable by admin & manager.
                                             $roleWhitelist = (int) Auth::user()->role === 1
-                                                ? ['Admin','Order Taker','Dispatcher','Manager','QA']
-                                                : ['Order Taker','Dispatcher'];
+                                                ? ['Admin','Order Taker','Dispatcher','Manager','QA','Onsite']
+                                                : ['Order Taker','Dispatcher','Onsite'];
                                         @endphp
                                         @foreach ($data as $val)
                                             @if (!in_array($val->name, $roleWhitelist, true) && $data2->role != $val->id) @continue @endif

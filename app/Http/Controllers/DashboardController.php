@@ -1002,8 +1002,10 @@ class DashboardController extends Controller
         if ($request->password) {
             $emp->password = Hash::make($request->password);
         }
-        // #13: non-admins (e.g. managers) may only set Order Taker(2) / Dispatcher(3) — never escalate.
-        if ((int) Auth::user()->role !== 1 && !in_array((int) $request->job_type, [2, 3], true)) {
+        // #13/#16: non-admins (e.g. managers) may only set Order Taker(2) / Dispatcher(3) / Onsite — never escalate.
+        $onsiteRoleId = (int) (DB::table('roles')->where('name', 'Onsite')->value('id') ?? 0);
+        $nonAdminAllowedRoles = array_values(array_filter([2, 3, $onsiteRoleId]));
+        if ((int) Auth::user()->role !== 1 && !in_array((int) $request->job_type, $nonAdminAllowedRoles, true)) {
             $request->merge(['job_type' => $emp->role]); // keep the current role
         }
         $emp->role = $request->job_type;
