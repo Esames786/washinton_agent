@@ -158,16 +158,21 @@ class CrApplicationApiController extends Controller
             'status'               => 'pending',
         ]);
 
-        // Confirmation email to applicant (non-blocking)
-        try {
-            Mail::to($application->email, $application->full_name)
-                ->send(new CrApplicationConfirmationMail($application));
-        } catch (\Throwable $e) {
-            Log::warning('CrApplicationApiController: applicant confirmation email failed', [
-                'application_id' => $application->id,
-                'email'          => $application->email,
-                'error'          => $e->getMessage(),
-            ]);
+        // Confirmation email to applicant (non-blocking).
+        // When the CrazyRays site handles this itself (it sends from its own crazyrayssolutions.com.pk
+        // mail engine, so Gmail doesn't show "via hellotransport.com"), it passes client_confirmation=1
+        // and we skip it here to avoid a duplicate email.
+        if (! $request->boolean('client_confirmation')) {
+            try {
+                Mail::to($application->email, $application->full_name)
+                    ->send(new CrApplicationConfirmationMail($application));
+            } catch (\Throwable $e) {
+                Log::warning('CrApplicationApiController: applicant confirmation email failed', [
+                    'application_id' => $application->id,
+                    'email'          => $application->email,
+                    'error'          => $e->getMessage(),
+                ]);
+            }
         }
 
         // Notify CrazyRays admin (non-blocking)
@@ -184,6 +189,12 @@ class CrApplicationApiController extends Controller
             'success' => true,
             'message' => 'Application received successfully. You will be contacted by CrazyRays Solutions after review.',
             'id'      => $application->id,
+            // Data the CrazyRays site uses to send the confirmation email from its own mail engine.
+            'applicant' => [
+                'full_name'      => $application->full_name,
+                'email'          => $application->email,
+                'campaign_label' => $application->campaign_label,
+            ],
         ], 201);
         } catch (\Throwable $e) {
             // #11: never let this endpoint return a raw 500 HTML page — the CrazyRays apply form
