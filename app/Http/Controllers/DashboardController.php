@@ -1002,6 +1002,10 @@ class DashboardController extends Controller
         if ($request->password) {
             $emp->password = Hash::make($request->password);
         }
+        // #13: non-admins (e.g. managers) may only set Order Taker(2) / Dispatcher(3) — never escalate.
+        if ((int) Auth::user()->role !== 1 && !in_array((int) $request->job_type, [2, 3], true)) {
+            $request->merge(['job_type' => $emp->role]); // keep the current role
+        }
         $emp->role = $request->job_type;
         $emp->phone = $phone;
         $emp->address = $request->address;

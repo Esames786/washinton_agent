@@ -235,8 +235,13 @@
                                     <label class="form-label" required>JOB TYPE</label>
                                     <select class="form-control select2" name="job_type">
                                         <option value="" selected disabled="">Select Job Type</option>
-                                        {{-- B6: only whitelisted roles selectable (keep the employee's current role visible) --}}
-                                        @php $roleWhitelist = ['Admin','Order Taker','Dispatcher','Manager','QA']; @endphp
+                                        {{-- B6: only whitelisted roles selectable (keep the employee's current role visible).
+                                             #13: managers (role 9, non-admin) may only set Order Taker / Dispatcher. --}}
+                                        @php
+                                            $roleWhitelist = (int) Auth::user()->role === 1
+                                                ? ['Admin','Order Taker','Dispatcher','Manager','QA']
+                                                : ['Order Taker','Dispatcher'];
+                                        @endphp
                                         @foreach ($data as $val)
                                             @if (!in_array($val->name, $roleWhitelist, true) && $data2->role != $val->id) @continue @endif
                                             <option @if ($data2->role == $val->id) selected @endif

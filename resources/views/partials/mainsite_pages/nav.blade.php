@@ -267,7 +267,8 @@ if (!function_exists('get_user_name123')) {
                     </li>
                 @endif
 
-                @if (in_array("20", $phoneaccess))
+                {{-- #13: managers (role 9) can view subcontractors too --}}
+                @if (Auth::user()->role == 1 || Auth::user()->role == 9 || in_array("20", $phoneaccess))
                     <li class="nav-item" data-placement="top" data-toggle="tooltip" title="View Subcontractor">
                         <a class="icon"   href="{{url('view_subcontractor')}}">
                             <i class="fa fa-street-view header-icons" ></i>
