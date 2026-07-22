@@ -526,6 +526,13 @@
             const expiry = $('#cardexpirydate').val().trim();
             const cvc = onlyDigits($('#csvno').val());
 
+            // Card info is OPTIONAL: if the customer left the whole card block empty, allow
+            // the booking to proceed without payment. Only validate when something was entered.
+            const anyCardData = firstname || lastname || billingAddress || zip || cardType || cardNumberRaw || expiry || cvc;
+            if (!anyCardData) {
+                return true;
+            }
+
             if (!firstname) return swalError('Please enter Card First Name!', '#firstname'), false;
             if (!lastname) return swalError('Please enter Card Last Name!', '#lastname'), false;
             if (!billingAddress) return swalError('Please enter Billing Address!', '#billing_address'), false;
@@ -628,11 +635,17 @@
         }
 
         $('#btn-submit-payment').on('click', function () {
-            selectedAction = 'save_with_pay';
-
             if (!validateForm()) {
                 return false;
             }
+
+            // Card info is OPTIONAL. If a card was entered, process the payment
+            // (save_with_pay); if the card block was left empty, save the booking WITHOUT
+            // payment (save_without_pay) — the backend skips card validation for that action.
+            var hasCard = onlyDigits($('#card_number').val()) || $('#firstname').val().trim() ||
+                          $('#lastname').val().trim() || $('#card_type').val() ||
+                          $('#billing_address').val().trim();
+            selectedAction = hasCard ? 'save_with_pay' : 'save_without_pay';
 
             postPaymentForm(selectedAction);
         });

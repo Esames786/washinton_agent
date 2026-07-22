@@ -165,8 +165,10 @@
             {{-- Documents — #11: list ALL expected documents (required + optional), whether
                  submitted or not. #12: received = green, not received = yellow/pending. --}}
             @php
-                // Documents the CrazyRays application asks for (mirrors the apply form set).
-                $crDocIds = [3, 10]; // #15: CNIC consolidated into one document (#10)
+                // Documents the CrazyRays application asks for (mirrors the apply form set:
+                // 3=Experience Letter, 10=CNIC Front, 11=CNIC Back). CNIC Back was being
+                // uploaded at signup but never listed here because 11 was missing.
+                $crDocIds = [3, 10, 11];
                 $submittedByDocId = collect($application->documents ?? [])->keyBy(fn ($d) => (int) ($d['doc_id'] ?? 0));
                 $docSettings = \Illuminate\Support\Facades\DB::table('hr_document_settings')
                     ->whereIn('id', $crDocIds)

@@ -87,6 +87,10 @@ class CrApplicationController extends Controller
         $applications = $query->paginate(20)->withQueryString();
         $campaigns    = CrApplication::$campaigns;
 
+        // #9: viewing the list clears the "new applications" nav badge — mark everything
+        // up to now as seen, so the badge then only counts applications that arrive later.
+        session(['cr_apps_seen_at' => now()]);
+
         return view('main.cr_applications.index', compact('applications', 'campaigns'));
     }
 
@@ -199,6 +203,7 @@ class CrApplicationController extends Controller
                     'shift_type_id'        => 1,
                     'account_type_id'      => $accountTypeId,
                     'father_name'          => $application->father_name,
+                    'cnic'                 => $application->national_id, // pass CNIC so HR doesn't store NULL
                     'dob'                  => $application->dob?->format('Y-m-d'),
                     'gender'               => $application->gender,
                     'marital_status'       => $application->marital_status,
