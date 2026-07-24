@@ -1329,7 +1329,7 @@ if (!function_exists('get_user_name123')) {
         function fetchNavCounts() {
             $.getJSON("{{ route('nav.counts') }}", function (d) {
                 var cr = parseInt(d.cr_pending || 0, 10);
-                $('#cr_app_count').text(cr > 99 ? '99+' : cr).toggle(cr > 0);
+                $('#cr_app_count').text(cr).toggle(cr > 0); // show the real number, not 99+
                 var pay = parseInt(d.payment_pending || 0, 10);
                 $('#payment_pending_count').text(pay > 99 ? '99+' : pay).toggle(pay > 0);
             });
