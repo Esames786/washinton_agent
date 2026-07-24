@@ -264,8 +264,9 @@ class EmployeeSyncController extends Controller
 
             $user->save();
 
-            // #18: every new agent gets default folder access New -> Delivered.
-            $user->applyDefaultFolderAccess();
+            // #18/#5 (2026-07-24): default New->Delivered folder access REMOVED — new agents
+            // now start with ZERO access until an admin explicitly grants it.
+            // $user->applyDefaultFolderAccess();
 
             // Create user settings
             $setting             = new user_setting();

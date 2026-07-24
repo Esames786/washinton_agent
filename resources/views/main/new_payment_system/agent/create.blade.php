@@ -122,11 +122,12 @@
                         @error('confirmation_date')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
 
+                    {{-- #11: payment screenshot / proof is mandatory --}}
                     <div class="form-group">
-                        <label class="font-weight-bold">Payment Screenshot / Proof</label>
+                        <label class="font-weight-bold">Payment Screenshot / Proof <span class="text-danger">*</span></label>
                         <input type="file" name="screenshot_path" class="form-control-file"
-                               accept=".jpg,.jpeg,.png,.pdf">
-                        <small class="text-muted">Accepted: JPG, PNG, PDF. Max 5MB.</small>
+                               accept=".jpg,.jpeg,.png,.pdf" required>
+                        <small class="text-muted">Required — attach the payment proof (JPG, PNG, PDF). Max 5MB.</small>
                     </div>
 
                     {{-- #3: booking / authorization form is mandatory (separate from the transaction screenshot) --}}

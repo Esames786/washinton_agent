@@ -11,6 +11,15 @@
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 
 <style>
+    /* #8: Vehicle Price removed from the quote form (covers static + dynamically added
+       vehicle rows). The input stays in the DOM so any submit logic reading it is unaffected. */
+    .form-group:has(> input.vehicle_price) { display: none !important; }
+
+    /* #12: hide the pay-type radios (COD/COP, Pay With Email, Pay Now, Pay Later) on BOTH the
+       new-customer and old-customer flows. Pay Later stays pre-selected in the DOM so a valid
+       pay_cond value is still submitted. */
+    .form-group:has(input[name="pay_cond"]) { display: none !important; }
+
     .card-people-list .media-body {
         margin-left: 15px;
     }
@@ -4782,7 +4791,7 @@
                     <div class="col-lg-2 mt-4">
                         <div class="form-group">
                             <label class="rdiobox">
-                                <input class="this_save" name="pay_cond" id="pay_cond4" type="radio" value="4" >
+                                <input class="this_save" name="pay_cond" id="pay_cond4" type="radio" value="4" checked>
                                 <span>Pay Later</span>
                             </label>
                         </div>
@@ -5173,7 +5182,7 @@
                     <div class="col-lg-2 mt-4">
                         <div class="form-group">
                             <label class="rdiobox">
-                                <input class="this_save" name="pay_cond" id="pay_cond4" type="radio" value="4" >
+                                <input class="this_save" name="pay_cond" id="pay_cond4" type="radio" value="4" checked>
                                 <span>Pay Later</span>
                             </label>
                         </div>
@@ -7906,7 +7915,10 @@
             var phonelenght = phone_no.replace(/[^0-9]/g, "").length;
             if (phonelenght == 10) {
                 $("#create_new").show();
-                $('#last_5').show();
+                // #6/#7: treat every customer as new — do NOT surface old orders,
+                // the previous-orders table (which exposes old customer email/number),
+                // the "Update Previous" button, or the "X Order(s) found" count.
+                $('#last_5').hide();
                 $.ajax({
                     type: "GET",
                     url: "/get_order",
@@ -7916,14 +7928,14 @@
                     dataType: "json",
                     success: function(data) {
                         $.each(data, function(i, item) {
-                            if (item.tot > 0) {
+                            if (false) { // #6/#7: old-order UI suppressed
                                 $("#update_previous").show();
                                 $(".show_hide").show();
                             } else {
                                 $("#update_previous").hide();
                                 $(".show_hide").hide();
                             }
-                            $('#show_total').html(item.tot + ' Order(s) found');
+                            $('#show_total').html(''); // #7: hide the "X Order(s) found" count
                         });
                     },
                     error: function(e) {}

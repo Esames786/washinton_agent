@@ -147,9 +147,9 @@ class BridgeAuthController extends Controller
             \App\Support\SignupProvisioner::applyNoAccess($user, self::PERMISSION_COLUMNS);
             $user->order_taker_quote = 1;
 
-            // #18: guarantee default New->Delivered folder access on every signup path
-            // (merges into the columns just copied; persisted by the save() below).
-            $user->applyDefaultFolderAccess(false);
+            // #18/#5 (2026-07-24): default New->Delivered folder access REMOVED — new agents
+            // now start with ZERO access until an admin explicitly grants it.
+            // $user->applyDefaultFolderAccess(false);
 
             // ── OLD panel logic (kept for record; replaced by #4 no-access default) ──
             // $penal_type = ($referenceUserId === self::AGENT_REFERENCE_USER_ID)

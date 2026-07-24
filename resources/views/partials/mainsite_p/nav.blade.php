@@ -1052,7 +1052,7 @@ if (!function_exists('get_user_name123')) {
                 $('#payment_pending_count').text(pay > 99 ? '99+' : pay).toggle(pay > 0);
             });
         }
-        setInterval(fetchNavCounts, 60000);
+        setInterval(fetchNavCounts, 20000); // #1/#2: poll every 20s so badges feel real-time
         fetchNavCounts();
     });
 </script>

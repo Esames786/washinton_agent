@@ -9,6 +9,10 @@
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 <style>
+    /* #9: hide the legacy price/record buttons in the edit form too, matching add_new
+       (only the "(New)" price buttons stay visible). */
+    #checkPrice, #previousCheckPrice, #previousRecord, #showOldCustomerNature, #historyBtn { display:none !important; }
+
     .btn-select-custom {
         margin-left: 25px !important;
         border: 2px solid #17a2b8 !important;
