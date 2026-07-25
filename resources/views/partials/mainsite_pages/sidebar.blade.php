@@ -330,6 +330,17 @@
                         </a>
                     </li>
                 @endif
+                {{-- Carrier Update Approval (pstatus 36): held listed orders awaiting approval.
+                     Permission code 36; admin (role 1) and Manager see it by default. --}}
+                @if (in_array('92', $phoneaccess) || (Auth::user()->role ?? 0) == 1 || (optional(Auth::user()->userRole)->name ?? '') == 'Manager')
+                    <li>
+                        <a class="side-menu__item" href="{{ url('carrier_update_approval') }}">
+                            <span class="js-search-result-thumbnail responsive-img img_border fa fa-check-square"></span>
+                            <span class="side-menu__label">CARRIER UPDATE APPROVAL</span><span class="badge badge-warning side-badge"
+                                style="font-size: 15px">{{ get_total_new(36, $check_panel) }}</span>
+                        </a>
+                    </li>
+                @endif
                 @if (in_array('17', $phoneaccess))
                     <li>
                         <a class="side-menu__item" href="" data-toggle="modal" data-target="#carrirermodal">

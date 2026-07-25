@@ -434,6 +434,39 @@ class NewOrder extends Controller
         return view('main.phone_quote.search.index', compact('data', 'link','label'));
     }
 
+    /**
+     * Carrier Update Approval: admin/manager approves a held order (pstatus 36) and moves it
+     * back to Listed (pstatus 9), stamping the Listed tracking columns + a history log row.
+     */
+    public function approve_carrier_update($id)
+    {
+        $order = AutoOrder::find($id);
+        if (!$order) {
+            return back()->with('error', 'Order not found.');
+        }
+        if ((int) $order->pstatus !== 36) {
+            return back()->with('error', 'This order is not pending carrier-update approval.');
+        }
+
+        $order->pstatus        = 9; // approved -> back to Listed
+        $order->Listed_User    = Auth::user()->id;
+        $order->Listed_Created = now();
+        $order->save();
+
+        // history log (same shape as other status changes)
+        try {
+            $rn = new \App\ReportNew();
+            $rn->userId  = Auth::user()->id;
+            $rn->orderId = $order->id;
+            $rn->pstatus = 9;
+            $rn->save();
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('approve_carrier_update log failed: ' . $e->getMessage(), ['order_id' => $id]);
+        }
+
+        return back()->with('success', 'Order approved and moved back to Listed.');
+    }
+
     public function new(Request $request)
     {
         $link = ReviewWebsiteLink::where('status', 1)->get();
@@ -699,6 +732,36 @@ class NewOrder extends Controller
             }
             if (\Request::is('listed')) {
                 $data = AutoOrder::with('listed_sheet', 'filterHistory', 'latestHistory')->where('pstatus', '=', 9)
+                    ->where(function ($q) use ($user) {
+                        if ($user->userRole->name == 'Manager') {
+                            if ($user->order_taker_quote == 1) {
+                                $q->where('manager_id', $user->id)->orWhere('order_taker_id', $user->id);
+                            }
+                        } else if ($user->userRole->name == 'Dispatcher') {
+                            if ($user->order_taker_quote == 1) {
+                                $q->where('dispatcher_id', $user->id);
+                            }
+                        } else if ($user->userRole->name == 'Delivery Boy') {
+                            if ($user->order_taker_quote == 1) {
+                                $q->where('delivery_boy_id', $user->id);
+                            }
+                        } else if ($user->userRole->name == 'Order Taker' || $user->userRole->name == 'CSR' || $user->userRole->name == 'Seller Agent') {
+                            if ($user->order_taker_quote == 1) {
+                                $q->where('order_taker_id', $user->id);
+                            } else if ($user->order_taker_quote == 2) {
+                                $q->whereRaw('FIND_IN_SET(?, manager_ot_ids)', [$user->id]);
+                            }
+                        }
+                    })
+                    ->where('paneltype', '=', $ptype)
+                    ->where('created_at', '>=', Carbon::today()->subDays($setting->no_days))
+                    ->orderBy('id', 'DESC')->paginate(20);
+                return view('main.phone_quote.new.index', compact('data', 'link', 'label'));
+            }
+            // Carrier Update Approval (pstatus 36) — listed orders held for admin/manager approval
+            // after a carrier update. Same role-scoping as Listed.
+            if (\Request::is('carrier_update_approval')) {
+                $data = AutoOrder::with('listed_sheet', 'filterHistory', 'latestHistory')->where('pstatus', '=', 36)
                     ->where(function ($q) use ($user) {
                         if ($user->userRole->name == 'Manager') {
                             if ($user->order_taker_quote == 1) {
@@ -2580,8 +2643,8 @@ class NewOrder extends Controller
                     ->paginate(20);
                 return view('main.phone_quote.new.load', compact('data'))->render();
             }
-            if ($request->titlee == 'listed') {
-                $data = AutoOrder::where('pstatus', '=', 9)
+            if ($request->titlee == 'listed' || $request->titlee == 'carrier_update_approval') {
+                $data = AutoOrder::where('pstatus', '=', ($request->titlee == 'carrier_update_approval' ? 36 : 9))
                     ->where(function ($q) use ($user) {
                         if ($user->userRole->name == 'Manager') {
                             if ($user->order_taker_quote == 1) {
@@ -4596,8 +4659,8 @@ class NewOrder extends Controller
                         ->orderBy('id', 'DESC')->paginate(20);
                     return view('main.phone_quote.new.load', compact('data'));
                 }
-                if ($request->titlee == 'listed') {
-                    $data = AutoOrder::where('pstatus', '=', 9)
+                if ($request->titlee == 'listed' || $request->titlee == 'carrier_update_approval') {
+                    $data = AutoOrder::where('pstatus', '=', ($request->titlee == 'carrier_update_approval' ? 36 : 9))
                         ->where(function ($q) use ($user) {
                             if ($user->userRole->name == 'Manager') {
                                 if ($user->order_taker_quote == 1) {
@@ -5543,8 +5606,8 @@ class NewOrder extends Controller
                         ->orderBy('id', 'DESC')->paginate(20);
                     return view('main.phone_quote.new.load', compact('data'));
                 }
-                if ($request->titlee == 'listed') {
-                    $data = AutoOrder::where('pstatus', '=', 9)
+                if ($request->titlee == 'listed' || $request->titlee == 'carrier_update_approval') {
+                    $data = AutoOrder::where('pstatus', '=', ($request->titlee == 'carrier_update_approval' ? 36 : 9))
                         ->where(function ($q) use ($user) {
                             if ($user->userRole->name == 'Manager') {
                                 if ($user->order_taker_quote == 1) {
@@ -6148,8 +6211,8 @@ class NewOrder extends Controller
                     ->orderBy('id', 'DESC')->paginate(20);
                 return view('main.phone_quote.new.load', compact('data'));
             }
-            if ($request->titlee == 'listed') {
-                $data = AutoOrder::where('pstatus', '=', 9)
+            if ($request->titlee == 'listed' || $request->titlee == 'carrier_update_approval') {
+                $data = AutoOrder::where('pstatus', '=', ($request->titlee == 'carrier_update_approval' ? 36 : 9))
                     ->where(function ($q) use ($user) {
                         if ($user->userRole->name == 'Manager') {
                             if ($user->order_taker_quote == 1) {

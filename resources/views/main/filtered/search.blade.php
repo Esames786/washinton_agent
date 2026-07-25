@@ -44,6 +44,8 @@
             $ret = "OnApproval";
         }elseif ($id == 19) {
             $ret = "On Approval Cancelled";
+        }elseif ($id == 36) {
+            $ret = "Carrier Update Approval";
         }
         return $ret;
     

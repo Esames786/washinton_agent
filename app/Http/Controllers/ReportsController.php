@@ -667,6 +667,7 @@ class ReportsController extends Controller
             17 => ['user' => 'CarrierUpdate_User', 'sort' => 'CarrierUpdate_Created'],
             18 => ['user' => 'OnApproval_User', 'sort' => 'OnApproval_Created'],
             19 => ['user' => 'CancelOnapproval_User', 'sort' => 'CancelOnapproval_Created'],
+            36 => ['user' => 'CarrierUpdateApproval_User', 'sort' => 'CarrierUpdateApproval_Created'],
         ];
 
         $pstatus = $request->pstatus;
@@ -1358,6 +1359,7 @@ class ReportsController extends Controller
             17 => ['user' => 'CarrierUpdate_User', 'sort' => 'CarrierUpdate_Created'],
             18 => ['user' => 'OnApproval_User', 'sort' => 'OnApproval_Created'],
             19 => ['user' => 'CancelOnapproval_User', 'sort' => 'CancelOnapproval_Created'],
+            36 => ['user' => 'CarrierUpdateApproval_User', 'sort' => 'CarrierUpdateApproval_Created'],
         ];
 
         $pstatus = $request->pstatus;

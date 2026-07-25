@@ -1013,6 +1013,13 @@ if (isset($_GET['titlee'])) {
                                         title="Authorization Form!"></i>
                                 </button>
                             @endif
+                            {{-- Carrier Update Approval: approve a held order (pstatus 36) back to Listed --}}
+                            @if ($val->pstatus == 36 && ((Auth::user()->role ?? 0) == 1 || (optional(Auth::user()->userRole)->name ?? '') == 'Manager' || in_array('92', $phoneaccess ?? [])))
+                                <form method="POST" action="{{ route('carrier_update_approval.approve', $val->id) }}" onsubmit="return confirm('Approve this order and move it back to Listed?');" style="display:inline;width:100%;">
+                                    @csrf
+                                    <button type="submit" class="btn btn-success btn-sm w-100">&#10003; Approve (Listed)</button>
+                                </form>
+                            @endif
                             @if (in_array('17', $actionaccess))
                                 @if (($val->pstatus >= 9 && $val->pstatus <= 14) || $val->pstatus == 19)
                                     <?php

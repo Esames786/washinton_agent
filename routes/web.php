@@ -672,6 +672,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/payment_missing', 'phone_quote\neworder\NewOrder@new');
         Route::get('/booked', 'phone_quote\neworder\NewOrder@new');
         Route::get('/listed', 'phone_quote\neworder\NewOrder@new');
+        // Carrier Update Approval folder (pstatus 36) — hold-for-approval after a carrier update.
+        Route::get('/carrier_update_approval', 'phone_quote\neworder\NewOrder@new');
+        Route::post('/carrier_update_approval/{id}/approve', 'phone_quote\neworder\NewOrder@approve_carrier_update')->name('carrier_update_approval.approve');
         Route::get('/dispatch', 'phone_quote\neworder\NewOrder@new');
         Route::get('/picked_up_approval', 'phone_quote\neworder\NewOrder@new');
         Route::get('/picked_up', 'phone_quote\neworder\NewOrder@new');

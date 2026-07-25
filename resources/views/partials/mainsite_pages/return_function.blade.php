@@ -811,6 +811,8 @@ if (!function_exists('get_pstatus')) {
             $ret = 'OnApproval';
         } elseif ($id == 19) {
             $ret = 'On Approval Canceled';
+        } elseif ($id == 36) {
+            $ret = 'Carrier Update Approval';
         } elseif ($id == 99) {
             $ret = 'Approaching';
         }

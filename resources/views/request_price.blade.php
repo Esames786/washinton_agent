@@ -3936,6 +3936,8 @@ New Quote
             ret = "OnApproval";
         } else if (id == 19) {
             ret = "On Approval Canceled";
+        } else if (id == 36) {
+            ret = "Carrier Update Approval";
         }
 
         return ret;

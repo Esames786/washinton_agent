@@ -399,6 +399,14 @@ class CarrierController extends Controller
             $order->driver_last_name = $name[1];
         }
         $order->updated_at = now();
+        // Carrier Update Approval: a LISTED order (pstatus 9) whose carrier is updated is held
+        // for admin/manager approval (pstatus 36) before it returns to Listed. Other statuses
+        // are unaffected. Approval (approve_carrier_update) moves it back to 9.
+        if ((int) $order->pstatus === 9) {
+            $order->pstatus = 36;
+            $order->CarrierUpdateApproval_User    = Auth::user()->id;
+            $order->CarrierUpdateApproval_Created = now();
+        }
         $order->save();
 
 

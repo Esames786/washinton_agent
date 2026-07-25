@@ -64,6 +64,8 @@
                 $ret = "OwesMoney";
             } elseif ($id == 17) {
                 $ret = "CarrierUpdate";
+            } elseif ($id == 36) {
+                $ret = "Carrier Update Approval";
             }
             return $ret;
 
