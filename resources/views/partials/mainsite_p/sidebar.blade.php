@@ -340,7 +340,7 @@
                         </li>
                     @endif
                     {{-- Carrier Update Approval (pstatus 36); admin + Manager open by default --}}
-                    @if (in_array('92', $phoneaccess) || (Auth::user()->role ?? 0) == 1 || (optional(Auth::user()->userRole)->name ?? '') == 'Manager')
+                    @if (in_array('170', $phoneaccess) || (Auth::user()->role ?? 0) == 1 || (optional(Auth::user()->userRole)->name ?? '') == 'Manager')
                         <li>
                             <a class="side-menu__item" href="{{ url('carrier_update_approval') }}">
                                 <span class="js-search-result-thumbnail responsive-img img_border fa fa-check-square"></span>

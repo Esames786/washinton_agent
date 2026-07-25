@@ -15,10 +15,11 @@
        vehicle rows). The input stays in the DOM so any submit logic reading it is unaffected. */
     .form-group:has(> input.vehicle_price) { display: none !important; }
 
-    /* #12: hide the pay-type radios (COD/COP, Pay With Email, Pay Now, Pay Later) on BOTH the
-       new-customer and old-customer flows. Pay Later stays pre-selected in the DOM so a valid
-       pay_cond value is still submitted. */
-    .form-group:has(input[name="pay_cond"]) { display: none !important; }
+    /* #12: keep ONLY "Pay Later" (value 4) visible — hide COD/COP(1), Pay With Email(2),
+       Pay Now(3) on BOTH the new-customer and old-customer flows. Pay Later is pre-selected. */
+    .form-group:has(input[name="pay_cond"][value="1"]),
+    .form-group:has(input[name="pay_cond"][value="2"]),
+    .form-group:has(input[name="pay_cond"][value="3"]) { display: none !important; }
 
     .card-people-list .media-body {
         margin-left: 15px;
@@ -7644,7 +7645,8 @@
                             console.log('weqeqeaw', response.autoorder);
                             // console.log('datasss22', response.autoorder["nature_of_customer"]);
                             $('#ophone').val(response.autoorder["ophone"]);
-                            $('#oemail').val(response.autoorder["oemail"]);
+                            // #7: treat as new — do NOT pre-fill the old customer's email; agent enters it fresh.
+                            // $('#oemail').val(response.autoorder["oemail"]);
                             // $('#nature_of_customer').val(response.autoorder["nature_of_customer"]);
                             $('#ophone').parent('div').siblings('input[name="ophone2[]"]').val(response
                                 .autoorder["ophone"]);

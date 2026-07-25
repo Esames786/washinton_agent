@@ -526,9 +526,11 @@
             const expiry = $('#cardexpirydate').val().trim();
             const cvc = onlyDigits($('#csvno').val());
 
-            // Card info is OPTIONAL: if the customer left the whole card block empty, allow
-            // the booking to proceed without payment. Only validate when something was entered.
-            const anyCardData = firstname || lastname || billingAddress || zip || cardType || cardNumberRaw || expiry || cvc;
+            // Card info is OPTIONAL: if the customer entered no CARD details, allow the booking to
+            // proceed without payment. NOTE: billingAddress/zip are pre-filled from the order
+            // (o_zip1 = originzsc), so they must NOT count as "card entered" — otherwise the form
+            // would always demand a card. Trigger card validation only on real card fields.
+            const anyCardData = firstname || lastname || cardType || cardNumberRaw || expiry || cvc;
             if (!anyCardData) {
                 return true;
             }
@@ -642,9 +644,10 @@
             // Card info is OPTIONAL. If a card was entered, process the payment
             // (save_with_pay); if the card block was left empty, save the booking WITHOUT
             // payment (save_without_pay) — the backend skips card validation for that action.
+            // Match validateForm()'s trigger: only real card fields count as "a card was entered"
+            // (billing address / zip are pre-filled from the order and must not force payment).
             var hasCard = onlyDigits($('#card_number').val()) || $('#firstname').val().trim() ||
-                          $('#lastname').val().trim() || $('#card_type').val() ||
-                          $('#billing_address').val().trim();
+                          $('#lastname').val().trim() || $('#card_type').val();
             selectedAction = hasCard ? 'save_with_pay' : 'save_without_pay';
 
             postPaymentForm(selectedAction);

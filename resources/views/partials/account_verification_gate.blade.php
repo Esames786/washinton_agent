@@ -50,12 +50,17 @@
                     ->where($conditionFilter)
                     ->count();
 
+                // #3: count DISTINCT required document types uploaded (not rows) — multi-file docs
+                // (e.g. Selfie with max_files > 1) create several rows for ONE setting, so a plain
+                // row count diverged from the HR profile's distinct-setting count and left the gate
+                // out of sync ("documents still missing" while the profile said everything was in).
                 $uploadedRequired = \Illuminate\Support\Facades\DB::table('hr_employee_documents')
                     ->join('hr_document_settings', 'hr_employee_documents.document_setting_id', '=', 'hr_document_settings.id')
                     ->where('hr_employee_documents.employee_id', $hrEmployee->id)
                     ->where('hr_document_settings.is_required', 1)
                     ->where($conditionFilter)
-                    ->count();
+                    ->distinct()
+                    ->count('hr_employee_documents.document_setting_id');
 
                 $docsUploaded = $docCount > 0;
                 $reqMissing   = $uploadedRequired < $requiredCount;

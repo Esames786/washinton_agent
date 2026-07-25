@@ -53,6 +53,7 @@ class AutoOrderObserver
             17 => ['CarrierUpdate_Created', 'CarrierUpdate_User'],
             18 => ['OnApproval_Created', 'OnApproval_User'],
             19 => ['CancelOnApproval_Created', 'CancelOnApproval_User'],
+            36 => ['CarrierUpdateApproval_Created', 'CarrierUpdateApproval_User'],
         ];
 
         // Set createdField and userField based on the current status
@@ -98,7 +99,7 @@ class AutoOrderObserver
         
                 $report->save();
             }
-        } else {
+        } elseif (isset($createdField)) {
             if ($autoOrder->$createdField === null) {
                 $autoOrder->$createdField = Carbon::now();
                 $autoOrder->$userField = $userId;

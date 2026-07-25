@@ -6,6 +6,21 @@
 
 @include('partials.mainsite_pages.return_function')
 <style>
+    /* #8: Vehicle Price removed from the quote form (input kept in DOM for submit logic). */
+    .form-group:has(> input.vehicle_price) { display: none !important; }
+
+    /* #12: keep ONLY "Pay Later" (value 4) visible — hide COD/COP(1), Pay With Email(2), Pay Now(3). */
+    .form-group:has(input[name="pay_cond"][value="1"]),
+    .form-group:has(input[name="pay_cond"][value="2"]),
+    .form-group:has(input[name="pay_cond"][value="3"]) { display: none !important; }
+
+    /* #6/#7: hide old-customer previous-order surfacing (kept in DOM so JS handlers don't break). */
+    #ophoneResult, #show_previous_orders, #last_5, #update_previous, .show_hide[data-content="toggle-text"] { display:none !important; }
+
+    /* #1: Coupon Number + History button removed from the quote form (kept in DOM for submit logic). */
+    .col-md-3:has(> #coupon_number) { display: none !important; }
+    #historyBtn { display: none !important; }
+
     .card-people-list .media-body {
         margin-left: 15px;
     }
@@ -902,7 +917,7 @@
                         <a href="https://www.weather.gov/" target="_blank" class="btn btn-primary mg-r-10">View Weather</a>
                         <a href="https://gasprices.aaa.com/" target="_blank" class="btn btn-primary">Fuel Price</a>
                         <a href="javascript:void(0)" id="previousBookPrice" class="btn btn-primary mg-r-10">Previous Driver Price</a>
-                        <a class="btn btn-primary mg-r-10"
+                        <a class="btn btn-primary mg-r-10" id="historyBtn"
                            onclick="history('0',$('#ophone').val())"
                            target="_blank">History</a>
                     </div>
@@ -2240,7 +2255,7 @@
                     <div class="col-lg-2 mt-4">
                         <div class="form-group">
                             <label class="rdiobox">
-                                <input class="this_save" name="pay_cond" id="pay_cond4" type="radio" value="4" >
+                                <input class="this_save" name="pay_cond" id="pay_cond4" type="radio" value="4" checked>
                                 <span>Pay Later</span>
                             </label>
                         </div>
@@ -2547,7 +2562,7 @@
                     <div class="col-lg-2 mt-4">
                         <div class="form-group">
                             <label class="rdiobox">
-                                <input class="this_save" name="pay_cond" id="pay_cond4" type="radio" value="4" >
+                                <input class="this_save" name="pay_cond" id="pay_cond4" type="radio" value="4" checked>
                                 <span>Pay Later</span>
                             </label>
                         </div>
@@ -4099,7 +4114,7 @@
                             $("#update_previous").hide();
                             $(".show_hide").hide();
                         }
-                        $('#show_total').html(item.tot + ' Order(s) found');
+                        $('#show_total').html(''); // #6/#7: suppress old-customer "X Order(s) found" count
                     });
                 },
                 error: function(e) {}

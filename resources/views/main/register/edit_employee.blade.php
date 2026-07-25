@@ -624,6 +624,7 @@
                             167=>'Guide Videos (Manage)<span class="badge badge-warning">New</span>',
                             168=>'Guide Videos (View)<span class="badge badge-warning">New</span>',
                             169=>'R-Dialer (RingCentral Phone)<span class="badge badge-primary">R-Dialer</span>',
+                            170=>'Carrier Update Approval<span class="badge badge-warning">New</span>',
                             ];
 
                             // #9 SOFT-HIDE (Batch 5): permission IDs hidden (display:none) in ALL panel-type
