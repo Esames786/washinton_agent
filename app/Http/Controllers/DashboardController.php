@@ -849,7 +849,9 @@ class DashboardController extends Controller
             }
             $emp->save();
             $usersetting = new user_setting();
-            $usersetting->penal_type = $request->penalytype;
+            // #7: guard against an empty penalytype writing ''/null into an int column
+            // (strict-mode MySQL rejects it → "unable to update"). Keep existing / default 1.
+            $usersetting->penal_type = $request->penalytype ?: (optional($usersetting)->penal_type ?? 1);
             $usersetting->call_type = (
                 (is_array($request->emp_access_phone) && in_array("134", $request->emp_access_phone)) ||
                 (is_array($request->emp_access_web) && in_array("134", $request->emp_access_web))
@@ -1058,7 +1060,9 @@ class DashboardController extends Controller
 
         $usersetting = user_setting::where('user_id', $request->user_id)->first();
         if (!empty($usersetting)) {
-            $usersetting->penal_type = $request->penalytype;
+            // #7: guard against an empty penalytype writing ''/null into an int column
+            // (strict-mode MySQL rejects it → "unable to update"). Keep existing / default 1.
+            $usersetting->penal_type = $request->penalytype ?: (optional($usersetting)->penal_type ?? 1);
             $usersetting->call_type = (
                 (is_array($request->emp_access_phone) && in_array("134", $request->emp_access_phone)) ||
                 (is_array($request->emp_access_web) && in_array("134", $request->emp_access_web))
@@ -1066,7 +1070,9 @@ class DashboardController extends Controller
             $usersetting->save();
         } else {
             $usersetting = new user_setting();
-            $usersetting->penal_type = $request->penalytype;
+            // #7: guard against an empty penalytype writing ''/null into an int column
+            // (strict-mode MySQL rejects it → "unable to update"). Keep existing / default 1.
+            $usersetting->penal_type = $request->penalytype ?: (optional($usersetting)->penal_type ?? 1);
             $usersetting->call_type = (
                 (is_array($request->emp_access_phone) && in_array("134", $request->emp_access_phone)) ||
                 (is_array($request->emp_access_web) && in_array("134", $request->emp_access_web))

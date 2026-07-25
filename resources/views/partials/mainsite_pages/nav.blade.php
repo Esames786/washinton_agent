@@ -282,9 +282,8 @@ if (!function_exists('get_user_name123')) {
                     <li class="nav-item" data-placement="top" data-toggle="tooltip" title="Campaign Users" style="position:relative;">
                         <a class="icon" href="{{ route('cr-applications.index') }}" style="position:relative;">
                             <i class="fa fa-user-plus header-icons"></i>
-                            @if ($crNewCount > 0)
-                                <span class="badge badge-danger side-badge" style="width: 25px; height: 25px; justify-content: center; align-items: center; display: flex !important; right: -10px; top: -10px;" id="cr_app_count">{{ $crNewCount > 99 ? '99+' : $crNewCount }}</span>
-                            @endif
+                            {{-- always render the badge so the JS poll can update it; show the real number --}}
+                            <span class="badge badge-danger side-badge" style="width: 25px; height: 25px; justify-content: center; align-items: center; display: {{ $crNewCount > 0 ? 'flex' : 'none' }} !important; right: -10px; top: -10px;" id="cr_app_count">{{ $crNewCount }}</span>
                         </a>
                     </li>
                 @endif

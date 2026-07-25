@@ -1398,18 +1398,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cr-applications/{id}/approve', 'CrApplicationController@approve')->name('cr-applications.approve');
     Route::post('/cr-applications/{id}/reject', 'CrApplicationController@reject')->name('cr-applications.reject');
 
-    // #2/#12: live nav badge counts (polled every 60s by the nav).
+    // #2/#12: live nav badge counts (polled by the nav).
     Route::get('/nav-counts', function () {
-        // #9: the campaign badge should notify of NEW applications, not the whole pending
-        // backlog (which sat perpetually at 99+). Count only pending applications that
-        // arrived AFTER the admin last opened the campaign list; opening it marks all seen.
-        $crQuery = \App\CrApplication::where('status', 'pending');
-        if ($seenAt = session('cr_apps_seen_at')) {
-            $crQuery->where('created_at', '>', $seenAt);
-        }
-
+        // Show the ACTUAL number of pending CrazyRays applications. (The earlier
+        // "unseen since last visit" logic made the badge read 0 for managers/admins as
+        // soon as they opened the list — which read as a bug.)
         return response()->json([
-            'cr_pending'      => $crQuery->count(),
+            'cr_pending'      => \App\CrApplication::where('status', 'pending')->count(),
             'payment_pending' => \App\AgentOrderPayment::where('payment_status', 'Payment Pending')->count(),
         ]);
     })->name('nav.counts');

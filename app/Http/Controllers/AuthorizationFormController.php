@@ -62,17 +62,28 @@ class AuthorizationFormController extends Controller
             return response()->json(['error' => 'Email field is required'], 400);
         }
         
-        $invoiceNo = $this->generateUniqueInvoice($cID);
-        // dd($invoiceAmount, $invoiceNo);
+        // #11: guard a missing order (was 500'ing on $order->invoiceNo on null).
+        $order = $cID ? AutoOrder::find($cID) : null;
+        if (!$order) {
+            return back()->with('error', 'Could not share the booking form: the order was not found (ID: ' . ($cID ?: 'missing') . '). Please reopen the order and try again.');
+        }
 
-        $order = AutoOrder::find($cID);
+        $invoiceNo = $this->generateUniqueInvoice($cID);
+
         $order->invoiceNo = $invoiceNo;
         $order->invoiceAmount = $invoiceAmount;
         $order->save();
-        
-    
-        Mail::to($email)->send(new AuthorizationFormMail($cID, $cname, $email, $cphone, $invoiceNo, $invoiceAmount, $origin, $destination, $vehicle));
-    
+
+        // #11: the screen "froze" because the email was sent SYNCHRONOUSLY over SMTP
+        // (sandbox.smtp.mailtrap.io) inside a full-page POST — a slow/unreachable mail host
+        // blocked the whole request. Queue it (deferred when a worker is running) and never
+        // let a mail failure 500 or hang the share action.
+        try {
+            Mail::to($email)->queue(new AuthorizationFormMail($cID, $cname, $email, $cphone, $invoiceNo, $invoiceAmount, $origin, $destination, $vehicle));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Authorization form email failed: ' . $e->getMessage(), ['order_id' => $cID]);
+        }
+
         return back();
     }
     

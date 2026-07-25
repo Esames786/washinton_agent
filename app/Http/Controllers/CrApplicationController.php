@@ -63,7 +63,14 @@ class CrApplicationController extends Controller
             $query->where('employment_type', $request->employment_type);
         }
         if ($request->filled('campaign')) {
-            $query->where('campaign', $request->campaign);
+            // The "In-house" dropdown entry is an employment split, not a real campaign key
+            // (in-house apps are stored as employment_type=in_house / campaign=onsite_general).
+            // Filtering by campaign='inhouse' matched nothing → treat it as the employment filter.
+            if ($request->campaign === 'inhouse') {
+                $query->where('employment_type', 'in_house');
+            } else {
+                $query->where('campaign', $request->campaign);
+            }
         }
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -86,10 +93,6 @@ class CrApplicationController extends Controller
 
         $applications = $query->paginate(20)->withQueryString();
         $campaigns    = CrApplication::$campaigns;
-
-        // #9: viewing the list clears the "new applications" nav badge — mark everything
-        // up to now as seen, so the badge then only counts applications that arrive later.
-        session(['cr_apps_seen_at' => now()]);
 
         return view('main.cr_applications.index', compact('applications', 'campaigns'));
     }

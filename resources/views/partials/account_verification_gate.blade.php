@@ -33,13 +33,28 @@
                 $docCount = \Illuminate\Support\Facades\DB::table('hr_employee_documents')
                     ->where('employee_id', $hrEmployee->id)->count();
 
+                // Only count documents that actually apply to this agent's house ownership —
+                // unconditional docs always apply; own/rent docs only for the matching selection.
+                // Without this, the gate counted the OTHER ownership's docs as "missing" while
+                // the HR profile (which filters by condition) said everything was submitted.
+                $ownership = $hrEmployee->house_ownership ?? null;
+                $conditionFilter = function ($q) use ($ownership) {
+                    $q->whereNull('hr_document_settings.condition');
+                    if ($ownership) {
+                        $q->orWhere('hr_document_settings.condition', $ownership);
+                    }
+                };
+
                 $requiredCount = \Illuminate\Support\Facades\DB::table('hr_document_settings')
-                    ->where('is_required', 1)->where('status', 1)->count();
+                    ->where('is_required', 1)->where('status', 1)
+                    ->where($conditionFilter)
+                    ->count();
 
                 $uploadedRequired = \Illuminate\Support\Facades\DB::table('hr_employee_documents')
                     ->join('hr_document_settings', 'hr_employee_documents.document_setting_id', '=', 'hr_document_settings.id')
                     ->where('hr_employee_documents.employee_id', $hrEmployee->id)
                     ->where('hr_document_settings.is_required', 1)
+                    ->where($conditionFilter)
                     ->count();
 
                 $docsUploaded = $docCount > 0;

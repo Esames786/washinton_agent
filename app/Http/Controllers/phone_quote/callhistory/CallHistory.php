@@ -86,6 +86,10 @@ class CallHistory extends Controller
             $ret = "OnApproval";
         } elseif ($id == 19) {
             $ret = "CancelOnapproval";
+        } elseif ($id == 36) {
+            // Carrier Update Approval — a listed order held for admin/manager approval after a
+            // carrier update. Name drives the CarrierUpdateApproval_User/_Created tracking columns.
+            $ret = "CarrierUpdateApproval";
         } elseif ($id == 99) {
             $ret = "Approaching";
         }
