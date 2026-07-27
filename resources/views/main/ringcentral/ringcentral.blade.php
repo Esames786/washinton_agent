@@ -38,7 +38,11 @@
 
                 <div class="top-header">
                     @php
-                        $rcUserName = $ringCentralUser?->user?->name ?? 'User';
+                        // On a brand-forced deployment (florida: PORTAL_BRAND=crazyrays) the shared
+                        // company dialer shows the brand name instead of the linked account's name.
+                        $rcUserName = config('brands.force')
+                            ? ($brand['name'] ?? 'User')
+                            : ($ringCentralUser?->user?->name ?? 'User');
                         $rcPhoneRaw = $ringCentralUser->phone_number ?? '';
                         $rcDigits = preg_replace('/\D+/', '', (string) $rcPhoneRaw);
                         $rcMasked = $rcDigits ? str_repeat('*', max(0, strlen($rcDigits) - 4)) . substr($rcDigits, -4) :

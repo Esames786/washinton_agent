@@ -2632,14 +2632,17 @@ class NewQuote extends Controller
         $request->validate([
             'id' => 'required|integer',
             'userid' => 'required',
-            'firstname' => 'required_if:save_but,save_with_pay|string|max:100',
-            'lastname' => 'required_if:save_but,save_with_pay|string|max:100',
-            'billing_address' => 'required_if:save_but,save_with_pay|string|max:255',
-            'o_zip1' => 'required_if:save_but,save_with_pay|string|max:50',
-            'card_type' => 'required_if:save_but,save_with_pay|in:visa,mastercard,amex,discover',
-            'card_number' => 'required_if:save_but,save_with_pay|string|max:25',
-            'cardexpirydate' => 'required_if:save_but,save_with_pay|string|max:10',
-            'csvno' => 'required_if:save_but,save_with_pay|string|max:4',
+            // #2: card info OPTIONAL — `nullable` lets empty/blank card fields pass when NOT paying;
+            // `required_if` still enforces them when save_with_pay. Without nullable, the `string`
+            // rule rejected blank fields ("The firstname must be a string").
+            'firstname' => 'nullable|required_if:save_but,save_with_pay|string|max:100',
+            'lastname' => 'nullable|required_if:save_but,save_with_pay|string|max:100',
+            'billing_address' => 'nullable|required_if:save_but,save_with_pay|string|max:255',
+            'o_zip1' => 'nullable|required_if:save_but,save_with_pay|string|max:50',
+            'card_type' => 'nullable|required_if:save_but,save_with_pay|in:visa,mastercard,amex,discover',
+            'card_number' => 'nullable|required_if:save_but,save_with_pay|string|max:25',
+            'cardexpirydate' => 'nullable|required_if:save_but,save_with_pay|string|max:10',
+            'csvno' => 'nullable|required_if:save_but,save_with_pay|string|max:4',
             'save_but' => 'required|in:save_with_pay,save_without_pay',
         ]);
 

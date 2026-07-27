@@ -502,7 +502,7 @@ if (!function_exists('get_user_name123')) {
                                 @if (in_array("159", $phoneaccess) || Auth::user()->role==1)
                                     <a class="dropdown-item" href="{{ route('gateway.portal.hello') }}" target="_blank"><i
                                             class="fa fa-sliders mr-1" style="color: #000;"></i>
-                                        <span>Hello Gateway</span>
+                                        <span>{{ $brand['name'] ?? 'Hello' }} Gateway</span>
                                     </a>
                                 @endif
                                 @if (in_array("160", $phoneaccess) || Auth::user()->role==1)
@@ -1325,12 +1325,28 @@ if (!function_exists('get_user_name123')) {
         fetchNotifications();
 
         // #2/#12: poll live badge counts (CR applications + admin payments) every 60s.
+        var _cuaPrev = null; // #1: previous Carrier Update Approval count (to detect new arrivals)
         function fetchNavCounts() {
             $.getJSON("{{ route('nav.counts') }}", function (d) {
                 var cr = parseInt(d.cr_pending || 0, 10);
                 $('#cr_app_count').text(cr).toggle(cr > 0); // show the real number, not 99+
                 var pay = parseInt(d.payment_pending || 0, 10);
                 $('#payment_pending_count').text(pay > 99 ? '99+' : pay).toggle(pay > 0);
+
+                // #1: Carrier Update Approval — live badge + notification when a new one arrives.
+                var cua = parseInt(d.carrier_update_approval || 0, 10);
+                $('#cua_folder_count').text(cua);
+                if (_cuaPrev !== null && cua > _cuaPrev) {
+                    try { var a = document.getElementById('noti'); if (a) { a.play(); } } catch (e) {}
+                    try {
+                        if (typeof notif === 'function') {
+                            notif({ msg: "<b>Carrier Update Approval</b>: a carrier update is awaiting your approval.", type: "warning", position: "right", multiline: true });
+                        } else if ($.growl) {
+                            $.growl.warning({ title: "Carrier Update Approval", message: "A carrier update is awaiting your approval." });
+                        }
+                    } catch (e) {}
+                }
+                _cuaPrev = cua;
             });
         }
         setInterval(fetchNavCounts, 20000); // #1/#2: poll every 20s so badges feel real-time

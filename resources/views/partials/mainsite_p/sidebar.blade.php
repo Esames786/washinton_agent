@@ -345,7 +345,7 @@
                             <a class="side-menu__item" href="{{ url('carrier_update_approval') }}">
                                 <span class="js-search-result-thumbnail responsive-img img_border fa fa-check-square"></span>
                                 <span class="side-menu__label">CARRIER UPDATE APPROVAL</span><span
-                                    class="badge badge-warning side-badge"
+                                    class="badge badge-warning side-badge" id="cua_folder_count"
                                     style="font-size: 15px">{{ get_total_new(36, $check_panel) }}</span>
                             </a>
                         </li>
