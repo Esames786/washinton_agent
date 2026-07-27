@@ -2257,7 +2257,7 @@
                                 $currentYear = date('Y');
                             @endphp
                             {{-- <p>Copyright & design by <a href="{{ route('Frontend.index') }}">@DayDispatch</a></p> --}}
-                            <p>©<a href="{{ route('Frontend.index') }}"  class="text-decoration-underline" > Hello Tranport</a> {{ $lastYear }}-{{ $currentYear }}. All Rights Reserved.</p>
+                            <p>©<a href="{{ route('Frontend.index') }}"  class="text-decoration-underline" > {{ $brand['name'] ?? 'Hello Transport' }}</a> {{ $lastYear }}-{{ $currentYear }}. All Rights Reserved.</p>
                         </div>
                     </div>
                 </div>

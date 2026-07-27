@@ -14,9 +14,27 @@
 - **B — Email migrates to the CrazyRays cPanel.** The whole app moves to the CrazyRays cPanel, so it uses that server's mail. Update `MAIL_*` + the hardcoded `@hellotransport.com` addresses → CrazyRays. → **§1a-mail + §2g.**
 - **C — Resolved: the activation-email login link goes to the agent portal directly** (`florida.crazyrayssolutions.com.pk/loginn`), consistent with `DAYDISPATCH_VERIFY_AFTER_SIGNUP_URL`, which already sends CR agents to the agent `/loginn` after signup. → **§2a.** *(Plain-English explanation of what C even was is in §7.)*
 
-Three Laravel apps talk to each other. **Most cross-app URLs are already `env()`-driven**, so the bulk of the work is `.env` edits + `config:clear`. A handful of values are **hardcoded in code** (config/brands, two email templates, one message, mail addresses, temp routes) and must be edited. RingCentral OAuth/webhook URLs must also be **re-registered in the RingCentral console**, not just changed in `.env`.
+Three Laravel apps talk to each other. **Most cross-app URLs are already `env()`-driven**, so the bulk of the work is `.env` edits + `config:clear`. A handful of values are **hardcoded in code** (config/brands, email templates, message, mail addresses, temp routes) and are now edited (see §2). RingCentral OAuth/webhook URLs must also be **re-registered in the RingCentral console**, not just changed in `.env`.
 
-> ⚠️ Nothing here has been changed yet — this is the plan. Do the DNS/SSL prerequisites first, then env, then code, then clear caches, then re-register RingCentral, then verify.
+---
+
+## ▶ EXECUTION ORDER (do in this sequence) — with live status
+
+**Architecture is now the simplest possible.** All three apps sit on the **SAME VPS** (IP `199.250.220.27`, two cPanel accounts) and **share ONE MySQL server**, so every app just uses `DB_HOST=127.0.0.1` + the **Hello DB** creds — **no remote MySQL, no cross-domain API, no CORS.** `florida.crazyrayssolutions.com.pk` (agent portal) and `hr.crazyrayssolutions.com.pk` (HR) are deployed as subdomains under the **CrazyRays** cPanel; `hellotransport.com` (landing) stays on the **Hello** cPanel. All three point at `hellotransport_databases`.
+
+1. **[CODE] Commit + push** the agent + HR changes so the servers can `git pull`. *(pending — ask me to commit)*
+   Includes: `IS_AGENT_PORTAL` flag + redirects, site-wide `Brand` branding (`PORTAL_BRAND`), HR-login-link emails now env-driven.
+2. **florida.crazyrayssolutions.com.pk (agent portal)** — ✅ deployed & login works. Finish:
+   - `.env`: add `PORTAL_BRAND=crazyrays`; set `HRPORTAL_BASE_URL=https://hr.crazyrayssolutions.com.pk`.
+   - `git pull`; `php artisan config:clear && view:clear && cache:clear`. (Do **not** `migrate` — shared live DB.)
+   - Verify: DB connects, `/loginn` shows **CrazyRays** branding, login works.
+   - RingCentral: re-register OAuth redirect `…/here` + webhook `…/r/webhook`.
+3. **hr.crazyrayssolutions.com.pk (HR portal)** — deploy with the `.env` in **§1b** (shared DB, CrazyRays mail, agent = florida). `config:clear`; `php artisan up`.
+4. **crazyrayssolutions.com.pk (CR bridge)** — `.env`: `DAYDISPATCH_BASE_URL/_DASHBOARD_URL/_LOGOUT_URL/_VERIFY_AFTER_SIGNUP_URL` → florida; `HRPORTAL_BASE_URL` → hr.crazyrays. `config:clear`. Delete temp route `/artisan/fix-daydispatch-url`.
+5. **hellotransport.com (landing)** — `git pull`; `.env`: `IS_AGENT_PORTAL=false`, `AGENT_PORTAL_URL=https://florida.crazyrayssolutions.com.pk` (keep Hello mail/DB/branding). `config:clear && view:clear`. Verify: Get-a-Quote still **lands** (same DB), Login → florida, Signup → CrazyRays, branding stays Hello.
+6. **Cleanup:** optional BridgeAuthController:251 message text; confirm RingCentral active on **florida only**.
+
+> Get-a-Quote "lands" automatically because the landing and florida use the **same database** — nothing special to wire (the old §5b Option-1/2 debate is moot now that it's one shared DB).
 
 ---
 
@@ -80,24 +98,80 @@ Three Laravel apps talk to each other. **Most cross-app URLs are already `env()`
 
 **Leave unchanged:** `CRAZYRAYS_BASE_URL=https://crazyrayssolutions.com.pk` (CR bridge/signup — still lives there), `CENTRAL_GATEWAY_*`, `AUTOHAUL_*`, `STRIPE_*`, `BREVO_API_KEY`, all bridge **keys**.
 
-### 1b. HR portal — `washinton_hr/.env` (server: ~/hr.hellotransport.com)
+### 1b. HR portal — `washinton_hr/.env` on `hr.crazyrayssolutions.com.pk` (deploy under the CrazyRays cPanel; shared Hello DB)
 
-```diff
-- APP_URL=https://hr.hellotransport.com
-+ APP_URL=https://hr.crazyrayssolutions.com.pk
+**Full deploy-ready file** (⚠️ keep HR's OWN `APP_KEY` — do NOT regenerate; it decrypts HR data & keeps sessions):
+```env
+APP_NAME=WashintonHRPORTAL
+APP_ENV=production
+APP_KEY=base64:aWvc8dOjFAUwCaLYOxdNtmLCd0q9REsP48/xoosTIyk=
+APP_DEBUG=false
+APP_URL=https://hr.crazyrayssolutions.com.pk
 
-# Live-chat iframe + bridge back to the agent portal
-- AGENT_PORTAL_URL=https://hellotransport.com
-+ AGENT_PORTAL_URL=https://florida.crazyrayssolutions.com.pk
-- HELLOTRANSPORT_BRIDGE_URL=https://hellotransport.com
-+ HELLOTRANSPORT_BRIDGE_URL=https://florida.crazyrayssolutions.com.pk
+LOG_CHANNEL=stack
+LOG_DEPRECATIONS_CHANNEL=null
+LOG_LEVEL=debug
 
-# ADD this line — the "Return to Agent Portal" button uses config('bridge.agent_portal.dashboard_url'),
-# which falls back to https://hellotransport.com/dashboard when the env var is absent (it is today).
-+ AGENT_PORTAL_DASHBOARD_URL=https://florida.crazyrayssolutions.com.pk/dashboard
+# Shared HELLO database (same VPS = localhost)
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=hellotransport_databases
+DB_USERNAME=hellotransport_databases
+DB_PASSWORD=hellotransport_databases
+
+BROADCAST_DRIVER=log
+CACHE_DRIVER=file
+FILESYSTEM_DISK=local
+QUEUE_CONNECTION=sync
+
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+SESSION_DOMAIN=
+SESSION_SECURE_COOKIE=true
+SESSION_SAME_SITE=lax
+SESSION_COOKIE=hr_portal_session
+
+MEMCACHED_HOST=127.0.0.1
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+# Mail: HR now on the CrazyRays cPanel → CrazyRays mail
+MAIL_MAILER=smtp
+MAIL_HOST=mail.crazyrayssolutions.com.pk
+MAIL_PORT=465
+MAIL_USERNAME=careers@crazyrayssolutions.com.pk
+MAIL_PASSWORD="vmwZ_YQVffUV"
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=careers@crazyrayssolutions.com.pk
+MAIL_FROM_NAME="Hello Transport HR"
+
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=
+AWS_USE_PATH_STYLE_ENDPOINT=false
+
+PUSHER_APP_ID=
+PUSHER_APP_KEY=
+PUSHER_APP_SECRET=
+PUSHER_APP_CLUSTER=mt1
+MIX_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+MIX_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+
+# Bridge (inbound from the agent portal) — key unchanged
+HR_BRIDGE_SHARED_KEY=c689d5166a3fe6a0772ce020b14c2e0d980559f4de3e80617d617383ac592cf5
+HR_BRIDGE_DEFAULT_EMPLOYMENT_TYPE_ID=3
+HR_BRIDGE_DEFAULT_EMPLOYEE_STATUS_ID=7
+
+# Agent portal is now florida
+AGENT_PORTAL_URL=https://florida.crazyrayssolutions.com.pk
+AGENT_PORTAL_DASHBOARD_URL=https://florida.crazyrayssolutions.com.pk/dashboard
+HELLOTRANSPORT_BRIDGE_URL=https://florida.crazyrayssolutions.com.pk
+HELLOTRANSPORT_BRIDGE_KEY=c689d5166a3fe6a0772ce020b14c2e0d980559f4de3e80617d617383ac592cf5
 ```
-
-`SESSION_COOKIE=hr_portal_session` and `SESSION_DOMAIN=` (empty) can stay — each app keeps its own session; cross-app auth is via the bridge/SSO token, not a shared cookie.
+Deploy steps: upload code + this `.env` → `php artisan config:clear && cache:clear && route:clear && view:clear` → fix `storage/`+`bootstrap/cache` perms → `php artisan storage:link` → **`php artisan up`**. Do NOT `migrate` (shared live DB). The HR-activation email's login link is now env-driven (uses `APP_URL`), so it points at `hr.crazyrayssolutions.com.pk` automatically.
 
 ### 1c. CR bridge / signup — `crazyrays/.env` (server: crazyrayssolutions public_html)
 

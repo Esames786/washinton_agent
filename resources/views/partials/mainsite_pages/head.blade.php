@@ -2,8 +2,8 @@
 <!-- Meta data -->
 <meta charset="UTF-8">
 <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=0'>
-<meta content="Hello Transport Agent Portal" name="description">
-<meta content="Hello Transport" name="author">
+<meta content="{{ $brand['name'] ?? 'Hello Transport' }} Agent Portal" name="description">
+<meta content="{{ $brand['name'] ?? 'Hello Transport' }}" name="author">
 <meta name="csrf-token" content="{{ csrf_token() }}" />
 
 <!-- Title -->

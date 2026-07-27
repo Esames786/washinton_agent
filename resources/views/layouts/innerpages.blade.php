@@ -1576,7 +1576,7 @@ Agent: Thank you for your cooperation. We appreciate your attention to these det
                 <div class="container">
                     <div class="row align-items-center flex-row-reverse">
                         <div class="col-md-12 col-sm-12 text-center">
-                            Copyright © {{ date('Y') }} <a href="{{ url('/dashboard') }}">Hello Transport</a>.
+                            Copyright © {{ date('Y') }} <a href="{{ url('/dashboard') }}">{{ $brand['name'] ?? 'Hello Transport' }}</a>.
                             All Rights Reserved ®.
                         </div>
                     </div>
