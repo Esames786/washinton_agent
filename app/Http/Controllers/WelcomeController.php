@@ -71,6 +71,12 @@ class WelcomeController extends Controller
 
     public function loginn()
     {
+        // On the Hello marketing/landing deployment there is no portal login here —
+        // send agents to the real agent portal (florida).
+        if (!config('app.is_agent_portal')) {
+            return redirect()->away(rtrim(config('app.agent_portal_url'), '/') . '/loginn');
+        }
+
         if (Auth::check()) {
             if (Auth::user()->userRole->name == 'Code Giver') {
                 return redirect('/employees');

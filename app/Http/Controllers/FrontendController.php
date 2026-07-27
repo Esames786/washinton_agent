@@ -12,6 +12,12 @@ class FrontendController extends Controller
 {
     public function home(Request $request)
     {
+        // On the agent-portal deployment (florida) there is no public marketing site —
+        // land straight on the login screen.
+        if (config('app.is_agent_portal')) {
+            return redirect('/loginn');
+        }
+
         // Logged-in CR users visiting the hellotransport marketing page get sent back to CrazyRays
         if (Auth::check()) {
             $isCrUser = (int) (Auth::user()->is_crazyrays ?? 0) === 1

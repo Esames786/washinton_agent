@@ -16,6 +16,15 @@ return [
     'name' => env('APP_NAME', 'Laravel'),
 
     /*
+    | true  = this deployment IS the agent portal (florida) → hide the public
+    |         marketing site; "/" goes straight to login.
+    | false = this deployment is the Hello marketing/landing site → show marketing;
+    |         send login/signup to the portal / CrazyRays.
+    */
+    'is_agent_portal' => (bool) env('IS_AGENT_PORTAL', false),
+    'agent_portal_url' => env('AGENT_PORTAL_URL', 'https://florida.crazyrayssolutions.com.pk'),
+
+    /*
     |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------

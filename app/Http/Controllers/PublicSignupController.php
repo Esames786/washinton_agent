@@ -39,7 +39,9 @@ class PublicSignupController extends Controller
 
     public function showForm()
     {
-        return view('auth.register');
+        // Public self-service signup is handled on CrazyRays now — redirect there.
+        $crBase = rtrim(config('bridge.crazyrays.base_url', 'https://crazyrayssolutions.com.pk'), '/');
+        return redirect()->away($crBase ?: 'https://crazyrayssolutions.com.pk');
     }
 
     public function store(Request $request): JsonResponse
