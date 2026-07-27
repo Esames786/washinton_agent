@@ -186,7 +186,7 @@
 
                     {{-- Header --}}
                     <div class="verify-header">
-                        <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}"
+                        <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}"
                              class="brand-logo" alt="Hello Transport">
                         <h2>Verify Your Identity</h2>
                         <p>Enter the OTP code sent to your email</p>

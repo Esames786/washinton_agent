@@ -4,7 +4,7 @@
           <tr>
             <td style="text-align: left; padding: 0;">
               <a href="#">
-                <img src="{{ url('frontend/img/logo/hello_transport.svg') }}" alt="Hello Transport" style="max-width: 200px;">
+                <img src="{{ url(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" alt="Hello Transport" style="max-width: 200px;">
               </a>
             </td>
             <td></td>

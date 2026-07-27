@@ -121,8 +121,8 @@
         <div class="row" style=" margin-top: 10px; ">
             <div class="card">
                 <div class="card-header justify-content-between">
-                    <h3 class="c_name">Hello Transport</h3>
-                    <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" style="max-height:70px;width:auto;" alt="Hello Transport">
+                    <h3 class="c_name">{{ $brand['name'] ?? 'Hello Transport' }}</h3>
+                    <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" style="max-height:70px;width:auto;" alt="Hello Transport">
                 </div>
                 <div class="card-body">
                     {{-- #2: company address / tel / email removed from transportation invoice --}}
@@ -187,7 +187,7 @@
                         </tbody>
                     </table>
                     @if ($data->site == 'Ship A1(Broker)')
-                        <p><b>Note: </b>Hello Transport operates as a broker,
+                        <p><b>Note: </b>{{ $brand['name'] ?? 'Hello Transport' }} operates as a broker,
                             arranging and assigning carriers to
                             complete your shipment. We coordinate
                             with trusted carriers to ensure your vehicle

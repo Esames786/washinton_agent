@@ -26,18 +26,18 @@
         <meta property="og:url" content="{{ $canonicalUrl }}">
         <meta property="og:title" content="{{ $fullTitle }}">
         <meta property="og:description" content="{{ $finalDesc }}">
-        <meta property="og:image" content="{{ asset('frontend/img/logo/hello_transport.svg') }}">
+        <meta property="og:image" content="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}">
         <meta property="og:site_name" content="Hello Transport">
 
         {{-- Twitter Card --}}
         <meta name="twitter:card" content="summary">
         <meta name="twitter:title" content="{{ $fullTitle }}">
         <meta name="twitter:description" content="{{ $finalDesc }}">
-        <meta name="twitter:image" content="{{ asset('frontend/img/logo/hello_transport.svg') }}">
+        <meta name="twitter:image" content="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}">
 
         {{-- Favicon --}}
-        <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('frontend/img/logo/hello_transport.svg') }}">
-        <link rel="icon" type="image/svg+xml" href="{{ asset('frontend/img/logo/hello_transport.svg') }}">
+        <link rel="shortcut icon" type="image/svg+xml" href="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}">
+        <link rel="icon" type="image/svg+xml" href="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}">
         <!-- CSS here -->
         <link rel="stylesheet" href="{{ asset('frontend/css/preloader.css') }}">
         <link rel="stylesheet" href="{{ asset('frontend/css/bootstrap.min.css') }}">
@@ -1727,7 +1727,7 @@
                                 <div class="col-xl-2 col-lg-2 col-md-2 col-3">
                                     <div class="logo logo-transform">
                                         <a href="{{ route('Frontend.index') }}"><img
-                                                src="{{ asset('frontend/img/logo/hello_transport.svg') }}" width="55" height="55" alt="Logo"></a>
+                                                src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" width="55" height="55" alt="Logo"></a>
                                     </div>
                                 </div>
                                 <div class="col-xl-10 col-lg-10 col-md-10 col-9">
@@ -1807,7 +1807,7 @@
                                 <div class="col-xl-2 col-lg-2">
                                     <div class="logo d-none">
                                         <a href="{{ route('Frontend.index') }}"><img
-                                                src="{{ asset('frontend/img/logo/hello_transport.svg') }}" width="55" height="55" alt="Logo"></a>
+                                                src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" width="55" height="55" alt="Logo"></a>
                                     </div>
                                 </div>
                                 <div class="col-xl-10 col-lg-10">
@@ -1898,7 +1898,7 @@
                         <div class="col-xl-2 col-lg-2 col-3">
                             <div class="logo">
                                 <a href="{{ route('Frontend.index') }}"><img
-                                        src="{{ asset('frontend/img/logo/hello_transport.svg') }}" width="55" height="55" alt="Logo"></a>
+                                        src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" width="55" height="55" alt="Logo"></a>
                             </div>
                         </div>
                         <div class="col-xl-10 col-lg-10 col-9">
@@ -1994,7 +1994,7 @@
                     <div class="sidebar__content">
                         <div class="sidebar__logo mb-40">
                             <a href="{{ route('Frontend.index') }}">
-                                <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" width="70" height="70" alt="logo">
+                                <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" width="70" height="70" alt="logo">
                             </a>
                         </div>
                         <div class="sidebar__search mb-25">

@@ -154,7 +154,7 @@ html, body { height: 100%; margin: 0; }
 
     {{-- ── LEFT PANEL ── --}}
     <div class="signup-left">
-        <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}"
+        <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}"
              alt="Hello Transport" class="brand-logo">
         <h2>Join Our <span>Network</span></h2>
         <div class="divider"></div>

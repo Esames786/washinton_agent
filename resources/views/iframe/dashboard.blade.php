@@ -424,7 +424,7 @@ body {
         @if(isset($source) && $source === 'crazyrays')
             <div style="width:46px;height:46px;border-radius:50%;border:2px solid #e11d48;background:linear-gradient(135deg,#e11d48,#f43f5e);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;flex-shrink:0;letter-spacing:.5px;">CR</div>
         @else
-            <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Logo">
+            <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" alt="Logo">
         @endif
         <div class="chat-header-info">
             <div class="name">{{ (isset($source) && $source === 'crazyrays') ? 'CrazyRays Support' : 'Hello Transport Support' }}</div>
@@ -455,7 +455,7 @@ body {
                         @if(isset($source) && $source === 'crazyrays')
                             <div style="width:32px;height:32px;border-radius:50%;border:1.5px solid #e11d48;background:linear-gradient(135deg,#e11d48,#f43f5e);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px;flex-shrink:0;letter-spacing:.5px;">CR</div>
                         @else
-                            <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Support">
+                            <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" alt="Support">
                         @endif
                         <div>
                             <div class="bubble">
@@ -492,7 +492,7 @@ body {
                         @if(isset($source) && $source === 'crazyrays')
                             <div style="width:32px;height:32px;border-radius:50%;border:1.5px solid #e11d48;background:linear-gradient(135deg,#e11d48,#f43f5e);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px;flex-shrink:0;letter-spacing:.5px;">CR</div>
                         @else
-                            <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Support">
+                            <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" alt="Support">
                         @endif
                         <div>
                             <div class="bubble">
@@ -544,7 +544,7 @@ body {
     var brandSource = "{{ $source ?? 'hello' }}";
     var brandLogoHtml = brandSource === 'crazyrays'
         ? '<div style="width:32px;height:32px;border-radius:50%;border:1.5px solid #e11d48;background:linear-gradient(135deg,#e11d48,#f43f5e);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px;flex-shrink:0;letter-spacing:.5px;">CR</div>'
-        : '<img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Support">';
+        : '<img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" alt="Support">';
     var brandWelcomeMsg = brandSource === 'crazyrays'
         ? 'Thank you for contacting <strong>CrazyRays Solutions</strong>! Our support team is standing by to assist you on Live Chat. How can we help you today?'
         : 'Thank you for contacting Hello Transport! We have agents standing by to assist you. How can we help you today?';

@@ -22,6 +22,14 @@ class Brand
      */
     public static function for(?User $user): array
     {
+        // Deployment-level override: on the CrazyRays portal (florida) PORTAL_BRAND=crazyrays
+        // forces CR branding for EVERYONE — including guests on the login page — so no Hello
+        // branding ever shows on that domain, regardless of the logged-in user.
+        $force = config('brands.force');
+        if ($force) {
+            return self::byKey($force);
+        }
+
         $key = ($user && $user->isCrazyrays()) ? 'crazyrays' : config('brands.default', 'hellotransport');
 
         return self::byKey($key);

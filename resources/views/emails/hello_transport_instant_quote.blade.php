@@ -14,7 +14,7 @@
             'site'      => 'https://www.hellotransport.com',
             'email'     => 'support@hellotransport.com',
             'insurance' => '$75K',
-            'logo'      => url('frontend/img/logo/hello_transport.svg'),
+            'logo'      => url(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')),
         ],
     ];
 

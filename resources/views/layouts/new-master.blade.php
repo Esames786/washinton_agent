@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     @php
         $nt = trim($__env->yieldContent('page_title') ?: $__env->yieldContent('title'));
-        $nt = $nt ? $nt . ' | Hello Transport' : 'Hello Transport';
+        $bn = $brand['name'] ?? 'Hello Transport';
+        $nt = $nt ? $nt . ' | ' . $bn : $bn;
     @endphp
     <title>{{ $nt }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -47,7 +48,7 @@
           crossorigin="anonymous"
           referrerpolicy="no-referrer" />
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{{ asset('frontend/img/logo/hello_transport.svg') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}">
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-N4GGWBB0YZ"></script>
@@ -102,7 +103,7 @@
 
 <button id="chat_with_us"
         style="position:fixed;bottom:20px;right:20px;z-index:100000;background:#111;color:#d4af37;border:2px solid #d4af37;border-radius:50px;padding:10px 18px;font-weight:600;box-shadow:0 8px 20px rgba(0,0,0,0.35);display:flex;align-items:center;gap:8px;">
-    <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="" style="height:28px;width:28px;border-radius:50%;background:#fff;padding:2px;">
+    <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" alt="" style="height:28px;width:28px;border-radius:50%;background:#fff;padding:2px;">
     <span>Live Chat</span>
 </button>
 

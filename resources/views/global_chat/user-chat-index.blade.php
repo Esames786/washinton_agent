@@ -8,7 +8,7 @@
 
     <head>
         <title>Chat</title>
-        <link rel="icon" href="{{ url('frontend/img/logo/hello_transport.svg') }}" type="image/png">
+        <link rel="icon" href="{{ url(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" type="image/png">
     </head>
     <style>
         .message-feed.media .media-body,
@@ -382,7 +382,7 @@
 
     <head>
         <title>User Support</title>
-        <link rel="icon" href="{{ asset('frontend/img/logo/hello_transport.svg') }}" type="image/png">
+        <link rel="icon" href="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" type="image/png">
     </head>
     <style>
         .message-feed.media .media-body,

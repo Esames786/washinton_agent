@@ -158,7 +158,7 @@
         <!-- Header -->
         <div class="header">
             <div class="logo-section">
-                <img src="{{ url('frontend/img/logo/hello_transport.svg') }}" alt="Hello Transport" style="height:55px;max-width:220px;">
+                <img src="{{ url(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" alt="Hello Transport" style="height:55px;max-width:220px;">
             </div>
             <h1>Quote Submission {{ $recipientType === 'customer' ? 'Confirmed' : 'Received' }}</h1>
             <div class="header-tagline">Professional Auto Transportation Services</div>

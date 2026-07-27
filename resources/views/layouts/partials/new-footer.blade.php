@@ -6,7 +6,7 @@
             <div class="col-lg-3 col-md-6">
                 <div class="single-footer-widget">
                     <a href="{{ route('Frontend.index') }}" class="logo">
-                        <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Hello Transport" style="height:70px;width:auto;">
+                        <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" alt="{{ $brand['name'] ?? 'Hello Transport' }}" style="height:70px;width:auto;">
                     </a>
 
                     <p>
@@ -70,7 +70,7 @@
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <p>
-                        Copyright &copy; 2025 Hello Transport. All Rights Reserved.
+                        Copyright &copy; 2025 {{ $brand['footer'] ?? 'Hello Transport. All Rights Reserved.' }}
                     </p>
                 </div>
             </div>

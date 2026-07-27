@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Print Invoice | Hello Transport</title>
+    <title>Print Invoice | {{ $brand['name'] ?? 'Hello Transport' }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -152,7 +152,7 @@
         <div class="header">
             <div class="row">
                 <div class="col-md-6 logo">
-                    <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}" alt="Hello Transport" style="max-height:70px;width:auto;background:#fff;border-radius:50%;padding:4px;">
+                    <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" alt="Hello Transport" style="max-height:70px;width:auto;background:#fff;border-radius:50%;padding:4px;">
                     {{-- #2: company address / tel / email removed from transportation invoice --}}
                 </div>
 
@@ -267,7 +267,7 @@
                 <div class="mt-5 p-3 border border-danger rounded" style="background-color: #fff4f4;">
                     <strong style="color: #ff0000;">Note:</strong>
                     <p class="mt-2" style="font-size: 0.9rem;">
-                        Hello Transport operates as a broker, arranging transportation and acting as an agent on your
+                        {{ $brand['name'] ?? 'Hello Transport' }} operates as a broker, arranging transportation and acting as an agent on your
                         behalf.
                         We coordinate with trusted carriers to ensure your vehicle is transported efficiently and
                         securely.

@@ -200,9 +200,14 @@
 
                         {{-- LEFT PANEL --}}
                         <div class="col-md-5 auth-left">
-                            <img src="{{ asset('frontend/img/logo/hello_transport.svg') }}"
-                                 class="brand-logo" alt="Hello Transport">
-                            <h2>Hello <span>Transport</span></h2>
+                            @php
+                                $brand = \App\Support\Brand::current();
+                                $brandName = $brand['name'] ?? 'Hello Transport';
+                                $brandParts = explode(' ', $brandName, 2);
+                            @endphp
+                            <img src="{{ asset($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg') }}"
+                                 class="brand-logo" alt="{{ $brandName }}">
+                            <h2>{{ $brandParts[0] }} <span>{{ $brandParts[1] ?? '' }}</span></h2>
                             <div class="divider"></div>
                             <p>Sign in to access your portal and manage your transport operations.</p>
                             <ul class="feature-list">
