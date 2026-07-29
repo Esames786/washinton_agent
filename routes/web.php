@@ -1412,6 +1412,9 @@ Route::middleware(['auth'])->group(function () {
             // #1: live count for the Carrier Update Approval folder (pstatus 36) so its sidebar
             // badge feels real-time like the other polled badges + triggers a notification.
             'carrier_update_approval' => \App\AutoOrder::where('pstatus', 36)->count(),
+            // #3: subcontractors who submitted documents awaiting HR verification (pending = status 0).
+            'subcontractor_docs' => (int) \Illuminate\Support\Facades\DB::table('hr_employee_documents')
+                ->where('status', 0)->distinct()->count('employee_id'),
         ]);
     })->name('nav.counts');
 
