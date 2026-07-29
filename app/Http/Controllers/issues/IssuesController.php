@@ -24,8 +24,8 @@ class IssuesController extends Controller
 
     public function issues_add()
     {
-
-        $data = User::all();
+        // #8: the "Issues with users" list should only show Managers (role 9), not every agent.
+        $data = User::where('role', 9)->get();
 
         if (Auth::check()) {
             return view('main.issues.index', compact('data'));

@@ -411,7 +411,13 @@ public function refreshToken($ringCentralUser, $forceRefresh = false)
             ];
 
         } catch (Exception $e) {
-            // Log the error and return failure
+            // Log the exact RingCentral error so the OAuth-callback failure is diagnosable
+            // (previously only returned as a flash message that the portal may not render).
+            Log::error('RC authenticateUser (token exchange) failed: ' . $e->getMessage(), [
+                'user_id'     => $userId,
+                'redirect_uri'=> config('services.ringcentral.redirect_url'),
+                'client_id'   => config('services.ringcentral.client_id'),
+            ]);
             return [
                 'success' => false,
                 'message' => 'Authentication failed: ' . $e->getMessage(),

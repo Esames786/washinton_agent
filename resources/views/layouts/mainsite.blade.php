@@ -2692,6 +2692,23 @@ Agent: Thank you for your cooperation. We appreciate your attention to these det
 
     @include('layouts.partials.contract-block-modal')
     @include('partials.inspect_guard')
+<!-- #11/#4: disable right-click + dev/copy shortcuts; lock copy of contract & NDA content -->
+<script>
+(function(){
+  function editable(t){var g=(t&&t.tagName||'').toLowerCase();return g==='input'||g==='textarea'||(t&&t.isContentEditable);}
+  document.addEventListener('contextmenu',function(e){e.preventDefault();});
+  ['copy','cut'].forEach(function(ev){document.addEventListener(ev,function(e){if(!editable(e.target))e.preventDefault();});});
+  document.addEventListener('keydown',function(e){
+    if(e.keyCode===123){e.preventDefault();return false;}
+    if(e.ctrlKey||e.metaKey){
+      var k=(e.key||'').toLowerCase();
+      if(e.shiftKey&&(k==='i'||k==='j'||k==='c')){e.preventDefault();return false;}
+      if(k==='u'||k==='s'||k==='p'){e.preventDefault();return false;}
+      if((k==='c'||k==='x'||k==='a')&&!editable(e.target)){e.preventDefault();return false;}
+    }
+  });
+})();
+</script>
 </body>
 
 </html>

@@ -194,6 +194,15 @@ class CrApplicationController extends Controller
                     'salary_and_commission' => 3,
                 ][$application->pay_type] ?? ($application->isInHouse() ? 3 : 2);
 
+                // #2: map the applicant's chosen shift (e.g. "Night (8pm – 4am)") to the HR
+                // shift_type_id instead of always defaulting to Morning (1).
+                // HR hr_shift_types: 1 Morning, 2 Evening, 3 Night, 4 General, 6 Work From Home.
+                $shiftId = 1;
+                $shiftStr = strtolower((string) $application->shift_type);
+                foreach (['night' => 3, 'evening' => 2, 'general' => 4, 'work from home' => 6, 'morning' => 1] as $kw => $sid) {
+                    if (str_contains($shiftStr, $kw)) { $shiftId = $sid; break; }
+                }
+
                 $this->hrBridge->createEmployee([
                     'name'                 => $application->full_name,
                     'email'                => $application->email,
@@ -204,7 +213,7 @@ class CrApplicationController extends Controller
                     'user_type'            => 'agent',
                     'agent_id'             => $user->id,
                     'employment_type'      => $application->employment_type,
-                    'shift_type_id'        => 1,
+                    'shift_type_id'        => $shiftId,
                     'account_type_id'      => $accountTypeId,
                     'father_name'          => $application->father_name,
                     'cnic'                 => $application->national_id, // pass CNIC so HR doesn't store NULL

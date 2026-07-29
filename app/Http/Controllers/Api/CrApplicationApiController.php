@@ -32,20 +32,21 @@ class CrApplicationApiController extends Controller
         $validator = Validator::make($request->all(), [
             // Names: alphabets (and spaces) only, up to 30 characters.
             'full_name'            => ['required', 'string', 'max:30', 'regex:/^[A-Za-z ]+$/'],
-            'father_name'          => ['nullable', 'string', 'max:30', 'regex:/^[A-Za-z ]*$/'],
+            // #5: these are now REQUIRED on the CrazyRays application.
+            'father_name'          => ['required', 'string', 'max:30', 'regex:/^[A-Za-z ]+$/'],
             'national_id'          => ['nullable', 'string', 'max:50'],
             'dob'                  => ['required', 'date', 'before_or_equal:' . $maxDob],
-            'gender'               => ['nullable', 'in:male,female,other'],
-            'marital_status'       => ['nullable', 'in:single,married,divorced,widowed'],
+            'gender'               => ['required', 'in:male,female,other'],
+            'marital_status'       => ['required', 'in:single,married,divorced,widowed'],
             'email'                => [
                 'required', 'email', 'max:150',
                 Rule::unique('cr_applications')->where(fn ($q) => $q->where('campaign', $campaign)),
             ],
             'phone'                => ['required', 'string', 'max:30'],
             'country'              => ['nullable', 'string', 'max:100'],
-            'city'                 => ['nullable', 'string', 'max:100'],
-            'state'                => ['nullable', 'string', 'max:100'],
-            'address'              => ['nullable', 'string', 'max:255'],
+            'city'                 => ['required', 'string', 'max:100'],
+            'state'                => ['required', 'string', 'max:100'],
+            'address'              => ['required', 'string', 'max:255'],
             // Employment-split: employment_type + a valid, active campaign of that category.
             'employment_type'      => ['required', 'in:work_from_home,in_house'],
             'campaign_id'          => ['required', 'integer', 'exists:cr_campaigns,id'],
