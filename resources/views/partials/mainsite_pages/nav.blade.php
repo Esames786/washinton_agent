@@ -1020,7 +1020,9 @@ if (!function_exists('get_user_name123')) {
                             <a
                                     class="dropdown-item text-center user pb-0 font-weight-bold"
                                     style="text-transform: uppercase;">
-                                {{{ isset(Auth::user()->name) ? Auth::user()->name : Auth::user()->email }}}
+                                {{-- #brand: on a brand-forced portal (florida) the company "Hello Transport"
+                                     admin account shows the brand name; real users keep their own name. --}}
+                                {{{ (config('brands.force') && strcasecmp(trim((string)(Auth::user()->name ?? '')), 'Hello Transport') === 0) ? ($brand['name'] ?? Auth::user()->name) : (isset(Auth::user()->name) ? Auth::user()->name : Auth::user()->email) }}}
 
                             </a>
                             {{-- @php
