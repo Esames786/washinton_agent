@@ -599,9 +599,9 @@
                                      alt="Admintro logo">
                                 <img src="{{ url(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg'))}}" class="header-brand-img dark-logo"
                                      alt="Admintro logo">
-                                <img src="{{ url('assets/images/brand/favicon.png')}}" class="header-brand-img mobile-logo"
+                                <img src="{{ url(($brand['logo'] ?? 'assets/images/brand/favicon.png'))}}" class="header-brand-img mobile-logo"
                                      alt="Admintro logo">
-                                <img src="{{ url('assets/images/brand/favicon1.png')}}" class="header-brand-img darkmobile-logo"
+                                <img src="{{ url(($brand['logo'] ?? 'assets/images/brand/favicon1.png'))}}" class="header-brand-img darkmobile-logo"
                                      alt="Admintro logo">
                             </a>
                 

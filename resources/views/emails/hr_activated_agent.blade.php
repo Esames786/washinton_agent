@@ -86,7 +86,7 @@
         <td style="background:#f8f9fa;padding:20px 40px;text-align:center;border-top:1px solid #e9ecef;">
           <p style="margin:0 0 6px;color:#6c757d;font-size:12px;">
             If you did not register for a Hello Transport account, please contact us at
-            <a href="mailto:info@hellotransport.com" style="color:#062e39;">info@hellotransport.com</a>
+            <a href="mailto:{{ $brand['contact_email'] ?? 'info@hellotransport.com' }}" style="color:#062e39;">{{ $brand['contact_email'] ?? 'info@hellotransport.com' }}</a>
           </p>
           <p style="margin:0;color:#adb5bd;font-size:12px;">
             © {{ date('Y') }} Hello Transport HR. All Rights Reserved.<br>

@@ -1,3 +1,14 @@
+@php
+    // Brand-aware email footer. On florida (PORTAL_BRAND=crazyrays) $brand is CrazyRays for every
+    // recipient; on the Hello landing it stays Hello. CrazyRays has no Hello social/review accounts,
+    // so those Hello-specific links are hidden for the CR brand.
+    $brand   = $brand ?? \App\Support\Brand::current();
+    $isHello = ($brand['key'] ?? 'hellotransport') === 'hellotransport';
+    $site    = rtrim($brand['site'] ?? 'https://hellotransport.com', '/');
+    $footer  = $brand['footer'] ?? 'Hello Transport. All Rights Reserved.';
+@endphp
+
+@if($isHello)
 <p style="text-align: center;font-size: 18px">You can find us here too!</p>
 
 <div style="text-align: center; margin-top: 10px;">
@@ -11,6 +22,7 @@
             alt="Trustpilot Reviews" style="width: 75px; height: 32px; margin-right: 15px;" /></a>
 </div>
 </div>
+@endif
 
 <div
     style="
@@ -20,6 +32,7 @@
           padding: 10px;
           border-radius: 10px;
         ">
+    @if($isHello)
     <div style="margin-top: 10px">
         <a href="https://www.facebook.com/hellotransport" style="margin: 0 10px; display: inline-block">
             <img src="{{ asset('images/fb-white.png') }}" alt="Facebook"
@@ -42,14 +55,15 @@
                 style="width: 30px; height: 22px; border: none" />
         </a>
     </div>
+    @endif
 
     <p style="color: white">
-        © 2025 Hello Transport. All rights reserved.
+        &copy; {{ date('Y') }} {{ $footer }}
     </p>
     |
-    <a href="https://hellotransport.com/terms-conditions" style="color: #ffffff; text-decoration: none">Terms &
+    <a href="{{ $site }}/terms-conditions" style="color: #ffffff; text-decoration: none">Terms &
         Conditions</a>
     |
-    <a href="https://hellotransport.com/faq" style="color: #ffffff; text-decoration: none">FAQs</a>
+    <a href="{{ $site }}/faq" style="color: #ffffff; text-decoration: none">FAQs</a>
     |
 </div>

@@ -266,8 +266,8 @@
                 <div class="contact-section">
                     <strong>Need Immediate Assistance?</strong>
                     <div class="contact-info">
-                        <p>✉️ <strong>Email:</strong> <a href="mailto:info@hellotransport.com" style="color: #1565c0;">info@hellotransport.com</a></p>
-                        <p>🌐 <strong>Website:</strong> <a href="https://www.hellotransport.com" style="color: #1565c0;">www.hellotransport.com</a></p>
+                        <p>✉️ <strong>Email:</strong> <a href="mailto:{{ $brand['contact_email'] ?? 'info@hellotransport.com' }}" style="color: #1565c0;">{{ $brand['contact_email'] ?? 'info@hellotransport.com' }}</a></p>
+                        <p>🌐 <strong>Website:</strong> <a href="{{ $brand['site'] ?? 'https://www.hellotransport.com' }}" style="color: #1565c0;">www.hellotransport.com</a></p>
                     </div>
                 </div>
             @else
@@ -288,8 +288,8 @@
                 <strong>Hello Transport</strong> - Professional Auto Transportation Services
             </p>
             <p style="margin: 0 0 10px 0;">
-                <a href="https://www.hellotransport.com" class="footer-link">Visit Our Website</a> |
-                <a href="mailto:info@hellotransport.com" class="footer-link">Email Us</a>
+                <a href="{{ $brand['site'] ?? 'https://www.hellotransport.com' }}" class="footer-link">Visit Our Website</a> |
+                <a href="mailto:{{ $brand['contact_email'] ?? 'info@hellotransport.com' }}" class="footer-link">Email Us</a>
             </p>
             <p style="margin: 0; color: #999;">
                 © {{ date('Y') }} Hello Transport. All rights reserved.

@@ -24,7 +24,7 @@ body{font-family:Arial,sans-serif;background:#f5f5f5;margin:0;padding:20px;}
         <p>CrazyRays Solutions — Recruitment Portal</p>
     </div>
     <div class="body">
-        <p style="color:#555;font-size:14px;margin-top:0;">A new campaign application has been submitted. Review the details below and take action in the HelloTransport admin panel.</p>
+        <p style="color:#555;font-size:14px;margin-top:0;">A new campaign application has been submitted. Review the details below and take action in the admin panel.</p>
 
         <div class="section">
             <h3>Campaign</h3>

@@ -80,7 +80,7 @@
                             <h6 class="mb-0">SHIP A1</h6>
                             <small class="text-muted">201 International Cir STE 230, Hunt Valley, MD 21030-1344</small>
                             <br><br>
-                            <small class="text-muted">Email: info@hellotransport.com</small>
+                            <small class="text-muted">Email: {{ $brand['contact_email'] ?? 'info@hellotransport.com' }}</small>
                         </div>
                         <div class="col-sm-7">
                             <div class="row mt-3">

@@ -69,6 +69,6 @@
         <p>Best Regards,<br>Hello Transport</p>
         <p>For your convenience, here are our contact details:</p>
 
-        <p>Email: <a href="mailto:info@hellotransport.com" style="color: #0056b3; text-decoration: none;">info@hellotransport.com</a></p>
+        <p>Email: <a href="mailto:{{ $brand['contact_email'] ?? 'info@hellotransport.com' }}" style="color: #0056b3; text-decoration: none;">{{ $brand['contact_email'] ?? 'info@hellotransport.com' }}</a></p>
         <p>Hours of availability: 8am to 7pm EST.</p>
 @endsection

@@ -949,7 +949,7 @@ MUST CALL CUSTOMER 2 to 4 HRS Before Pickup / DELIVERY and don't make any SURPRI
 
 Pick up the vehicle exactly according to "THE CENTRAL DISPATCH SHEET'S DATE & TIMINGS"
 
-Make sure that the driver should leave a copy of the inspection at pick-up and on delivery. Also, make sure to send us an email at "info@hellotransport.com".
+Make sure that the driver should leave a copy of the inspection at pick-up and on delivery. Also, make sure to send us an email at "{{ $brand['contact_email'] ?? 'info@hellotransport.com' }}".
 
 If the carrier or driver need any kind of information or facing a problem at Pick up or Delivery, please call 240-341-0040 / 307-222-7674  update the status of a vehicle on central dispatch as soon as possible
 

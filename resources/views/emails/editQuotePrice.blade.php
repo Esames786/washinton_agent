@@ -292,7 +292,7 @@
         </p>
         <p style="font-size: 18px">
             Visit Our Website:
-            <a href="https://www.hellotransport.com/" style="color: #8fc445">www.hellotransport.com</a>
+            <a href="{{ $brand['site'] ?? 'https://www.hellotransport.com' }}/" style="color: #8fc445">www.hellotransport.com</a>
         </p>
     </div>
 @endsection

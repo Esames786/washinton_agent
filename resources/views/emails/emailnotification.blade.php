@@ -26,7 +26,7 @@
     {{-- Footer --}}
     <div style="margin-top: 40px; font-size: 14px; color: #888888; text-align: center;">
         If you have any questions, just reply to this
-        <a href="mailto:info@hellotransport.com" style="color: #113771;">info@hellotransport.com</a>.<br />
+        <a href="mailto:{{ $brand['contact_email'] ?? 'info@hellotransport.com' }}" style="color: #113771;">{{ $brand['contact_email'] ?? 'info@hellotransport.com' }}</a>.<br />
         We're always happy to help out.<br /><br />
         <strong>Hello Transport Team</strong>
     </div>
