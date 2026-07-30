@@ -1406,15 +1406,34 @@ Route::middleware(['auth'])->group(function () {
         // Show the ACTUAL number of pending CrazyRays applications. (The earlier
         // "unseen since last visit" logic made the badge read 0 for managers/admins as
         // soon as they opened the list — which read as a bug.)
+
+        // #3/A: agents (subcontractors) who have documents awaiting verification (status 0),
+        // newest first, with their name — so the nav poll can announce who just submitted.
+        $__docsPending = \Illuminate\Support\Facades\DB::table('hr_employees as e')
+            ->whereExists(function ($q) {
+                $q->select(\Illuminate\Support\Facades\DB::raw(1))
+                  ->from('hr_employee_documents as d')
+                  ->whereColumn('d.employee_id', 'e.id')
+                  ->where('d.status', 0);
+            })
+            ->orderByDesc('e.updated_at')
+            ->limit(50)
+            ->get(['e.id', 'e.full_name']);
+
         return response()->json([
             'cr_pending'      => \App\CrApplication::where('status', 'pending')->count(),
             'payment_pending' => \App\AgentOrderPayment::where('payment_status', 'Payment Pending')->count(),
             // #1: live count for the Carrier Update Approval folder (pstatus 36) so its sidebar
             // badge feels real-time like the other polled badges + triggers a notification.
             'carrier_update_approval' => \App\AutoOrder::where('pstatus', 36)->count(),
-            // #3: subcontractors who submitted documents awaiting HR verification (pending = status 0).
-            'subcontractor_docs' => (int) \Illuminate\Support\Facades\DB::table('hr_employee_documents')
-                ->where('status', 0)->distinct()->count('employee_id'),
+            // #3/A: subcontractors who submitted documents awaiting HR verification (pending = status 0).
+            // Return the actual agents (id + name) so the poll can name WHICH agent just submitted,
+            // not merely bump a count.
+            'subcontractor_docs'      => $__docsPending->count(),
+            'subcontractor_docs_list' => $__docsPending->map(fn ($r) => [
+                'id'   => (int) $r->id,
+                'name' => trim(($r->full_name ?? '') ?: ('Agent #' . $r->id)),
+            ])->values(),
         ]);
     })->name('nav.counts');
 

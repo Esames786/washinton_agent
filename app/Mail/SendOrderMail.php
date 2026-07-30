@@ -26,6 +26,10 @@ class SendOrderMail extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.send_order_email');
+        // Brand the sender name (florida = Crazy Rays Solutions) instead of the default
+        // MAIL_FROM_NAME, so the order-link email doesn't show "Hello Transport".
+        $brand = \App\Support\Brand::current();
+        return $this->from(config('mail.from.address'), ($brand['name'] ?? config('mail.from.name')))
+                    ->view('emails.send_order_email');
     }
 }

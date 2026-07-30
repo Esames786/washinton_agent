@@ -626,6 +626,8 @@
                                style="background: #2dd1ba8c">
                                 <span class="js-search-result-thumbnail responsive-img img_border fa fa-credit-card"></span>
                                 <span class="side-menu__label">Admin Payments</span>
+                                {{-- C: payments badge (polled every 20s) — was missing on this layout --}}
+                                <span class="badge badge-danger ml-auto" id="payment_pending_count" style="display:none;"></span>
                             </a>
                         </li>
                     @endif

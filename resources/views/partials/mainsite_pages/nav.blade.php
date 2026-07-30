@@ -1330,7 +1330,7 @@ if (!function_exists('get_user_name123')) {
 
         // #2/#12: poll live badge counts (CR applications + admin payments) every 60s.
         var _cuaPrev = null; // #1: previous Carrier Update Approval count (to detect new arrivals)
-        var _docsPrev = null; // #3: previous subcontractor-documents count
+        var _docsPrevIds = null; // #3/A: previous set of pending-document agent ids (to name new submitters)
         function fetchNavCounts() {
             $.getJSON("{{ route('nav.counts') }}", function (d) {
                 var cr = parseInt(d.cr_pending || 0, 10);
@@ -1353,20 +1353,27 @@ if (!function_exists('get_user_name123')) {
                 }
                 _cuaPrev = cua;
 
-                // #3: Subcontractors who submitted documents (pending verification) — live badge + notification.
-                var docs = parseInt(d.subcontractor_docs || 0, 10);
+                // #3/A: Subcontractors who submitted documents — live badge + a notification that
+                // NAMES the specific agent who just submitted (so the admin knows who to review).
+                var docsList = d.subcontractor_docs_list || [];
+                var docs = docsList.length;
                 $('#subcontractor_docs_count').text(docs > 99 ? '99+' : docs).toggle(docs > 0);
-                if (_docsPrev !== null && docs > _docsPrev) {
-                    try { var a2 = document.getElementById('noti'); if (a2) { a2.play(); } } catch (e) {}
-                    try {
-                        if (typeof notif === 'function') {
-                            notif({ msg: "<b>Subcontractor Documents</b>: an agent has submitted documents for verification.", type: "info", position: "right", multiline: true });
-                        } else if ($.growl) {
-                            $.growl.notice({ title: "Subcontractor Documents", message: "An agent has submitted documents for verification." });
+                if (_docsPrevIds !== null) {
+                    docsList.forEach(function (a) {
+                        if (_docsPrevIds.indexOf(a.id) === -1) { // this agent is newly pending → just submitted
+                            var nm = a.name || 'An agent';
+                            try { var a2 = document.getElementById('noti'); if (a2) { a2.play(); } } catch (e) {}
+                            try {
+                                if (typeof notif === 'function') {
+                                    notif({ msg: "<b>Documents submitted:</b> " + nm + " has submitted their documents for verification.", type: "info", position: "right", multiline: true });
+                                } else if ($.growl) {
+                                    $.growl.notice({ title: "Documents Submitted", message: nm + " has submitted their documents for verification." });
+                                }
+                            } catch (e) {}
                         }
-                    } catch (e) {}
+                    });
                 }
-                _docsPrev = docs;
+                _docsPrevIds = docsList.map(function (a) { return a.id; });
             });
         }
         setInterval(fetchNavCounts, 20000); // #1/#2: poll every 20s so badges feel real-time

@@ -411,7 +411,7 @@
                         <tr>
                             <td height="28" align="center"
                                 style="font-family: Open Sans, sans-serif;font-size:11px; font-weight:normal; color:#7f8c8d">
-                                Hello Transport All Rights Reserved.
+                                {{ $brand['footer'] ?? 'Hello Transport. All Rights Reserved.' }}
                             </td>
                         </tr>
                         </tbody>
