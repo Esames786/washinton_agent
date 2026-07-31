@@ -308,12 +308,12 @@ if (!function_exists('get_user_name123')) {
                             <i class="fa fa-street-view header-icons" ></i>
                             <span class="badge badge-danger side-badge" style="width:25px;height:25px;justify-content:center;align-items:center;display:none !important;right:-10px;top:-10px;" id="subcontractor_docs_count">0</span>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right sc-docs-menu" aria-labelledby="subcontractorDocsToggle">
-                            <div class="sc-docs-head">Documents Awaiting Verification</div>
+                        <div class="dropdown-menu dropdown-menu-right sc-docs-menu" aria-labelledby="subcontractorDocsToggle" style="min-width:300px;max-width:340px;max-height:380px;overflow-y:auto;overflow-x:hidden;padding:6px 0;background:#fff;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.14);">
+                            <div class="sc-docs-head" style="padding:8px 14px;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9ca3af;border-bottom:1px solid #f1f1f1;white-space:nowrap;">Documents Awaiting Verification</div>
                             <div id="subcontractor_docs_menu">
-                                <span class="sc-docs-empty">No pending document submissions</span>
+                                <span class="sc-docs-empty" style="display:block;padding:14px;font-size:12px;color:#9ca3af;text-align:center;">No pending document submissions</span>
                             </div>
-                            <a class="sc-docs-foot" href="{{url('view_subcontractor')}}">View all subcontractors</a>
+                            <a class="sc-docs-foot" href="{{url('view_subcontractor')}}" style="position:static;float:none;display:block;padding:9px 14px;font-size:12px;font-weight:600;text-align:center;color:#2563eb;text-decoration:none;border-top:1px solid #f1f1f1;white-space:nowrap;">View all subcontractors</a>
                         </div>
                     </li>
                 @endif
@@ -1409,11 +1409,14 @@ if (!function_exists('get_user_name123')) {
                         var html = '';
                         docsList.forEach(function (a) {
                             var nm = $('<span>').text(a.name || 'Agent #' + a.id).html(); // escape
-                            html += '<a class="sc-doc-item" href="' + viewUrl + '">'
-                                  + '<i class="fa fa-file-text-o sc-doc-ic"></i>'
-                                  + '<span><span class="sc-doc-name">' + nm + '</span>'
-                                  + '<span class="sc-doc-sub">submitted documents for review</span></span>'
-                                  + '</a>';
+                            // Inline styles (with position:static/float:none) so header-anchor theme
+                            // rules can't leak in and overlap the rows.
+                            html += '<a class="sc-doc-item" href="' + viewUrl + '" style="position:static;float:none;display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-bottom:1px solid #f3f4f6;white-space:normal;line-height:1.35;text-decoration:none;color:#333;min-height:0;height:auto;">'
+                                  + '<i class="fa fa-file-text-o" style="color:#e11d48;margin-top:2px;flex-shrink:0;line-height:1.35;"></i>'
+                                  + '<span style="display:block;line-height:1.35;">'
+                                  + '<span style="display:block;font-weight:600;color:#111827;font-size:13px;line-height:1.35;">' + nm + '</span>'
+                                  + '<span style="display:block;font-size:11px;color:#9ca3af;line-height:1.35;">submitted documents for review</span>'
+                                  + '</span></a>';
                         });
                         $menu.html(html);
                     }
