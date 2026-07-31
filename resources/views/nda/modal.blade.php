@@ -1,6 +1,30 @@
 {{-- NDA Blocking Overlay — injected in layout when auth()->user()->nda_required == 1 --}}
 {{-- $signRoute is set by the including layout before @include --}}
-@php $signRoute = $signRoute ?? route('nda.sign'); @endphp
+@php
+    $signRoute = $signRoute ?? route('nda.sign');
+
+    $__uid   = auth()->id();
+    $__brand = \App\Support\Brand::current();
+    $__hrEmp = \Illuminate\Support\Facades\DB::table('hr_employees')->where('agent_id', $__uid)->first();
+
+    // The exact NDA the admin prepared for this agent (falls back to the branded default template).
+    $__ndaContent = $__hrEmp->nda_content ?? null;
+    if (!$__ndaContent || trim(strip_tags($__ndaContent)) === '') {
+        $__tpl = \App\NdaTemplate::getDefault();
+        $__ndaContent = $__tpl ? \App\Support\Brand::applyTokens($__tpl->content, $__brand) : '';
+    }
+
+    // CNIC front/back already on file? (hr_document_settings #10 = Front, #11 = Back).
+    $__cnicHave = [];
+    if ($__hrEmp) {
+        $__cnicHave = \Illuminate\Support\Facades\DB::table('hr_employee_documents')
+            ->where('employee_id', $__hrEmp->id)
+            ->whereIn('document_setting_id', [10, 11])
+            ->pluck('document_setting_id')->map(fn($v) => (int) $v)->all();
+    }
+    $__needCnicFront = !in_array(10, $__cnicHave, true);
+    $__needCnicBack  = !in_array(11, $__cnicHave, true);
+@endphp
 
 <div id="ndaOverlay" style="
     position: fixed; inset: 0; z-index: 99999;
@@ -31,49 +55,17 @@
 
             {{-- Logo --}}
             <div style="text-align:center; margin-bottom:22px;">
-                <img src="/assets/images/png/crazy_rays_logo.png" alt="Crazy Rays Solutions" style="height:64px;" onerror="this.style.display='none'">
+                <img src="{{ asset($__brand['logo'] ?? 'assets/images/png/crazy_rays_logo.png') }}" alt="{{ $__brand['name'] ?? 'Company' }}" style="height:64px;" onerror="this.style.display='none'">
             </div>
 
             <h2 style="text-align:center; color:#1a4ca0; font-size:16px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; margin-bottom:18px; line-height:1.4;">
                 Non-Disclosure Agreement (NDA)<br>& Confidentiality Acknowledgment
             </h2>
 
-            <p style="margin-bottom:16px; color:#333; font-size:13.5px;">
-                This Non-Disclosure Agreement ("Agreement") is entered into between <strong>Crazy Rays Solutions</strong>
-                ("Company") and the undersigned Employee/Contractor ("Recipient").
-            </p>
-
-            @foreach([
-                ['1. Confidential Information', 'The Recipient acknowledges that during employment or engagement with Crazy Rays Solutions, they may have access to confidential and proprietary information including but not limited to:', [
-                    'Client lists and customer information',
-                    'Pricing, rates, commissions, and contracts',
-                    'Freight brokerage and dispatching data',
-                    'Sales scripts, leads, and marketing strategies',
-                    'Company processes, SOPs, and business methods',
-                    'Financial information and internal reports',
-                    'Employee information and company records',
-                ]],
-                ['2. Non-Disclosure Obligation', 'The Recipient agrees not to disclose, copy, distribute, sell, share, or use confidential information for any purpose other than performing authorized duties for the Company.', []],
-                ['3. Data Security', 'The Recipient shall maintain the confidentiality of all company information and protect all company files, documents, credentials, and systems from unauthorized access.', []],
-                ['4. Return of Company Property', 'Upon termination of employment or engagement, the Recipient shall immediately return all company property, documents, files, equipment, passwords, and confidential materials.', []],
-                ['5. Non-Solicitation', 'The Recipient agrees not to directly solicit or divert Company clients, customers, carriers, employees, or business opportunities during employment and for a period of 12 months after separation.', []],
-                ['6. Breach of Agreement', 'Any breach of this Agreement may result in disciplinary action, termination of employment, legal action, and claims for damages as permitted by applicable law.', []],
-                ['7. Account Suspension', 'Crazy Rays Solutions reserves the right to suspend or terminate the Recipient\'s account and access at any time, without prior notice, upon detection of any suspicious, unauthorized, or fraudulent activity.', []],
-                ['8. Termination', 'The confidentiality obligations contained in this Agreement shall survive the termination of employment and remain in effect indefinitely unless otherwise required by law.', []],
-                ['9. Acknowledgment', 'I acknowledge that I have read, understood, and agree to comply with the terms of this NDA & Confidentiality Agreement and understand the consequences of violating its provisions.', []],
-            ] as [$heading, $body, $items])
-            <div style="margin-bottom:14px;">
-                <div style="color:#c0392b; font-weight:700; font-size:13px; text-transform:uppercase; margin-bottom:5px;">{{ $heading }}</div>
-                <p style="color:#333; font-size:13px; line-height:1.6;">{{ $body }}</p>
-                @if(count($items))
-                <ul style="margin-top:6px; padding-left:20px;">
-                    @foreach($items as $item)
-                    <li style="color:#444; font-size:13px; margin-bottom:3px;">{{ $item }}</li>
-                    @endforeach
-                </ul>
-                @endif
+            {{-- The exact NDA the admin prepared for this agent (rich text), or the branded default. --}}
+            <div class="nda-doc-body" style="color:#333; font-size:13.5px; line-height:1.6;">
+                {!! $__ndaContent !!}
             </div>
-            @endforeach
 
             <hr style="border:none; border-top:1px solid #ddd; margin:18px 0;">
 
@@ -103,6 +95,26 @@
                                style="width:100%; border:1px solid #ccc; border-radius:5px; padding:7px 10px; font-size:13px;" required placeholder="e.g. 42101-1234567-1">
                     </div>
                 </div>
+
+                {{-- CNIC front/back — asked only when not already on file (doc settings #10/#11). --}}
+                @if($__needCnicFront || $__needCnicBack)
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+                    @if($__needCnicFront)
+                    <div>
+                        <label style="font-size:12px; font-weight:600; color:#444; display:block; margin-bottom:4px;">CNIC Front <span style="color:red;">*</span></label>
+                        <input type="file" name="cnic_front" accept="image/*,.pdf" required
+                               style="width:100%; border:1px solid #ccc; border-radius:5px; padding:6px 8px; font-size:12px;">
+                    </div>
+                    @endif
+                    @if($__needCnicBack)
+                    <div>
+                        <label style="font-size:12px; font-weight:600; color:#444; display:block; margin-bottom:4px;">CNIC Back <span style="color:red;">*</span></label>
+                        <input type="file" name="cnic_back" accept="image/*,.pdf" required
+                               style="width:100%; border:1px solid #ccc; border-radius:5px; padding:6px 8px; font-size:12px;">
+                    </div>
+                    @endif
+                </div>
+                @endif
 
                 <div style="margin-bottom:14px;">
                     <label style="font-size:12px; font-weight:600; color:#444; display:block; margin-bottom:6px;">

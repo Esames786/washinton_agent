@@ -692,6 +692,11 @@
                                                 <i class="fe fe-download mr-1"></i>Download Signed NDA
                                             </a>
                                         </div>
+                                        {{-- Read-only view of the exact NDA the agent signed (+ signed IP). --}}
+                                        <div id="rev_nda_signed_wrap" class="mt-2" style="display:none;">
+                                            <div class="small text-muted mb-1" id="rev_nda_signed_meta"></div>
+                                            <div id="rev_nda_signed_preview" class="border rounded p-2 bg-light" style="max-height:220px;overflow-y:auto;font-size:12px;"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1028,6 +1033,16 @@
                     );
                     $('#rev_nda_download_wrap').show();
                     $('#rev_nda_download_link').attr('href', '/nda/download/' + agent.id);
+                    // Inline read-only view of the signed copy + the IP it was signed from.
+                    if (agent.nda_content) {
+                        var meta = 'Signed' + (ndaSignedAt ? ' on ' + ndaSignedAt : '');
+                        if (agent.nda_signed_ip) { meta += ' · IP ' + agent.nda_signed_ip; }
+                        $('#rev_nda_signed_meta').text(meta);
+                        $('#rev_nda_signed_preview').html(agent.nda_content);
+                        $('#rev_nda_signed_wrap').show();
+                    } else {
+                        $('#rev_nda_signed_wrap').hide();
+                    }
                 } else if (ndaRequired) {
                     $('#rev_nda_status_display').html('<span class="badge badge-warning">Pending Signature</span>');
                     $('#rev_nda_download_wrap').hide();
