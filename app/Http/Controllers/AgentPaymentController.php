@@ -87,7 +87,7 @@ class AgentPaymentController extends Controller
         $payments = $query->paginate(20)->withQueryString();
 
         $totals = [
-            'pending'   => AgentOrderPayment::where('user_id', $user->id)->where('payment_status', 'Payment Pending')->count(),
+            'pending'   => AgentOrderPayment::where('user_id', $user->id)->where('payment_status', 'Confirmation Pending')->count(),
             'confirmed' => AgentOrderPayment::where('user_id', $user->id)->where('payment_status', 'Payment Confirmed')->count(),
             'returned'  => AgentOrderPayment::where('user_id', $user->id)->where('payment_status', 'Payment Return')->count(),
             'profit'    => AgentOrderPayment::where('user_id', $user->id)->where('payment_status', 'Payment Confirmed')->sum('profit'),
@@ -168,7 +168,7 @@ class AgentPaymentController extends Controller
             $payment->profit            = $profit;
             $payment->confirmation_date = $request->confirmation_date;
             $payment->details           = $request->details;
-            $payment->payment_status    = 'Payment Pending';
+            $payment->payment_status    = 'Confirmation Pending';
             $payment->save();
 
             // Handle screenshot upload
@@ -201,7 +201,7 @@ class AgentPaymentController extends Controller
             AgentOrderPaymentJourney::create([
                 'payment_id' => $payment->id,
                 'old_status' => null,
-                'new_status' => 'Payment Pending',
+                'new_status' => 'Confirmation Pending',
                 'changed_by' => Auth::id(),
                 'user_type'  => 'user',
                 'note'       => 'Payment submitted by agent',
@@ -296,7 +296,7 @@ class AgentPaymentController extends Controller
             $payment->profit            = $profit;
             $payment->confirmation_date = $request->confirmation_date;
             $payment->details           = $request->details;
-            $payment->payment_status    = 'Payment Pending'; // Reset to pending after edit
+            $payment->payment_status    = 'Confirmation Pending'; // Reset to pending after edit
             $payment->admin_remarks     = null;
 
             // Handle new screenshot
@@ -324,7 +324,7 @@ class AgentPaymentController extends Controller
             AgentOrderPaymentJourney::create([
                 'payment_id' => $payment->id,
                 'old_status' => $logData['old_payment_status'],
-                'new_status' => 'Payment Pending',
+                'new_status' => 'Confirmation Pending',
                 'changed_by' => Auth::id(),
                 'user_type'  => 'user',
                 'note'       => 'Agent resubmitted after correction',

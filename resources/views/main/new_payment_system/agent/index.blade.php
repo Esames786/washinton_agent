@@ -69,7 +69,7 @@
                 <div>
                     <select name="status" class="form-control form-control-sm">
                         <option value="">All Status</option>
-                        <option value="Payment Pending"   {{ request('status') == 'Payment Pending'   ? 'selected' : '' }}>Pending</option>
+                        <option value="Confirmation Pending"   {{ request('status') == 'Confirmation Pending'   ? 'selected' : '' }}>Confirmation Pending</option>
                         <option value="Payment Confirmed" {{ request('status') == 'Payment Confirmed' ? 'selected' : '' }}>Confirmed</option>
                         <option value="Payment Return"    {{ request('status') == 'Payment Return'    ? 'selected' : '' }}>Returned</option>
                     </select>
@@ -145,7 +145,7 @@
                             @elseif($p->payment_status === 'Payment Return')
                                 <span class="badge-returned">Returned</span>
                             @else
-                                <span class="badge-pending">Pending</span>
+                                <span class="badge-pending">Confirmation Pending</span>
                             @endif
                         </td>
                         <td>

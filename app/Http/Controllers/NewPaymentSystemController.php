@@ -93,7 +93,7 @@ class NewPaymentSystemController extends Controller
         // Totals for filtered set
         $totals = [
             'total'     => (clone $query)->count(),
-            'pending'   => (clone $query)->where('payment_status', 'Payment Pending')->count(),
+            'pending'   => (clone $query)->where('payment_status', 'Confirmation Pending')->count(),
             'confirmed' => (clone $query)->where('payment_status', 'Payment Confirmed')->count(),
             'returned'  => (clone $query)->where('payment_status', 'Payment Return')->count(),
             'profit'    => (clone $query)->where('payment_status', 'Payment Confirmed')->sum('profit'),

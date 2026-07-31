@@ -259,12 +259,21 @@ if (!function_exists('get_user_name123')) {
                 @endif
 
                 @if (in_array("20", $phoneaccess))
-                    <li class="nav-item" data-placement="top" data-toggle="tooltip" title="View Subcontractor" style="position:relative;">
-                        <a class="icon"   href="{{url('view_subcontractor')}}" style="position:relative;">
+                    {{-- #2: dropdown panel that NAMES the subcontractors who submitted documents awaiting
+                         verification, so it's clear WHICH agent to review (not just a count). --}}
+                    <li class="nav-item dropdown" data-placement="top" data-toggle="tooltip" title="Subcontractor Documents" style="position:relative;">
+                        <a class="icon" href="#" id="subcontractorDocsToggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="position:relative;">
                             <i class="fa fa-street-view header-icons" ></i>
-                            {{-- #3: live badge — subcontractors who submitted documents awaiting verification --}}
                             <span class="badge badge-danger side-badge" style="width:25px;height:25px;justify-content:center;align-items:center;display:none !important;right:-10px;top:-10px;" id="subcontractor_docs_count">0</span>
                         </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="subcontractorDocsToggle" style="min-width:290px;max-height:360px;overflow:auto;">
+                            <h6 class="dropdown-header">Documents Awaiting Verification</h6>
+                            <div id="subcontractor_docs_menu">
+                                <span class="dropdown-item-text text-muted" style="font-size:12px;">No pending document submissions</span>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-center" href="{{url('view_subcontractor')}}" style="font-size:12px;font-weight:600;">View all subcontractors</a>
+                        </div>
                     </li>
                 @endif
 
@@ -1077,6 +1086,25 @@ if (!function_exists('get_user_name123')) {
                 var docsList = d.subcontractor_docs_list || [];
                 var docs = docsList.length;
                 $('#subcontractor_docs_count').text(docs > 99 ? '99+' : docs).toggle(docs > 0);
+
+                // Persistent list under the icon — names every agent with docs awaiting verification.
+                var $menu = $('#subcontractor_docs_menu');
+                if ($menu.length) {
+                    if (docs === 0) {
+                        $menu.html('<span class="dropdown-item-text text-muted" style="font-size:12px;">No pending document submissions</span>');
+                    } else {
+                        var viewUrl = "{{ url('view_subcontractor') }}";
+                        var html = '';
+                        docsList.forEach(function (a) {
+                            var nm = $('<span>').text(a.name || 'Agent #' + a.id).html(); // escape
+                            html += '<a class="dropdown-item d-flex align-items-center" href="' + viewUrl + '" style="white-space:normal;">'
+                                  + '<i class="fa fa-file-text-o mr-2" style="color:#e11d48;"></i>'
+                                  + '<span><strong>' + nm + '</strong><br><small class="text-muted">submitted documents for review</small></span>'
+                                  + '</a>';
+                        });
+                        $menu.html(html);
+                    }
+                }
                 if (_docsPrevIds !== null) {
                     docsList.forEach(function (a) {
                         if (_docsPrevIds.indexOf(a.id) === -1) { // this agent is newly pending → just submitted

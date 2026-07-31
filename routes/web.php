@@ -1422,7 +1422,7 @@ Route::middleware(['auth'])->group(function () {
 
         return response()->json([
             'cr_pending'      => \App\CrApplication::where('status', 'pending')->count(),
-            'payment_pending' => \App\AgentOrderPayment::where('payment_status', 'Payment Pending')->count(),
+            'payment_pending' => \App\AgentOrderPayment::where('payment_status', 'Confirmation Pending')->count(),
             // #1: live count for the Carrier Update Approval folder (pstatus 36) so its sidebar
             // badge feels real-time like the other polled badges + triggers a notification.
             'carrier_update_approval' => \App\AutoOrder::where('pstatus', 36)->count(),

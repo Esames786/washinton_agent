@@ -1015,6 +1015,12 @@ if (isset($_GET['titlee'])) {
                             @endif
                             {{-- Carrier Update Approval: approve a held order (pstatus 36) back to Listed --}}
                             @if ($val->pstatus == 36 && ((Auth::user()->role ?? 0) == 1 || (optional(Auth::user()->userRole)->name ?? '') == 'Manager' || in_array('170', $phoneaccess ?? [])))
+                                {{-- #6: let the approver open the carrier/listed sheet before approving --}}
+                                <button type="button" class="btn btn-outline-info btn-sm w-100"
+                                    onclick="getData({{ $val->id }})" title="View Sheet" data-toggle="modal"
+                                    data-target="#exampleModal">
+                                    Sheet <i class="fa fa-book" data-placement="bottom" title="Sheet!"></i>
+                                </button>
                                 <form method="POST" action="{{ route('carrier_update_approval.approve', $val->id) }}" onsubmit="return confirm('Approve this order and move it back to Listed?');" style="display:inline;width:100%;">
                                     @csrf
                                     <button type="submit" class="btn btn-success btn-sm w-100">&#10003; Approve (Listed)</button>
