@@ -19,6 +19,7 @@ class CrApplicationApprovedMail extends Mailable
     public function build()
     {
         return $this
+            ->mailer('crazyrays')
             ->from('careers@crazyrayssolutions.com.pk', 'CrazyRays Solutions')
             ->subject('Your Application Has Been Approved — CrazyRays Solutions')
             ->view('emails.cr_application_approved');

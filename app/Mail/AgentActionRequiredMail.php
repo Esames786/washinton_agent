@@ -23,15 +23,16 @@ class AgentActionRequiredMail extends Mailable
 
     public function build()
     {
-        $fromAddress = config('mail.from.address', 'support@hellotransport.com');
-        $fromName    = $this->brand['name']  ?? config('mail.from.name', 'Hello Transport');
-        $replyTo     = $this->brand['email'] ?? $fromAddress;
+        // Routed to the brand's own mailer (CrazyRays agents ← careers@crazyrays, SPF/DKIM valid).
+        [$fromAddress, $fromName] = \App\Support\Brand::mailFrom($this->brand);
+        $replyTo = $this->brand['email'] ?? $fromAddress;
 
         $subject = $this->type === 'nda'
             ? 'Action Required: Sign your NDA — ' . $fromName
             : 'Action Required: Review your Contract — ' . $fromName;
 
-        return $this->from($fromAddress, $fromName)
+        return $this->mailer(\App\Support\Brand::mailer($this->brand))
+            ->from($fromAddress, $fromName)
             ->replyTo($replyTo, $fromName)
             ->subject($subject)
             ->view('emails.agent_action_required')

@@ -185,6 +185,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/employee-review/accept-contract', 'EmployeeReviewController@acceptContract')->name('employee.review.accept_contract');
     Route::get('/employee-review/default-contract', 'EmployeeReviewController@defaultContract')->name('employee.review.default_contract');
     Route::post('/employee-review/require-nda', 'EmployeeReviewController@requireNda')->name('employee.review.require_nda');
+    Route::get('/employee-review/default-nda', 'EmployeeReviewController@defaultNda')->name('employee.review.default_nda');
+    Route::post('/employee-review/save-nda', 'EmployeeReviewController@saveNda')->name('employee.review.save_nda');
 
     // NDA signing (employee)
     Route::post('/nda/sign', 'NdaController@sign')->name('nda.sign');

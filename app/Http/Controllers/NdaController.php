@@ -103,17 +103,37 @@ class NdaController extends Controller
     {
         $row = DB::table('user')->where('id', $userId)->first();
 
-        if (!$row || !$row->nda_document_path) {
+        if (!$row) {
             abort(404, 'Signed NDA not found.');
         }
 
-        if (!Storage::disk('public')->exists($row->nda_document_path)) {
-            abort(404, 'File not found on server.');
-        }
-
-        $fullPath = Storage::disk('public')->path($row->nda_document_path);
+        $path     = $row->nda_document_path;
         $filename = 'NDA_Signed_' . $userId . '.pdf';
 
-        return response()->download($fullPath, $filename, ['Content-Type' => 'application/pdf']);
+        // The NDA may have been signed by EITHER app (agent portal writes
+        // storage/app/public/nda_documents/…, the HR portal writes public/Uploads/nda_documents/…
+        // under a DIFFERENT cPanel account). Resolve every scheme this side can actually reach,
+        // and if the file lives on the HR account, redirect to its public URL instead of 404ing.
+        if ($path) {
+            $candidates = [
+                public_path($path),                          // public/Uploads/nda_documents/…
+                storage_path('app/public/' . $path),         // storage/app/public/nda_documents/…
+                Storage::disk('public')->path($path),        // same as above via the disk
+            ];
+            foreach ($candidates as $full) {
+                if ($full && is_file($full)) {
+                    return response()->download($full, $filename, ['Content-Type' => 'application/pdf']);
+                }
+            }
+        }
+
+        // File isn't on this account's filesystem — fall back to the URL the signing app published
+        // (e.g. the HR portal serves it at https://hr.…/Uploads/nda_documents/…).
+        $hr = DB::table('hr_employees')->where('agent_id', $userId)->first();
+        if ($hr && !empty($hr->nda_document_url)) {
+            return redirect()->away($hr->nda_document_url);
+        }
+
+        abort(404, 'Signed NDA file not found.');
     }
 }

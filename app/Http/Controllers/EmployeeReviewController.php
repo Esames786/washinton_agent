@@ -90,6 +90,10 @@ class EmployeeReviewController extends Controller
         $totalSeconds = (int) (DB::table('agent_active_times')
             ->where('user_id', $userId)->sum('active_seconds') ?? 0);
 
+        // NDA rich-text state (admin's editable copy + signed details) lives on hr_employees.
+        $ndaRow = DB::table('hr_employees')->where('agent_id', $agentUser->id)
+            ->first(['nda_content', 'nda_signature', 'nda_signed_ip', 'nda_cnic_front', 'nda_cnic_back', 'nda_document_url']);
+
         return response()->json([
             'agent'       => [
                 'id'              => $agentUser->id,
@@ -101,6 +105,12 @@ class EmployeeReviewController extends Controller
                 'nda_required'    => (int) ($agentUser->nda_required ?? 0),
                 'nda_signed_at'   => $agentUser->nda_signed_at ?? null,
                 'nda_document_path' => $agentUser->nda_document_path ?? null,
+                'nda_content'     => $ndaRow->nda_content     ?? null,
+                'nda_signature'   => $ndaRow->nda_signature   ?? null,
+                'nda_signed_ip'   => $ndaRow->nda_signed_ip   ?? null,
+                'nda_cnic_front'  => $ndaRow->nda_cnic_front  ?? null,
+                'nda_cnic_back'   => $ndaRow->nda_cnic_back   ?? null,
+                'nda_document_url' => $ndaRow->nda_document_url ?? null,
             ],
             'hr_employee'  => $hrEmp,
             'documents'    => $documents,
@@ -295,6 +305,67 @@ class EmployeeReviewController extends Controller
             'title'   => $tpl ? $tpl->title : 'Terms & Conditions',
             'content' => $content,
         ]);
+    }
+
+    /**
+     * Return the default NDA template (brand-applied) for the rich-text editor — mirrors
+     * defaultContract(). Admins load this into the editor, tweak it, then saveNda().
+     */
+    public function defaultNda(Request $request): JsonResponse
+    {
+        $tpl = \App\NdaTemplate::getDefault();
+
+        $viewed  = $request->filled('user_id') ? User::find($request->input('user_id')) : null;
+        $brand   = \App\Support\Brand::for($viewed);
+        $content = $tpl ? \App\Support\Brand::applyTokens($tpl->content, $brand) : '';
+
+        return response()->json([
+            'title'   => $tpl ? $tpl->title : 'Non-Disclosure Agreement',
+            'content' => $content,
+        ]);
+    }
+
+    /**
+     * Save the admin's NDA copy for this agent and (re)require signing — mirrors saveContract().
+     * Any previous signature is cleared so the agent re-signs the new copy.
+     */
+    public function saveNda(Request $request): JsonResponse
+    {
+        $request->validate(['user_id' => 'required|integer', 'nda' => 'required|string']);
+
+        $hrEmployee = DB::table('hr_employees')->where('agent_id', $request->user_id)->first();
+        if (!$hrEmployee) {
+            return response()->json(['error' => 'HR employee not found.'], 404);
+        }
+
+        DB::table('hr_employees')->where('agent_id', $request->user_id)->update([
+            'nda_content'      => $request->nda,
+            'nda_required'     => 1,
+            'nda_signed_at'    => null,
+            'nda_signature'    => null,
+            'nda_signed_ip'    => null,
+            'nda_document_url' => null,
+        ]);
+
+        $user = User::find($request->user_id);
+        if ($user) {
+            $user->nda_required      = 1;
+            $user->nda_signed_at     = null;
+            $user->nda_document_path = null;
+            $user->save();
+
+            if ($user->email) {
+                try {
+                    Mail::to($user->email)->send(
+                        new \App\Mail\AgentActionRequiredMail($user->name, \App\Support\Brand::for($user), 'nda')
+                    );
+                } catch (\Throwable $e) {
+                    Log::warning('saveNda: notify email failed', ['user_id' => $request->user_id, 'error' => $e->getMessage()]);
+                }
+            }
+        }
+
+        return response()->json(['success' => true, 'message' => 'NDA saved. The agent has been asked to review and sign it.']);
     }
 
     public function requireNda(Request $request): JsonResponse

@@ -65,6 +65,35 @@ class Brand
     }
 
     /**
+     * Name of the configured mailer this brand's outgoing mail should use.
+     * CrazyRays mail goes through the dedicated 'crazyrays' SMTP mailer (careers@…),
+     * everything else through the default 'smtp' mailer (Hello support@…). This keeps
+     * SPF/DKIM valid after the default mailer was pointed at the Hello domain.
+     */
+    public static function mailer(array $brand): string
+    {
+        return (($brand['key'] ?? '') === 'crazyrays') ? 'crazyrays' : 'smtp';
+    }
+
+    /**
+     * Authenticated "From" identity [address, name] to pair with mailer().
+     */
+    public static function mailFrom(array $brand): array
+    {
+        if (($brand['key'] ?? '') === 'crazyrays') {
+            return [
+                config('mail.crazyrays_from.address', 'careers@crazyrayssolutions.com.pk'),
+                config('mail.crazyrays_from.name', $brand['name'] ?? 'Crazy Rays Solutions'),
+            ];
+        }
+
+        return [
+            config('mail.from.address', 'support@hellotransport.com'),
+            config('mail.from.name', $brand['name'] ?? 'Hello Transport'),
+        ];
+    }
+
+    /**
      * Rebrand a block of HTML/text (e.g. a contract or T&C) for the given brand.
      *
      * Supports explicit placeholders ({{COMPANY_NAME}}, {{COMPANY_LEGAL}}) and

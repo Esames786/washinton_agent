@@ -16,6 +16,7 @@ class CrApplicationRejectedMail extends Mailable
     public function build()
     {
         return $this
+            ->mailer('crazyrays')
             ->from('careers@crazyrayssolutions.com.pk', 'CrazyRays Solutions')
             ->subject('Update on Your Application — CrazyRays Solutions')
             ->view('emails.cr_application_rejected');
