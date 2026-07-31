@@ -672,6 +672,19 @@
                                                 Require NDA Signing
                                             </label>
                                         </div>
+
+                                        {{-- Editable NDA (rich-text) — the copy the agent will sign. Mirrors the Contract editor. --}}
+                                        <div id="rev_nda_editor_wrap" style="display:none;">
+                                            <p class="small text-muted mb-1">Edit the NDA the agent will sign below. Clicking <strong>Save NDA</strong> requires the agent to review &amp; sign this exact copy.</p>
+                                            <div id="rev_nda_quill" style="height:200px;"></div>
+                                            <div class="mt-2 mb-2 d-flex align-items-center">
+                                                <button id="rev_save_nda_content_btn" class="btn btn-sm btn-primary mr-2">
+                                                    <i class="fe fe-save mr-1"></i>Save NDA
+                                                </button>
+                                                <span id="rev_nda_save_msg" class="small" style="display:none;"></span>
+                                            </div>
+                                        </div>
+
                                         <button id="rev_save_nda_btn" class="btn btn-sm btn-warning btn-block">Save NDA Setting</button>
                                         <div id="rev_nda_msg" class="mt-2 small" style="display:none;"></div>
                                         <div id="rev_nda_download_wrap" class="mt-2" style="display:none;">
@@ -1023,6 +1036,17 @@
                     $('#rev_nda_download_wrap').hide();
                 }
                 $('#rev_nda_msg').hide();
+                $('#rev_nda_save_msg').hide();
+
+                // NDA rich-text editor: keep the admin's saved copy handy; reveal + init it when
+                // NDA signing is required (or when the admin ticks the box).
+                window._revNdaContent = agent.nda_content || '';
+                if (ndaRequired == 1) {
+                    $('#rev_nda_editor_wrap').show();
+                    initRevNdaEditor(window._revNdaContent);
+                } else {
+                    $('#rev_nda_editor_wrap').hide();
+                }
 
                 // Leave Quotas
                 $('#rev_leave_quotas_row').empty();
@@ -1265,6 +1289,87 @@
                 error: function () {
                     $(self).prop('disabled', false).text('Save NDA Setting');
                     $('#rev_nda_msg').text('Error. Please try again.').css('color','#721c24').show();
+                }
+            });
+        });
+
+        // Reveal/hide the NDA editor when the admin toggles "Require NDA Signing".
+        $(document).on('change', '#rev_nda_checkbox', function () {
+            if ($(this).is(':checked')) {
+                $('#rev_nda_editor_wrap').show();
+                initRevNdaEditor(window._revNdaContent || '');
+            } else {
+                $('#rev_nda_editor_wrap').hide();
+            }
+        });
+
+        // ── NDA editor (Quill) — mirrors the Contract editor ──────────────────
+        function initRevNdaEditor(ndaHtml) {
+            // If no per-agent NDA saved yet, pre-load the default template (front-end only —
+            // not saved until "Save NDA" is clicked). Branded for the viewed agent via user_id.
+            function resolveHtml(cb) {
+                if (ndaHtml && ndaHtml.trim().length > 10) { cb(ndaHtml); return; }
+                var url = '{{ route("employee.review.default_nda") }}';
+                if (_reviewUserId) { url += (url.indexOf('?') === -1 ? '?' : '&') + 'user_id=' + _reviewUserId; }
+                $.getJSON(url, function (res) { cb(res.content || ''); }).fail(function () { cb(''); });
+            }
+            function setContent(html) {
+                if (window._revNdaQuill) { window._revNdaQuill.root.innerHTML = html || ''; }
+            }
+            if ($('#rev_nda_quill').find('.ql-editor').length > 0 && window._revNdaQuill) {
+                resolveHtml(setContent);
+                return;
+            }
+            function buildQuill(html) {
+                $('#rev_nda_quill').empty();
+                window._revNdaQuill = new Quill('#rev_nda_quill', {
+                    theme: 'snow',
+                    placeholder: 'Write the NDA the agent will sign here...'
+                });
+                window._revNdaQuill.root.innerHTML = html || '';
+            }
+            if (typeof Quill !== 'undefined') {
+                resolveHtml(function (html) { buildQuill(html); });
+            } else {
+                if (!$('#quill-css').length) {
+                    $('<link id="quill-css" rel="stylesheet" href="https://cdn.quilljs.com/1.3.7/quill.snow.css">').appendTo('head');
+                }
+                $.getScript('https://cdn.quilljs.com/1.3.7/quill.min.js', function () {
+                    resolveHtml(function (html) { buildQuill(html); });
+                });
+            }
+        }
+
+        // Save NDA (saves the admin's copy + requires the agent to sign it).
+        $(document).on('click', '#rev_save_nda_content_btn', function () {
+            if (!_reviewUserId) return;
+            if (!window._revNdaQuill) { alert('Editor not ready yet.'); return; }
+            var ndaHtml = window._revNdaQuill.root.innerHTML;
+            var self = this;
+            $(self).prop('disabled', true).html('<i class="fe fe-loader mr-1"></i>Saving...');
+            $.ajax({
+                url: '/employee-review/save-nda',
+                type: 'POST',
+                data: { _token: $('meta[name="csrf-token"]').attr('content'), user_id: _reviewUserId, nda: ndaHtml },
+                success: function (res) {
+                    $(self).prop('disabled', false).html('<i class="fe fe-save mr-1"></i>Save NDA');
+                    if (res.success) {
+                        window._revNdaContent = ndaHtml;
+                        $('#rev_nda_checkbox').prop('checked', true);
+                        $('#rev_nda_status_display').html('<span class="badge badge-warning">Pending Signature</span>');
+                        $('#rev_nda_download_wrap').hide();
+                        $('#rev_nda_save_msg').text(res.message || 'NDA saved. The agent has been notified to sign.')
+                            .removeClass('text-danger').addClass('text-success').show();
+                    } else {
+                        $('#rev_nda_save_msg').text('Failed to save NDA.')
+                            .removeClass('text-success').addClass('text-danger').show();
+                    }
+                },
+                error: function (xhr) {
+                    $(self).prop('disabled', false).html('<i class="fe fe-save mr-1"></i>Save NDA');
+                    var msg = 'Failed to save NDA.';
+                    if (xhr.responseJSON && xhr.responseJSON.error) msg = xhr.responseJSON.error;
+                    $('#rev_nda_save_msg').text(msg).removeClass('text-success').addClass('text-danger').show();
                 }
             });
         });
