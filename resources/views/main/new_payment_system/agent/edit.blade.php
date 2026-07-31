@@ -49,8 +49,15 @@
                                 <label class="font-weight-bold">Payment Mode <span class="text-danger">*</span></label>
                                 <select name="payment_mode" class="form-control" required>
                                     <option value="">-- Select Mode --</option>
-                                    @foreach(['COD', 'Bank Transfer', 'Cheque', 'Wire Transfer', 'Zelle', 'Venmo', 'CashApp', 'Other'] as $mode)
-                                        <option value="{{ $mode }}" {{ (old('payment_mode', $payment->payment_mode) == $mode) ? 'selected' : '' }}>
+                                    @php
+                                        // Bank Transfer / Cheque / Wire Transfer soft-hidden per client; Credit Card added.
+                                        $visibleModes = ['COD', 'Credit Card', 'Zelle', 'Venmo', 'CashApp', 'Other'];
+                                        $currentMode  = old('payment_mode', $payment->payment_mode);
+                                        // keep a previously-saved (now hidden) mode selectable so an edit doesn't lose it
+                                        if ($currentMode && !in_array($currentMode, $visibleModes)) $visibleModes[] = $currentMode;
+                                    @endphp
+                                    @foreach($visibleModes as $mode)
+                                        <option value="{{ $mode }}" {{ ($currentMode == $mode) ? 'selected' : '' }}>
                                             {{ $mode }}
                                         </option>
                                     @endforeach

@@ -54,9 +54,11 @@
                                 <select name="payment_mode" class="form-control @error('payment_mode') is-invalid @enderror" required>
                                     <option value="">-- Select Mode --</option>
                                     <option value="COD"           {{ old('payment_mode') == 'COD'           ? 'selected' : '' }}>COD (Cash on Delivery)</option>
-                                    <option value="Bank Transfer" {{ old('payment_mode') == 'Bank Transfer' ? 'selected' : '' }}>Bank Transfer</option>
-                                    <option value="Cheque"        {{ old('payment_mode') == 'Cheque'        ? 'selected' : '' }}>Cheque</option>
-                                    <option value="Wire Transfer" {{ old('payment_mode') == 'Wire Transfer' ? 'selected' : '' }}>Wire Transfer</option>
+                                    <option value="Credit Card"   {{ old('payment_mode') == 'Credit Card'   ? 'selected' : '' }}>Credit Card</option>
+                                    {{-- Soft-hidden per client (kept for easy restore) --}}
+                                    {{-- <option value="Bank Transfer" {{ old('payment_mode') == 'Bank Transfer' ? 'selected' : '' }}>Bank Transfer</option> --}}
+                                    {{-- <option value="Cheque"        {{ old('payment_mode') == 'Cheque'        ? 'selected' : '' }}>Cheque</option> --}}
+                                    {{-- <option value="Wire Transfer" {{ old('payment_mode') == 'Wire Transfer' ? 'selected' : '' }}>Wire Transfer</option> --}}
                                     <option value="Zelle"         {{ old('payment_mode') == 'Zelle'         ? 'selected' : '' }}>Zelle</option>
                                     <option value="Venmo"         {{ old('payment_mode') == 'Venmo'         ? 'selected' : '' }}>Venmo</option>
                                     <option value="CashApp"       {{ old('payment_mode') == 'CashApp'       ? 'selected' : '' }}>CashApp</option>
@@ -130,12 +132,12 @@
                         <small class="text-muted">Required — attach the payment proof (JPG, PNG, PDF). Max 5MB.</small>
                     </div>
 
-                    {{-- #3: booking / authorization form is mandatory (separate from the transaction screenshot) --}}
+                    {{-- Booking / authorization form is now OPTIONAL (per client). --}}
                     <div class="form-group">
-                        <label class="font-weight-bold">Booking Form / Authorization Form <span class="text-danger">*</span></label>
+                        <label class="font-weight-bold">Booking Form / Authorization Form</label>
                         <input type="file" name="booking_form_path" class="form-control-file"
-                               accept=".jpg,.jpeg,.png,.pdf" required>
-                        <small class="text-muted">Required — attach the paid booking form or authorization form summary (JPG, PNG, PDF). Max 5MB.</small>
+                               accept=".jpg,.jpeg,.png,.pdf">
+                        <small class="text-muted">Optional — attach the paid booking form or authorization form summary (JPG, PNG, PDF). Max 5MB.</small>
                     </div>
 
                     <div class="form-group">

@@ -63,6 +63,11 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    // Base URL for CUSTOMER-facing links (order-continuation / booking links emailed to
+    // customers). On the CrazyRays (florida) portal set CUSTOMER_BASE_URL=https://hellotransport.com
+    // so customers only ever see the Hello domain. Defaults to APP_URL when unset.
+    'customer_url' => env('CUSTOMER_BASE_URL', env('APP_URL', 'http://localhost')),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

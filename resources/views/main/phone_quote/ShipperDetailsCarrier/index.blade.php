@@ -729,7 +729,7 @@
             //populate the textbox
             var encryptvuserid = btoa({{ Auth::user()->id }});
             var encryptvoderid = btoa(orderId);
-            var linkv = "{{ url('/email_order/') }}" + '/' + encryptvoderid + '/' + encryptvuserid;
+            var linkv = "{{ customer_url('/email_order/') }}" + '/' + encryptvoderid + '/' + encryptvuserid;
             $(e.currentTarget).find('input[name="orderid"]').val(orderId);
             $(e.currentTarget).find('input[name="link"]').val(linkv);
         });

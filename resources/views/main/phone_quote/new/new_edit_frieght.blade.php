@@ -9,10 +9,10 @@
     /* #8: Vehicle Price removed from the quote form (input kept in DOM for submit logic). */
     .form-group:has(> input.vehicle_price) { display: none !important; }
 
-    /* #12: keep ONLY "Pay Later" (value 4) visible — hide COD/COP(1), Pay With Email(2), Pay Now(3). */
+    /* #12 reverted per client: all pay options restored (COD/COP, Pay With Email, Pay Now, Pay Later) — same as Washington.
     .form-group:has(input[name="pay_cond"][value="1"]),
     .form-group:has(input[name="pay_cond"][value="2"]),
-    .form-group:has(input[name="pay_cond"][value="3"]) { display: none !important; }
+    .form-group:has(input[name="pay_cond"][value="3"]) { display: none !important; } */
 
     /* #6/#7: hide old-customer previous-order surfacing (kept in DOM so JS handlers don't break). */
     #ophoneResult, #show_previous_orders, #last_5, #update_previous, .show_hide[data-content="toggle-text"] { display:none !important; }
@@ -3380,7 +3380,7 @@
                     <div class="col-lg-2 mt-4">
                         <div class="form-group">
                             <label class="rdiobox">
-                                <input class="this_save" name="pay_cond" id="pay_cond4" type="radio" value="4" checked>
+                                <input class="this_save" name="pay_cond" id="pay_cond4" type="radio" value="4">
                                 <span>Pay Later</span>
                             </label>
                         </div>
@@ -3693,7 +3693,7 @@
                     <div class="col-lg-2 mt-4">
                         <div class="form-group">
                             <label class="rdiobox">
-                                <input class="this_save" name="pay_cond" id="pay_cond4" type="radio" value="4" checked>
+                                <input class="this_save" name="pay_cond" id="pay_cond4" type="radio" value="4">
                                 <span>Pay Later</span>
                             </label>
                         </div>

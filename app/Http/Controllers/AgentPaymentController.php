@@ -125,12 +125,11 @@ class AgentPaymentController extends Controller
             'confirmation_date' => 'required|date',
             // #11: payment screenshot / proof is now mandatory too
             'screenshot_path'   => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
-            // #3: booking/authorization form is mandatory
-            'booking_form_path' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            // Booking/authorization form is now OPTIONAL (per client).
+            'booking_form_path' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
             'details'           => 'nullable|string|max:1000',
         ], [
             'screenshot_path.required'   => 'The payment screenshot / proof is required to submit a payment.',
-            'booking_form_path.required' => 'The booking / authorization form is required to submit a payment.',
         ]);
 
         // Verify the order exists.

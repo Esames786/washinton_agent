@@ -1837,7 +1837,7 @@ class NewQuote extends Controller
                         if ($request->neworderpay_btn == "1") {
                             $orderid = base64_encode($request->orderid);
                             $userid = base64_encode(Auth::user()->id);
-                            $link1 = url("/email_order/{$orderid}/{$userid}");
+                            $link1 = customer_url("/email_order/{$orderid}/{$userid}");
                             // Mail::to(config('custom.SEND_MAIL'))->send(new SendOrderMail($test));
                             Mail::to($request->oemail2)->send(new SendOrderMail($link1));
                         }
@@ -2955,7 +2955,7 @@ class NewQuote extends Controller
     {
         $orderid = base64_encode($request->orderid);
         $userid = base64_encode(Auth::user()->id);
-        $link1 = url("/email_order/{$orderid}/{$userid}");
+        $link1 = customer_url("/email_order/{$orderid}/{$userid}");
         Mail::to($request->email)->send(new SendOrderMail($link1));
         return "SUCCESS";
     }
@@ -5643,7 +5643,7 @@ class NewQuote extends Controller
         $orderId = $order->id;
         $encryptvuserid = $this->encodeData($userId);
         $encryptvoderid = $this->encodeData($orderId);
-        $linkv = url('/email_order/' . $encryptvoderid . '/' . $encryptvuserid);
+        $linkv = customer_url('/email_order/' . $encryptvoderid . '/' . $encryptvuserid);
 
 
         try {

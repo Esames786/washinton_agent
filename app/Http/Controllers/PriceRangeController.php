@@ -140,7 +140,7 @@ class PriceRangeController extends Controller
 
         $encryptvuserid = $this->encodeData($userId);
         $encryptvoderid = $this->encodeData($orderId);
-        $linkv = url('/email_order/' . $encryptvoderid . '/' . $encryptvuserid);
+        $linkv = customer_url('/email_order/' . $encryptvoderid . '/' . $encryptvuserid);
 
         //     Mail::to('abst99856@gmail.com')->send(new GivenAddonPriceMail($price, $order, $linkv));
         // Mail::to('autonewexport@gmail.com')->send(new GivenAddonPriceMail($price, $order, $linkv));

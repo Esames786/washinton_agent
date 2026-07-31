@@ -27,7 +27,7 @@
 
     $order_id       = base64_encode($q->order_id);
     $order_taker_id = base64_encode($q->order_taker_id);
-    $wash_link      = url('/email_order') . '/' . $order_id . '/' . $order_taker_id;
+    $wash_link      = customer_url('/email_order') . '/' . $order_id . '/' . $order_taker_id;
 
     $customerName  = $q->customer_name ?? 'Customer';
     $customerPhone = $q->customer_phone ?? '-';
