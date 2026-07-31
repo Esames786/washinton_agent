@@ -72,6 +72,38 @@ if (!function_exists('get_user_name123')) {
         pointer-events: none;
     }
 
+    /* Subcontractor Documents dropdown — fully self-contained so the theme's generic
+       .dropdown-item rules can't squash/overlap the two-line items. */
+    .sc-docs-menu {
+        min-width: 300px; max-width: 340px;
+        max-height: 380px; overflow-y: auto; overflow-x: hidden;
+        padding: 6px 0; background: #fff;
+        border: 1px solid #e5e7eb; border-radius: 10px;
+        box-shadow: 0 8px 28px rgba(0,0,0,.14);
+    }
+    .sc-docs-menu .sc-docs-head {
+        padding: 8px 14px; font-size: 11px; font-weight: 700; letter-spacing: .4px;
+        text-transform: uppercase; color: #9ca3af; border-bottom: 1px solid #f1f1f1;
+    }
+    .sc-docs-menu .sc-docs-empty { display: block; padding: 14px; font-size: 12px; color: #9ca3af; text-align: center; }
+    .sc-docs-menu .sc-doc-item {
+        display: flex; align-items: flex-start; gap: 8px;
+        padding: 10px 14px; border-bottom: 1px solid #f3f4f6;
+        white-space: normal; line-height: 1.35; text-decoration: none; color: #333;
+    }
+    .sc-docs-menu .sc-doc-item:hover { background: #f8f9fa; }
+    .sc-docs-menu .sc-doc-item .sc-doc-ic { color: #e11d48; margin-top: 2px; flex-shrink: 0; }
+    .sc-docs-menu .sc-doc-item .sc-doc-name { display: block; font-weight: 600; color: #111827; font-size: 13px; }
+    .sc-docs-menu .sc-doc-item .sc-doc-sub  { display: block; font-size: 11px; color: #9ca3af; }
+    .sc-docs-menu .sc-docs-foot {
+        display: block; padding: 9px 14px; font-size: 12px; font-weight: 600;
+        text-align: center; color: #2563eb; text-decoration: none; border-top: 1px solid #f1f1f1;
+    }
+    .sc-docs-menu .sc-docs-foot:hover { background: #f8f9fa; }
+    /* This dropdown opens on click only (Bootstrap) — cancel the theme's hover-to-open rule. */
+    .sc-docs-dd:hover > .dropdown-menu { display: none; }
+    .sc-docs-dd.show > .dropdown-menu { display: block; }
+
        .manage_dropdown {
         min-height: auto;
         border-radius: 7px;
@@ -261,18 +293,17 @@ if (!function_exists('get_user_name123')) {
                 @if (in_array("20", $phoneaccess))
                     {{-- #2: dropdown panel that NAMES the subcontractors who submitted documents awaiting
                          verification, so it's clear WHICH agent to review (not just a count). --}}
-                    <li class="nav-item dropdown" data-placement="top" data-toggle="tooltip" title="Subcontractor Documents" style="position:relative;">
-                        <a class="icon" href="#" id="subcontractorDocsToggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="position:relative;">
+                    <li class="nav-item dropdown sc-docs-dd" style="position:relative;">
+                        <a class="icon" href="#" id="subcontractorDocsToggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Subcontractor Documents" style="position:relative;">
                             <i class="fa fa-street-view header-icons" ></i>
                             <span class="badge badge-danger side-badge" style="width:25px;height:25px;justify-content:center;align-items:center;display:none !important;right:-10px;top:-10px;" id="subcontractor_docs_count">0</span>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="subcontractorDocsToggle" style="min-width:290px;max-height:360px;overflow:auto;">
-                            <h6 class="dropdown-header">Documents Awaiting Verification</h6>
+                        <div class="dropdown-menu dropdown-menu-right sc-docs-menu" aria-labelledby="subcontractorDocsToggle">
+                            <div class="sc-docs-head">Documents Awaiting Verification</div>
                             <div id="subcontractor_docs_menu">
-                                <span class="dropdown-item-text text-muted" style="font-size:12px;">No pending document submissions</span>
+                                <span class="sc-docs-empty">No pending document submissions</span>
                             </div>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-center" href="{{url('view_subcontractor')}}" style="font-size:12px;font-weight:600;">View all subcontractors</a>
+                            <a class="sc-docs-foot" href="{{url('view_subcontractor')}}">View all subcontractors</a>
                         </div>
                     </li>
                 @endif
@@ -1091,15 +1122,16 @@ if (!function_exists('get_user_name123')) {
                 var $menu = $('#subcontractor_docs_menu');
                 if ($menu.length) {
                     if (docs === 0) {
-                        $menu.html('<span class="dropdown-item-text text-muted" style="font-size:12px;">No pending document submissions</span>');
+                        $menu.html('<span class="sc-docs-empty">No pending document submissions</span>');
                     } else {
                         var viewUrl = "{{ url('view_subcontractor') }}";
                         var html = '';
                         docsList.forEach(function (a) {
                             var nm = $('<span>').text(a.name || 'Agent #' + a.id).html(); // escape
-                            html += '<a class="dropdown-item d-flex align-items-center" href="' + viewUrl + '" style="white-space:normal;">'
-                                  + '<i class="fa fa-file-text-o mr-2" style="color:#e11d48;"></i>'
-                                  + '<span><strong>' + nm + '</strong><br><small class="text-muted">submitted documents for review</small></span>'
+                            html += '<a class="sc-doc-item" href="' + viewUrl + '">'
+                                  + '<i class="fa fa-file-text-o sc-doc-ic"></i>'
+                                  + '<span><span class="sc-doc-name">' + nm + '</span>'
+                                  + '<span class="sc-doc-sub">submitted documents for review</span></span>'
                                   + '</a>';
                         });
                         $menu.html(html);
