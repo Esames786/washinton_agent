@@ -1,3 +1,4 @@
+@php $brand = \App\Support\Brand::byKey('hellotransport'); @endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -4,6 +4,8 @@
     Print Invoice
 @endsection
 @include('partials.mainsite_pages.return_function')
+{{-- Customer-facing transportation invoice is always Hello-branded (never CrazyRays). --}}
+@php $brand = \App\Support\Brand::byKey('hellotransport'); @endphp
 
 <style>
         body {

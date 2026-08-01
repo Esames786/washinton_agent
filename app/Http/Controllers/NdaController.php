@@ -16,6 +16,8 @@ class NdaController extends Controller
     {
         $request->validate([
             'employee_name'  => 'required|string|max:255',
+            'father_name'    => 'required|string|max:255',
+            'address'        => 'required|string|max:500',
             'cnic'           => 'required|string|max:20',
             'signature_data' => 'required|string',
             'agreed'         => 'required|in:1',
@@ -78,6 +80,8 @@ class NdaController extends Controller
                 'nda_signed_ip'    => $ip,
                 'nda_cnic_front'   => $cnicFrontPath,
                 'nda_cnic_back'    => $cnicBackPath,
+                'nda_father_name'  => $request->father_name,
+                'nda_address'      => $request->address,
             ]);
         } catch (\Throwable $e) {
             Log::error('NDA flag clear failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
@@ -116,6 +120,8 @@ class NdaController extends Controller
                     'ndaContent'    => $hr->nda_content,
                     'brand'         => \App\Support\Brand::for($user),
                     'employeeName'  => $user->name ?? '',
+                    'fatherName'    => $hr->nda_father_name ?? '',
+                    'address'       => $hr->nda_address ?? '',
                     'cnic'          => $hr->cnic ?? '',
                     'signedDate'    => $hr->nda_signed_at ? date('d M Y H:i', strtotime($hr->nda_signed_at)) : '',
                     'signedIp'      => $hr->nda_signed_ip ?? '',
@@ -207,6 +213,8 @@ class NdaController extends Controller
                 'ndaContent'    => $ndaContent,
                 'brand'         => \App\Support\Brand::for($user),
                 'employeeName'  => $request->employee_name,
+                'fatherName'    => $request->father_name,
+                'address'       => $request->address,
                 'cnic'          => $request->cnic,
                 'signedDate'    => $signedAt->format('d M Y H:i'),
                 'signedIp'      => $ip,

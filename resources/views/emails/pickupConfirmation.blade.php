@@ -1,3 +1,4 @@
+@php $brand = \App\Support\Brand::byKey('hellotransport'); @endphp
 @extends('emails.layouts.app')
 
 @section('content')
@@ -51,7 +52,7 @@
         <p>Your vehicle has been collected from the origin location and is now on its way to the destination.</p>
         <p>You can continue to track the status of your shipment on our website using your transport number.</p>
         <div style="text-align: center; margin-top: 13px; margin-bottom: 13px;">
-            <a href="{{ route('order.tracking', $autoorder->id) }}" target="_blank">
+            <a href="{{ customer_url('/order_tracking/' . $autoorder->id) }}" target="_blank">
               <button style="background-color: #8fc445; color: white; font-size: larger; border: none; padding: 10px 20px; border-radius: 5px;">Track Order</button>
             </a>
           </div>

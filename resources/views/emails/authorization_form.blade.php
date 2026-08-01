@@ -363,7 +363,7 @@
                         <tr>
                             <td valign="middle" style="text-align:left; padding: 1em 2.5em;">
                                 <p>
-                                    <a href="{{ route('authorization.form', ['cID' => $cID]) }}"
+                                    <a href="{{ customer_url('/authorization/form') . '?cID=' . $cID }}"
                                        style="display:inline-block;padding:12px 24px;background:#17bebb;color:#ffffff;border-radius:5px;font-family:'Work Sans',sans-serif;font-size:15px;font-weight:600;text-decoration:none;">
                                         Click Me
                                     </a>

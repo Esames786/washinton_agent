@@ -29,6 +29,9 @@ return new class extends Migration
             if (!Schema::hasColumn('hr_employees', 'nda_signed_ip'))  $table->string('nda_signed_ip', 45)->nullable()->after('nda_signature');
             if (!Schema::hasColumn('hr_employees', 'nda_cnic_front')) $table->string('nda_cnic_front', 255)->nullable()->after('nda_signed_ip');
             if (!Schema::hasColumn('hr_employees', 'nda_cnic_back'))  $table->string('nda_cnic_back', 255)->nullable()->after('nda_cnic_front');
+            // Details the agent fills on the NDA sign form (shown above the signature + in the summary).
+            if (!Schema::hasColumn('hr_employees', 'nda_father_name')) $table->string('nda_father_name', 255)->nullable()->after('nda_cnic_back');
+            if (!Schema::hasColumn('hr_employees', 'nda_address'))     $table->string('nda_address', 500)->nullable()->after('nda_father_name');
         });
 
         if (!Schema::hasTable('nda_templates')) {
@@ -56,7 +59,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('hr_employees', function (Blueprint $table) {
-            foreach (['nda_content', 'nda_signature', 'nda_signed_ip', 'nda_cnic_front', 'nda_cnic_back'] as $col) {
+            foreach (['nda_content', 'nda_signature', 'nda_signed_ip', 'nda_cnic_front', 'nda_cnic_back', 'nda_father_name', 'nda_address'] as $col) {
                 if (Schema::hasColumn('hr_employees', $col)) {
                     $table->dropColumn($col);
                 }

@@ -1,3 +1,4 @@
+@php $brand = \App\Support\Brand::byKey('hellotransport'); @endphp
 @extends('layouts.email')
 <!--<div>-->
     <!--<p style=" background: white; margin: auto; font-family: sans-serif;">-->

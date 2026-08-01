@@ -24,6 +24,13 @@
     }
     $__needCnicFront = !in_array(10, $__cnicHave, true);
     $__needCnicBack  = !in_array(11, $__cnicHave, true);
+
+    // Auto-captured signing context (shown read-only; server records the authoritative values).
+    $__signIp   = request()->ip();
+    $__signNow  = now()->format('d M Y, h:i A');
+    // Prefill father's name / address from the agent's HR record where available.
+    $__father   = $__hrEmp->father_name ?? ($__hrEmp->father ?? '');
+    $__address  = $__hrEmp->address ?? '';
 @endphp
 
 <div id="ndaOverlay" style="
@@ -35,12 +42,11 @@
     <div style="
         background: #fff; border-radius: 10px;
         width: 100%; max-width: 820px; max-height: 94vh;
-        display: flex; flex-direction: column;
         box-shadow: 0 20px 60px rgba(0,0,0,.45);
-        overflow: hidden;
+        overflow-y: auto; overflow-x: hidden;
     ">
-        {{-- Header --}}
-        <div style="background:#1a4ca0; color:#fff; padding:14px 22px; flex-shrink:0; display:flex; align-items:center; gap:12px;">
+        {{-- Header (sticky so it stays visible while the whole agreement scrolls as one page) --}}
+        <div style="background:#1a4ca0; color:#fff; padding:14px 22px; position:sticky; top:0; z-index:3; display:flex; align-items:center; gap:12px;">
             <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
             </svg>
@@ -50,8 +56,8 @@
             </div>
         </div>
 
-        {{-- Scrollable document --}}
-        <div style="flex:1; overflow-y:auto; padding:28px 30px 16px; border-bottom:1px solid #e0e0e0;">
+        {{-- Full document — displayed in full (no inner scroll box) so no clause can be missed. --}}
+        <div style="padding:28px 30px 16px; border-bottom:1px solid #e0e0e0;">
 
             {{-- Logo --}}
             <div style="text-align:center; margin-bottom:22px;">
@@ -84,15 +90,27 @@
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
                     <div>
-                        <label style="font-size:12px; font-weight:600; color:#444; display:block; margin-bottom:4px;">Full Name <span style="color:red;">*</span></label>
+                        <label style="font-size:12px; font-weight:600; color:#444; display:block; margin-bottom:4px;">Agent Full Name <span style="color:red;">*</span></label>
                         <input type="text" id="ndaFullName" name="employee_name"
                                value="{{ auth()->user()->name ?? '' }}"
+                               style="width:100%; border:1px solid #ccc; border-radius:5px; padding:7px 10px; font-size:13px;" required>
+                    </div>
+                    <div>
+                        <label style="font-size:12px; font-weight:600; color:#444; display:block; margin-bottom:4px;">Father's Name <span style="color:red;">*</span></label>
+                        <input type="text" id="ndaFather" name="father_name"
+                               value="{{ $__father }}"
                                style="width:100%; border:1px solid #ccc; border-radius:5px; padding:7px 10px; font-size:13px;" required>
                     </div>
                     <div>
                         <label style="font-size:12px; font-weight:600; color:#444; display:block; margin-bottom:4px;">CNIC Number <span style="color:red;">*</span></label>
                         <input type="text" id="ndaCnic" name="cnic"
                                style="width:100%; border:1px solid #ccc; border-radius:5px; padding:7px 10px; font-size:13px;" required placeholder="e.g. 42101-1234567-1">
+                    </div>
+                    <div>
+                        <label style="font-size:12px; font-weight:600; color:#444; display:block; margin-bottom:4px;">Address <span style="color:red;">*</span></label>
+                        <input type="text" id="ndaAddress" name="address"
+                               value="{{ $__address }}"
+                               style="width:100%; border:1px solid #ccc; border-radius:5px; padding:7px 10px; font-size:13px;" required placeholder="Your address">
                     </div>
                 </div>
 
@@ -116,10 +134,24 @@
                 </div>
                 @endif
 
+                {{-- Auto-captured — verified server-side against login activity + timestamp. --}}
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+                    <div>
+                        <label style="font-size:12px; font-weight:600; color:#444; display:block; margin-bottom:4px;">Date &amp; Time of Signing</label>
+                        <input type="text" value="{{ $__signNow }}" readonly
+                               style="width:100%; border:1px solid #e0e0e0; background:#f6f7fb; color:#555; border-radius:5px; padding:7px 10px; font-size:13px;">
+                    </div>
+                    <div>
+                        <label style="font-size:12px; font-weight:600; color:#444; display:block; margin-bottom:4px;">IP Address at Signing</label>
+                        <input type="text" value="{{ $__signIp }}" readonly
+                               style="width:100%; border:1px solid #e0e0e0; background:#f6f7fb; color:#555; border-radius:5px; padding:7px 10px; font-size:13px;">
+                    </div>
+                </div>
+
                 <div style="margin-bottom:14px;">
                     <label style="font-size:12px; font-weight:600; color:#444; display:block; margin-bottom:6px;">
-                        Draw Your Signature Below <span style="color:red;">*</span>
-                        <span style="font-weight:400; color:#888; margin-left:8px; font-size:11px;">(Use mouse or touch)</span>
+                        Signature <span style="color:red;">*</span>
+                        <span style="font-weight:400; color:#888; margin-left:8px; font-size:11px;">(Draw with mouse or touch)</span>
                     </label>
                     <div style="position:relative; border:2px dashed #aab4cc; border-radius:6px; background:#fff; display:inline-block;">
                         <canvas id="ndaSignatureCanvas" width="500" height="120"
@@ -136,7 +168,7 @@
                     <input type="checkbox" id="ndaAgreeCheck" name="agreed" value="1"
                            style="margin-top:3px; width:15px; height:15px; cursor:pointer;" required>
                     <label for="ndaAgreeCheck" style="font-size:13px; color:#333; cursor:pointer; line-height:1.5;">
-                        I have read the full NDA & Confidentiality Agreement and agree to comply with all its terms.
+                        I have read and understood all 26 clauses of the NDA &amp; Confidentiality Agreement and agree to comply with all its terms.
                         I understand the consequences of violating its provisions.
                     </label>
                 </div>

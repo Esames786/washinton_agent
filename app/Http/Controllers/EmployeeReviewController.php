@@ -92,7 +92,7 @@ class EmployeeReviewController extends Controller
 
         // NDA rich-text state (admin's editable copy + signed details) lives on hr_employees.
         $ndaRow = DB::table('hr_employees')->where('agent_id', $agentUser->id)
-            ->first(['nda_content', 'nda_signature', 'nda_signed_ip', 'nda_cnic_front', 'nda_cnic_back', 'nda_document_url']);
+            ->first(['nda_content', 'nda_signature', 'nda_signed_ip', 'nda_cnic_front', 'nda_cnic_back', 'nda_document_url', 'nda_father_name', 'nda_address']);
 
         return response()->json([
             'agent'       => [
@@ -111,6 +111,8 @@ class EmployeeReviewController extends Controller
                 'nda_cnic_front'  => $ndaRow->nda_cnic_front  ?? null,
                 'nda_cnic_back'   => $ndaRow->nda_cnic_back   ?? null,
                 'nda_document_url' => $ndaRow->nda_document_url ?? null,
+                'nda_father_name' => $ndaRow->nda_father_name ?? null,
+                'nda_address'     => $ndaRow->nda_address     ?? null,
             ],
             'hr_employee'  => $hrEmp,
             'documents'    => $documents,

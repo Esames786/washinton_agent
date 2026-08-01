@@ -69,8 +69,8 @@
                 <div>
                     <select name="status" class="form-control form-control-sm">
                         <option value="">All Status</option>
-                        <option value="Confirmation Pending"   {{ request('status') == 'Confirmation Pending'   ? 'selected' : '' }}>Confirmation Pending</option>
-                        <option value="Payment Confirmed" {{ request('status') == 'Payment Confirmed' ? 'selected' : '' }}>Confirmed</option>
+                        <option value="Payment Pending"   {{ request('status') == 'Payment Pending'   ? 'selected' : '' }}>Confirmation Pending</option>
+                        <option value="Payment Confirmed" {{ request('status') == 'Payment Confirmed' ? 'selected' : '' }}>Received</option>
                         <option value="Payment Return"    {{ request('status') == 'Payment Return'    ? 'selected' : '' }}>Returned</option>
                     </select>
                 </div>
@@ -141,7 +141,7 @@
                         </td>
                         <td>
                             @if($p->payment_status === 'Payment Confirmed')
-                                <span class="badge-confirmed">Confirmed</span>
+                                <span class="badge-confirmed">Received</span>
                             @elseif($p->payment_status === 'Payment Return')
                                 <span class="badge-returned">Returned</span>
                             @else
@@ -212,8 +212,11 @@ $(document).on('click', '.journey-btn', function () {
         data.forEach(function (j) {
             const badge = j.new_status === 'Payment Confirmed' ? 'badge-success' :
                           j.new_status === 'Payment Return'    ? 'badge-danger'  : 'badge-warning';
+            const label = j.new_status === 'Payment Confirmed' ? 'Received' :
+                          j.new_status === 'Payment Return'    ? 'Returned' :
+                          j.new_status === 'Payment Pending'   ? 'Confirmation Pending' : j.new_status;
             html += `<tr>
-                <td><span class="badge ${badge}">${j.new_status}</span></td>
+                <td><span class="badge ${badge}">${label}</span></td>
                 <td>${j.changed_by ? '#'+j.changed_by : '-'}</td>
                 <td><span class="badge badge-secondary">${j.user_type || '-'}</span></td>
                 <td>${j.note || '-'}</td>

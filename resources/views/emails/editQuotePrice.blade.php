@@ -1,3 +1,4 @@
+@php $brand = \App\Support\Brand::byKey('hellotransport'); @endphp
 @extends('emails.layouts.app')
 
 @section('content')

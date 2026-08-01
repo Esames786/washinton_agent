@@ -1,3 +1,6 @@
+{{-- This layout is used only by CUSTOMER-facing emails, which must always be Hello-branded
+     (never CrazyRays), regardless of the deployment's forced portal brand. --}}
+@php $brand = \App\Support\Brand::byKey('hellotransport'); @endphp
 <!DOCTYPE html>
 <html lang="en">
   <head>

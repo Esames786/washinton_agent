@@ -1037,6 +1037,8 @@
                     if (agent.nda_content) {
                         var meta = 'Signed' + (ndaSignedAt ? ' on ' + ndaSignedAt : '');
                         if (agent.nda_signed_ip) { meta += ' · IP ' + agent.nda_signed_ip; }
+                        if (agent.nda_father_name) { meta += ' · Father: ' + agent.nda_father_name; }
+                        if (agent.nda_address) { meta += ' · Address: ' + agent.nda_address; }
                         $('#rev_nda_signed_meta').text(meta);
                         $('#rev_nda_signed_preview').html(agent.nda_content);
                         $('#rev_nda_signed_wrap').show();

@@ -66,8 +66,8 @@
                 <label class="form-label small font-weight-bold">Status</label>
                 <select name="status" class="form-control form-control-sm">
                     <option value="">All</option>
-                    <option value="Confirmation Pending"   {{ request('status') == 'Confirmation Pending'   ? 'selected' : '' }}>Confirmation Pending</option>
-                    <option value="Payment Confirmed" {{ request('status') == 'Payment Confirmed' ? 'selected' : '' }}>Confirmed</option>
+                    <option value="Payment Pending"   {{ request('status') == 'Payment Pending'   ? 'selected' : '' }}>Confirmation Pending</option>
+                    <option value="Payment Confirmed" {{ request('status') == 'Payment Confirmed' ? 'selected' : '' }}>Received</option>
                     <option value="Payment Return"    {{ request('status') == 'Payment Return'    ? 'selected' : '' }}>Returned</option>
                 </select>
             </div>
@@ -168,7 +168,7 @@
                         </td>
                         <td>
                             @if($p->payment_status === 'Payment Confirmed')
-                                <span class="badge-confirmed">Confirmed</span>
+                                <span class="badge-confirmed">Received</span>
                             @elseif($p->payment_status === 'Payment Return')
                                 <span class="badge-returned">Returned</span>
                             @else

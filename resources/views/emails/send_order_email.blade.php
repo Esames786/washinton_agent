@@ -1,3 +1,4 @@
+@php $brand = \App\Support\Brand::byKey('hellotransport'); @endphp
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
       xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -411,7 +412,8 @@
                         <tr>
                             <td height="28" align="center"
                                 style="font-family: Open Sans, sans-serif;font-size:11px; font-weight:normal; color:#7f8c8d">
-                                {{ $brand['footer'] ?? 'Hello Transport. All Rights Reserved.' }}
+                                {{-- Customer-facing order email is always Hello-branded (never CrazyRays). --}}
+                                Hello Transport. All Rights Reserved.
                             </td>
                         </tr>
                         </tbody>

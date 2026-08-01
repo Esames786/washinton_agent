@@ -15,11 +15,10 @@
        vehicle rows). The input stays in the DOM so any submit logic reading it is unaffected. */
     .form-group:has(> input.vehicle_price) { display: none !important; }
 
-    /* #12: keep ONLY "Pay Later" (value 4) visible — hide COD/COP(1), Pay With Email(2),
-       Pay Now(3) on BOTH the new-customer and old-customer flows. Pay Later is pre-selected. */
+    /* #12 reverted per client: all pay options restored (COD/COP, Pay With Email, Pay Now, Pay Later) — same as Washington.
     .form-group:has(input[name="pay_cond"][value="1"]),
     .form-group:has(input[name="pay_cond"][value="2"]),
-    .form-group:has(input[name="pay_cond"][value="3"]) { display: none !important; }
+    .form-group:has(input[name="pay_cond"][value="3"]) { display: none !important; } */
 
     .card-people-list .media-body {
         margin-left: 15px;
@@ -4792,7 +4791,7 @@
                     <div class="col-lg-2 mt-4">
                         <div class="form-group">
                             <label class="rdiobox">
-                                <input class="this_save" name="pay_cond" id="pay_cond4" type="radio" value="4" checked>
+                                <input class="this_save" name="pay_cond" id="pay_cond4" type="radio" value="4">
                                 <span>Pay Later</span>
                             </label>
                         </div>
@@ -5183,7 +5182,7 @@
                     <div class="col-lg-2 mt-4">
                         <div class="form-group">
                             <label class="rdiobox">
-                                <input class="this_save" name="pay_cond" id="pay_cond4" type="radio" value="4" checked>
+                                <input class="this_save" name="pay_cond" id="pay_cond4" type="radio" value="4">
                                 <span>Pay Later</span>
                             </label>
                         </div>

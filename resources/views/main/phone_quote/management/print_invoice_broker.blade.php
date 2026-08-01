@@ -1,3 +1,5 @@
+{{-- Customer-facing transportation invoice is always Hello-branded (never CrazyRays). --}}
+@php $brand = \App\Support\Brand::byKey('hellotransport'); @endphp
 <!DOCTYPE html>
 <html lang="en">
 
