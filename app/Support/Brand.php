@@ -49,12 +49,68 @@ class Brand
      */
     public static function current(): array
     {
+        // 1. Explicit deployment brand wins (PORTAL_BRAND).
         $force = config('brands.force');
         if ($force) {
             return self::byKey($force);
         }
 
+        // 2. Otherwise infer it from the HOST being visited, so each domain brands itself even
+        //    when PORTAL_BRAND was never set: florida.crazyrayssolutions.com.pk → CrazyRays,
+        //    hellotransport.com → Hello. This is what makes the branding follow the domain.
+        $host = self::hostBrandKey();
+        if ($host) {
+            return self::byKey($host);
+        }
+
+        // 3. Fall back to the signed-in person's own brand.
         return self::for(Auth::user());
+    }
+
+    /**
+     * Is this deployment a CrazyRays one? True when PORTAL_BRAND says so, or when the request
+     * is on a crazyrays host. Used for mail routing: only a CrazyRays deployment may send
+     * through the CrazyRays mailbox — a Hello domain has no such mailbox to authenticate with.
+     */
+    public static function isCrazyraysDeployment(): bool
+    {
+        if (config('brands.force') === 'crazyrays') {
+            return true;
+        }
+
+        // A different explicit PORTAL_BRAND means "definitely not CrazyRays".
+        if (config('brands.force')) {
+            return false;
+        }
+
+        return self::hostBrandKey() === 'crazyrays';
+    }
+
+    /**
+     * Brand implied by the current request's hostname, or null when it matches neither domain
+     * (e.g. a local/staging host) so the caller can fall back.
+     */
+    public static function hostBrandKey(): ?string
+    {
+        try {
+            $host = strtolower((string) request()->getHost());
+        } catch (\Throwable $e) {
+            return null;   // console/queue context — no request
+        }
+
+        if ($host === '') {
+            return null;
+        }
+
+        if (str_contains($host, 'crazyrays')) {
+            return 'crazyrays';
+        }
+
+        if (str_contains($host, 'hellotransport')) {
+            return 'hellotransport';
+        }
+
+        return null;
     }
 
     /**
@@ -86,10 +142,10 @@ class Brand
      */
     public static function mailer(array $brand): string
     {
-        // On the Hello domains (PORTAL_BRAND unset) EVERY outgoing email is a Hello email —
-        // customer mail, OTP, activation, NDA/contract notices. Those deployments have no
-        // CrazyRays mailbox to authenticate with, so never route through the CR mailer there.
-        if (!config('brands.force')) {
+        // On the Hello domains EVERY outgoing email is a Hello email — customer mail, OTP,
+        // activation, NDA/contract notices. Those deployments have no CrazyRays mailbox to
+        // authenticate with, so never route through the CR mailer there.
+        if (!self::isCrazyraysDeployment()) {
             return 'smtp';
         }
 
@@ -103,7 +159,7 @@ class Brand
     {
         // Paired with mailer(): on a Hello domain the From address must be the Hello mailbox,
         // otherwise the message would claim a CrazyRays sender the server can't authenticate.
-        if (($brand['key'] ?? '') === 'crazyrays' && config('brands.force')) {
+        if (($brand['key'] ?? '') === 'crazyrays' && self::isCrazyraysDeployment()) {
             return [
                 config('mail.crazyrays_from.address', 'careers@crazyrayssolutions.com.pk'),
                 config('mail.crazyrays_from.name', $brand['name'] ?? 'Crazy Rays Solutions'),
