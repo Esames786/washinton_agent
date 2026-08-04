@@ -42,11 +42,15 @@ class NdaController extends Controller
         $hrEmp    = DB::table('hr_employees')->where('agent_id', $user->id)->first();
 
         // The NDA copy the agent is signing = the admin's prepared copy, or the branded default.
+        // Either way it is re-branded for THIS agent, so a Hello agent can never sign a copy
+        // that names CrazyRays (e.g. saved while the CrazyRays portal brand was forced).
+        $agentBrand = \App\Support\Brand::for($user);
         $ndaContent = $hrEmp->nda_content ?? null;
         if (!$ndaContent || trim(strip_tags($ndaContent)) === '') {
             $tpl        = \App\NdaTemplate::getDefault();
-            $ndaContent = $tpl ? \App\Support\Brand::applyTokens($tpl->content, \App\Support\Brand::for($user)) : '';
+            $ndaContent = $tpl ? $tpl->content : '';
         }
+        $ndaContent = $ndaContent ? \App\Support\Brand::applyTokens($ndaContent, $agentBrand) : '';
 
         // Store CNIC front/back if provided (public/Uploads so both apps serve it without a symlink).
         $cnicFrontPath = $this->storeUpload($request, 'cnic_front', $user->id, $signedAt);

@@ -4,15 +4,18 @@
     $signRoute = $signRoute ?? route('nda.sign');
 
     $__uid   = auth()->id();
-    $__brand = \App\Support\Brand::current();
+    // Brand of the PERSON signing (not the domain) — a Hello agent must see Hello wording.
+    $__brand = \App\Support\Brand::for(auth()->user());
     $__hrEmp = \Illuminate\Support\Facades\DB::table('hr_employees')->where('agent_id', $__uid)->first();
 
     // The exact NDA the admin prepared for this agent (falls back to the branded default template).
     $__ndaContent = $__hrEmp->nda_content ?? null;
     if (!$__ndaContent || trim(strip_tags($__ndaContent)) === '') {
         $__tpl = \App\NdaTemplate::getDefault();
-        $__ndaContent = $__tpl ? \App\Support\Brand::applyTokens($__tpl->content, $__brand) : '';
+        $__ndaContent = $__tpl ? $__tpl->content : '';
     }
+    // Always re-branded for THIS agent — a Hello agent must never be shown CrazyRays wording.
+    $__ndaContent = $__ndaContent ? \App\Support\Brand::applyTokens($__ndaContent, $__brand) : '';
 
     // CNIC front/back already on file? (hr_document_settings #10 = Front, #11 = Back).
     $__cnicHave = [];
@@ -76,9 +79,10 @@
             <hr style="border:none; border-top:1px solid #ddd; margin:18px 0;">
 
             <div style="background:#f8f9ff; border:1px solid #dce3f5; border-radius:6px; padding:16px 18px; font-size:12.5px; color:#444;">
-                <strong style="color:#1a4ca0;">CRAZY RAYS SOLUTIONS</strong><br>
-                Phone: 0313-8432343 &nbsp;|&nbsp; Email: info@crazyrayssolutions.com.pk &nbsp;|&nbsp;
-                Website: <a href="https://crazyrayssolutions.com.pk" target="_blank" style="color:#1a4ca0;">crazyrayssolutions.com.pk</a>
+                <strong style="color:#1a4ca0;">{{ strtoupper($__brand['name'] ?? 'Company') }}</strong><br>
+                @if(!empty($__brand['phone']))Phone: {{ $__brand['phone'] }} &nbsp;|&nbsp; @endif
+                @if(!empty($__brand['contact_email']))Email: {{ $__brand['contact_email'] }} &nbsp;|&nbsp; @endif
+                @if(!empty($__brand['site']))Website: <a href="{{ $__brand['site'] }}" target="_blank" style="color:#1a4ca0;">{{ preg_replace('#^https?://#', '', $__brand['site']) }}</a>@endif
             </div>
         </div>
 

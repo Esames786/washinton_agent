@@ -20,26 +20,40 @@ class Brand
      *
      * @return array{key:string,name:string,legal:string,site:string,email:string,phone:string,footer:string}
      */
+    /**
+     * Brand OF A PERSON — use for anything that is *about* a specific user: their NDA, their
+     * contract, and every email addressed to them (OTP, activation, action-required).
+     *
+     * The person's own origin wins here and PORTAL_BRAND does NOT override it, because a Hello
+     * agent administered from the CrazyRays portal must still receive Hello-worded documents and
+     * Hello-branded email — the document belongs to them, not to the screen it was created on.
+     * With no identified user (public/guest context) we fall back to the deployment brand.
+     */
     public static function for(?User $user): array
     {
-        // Deployment-level override: on the CrazyRays portal (florida) PORTAL_BRAND=crazyrays
-        // forces CR branding for EVERYONE — including guests on the login page — so no Hello
-        // branding ever shows on that domain, regardless of the logged-in user.
+        if ($user) {
+            return self::byKey($user->isCrazyrays() ? 'crazyrays' : config('brands.default', 'hellotransport'));
+        }
+
+        $force = config('brands.force');
+
+        return self::byKey($force ?: config('brands.default', 'hellotransport'));
+    }
+
+    /**
+     * Brand OF THE DOMAIN — use for portal chrome (logo, navbar, footer, page titles).
+     *
+     * PORTAL_BRAND=crazyrays makes the whole florida domain render CrazyRays for everyone,
+     * including guests on the login page, so no Hello branding leaks onto that domain. On the
+     * Hello domains PORTAL_BRAND is unset, so the visitor's own brand applies.
+     */
+    public static function current(): array
+    {
         $force = config('brands.force');
         if ($force) {
             return self::byKey($force);
         }
 
-        $key = ($user && $user->isCrazyrays()) ? 'crazyrays' : config('brands.default', 'hellotransport');
-
-        return self::byKey($key);
-    }
-
-    /**
-     * Resolve the brand for the currently authenticated user.
-     */
-    public static function current(): array
-    {
         return self::for(Auth::user());
     }
 
@@ -72,6 +86,13 @@ class Brand
      */
     public static function mailer(array $brand): string
     {
+        // On the Hello domains (PORTAL_BRAND unset) EVERY outgoing email is a Hello email —
+        // customer mail, OTP, activation, NDA/contract notices. Those deployments have no
+        // CrazyRays mailbox to authenticate with, so never route through the CR mailer there.
+        if (!config('brands.force')) {
+            return 'smtp';
+        }
+
         return (($brand['key'] ?? '') === 'crazyrays') ? 'crazyrays' : 'smtp';
     }
 
@@ -80,7 +101,9 @@ class Brand
      */
     public static function mailFrom(array $brand): array
     {
-        if (($brand['key'] ?? '') === 'crazyrays') {
+        // Paired with mailer(): on a Hello domain the From address must be the Hello mailbox,
+        // otherwise the message would claim a CrazyRays sender the server can't authenticate.
+        if (($brand['key'] ?? '') === 'crazyrays' && config('brands.force')) {
             return [
                 config('mail.crazyrays_from.address', 'careers@crazyrayssolutions.com.pk'),
                 config('mail.crazyrays_from.name', $brand['name'] ?? 'Crazy Rays Solutions'),
@@ -114,10 +137,34 @@ class Brand
         ];
         $html = strtr($html, $replacements);
 
-        // Legacy literals (longest first so "LLC" variant is handled before the short name)
-        $html = str_ireplace('Hello Transport LLC', $legal, $html);
-        $html = str_ireplace('Hello Transport', $name, $html);
+        // Legacy literals — replaced in BOTH directions so a block of text stored under one brand
+        // re-brands correctly when rendered for the other (e.g. a contract saved while the CrazyRays
+        // portal was forced, later shown to a Hello agent). Longest match first so the "LLC" /
+        // "Solutions" variants are handled before the short names.
+        // Matched in ONE case-insensitive pass (longest alternative first) so replaced text is never
+        // re-scanned — a sequential str_ireplace would turn "Crazy Rays Solutions" into
+        // "Crazy Rays Solutions Solutions" when the target brand is CrazyRays.
+        $literals = [
+            'hello transport llc'  => $legal,
+            'crazy rays solutions' => $legal,
+            'crazyrays solutions'  => $legal,
+            'hello transport'      => $name,
+            'crazy rays'           => $name,
+            'crazyrays'            => $name,
+        ];
 
-        return $html;
+        $pattern = '/' . implode('|', array_map(
+            static fn ($needle) => preg_quote($needle, '/'),
+            array_keys($literals)
+        )) . '/i';
+
+        $replaced = preg_replace_callback(
+            $pattern,
+            static fn ($m) => $literals[strtolower($m[0])] ?? $m[0],
+            $html
+        );
+
+        // preg_* returns null on failure (e.g. backtrack limit) — never destroy the content.
+        return $replaced ?? $html;
     }
 }

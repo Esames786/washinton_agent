@@ -94,6 +94,17 @@ class EmployeeReviewController extends Controller
         $ndaRow = DB::table('hr_employees')->where('agent_id', $agentUser->id)
             ->first(['nda_content', 'nda_signature', 'nda_signed_ip', 'nda_cnic_front', 'nda_cnic_back', 'nda_document_url', 'nda_father_name', 'nda_address']);
 
+        // Re-brand the stored agreements for the AGENT being viewed (not for this portal's brand),
+        // so a Hello agent's NDA/contract never shows CrazyRays wording — and vice-versa.
+        $agentBrand = \App\Support\Brand::for($agentUser);
+        $ndaContent = $ndaRow->nda_content ?? null;
+        if ($ndaContent) {
+            $ndaContent = \App\Support\Brand::applyTokens($ndaContent, $agentBrand);
+        }
+        if ($hrEmp && !empty($hrEmp->contract)) {
+            $hrEmp->contract = \App\Support\Brand::applyTokens($hrEmp->contract, $agentBrand);
+        }
+
         return response()->json([
             'agent'       => [
                 'id'              => $agentUser->id,
@@ -105,7 +116,7 @@ class EmployeeReviewController extends Controller
                 'nda_required'    => (int) ($agentUser->nda_required ?? 0),
                 'nda_signed_at'   => $agentUser->nda_signed_at ?? null,
                 'nda_document_path' => $agentUser->nda_document_path ?? null,
-                'nda_content'     => $ndaRow->nda_content     ?? null,
+                'nda_content'     => $ndaContent,
                 'nda_signature'   => $ndaRow->nda_signature   ?? null,
                 'nda_signed_ip'   => $ndaRow->nda_signed_ip   ?? null,
                 'nda_cnic_front'  => $ndaRow->nda_cnic_front  ?? null,
