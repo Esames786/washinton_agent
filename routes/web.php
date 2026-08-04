@@ -191,6 +191,9 @@ Route::group(['middleware' => ['auth']], function () {
     // NDA signing (employee)
     Route::post('/nda/sign', 'NdaController@sign')->name('nda.sign');
     Route::get('/nda/download/{userId}', 'NdaController@download')->name('nda.download');
+    // IRS Form W-9 — submitted by US (Hello) agents during onboarding; admins download the PDF.
+    Route::post('/w9/submit', 'W9Controller@store')->name('w9.store');
+    Route::get('/w9/download/{userId}', 'W9Controller@download')->name('w9.download');
 
     // Agent active working-time heartbeat (cursor/keyboard activity)
     Route::post('/agent/activity-heartbeat', 'AgentActivityController@heartbeat')->name('agent.activity.heartbeat');

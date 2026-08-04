@@ -90,7 +90,23 @@ Work:
 - Upload UI on the Hello signup form (or immediately after first login via the existing verification gate) → files into `hr_employee_documents` (like CR doc transfer).
 - Verification gate (`account_verification_gate.blade.php`) + HR profile counting must respect brand-conditional requireds (they currently filter by ownership `condition` — extend the same filter).
 
-## 5. W9 form step (requirement #4)
+## 5. W9 form step (requirement #4) — ✅ DONE 2026-08-02
+
+Built as a step in the **verification gate** (not inside signup) so signup stays short and the gate —
+which already governs documents + NDA — holds the portal until onboarding is complete.
+
+- `w9_forms` table + `App\W9Form` model. **The TIN is encrypted at rest** (`Crypt`), only `tin_last4`
+  is stored in the clear, and admin screens/JSON only ever receive the masked form (`***-**-1234`).
+- `W9Controller`: `store` (validates + records + renders the PDF) and `download` (regenerates the PDF
+  from the database if the file is missing — same resilience as the NDA).
+- `w9/modal.blade.php`: full IRS W-9 layout (lines 1–7, Part I TIN, Part II certification), conditional
+  LLC / "Other" fields, signature pad, and **front-end validation mirroring the server rules**.
+- `w9/pdf.blade.php`: printable W-9 with the signature, timestamp and IP.
+- Gate step + admin card on the Employee Review modal with a **Download W-9** button.
+- **Only asked of Hello agents** — `isRequiredFor()` returns false for `is_crazyrays` users and admins,
+  so CrazyRays onboarding is untouched.
+
+### Original spec (for reference)
 
 New feature: after the signup fields/documents, applicant fills a **W9 form online**; we receive it as a submitted form.
 - Build a fillable W9 page (fields of IRS W-9: name, business name, tax classification, address, SSN/EIN, certification signature) as the last signup step (or first-login step inside the verification gate — recommended, so signup stays short).
@@ -264,8 +280,23 @@ Contract/NDA sections — so the headings read as section titles above their con
 | 2 | ✅ **DONE** (code) — **§13 print-summary font**; ⚠️ `.env` `MAIL_ENCRYPTION` fix still to apply on the servers | Tiny, immediate wins; the mail fix unblocks live sending today. |
 | 3 | ⬅️ **NEXT** — **§1 Reopen Hello signup + login** | Small; unblocks all testing of the rest. |
 | 4 | **§3 + §6 form fields + Hello T&C**, then **§2 backend parity** | The core signup rework. |
-| 5 | **§4 Documents** (brand-conditional settings + gate counting) | Depends on signup + brand. |
-| 6 | **§8 Hello vs Crazy badges/filters** | Small, needs `is_crazyrays` already reliable (step 1). |
-| 7 | **§9 Per-user timezone** | Largest single piece (22 HR + 6 agent hardcodes + attendance cron). |
-| 8 | **§5 W9 form** | Independent; can land last. |
-| 9 | **§7 verify** NDA/contract branding end-to-end for a Hello agent | Final QA gate. |
+| 5 | ✅ **DONE** — **§4 Documents** (brand-conditional settings + gate counting) | Depends on signup + brand. |
+| 6 | ✅ **DONE** — **§8 Hello vs Crazy badges/filters** | Small, needs `is_crazyrays` already reliable (step 1). |
+| 7 | ✅ **DONE** — **§9 Per-user timezone** incl. the attendance cron | Largest single piece (22 HR + 6 agent hardcodes + attendance cron). |
+| 8 | ✅ **DONE** — **§5 W9 form** | Independent; landed last. |
+| 9 | ⬅️ **REMAINING** — **§7 verify** NDA/contract branding end-to-end for a Hello agent | Final QA gate — needs a real Hello signup to walk through. |
+
+---
+
+## 16. CrazyRays safety — what was verified (not assumed)
+
+Every change was checked against the live shared database before being called done:
+
+| Check | Result |
+|---|---|
+| Document sets for CR staff, before vs after brand filtering | **13 → 13** (own) and **14 → 14** (rent); required **11 → 11**, **12 → 12** — identical |
+| Timezone values already on record | `hr_employees` 19/19, `user` 24/24, CR staff 18/18 all **Asia/Karachi** |
+| Attendance-cron finalization logic, 24h × 3 shift patterns | **72 scenarios, 0 differences** for Asia/Karachi staff — a no-op |
+| Two-way brand token replacement | CR→Hello and Hello→CR both correct, no double-replacement |
+| CR signup route isolation | CrazyRays signs up via `/bridge/register` (separate controller) — the tightened `/register` rules cannot affect it |
+| W-9 applicability | `isRequiredFor()` excludes `is_crazyrays` users and admins entirely |

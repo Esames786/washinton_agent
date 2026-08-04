@@ -13,10 +13,12 @@
                 ->first();
             if ($__hrEmp) {
                 // Match HR markAttendance()'s date logic EXACTLY (shared DB): the shift date is
-                // Asia/Karachi and anything before 6 AM belongs to the previous day's overnight
-                // shift. A naive date('Y-m-d') queried a different day than HR check-in wrote, so
-                // on a night shift after midnight this gate never cleared. (fix)
-                $__now   = \Carbon\Carbon::now('Asia/Karachi');
+                // resolved in the EMPLOYEE'S timezone (Asia/Karachi for CrazyRays staff) and
+                // anything before 6 AM belongs to the previous day's overnight shift. A naive
+                // date('Y-m-d') queried a different day than HR check-in wrote, so on a night
+                // shift after midnight this gate never cleared. (fix)
+                $__gateTz = $__hrEmp->timezone ?: (Auth::user()->tz() ?? config('app.timezone', 'Asia/Karachi'));
+                $__now   = \Carbon\Carbon::now($__gateTz);
                 $__today = $__now->hour < 6 ? $__now->copy()->subDay()->toDateString() : $__now->toDateString();
                 $__att = \Illuminate\Support\Facades\DB::table('hr_employee_attendances')
                     ->where('employee_id', $__hrEmp->id)

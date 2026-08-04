@@ -187,16 +187,34 @@
         <div class="page-rightheader">
             <span style="display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:30px;background:#f3f1fb;border:1px solid #e2ddf5;color:#705ec8;font-weight:700;font-size:16px;font-variant-numeric:tabular-nums;">
                 <i class="fa fa-clock-o"></i><span id="pkClockDash">--:--:--</span>
-                <span style="font-size:11px;color:#8a93a6;font-weight:600;">PKT · Pakistan Time</span>
+                <span id="pkClockDashZone" style="font-size:11px;color:#8a93a6;font-weight:600;"></span>
             </span>
         </div>
+        @php
+            // Clock follows the AGENT'S own timezone — Asia/Karachi for CrazyRays agents, so their
+            // dashboard is unchanged; a US-based Hello agent sees their own local time instead.
+            $__dashTz = (Auth::check() && method_exists(Auth::user(), 'tz'))
+                ? Auth::user()->tz()
+                : config('app.timezone', 'Asia/Karachi');
+        @endphp
         <script>
         (function () {
-            var el = document.getElementById('pkClockDash');
+            var el   = document.getElementById('pkClockDash');
+            var zEl  = document.getElementById('pkClockDashZone');
+            var zone = @json($__dashTz);
             function tick() {
                 if (el) el.textContent = new Intl.DateTimeFormat('en-GB', {
-                    timeZone: 'Asia/Karachi', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+                    timeZone: zone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
                 }).format(new Date());
+            }
+            if (zEl) {
+                try {
+                    var parts = new Intl.DateTimeFormat('en-US', { timeZone: zone, timeZoneName: 'short' })
+                        .formatToParts(new Date());
+                    var tzn = parts.find(function (p) { return p.type === 'timeZoneName'; });
+                    // e.g. "PKT · Asia/Karachi"  /  "EDT · America/New_York"
+                    zEl.textContent = (tzn ? tzn.value + ' · ' : '') + zone;
+                } catch (e) { zEl.textContent = zone; }
             }
             tick(); setInterval(tick, 1000);
         })();

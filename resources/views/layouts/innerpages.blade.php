@@ -1617,6 +1617,11 @@ Agent: Thank you for your cooperation. We appreciate your attention to these det
         @include('nda.modal')
     @endif
 
+    {{-- W-9 (US / Hello agents only) — opened from the verification gate. --}}
+    @if(auth()->check() && \App\Http\Controllers\W9Controller::isRequiredFor(auth()->user()))
+        @include('w9.modal')
+    @endif
+
     @include('partials.account_verification_gate')
 
     @include('partials.agent_checkin_gate')

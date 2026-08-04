@@ -15,6 +15,8 @@
     $docsUploaded = false;
     $reqMissing   = false;
     $ndaRequired  = (int) (auth()->user()->nda_required ?? 0) === 1;
+    // W-9 is a US tax form: asked of Hello agents only (never CrazyRays staff), once.
+    $w9Required   = \App\Http\Controllers\W9Controller::isRequiredFor(auth()->user());
     $brand        = \App\Support\Brand::current();
 
     if (auth()->user()->role != 1) {
@@ -24,10 +26,10 @@
 
         if ($hrEmployee) {
             // Pending while in "Document Verification" (status 7) or account still inactive,
-            // or an NDA signature is still outstanding.
+            // or an NDA signature / W-9 submission is still outstanding.
             $isDocVerification = (int) $hrEmployee->employee_status_id === 7;
             $isInactive        = (int) auth()->user()->status === 0;
-            $gateActive        = $isDocVerification || $isInactive || $ndaRequired;
+            $gateActive        = $isDocVerification || $isInactive || $ndaRequired || $w9Required;
 
             if ($gateActive) {
                 $docCount = \Illuminate\Support\Facades\DB::table('hr_employee_documents')
@@ -167,6 +169,20 @@
                         A Non-Disclosure Agreement is awaiting your signature.
                     </div>
                     <button type="button" class="agc-btn alt" onclick="window.scrollTo(0,0);">Sign NDA (shown above)</button>
+                </div>
+            </div>
+            @endif
+
+            {{-- Step: W-9 — US (Hello) agents only; CrazyRays staff are never asked for one. --}}
+            @if($w9Required)
+            <div class="agc-step">
+                <span class="ic">🧾</span>
+                <div style="flex:1;">
+                    <div style="font-weight:700;color:#1a1a2e;font-size:14px;">Complete your W-9</div>
+                    <div style="color:#6b7280;font-size:12.5px;margin:2px 0 8px;">
+                        IRS Form W-9 is required for US tax reporting. It takes a minute and is stored securely.
+                    </div>
+                    <button type="button" class="agc-btn alt" onclick="window.openW9Form && window.openW9Form();">Fill W-9 Form</button>
                 </div>
             </div>
             @endif

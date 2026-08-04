@@ -158,6 +158,8 @@
                                                                 class="rounded-circle p-1 badge badge-{{ $val->is_login == 1 ? 'success' : 'danger' }} my-auto mr-1"
                                                                 style="display: block;width:0;height: 1px;"></span>
                                                             {{ $val->name }}
+                                                            {{-- Which company this agent belongs to. --}}
+                                                            <span class="badge ml-1" style="font-size:10.5px;font-weight:600;{{ (int) ($val->is_crazyrays ?? 0) === 1 ? 'background:#f0e6cf;color:#8a6116;' : 'background:#e6edf8;color:#1a4ca0;' }}">{{ (int) ($val->is_crazyrays ?? 0) === 1 ? 'Crazy Rays' : 'Hello' }}</span>
                                                             @if ($val->slug)
                                                                 <br>
                                                                 ({{ $val->slug }})
@@ -362,6 +364,8 @@
                                                 </td>
                                                 <td>
                                                     {{ $val->name }}
+                                                    {{-- Which company this agent belongs to. --}}
+                                                    <span class="badge ml-1" style="font-size:10.5px;font-weight:600;{{ (int) ($val->is_crazyrays ?? 0) === 1 ? 'background:#f0e6cf;color:#8a6116;' : 'background:#e6edf8;color:#1a4ca0;' }}">{{ (int) ($val->is_crazyrays ?? 0) === 1 ? 'Crazy Rays' : 'Hello' }}</span>
                                                     @if ($val->slug)
                                                         <br>
                                                         ({{ $val->slug }})
@@ -454,6 +458,8 @@
                                                 </td>
                                                 <td>
                                                     {{ $val->name }}
+                                                    {{-- Which company this agent belongs to. --}}
+                                                    <span class="badge ml-1" style="font-size:10.5px;font-weight:600;{{ (int) ($val->is_crazyrays ?? 0) === 1 ? 'background:#f0e6cf;color:#8a6116;' : 'background:#e6edf8;color:#1a4ca0;' }}">{{ (int) ($val->is_crazyrays ?? 0) === 1 ? 'Crazy Rays' : 'Hello' }}</span>
                                                     @if ($val->slug)
                                                         <br>
                                                         ({{ $val->slug }})
@@ -536,6 +542,8 @@
                 <div class="modal-header bg-dark text-white py-2">
                     <h5 class="modal-title mb-0" id="employeeReviewModalLabel">
                         <i class="fe fe-user mr-2"></i>Employee Review
+                        {{-- Which company this agent belongs to — filled in when the modal loads. --}}
+                        <span id="rev_brand_badge" class="badge ml-2" style="display:none;font-size:11px;font-weight:600;vertical-align:middle;"></span>
                     </h5>
                     <div class="d-flex align-items-center">
                         <a id="rev_hr_profile_btn" href="#" target="_blank"
@@ -692,6 +700,12 @@
                                                 <i class="fe fe-download mr-1"></i>Download Signed NDA
                                             </a>
                                         </div>
+                                        {{-- W-9 (US / Hello agents) --}}
+                                        <div id="rev_w9_wrap" class="mt-3 pt-2" style="border-top:1px solid #eee;">
+                                            <div class="small font-weight-bold mb-1">🧾 W-9 Form</div>
+                                            <div id="rev_w9_body" class="small text-muted">—</div>
+                                        </div>
+
                                         {{-- Read-only view of the exact NDA the agent signed (+ signed IP). --}}
                                         <div id="rev_nda_signed_wrap" class="mt-2" style="display:none;">
                                             <div class="small text-muted mb-1" id="rev_nda_signed_meta"></div>
@@ -1021,6 +1035,35 @@
                     });
                 }
                 $('#rev_hr_status_select').html(selectHtml).prop('disabled', !hr);
+
+                // Company badge in the modal header
+                if (agent.brand_name) {
+                    var isCrBrand = agent.brand_key === 'crazyrays';
+                    $('#rev_brand_badge')
+                        .text(agent.brand_name)
+                        .attr('style', 'font-size:11px;font-weight:600;vertical-align:middle;'
+                            + (isCrBrand ? 'background:#f0e6cf;color:#8a6116;' : 'background:#e6edf8;color:#1a4ca0;'))
+                        .show();
+                }
+
+                // W-9 card — masked TIN only; the full number is never sent to the browser.
+                if (agent.w9) {
+                    var w9 = agent.w9;
+                    var esc = function (s) { return $('<span>').text(s == null ? '' : s).html(); };
+                    $('#rev_w9_body').html(
+                        '<span class="badge badge-success">Submitted</span> '
+                        + '<span class="text-muted">' + esc(w9.submitted_at || '') + '</span>'
+                        + '<div class="mt-1"><strong>Name:</strong> ' + esc(w9.legal_name) + '</div>'
+                        + '<div><strong>Classification:</strong> ' + esc(w9.classification) + '</div>'
+                        + '<div><strong>TIN:</strong> ' + esc(w9.tin_masked) + '</div>'
+                        + '<div><strong>Address:</strong> ' + esc(w9.address) + '</div>'
+                        + (w9.signed_ip ? '<div><strong>IP:</strong> ' + esc(w9.signed_ip) + '</div>' : '')
+                        + '<a href="/w9/download/' + agent.id + '" target="_blank" class="btn btn-sm btn-outline-success btn-block mt-2">'
+                        + '<i class="fe fe-download mr-1"></i>Download W-9</a>'
+                    );
+                } else {
+                    $('#rev_w9_body').html('<span class="badge badge-secondary">Not submitted</span>');
+                }
 
                 // NDA card
                 var ndaRequired = agent.nda_required || 0;

@@ -113,6 +113,9 @@ class EmployeeReviewController extends Controller
                 'email'           => $agentUser->email,
                 'phone'           => $agentUser->phone,
                 'status'          => (int) $agentUser->status,
+                // Which company this agent belongs to (Hello vs CrazyRays).
+                'brand_key'       => $agentBrand['key']  ?? 'hellotransport',
+                'brand_name'      => $agentBrand['name'] ?? 'Hello Transport',
                 'nda_required'    => (int) ($agentUser->nda_required ?? 0),
                 'nda_signed_at'   => $agentUser->nda_signed_at ?? null,
                 'nda_document_path' => $agentUser->nda_document_path ?? null,
@@ -124,6 +127,17 @@ class EmployeeReviewController extends Controller
                 'nda_document_url' => $ndaRow->nda_document_url ?? null,
                 'nda_father_name' => $ndaRow->nda_father_name ?? null,
                 'nda_address'     => $ndaRow->nda_address     ?? null,
+                // W-9 (US / Hello agents). Only ever the masked TIN — never the full number.
+                'w9'              => ($w9 = \App\W9Form::where('user_id', $agentUser->id)->latest('id')->first())
+                    ? [
+                        'submitted_at'   => optional($w9->signed_at)->format('d M Y, h:i A'),
+                        'legal_name'     => $w9->legal_name,
+                        'classification' => $w9->classificationLabel(),
+                        'tin_masked'     => $w9->maskedTin(),
+                        'address'        => trim($w9->address . ', ' . $w9->city . ', ' . $w9->state . ' ' . $w9->zip),
+                        'signed_ip'      => $w9->signed_ip,
+                    ]
+                    : null,
             ],
             'hr_employee'  => $hrEmp,
             'documents'    => $documents,

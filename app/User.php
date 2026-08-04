@@ -41,6 +41,25 @@ class User extends Authenticatable
     }
 
     /**
+     * The timezone this agent works in — mirrors hr_employees.timezone.
+     *
+     * Used for the portal clock, the check-in gate and anything else that must reflect the
+     * agent's own day. Defaults to Asia/Karachi (the column default), so every existing
+     * CrazyRays agent behaves exactly as before. Falls back safely on an unknown value.
+     */
+    public function tz(): string
+    {
+        $fallback = config('app.timezone', 'Asia/Karachi');
+        $tz = $this->timezone ?? null;
+
+        if (!$tz || !in_array($tz, \DateTimeZone::listIdentifiers(), true)) {
+            return $fallback;
+        }
+
+        return $tz;
+    }
+
+    /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
