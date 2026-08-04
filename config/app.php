@@ -68,6 +68,11 @@ return [
     // so customers only ever see the Hello domain. Defaults to APP_URL when unset.
     'customer_url' => env('CUSTOMER_BASE_URL', env('APP_URL', 'http://localhost')),
 
+    // Opt-in: hand this deployment's /loginn and /register off to `agent_portal_url` instead of
+    // serving them locally. Hello Transport serves its own signup + login, so this stays FALSE
+    // there; it exists only so a marketing-only deployment can delegate if ever needed.
+    'agent_portal_redirect_login' => env('AGENT_PORTAL_REDIRECT_LOGIN', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

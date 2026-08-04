@@ -71,9 +71,11 @@ class WelcomeController extends Controller
 
     public function loginn()
     {
-        // On the Hello marketing/landing deployment there is no portal login here —
-        // send agents to the real agent portal (florida).
-        if (!config('app.is_agent_portal')) {
+        // Hello Transport serves its OWN portal login again (its agents live in the same shared
+        // database and work on the Hello domain). The old blanket redirect to florida is gone —
+        // it is now opt-in via AGENT_PORTAL_REDIRECT_LOGIN=true, in case a deployment ever needs
+        // to hand its login off to another portal.
+        if (!config('app.is_agent_portal') && config('app.agent_portal_redirect_login')) {
             return redirect()->away(rtrim(config('app.agent_portal_url'), '/') . '/loginn');
         }
 

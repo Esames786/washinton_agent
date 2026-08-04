@@ -39,9 +39,16 @@ class PublicSignupController extends Controller
 
     public function showForm()
     {
-        // Public self-service signup is handled on CrazyRays now — redirect there.
-        $crBase = rtrim(config('bridge.crazyrays.base_url', 'https://crazyrayssolutions.com.pk'), '/');
-        return redirect()->away($crBase ?: 'https://crazyrayssolutions.com.pk');
+        // The CrazyRays portal (florida) has no self-service signup of its own — CrazyRays
+        // recruiting happens on crazyrayssolutions.com.pk, so send those visitors there.
+        // Hello Transport serves its OWN signup form again (its agents are created directly
+        // in the shared `user` table from here).
+        if (config('brands.force') === 'crazyrays' || config('app.is_agent_portal')) {
+            $crBase = rtrim(config('bridge.crazyrays.base_url', 'https://crazyrayssolutions.com.pk'), '/');
+            return redirect()->away($crBase ?: 'https://crazyrayssolutions.com.pk');
+        }
+
+        return view('auth.register');
     }
 
     public function store(Request $request): JsonResponse
@@ -62,13 +69,20 @@ class PublicSignupController extends Controller
             'dob'            => 'required|date|before_or_equal:' . \Carbon\Carbon::now()->subYears(18)->format('Y-m-d'),
             'gender'         => 'nullable|in:male,female,other',
             'marital_status' => 'nullable|in:single,married,divorced,widowed',
+            // State ID (US) reuses the existing `cnic` column — no new column for it.
             'cnic'           => 'nullable|string|max:20',
             'city'           => 'nullable|string|max:100',
             'state'          => 'nullable|string|max:100',
             'country'        => 'nullable|string|max:100',
+            // Hello onboarding additions (nullable so an older form keeps working).
+            'mother_name'    => 'nullable|string|max:100',
+            'zip'            => 'nullable|string|max:20',
+            'timezone'       => 'nullable|string|max:64|timezone',
+            'terms_accepted' => 'nullable|in:1',
         ], [
             'dob.required'        => 'Date of birth is required.',
             'dob.before_or_equal' => 'You must be at least 18 years old to sign up.',
+            'timezone.timezone'   => 'Please choose a valid timezone.',
         ]);
 
         if ($validator->fails()) {
@@ -108,6 +122,17 @@ class PublicSignupController extends Controller
             $user->role      = $role->id;
             $user->status    = 0;
             $user->verify    = 1;
+
+            // Parity with CrApplicationController@approve, which sets is_crazyrays = 1 for
+            // CrazyRays campaign hires. This form is the HELLO signup, so the person is
+            // explicitly a Hello agent — that flag drives their branding, documents and email.
+            $user->is_crazyrays = 0;
+
+            // Per-person timezone (drives their attendance/check-in and displayed times).
+            // Falls back to the app default so behaviour is unchanged when not supplied.
+            if (\Illuminate\Support\Facades\Schema::hasColumn('user', 'timezone')) {
+                $user->timezone = $request->input('timezone') ?: config('app.timezone', 'Asia/Karachi');
+            }
 
             // ── OLD panel logic (kept for record; replaced by #4 no-access default) ──
             // $roleKey = $request->signup_type === 'agent' ? 'order_taker' : 'dispatcher';
@@ -183,13 +208,20 @@ class PublicSignupController extends Controller
                 'shift_type_id'   => (int) $request->shift_type_id,
                 'account_type_id' => (int) $request->account_type_id,
                 'father_name'     => $request->father_name,
+                'mother_name'     => $request->mother_name,
                 'dob'             => $request->dob,
                 'gender'          => $request->gender,
                 'marital_status'  => $request->marital_status,
+                // State ID is stored in the existing `cnic` column.
                 'cnic'            => $request->cnic,
                 'city'            => $request->city,
                 'state'           => $request->state,
+                'zip'             => $request->zip,
                 'country'         => $request->country,
+                'timezone'        => $request->input('timezone') ?: config('app.timezone', 'Asia/Karachi'),
+                // Parity with the CrazyRays approve flow: recording acceptance here stops the
+                // blocking contract modal from greeting the agent on their very first login.
+                'contract_accepted_at' => $request->input('terms_accepted') ? now()->toDateTimeString() : null,
             ]);
         } catch (\Throwable $e) {
             Log::warning('PublicSignupController: HR portal createEmployee failed', [
