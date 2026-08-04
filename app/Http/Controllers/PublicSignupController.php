@@ -70,19 +70,24 @@ class PublicSignupController extends Controller
             'gender'         => 'nullable|in:male,female,other',
             'marital_status' => 'nullable|in:single,married,divorced,widowed',
             // State ID (US) reuses the existing `cnic` column — no new column for it.
-            'cnic'           => 'nullable|string|max:20',
-            'city'           => 'nullable|string|max:100',
-            'state'          => 'nullable|string|max:100',
-            'country'        => 'nullable|string|max:100',
-            // Hello onboarding additions (nullable so an older form keeps working).
+            'cnic'           => 'required|string|max:20',
+            'city'           => 'required|string|max:100',
+            'state'          => 'required|string|max:100',
+            'country'        => 'required|string|max:100',
+            // Hello onboarding additions — mirrored by the front-end validator in the form.
             'mother_name'    => 'nullable|string|max:100',
-            'zip'            => 'nullable|string|max:20',
-            'timezone'       => 'nullable|string|max:64|timezone',
-            'terms_accepted' => 'nullable|in:1',
+            'zip'            => ['required', 'string', 'max:20', 'regex:/^\d{5}(-\d{4})?$/'],
+            'timezone'       => 'required|string|max:64|timezone',
+            'terms_accepted' => 'accepted',
         ], [
-            'dob.required'        => 'Date of birth is required.',
-            'dob.before_or_equal' => 'You must be at least 18 years old to sign up.',
-            'timezone.timezone'   => 'Please choose a valid timezone.',
+            'dob.required'         => 'Date of birth is required.',
+            'dob.before_or_equal'  => 'You must be at least 18 years old to sign up.',
+            'cnic.required'        => 'State ID is required.',
+            'zip.required'         => 'Zip code is required.',
+            'zip.regex'            => 'Enter a valid zip code (12345 or 12345-6789).',
+            'timezone.required'    => 'Please choose your timezone.',
+            'timezone.timezone'    => 'Please choose a valid timezone.',
+            'terms_accepted.accepted' => 'You must accept the Terms & Conditions to continue.',
         ]);
 
         if ($validator->fails()) {

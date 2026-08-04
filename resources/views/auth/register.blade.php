@@ -257,12 +257,17 @@ html, body { height: 100%; margin: 0; }
 
                 <div class="row g-2 mb-c">
                     <div class="col-md-4">
-                        <label class="form-label">Father Name</label>
+                        <label class="form-label">Father / Mother Name <small class="text-muted">(optional)</small></label>
                         <div class="input-icon-wrap">
                             <i class="fas fa-user-tie field-icon"></i>
                             <input type="text" name="father_name" class="form-control" placeholder="Father's name">
                         </div>
                         <div class="field-error" id="err_father_name"></div>
+                        <div class="input-icon-wrap mt-2">
+                            <i class="fas fa-user-tie field-icon"></i>
+                            <input type="text" name="mother_name" class="form-control" placeholder="Mother's name">
+                        </div>
+                        <div class="field-error" id="err_mother_name"></div>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Date of Birth <span class="text-danger">*</span> <small class="text-muted">(must be 18+)</small></label>
@@ -286,11 +291,12 @@ html, body { height: 100%; margin: 0; }
                 </div>
 
                 <div class="row g-2 mb-c">
+                    {{-- State ID is stored in the existing `cnic` column (no new column added). --}}
                     <div class="col-md-4">
-                        <label class="form-label">CNIC / ID Card</label>
+                        <label class="form-label">State ID <span class="text-danger">*</span></label>
                         <div class="input-icon-wrap">
                             <i class="fas fa-id-card field-icon"></i>
-                            <input type="text" name="cnic" class="form-control" placeholder="e.g. 42101-1234567-1">
+                            <input type="text" name="cnic" class="form-control" placeholder="State-issued ID number" required>
                         </div>
                         <div class="field-error" id="err_cnic"></div>
                     </div>
@@ -321,18 +327,22 @@ html, body { height: 100%; margin: 0; }
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Phone Number <span class="text-danger">*</span></label>
-                        <div class="input-icon-wrap">
-                            <i class="fas fa-phone field-icon"></i>
-                            <input type="text" name="phone" class="form-control" placeholder="+1 (555) 000-0000">
+                        {{-- US country code is fixed and prefixed onto the submitted value. --}}
+                        <div class="d-flex align-items-stretch" style="border:1px solid #ced4da;border-radius:6px;overflow:hidden;background:#fff;">
+                            <span style="display:flex;align-items:center;padding:0 12px;background:#f1f3f5;color:#343a40;font-weight:600;white-space:nowrap;border-right:1px solid #ced4da;">+1</span>
+                            <input type="text" id="phoneLocal" class="form-control" placeholder="555 000 0000"
+                                   inputmode="numeric" maxlength="14" style="border:0;box-shadow:none;">
                         </div>
+                        <input type="hidden" name="phone" id="phoneFull">
                         <div class="field-error" id="err_phone"></div>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Full Address <span class="text-danger">*</span></label>
+                        <label class="form-label">Street Address <span class="text-danger">*</span></label>
                         <div class="input-icon-wrap">
                             <i class="fas fa-map-marker-alt field-icon textarea-icon"></i>
                             <textarea name="address" rows="1" class="form-control" placeholder="Street address"></textarea>
                         </div>
+                        <small class="text-muted">Then complete City, State and Zip Code below.</small>
                         <div class="field-error" id="err_address"></div>
                     </div>
                 </div>
@@ -355,12 +365,49 @@ html, body { height: 100%; margin: 0; }
                         <div class="field-error" id="err_state"></div>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Country</label>
+                        <label class="form-label">Zip Code <span class="text-danger">*</span></label>
+                        <div class="input-icon-wrap">
+                            <i class="fas fa-mail-bulk field-icon"></i>
+                            <input type="text" name="zip" class="form-control" placeholder="e.g. 33101" maxlength="10">
+                        </div>
+                        <div class="field-error" id="err_zip"></div>
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-c">
+                    <div class="col-md-4">
+                        <label class="form-label">Country <span class="text-danger">*</span></label>
                         <div class="input-icon-wrap">
                             <i class="fas fa-globe field-icon"></i>
-                            <input type="text" name="country" class="form-control" placeholder="Country">
+                            <input type="text" name="country" id="countryInput" class="form-control" value="United States" placeholder="Country">
                         </div>
                         <div class="field-error" id="err_country"></div>
+                    </div>
+                    {{-- Timezone drives this person's check-in/out, breaks, attendance and displayed times. --}}
+                    <div class="col-md-8">
+                        <label class="form-label">Your Timezone <span class="text-danger">*</span></label>
+                        <div class="input-icon-wrap">
+                            <i class="fas fa-clock field-icon"></i>
+                            <select name="timezone" id="timezoneSelect" class="form-control">
+                                <optgroup label="United States">
+                                    <option value="America/New_York">Eastern Time — America/New_York</option>
+                                    <option value="America/Chicago">Central Time — America/Chicago</option>
+                                    <option value="America/Denver">Mountain Time — America/Denver</option>
+                                    <option value="America/Phoenix">Mountain (no DST) — America/Phoenix</option>
+                                    <option value="America/Los_Angeles">Pacific Time — America/Los_Angeles</option>
+                                    <option value="America/Anchorage">Alaska — America/Anchorage</option>
+                                    <option value="Pacific/Honolulu">Hawaii — Pacific/Honolulu</option>
+                                </optgroup>
+                                <optgroup label="Other">
+                                    <option value="Asia/Karachi">Pakistan — Asia/Karachi</option>
+                                    <option value="Europe/London">UK — Europe/London</option>
+                                    <option value="Asia/Dubai">UAE — Asia/Dubai</option>
+                                    <option value="Asia/Manila">Philippines — Asia/Manila</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <small class="text-muted">Your attendance, breaks and all times in the portals will use this timezone.</small>
+                        <div class="field-error" id="err_timezone"></div>
                     </div>
                 </div>
 
@@ -385,28 +432,57 @@ html, body { height: 100%; margin: 0; }
                 {{-- Work Preferences --}}
                 <div class="form-section-title">Work Preferences</div>
 
+                @php
+                    // Shift + pay type are fixed for Hello Transport agents. Resolved from the DB so
+                    // they stay correct if the reference rows are ever re-seeded (ids are not assumed).
+                    $helloShift = \Illuminate\Support\Facades\DB::table('hr_shift_types')
+                        ->where('name', 'Morning (10am - 5pm)')->where('status', 1)->first();
+                    $helloShiftId = $helloShift->id ?? 10;
+                    $commissionType = \Illuminate\Support\Facades\DB::table('hr_employee_account_types')
+                        ->where('name', 'Commission Only')->first();
+                    $commissionTypeId = $commissionType->id ?? 2;
+                @endphp
                 <div class="row g-2 mb-c">
                     <div class="col-md-4">
                         <label class="form-label">Shift Timing <span class="text-danger">*</span></label>
                         <select name="shift_type_id" class="form-control">
-                            <option value="">-- Select Shift --</option>
-                            <option value="1">🌅 Morning (9am – 5pm)</option>
-                            <option value="2">🌆 Evening (2pm – 10pm)</option>
-                            <option value="3">🌙 Night (8pm – 4am)</option>
-                            <option value="4">🕙 General (10am – 6pm)</option>
+                            <option value="{{ $helloShiftId }}" selected>🌅 Morning (10am – 5pm)</option>
                         </select>
                         <div class="field-error" id="err_shift_type_id"></div>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Pay Type <span class="text-danger">*</span></label>
                         <select name="account_type_id" class="form-control">
-                            <option value="">-- Select Pay Type --</option>
-                            <option value="1">💰 Salary Only</option>
-                            <option value="2">📈 Commission Only</option>
-                            <option value="3" selected>💰📈 Salary + Commission</option>
+                            <option value="{{ $commissionTypeId }}" selected>📈 Commission</option>
                         </select>
                         <div class="field-error" id="err_account_type_id"></div>
                     </div>
+                </div>
+
+                {{-- Terms & Conditions — Hello Transport wording, pulled from the shared contract
+                     template and branded for Hello (never CrazyRays on this form). --}}
+                @php
+                    $tcTpl   = \App\ContractTemplate::getDefault();
+                    $tcBrand = \App\Support\Brand::byKey('hellotransport');
+                    $tcHtml  = $tcTpl ? \App\Support\Brand::applyTokens($tcTpl->content, $tcBrand) : '';
+                @endphp
+                <div class="form-section-title">Terms &amp; Conditions</div>
+                <div class="mb-c">
+                    {{-- The acceptance checkbox always renders (the server requires it); only the
+                         quoted text depends on a template being configured. --}}
+                    @if($tcHtml)
+                    <div style="max-height:190px;overflow-y:auto;border:1px solid #dee2e6;border-radius:6px;padding:12px 14px;background:#fbfbfb;font-size:12.5px;line-height:1.6;color:#444;">
+                        {!! $tcHtml !!}
+                    </div>
+                    @endif
+                    <label class="d-flex align-items-start gap-2 mt-2" style="cursor:pointer;">
+                        <input type="checkbox" name="terms_accepted" id="termsAccepted" value="1" style="margin-top:3px;width:16px;height:16px;">
+                        <span style="font-size:13px;color:#333;">
+                            I have read and accept the {{ $tcBrand['name'] }} Terms &amp; Conditions.
+                            <span class="text-danger">*</span>
+                        </span>
+                    </label>
+                    <div class="field-error" id="err_terms_accepted"></div>
                 </div>
 
                 {{-- Submit --}}
@@ -456,6 +532,96 @@ html, body { height: 100%; margin: 0; }
         });
     });
 
+    // ── Phone: keep the visible box to digits and submit it with the +1 country code ──
+    var phoneLocal = document.getElementById('phoneLocal');
+    var phoneFull  = document.getElementById('phoneFull');
+    function syncPhone() {
+        if (!phoneLocal || !phoneFull) return;
+        var digits = phoneLocal.value.replace(/\D/g, '').slice(0, 10);
+        phoneLocal.value = digits;
+        phoneFull.value  = digits ? '+1 ' + digits : '';
+    }
+    if (phoneLocal) {
+        phoneLocal.addEventListener('input', function () {
+            syncPhone();
+            this.classList.remove('is-invalid');
+            var errEl = document.getElementById('err_phone');
+            if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
+        });
+    }
+
+    function showFieldError(name, message) {
+        var errEl = document.getElementById('err_' + name);
+        if (errEl) { errEl.textContent = message; errEl.style.display = 'block'; }
+        var input = document.querySelector('#signupForm [name="' + name + '"]');
+        // The phone field submits through a hidden input — flag the visible one instead.
+        if (name === 'phone' && phoneLocal) { input = phoneLocal; }
+        if (input) { input.classList.add('is-invalid'); }
+        return input;
+    }
+
+    /** Front-end mirror of the server rules — same fields, same messages. */
+    function validateSignup() {
+        syncPhone();
+        var firstBad = null;
+        function fail(name, msg) {
+            var el = showFieldError(name, msg);
+            if (!firstBad) { firstBad = el; }
+        }
+
+        var val = function (n) {
+            var el = document.querySelector('#signupForm [name="' + n + '"]');
+            return el ? String(el.value || '').trim() : '';
+        };
+
+        if (!val('name'))       fail('name', 'First name is required.');
+        if (!val('last_name'))  fail('last_name', 'Last name is required.');
+        if (!val('slug'))       fail('slug', 'Username is required.');
+
+        var email = val('email');
+        if (!email) { fail('email', 'Email address is required.'); }
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { fail('email', 'Enter a valid email address.'); }
+
+        if (!val('cnic')) fail('cnic', 'State ID is required.');
+
+        var dob = val('dob');
+        if (!dob) { fail('dob', 'Date of birth is required.'); }
+        else if (dob > '{{ date('Y-m-d', strtotime('-18 years')) }}') { fail('dob', 'You must be at least 18 years old to sign up.'); }
+
+        var digits = (phoneLocal ? phoneLocal.value : '').replace(/\D/g, '');
+        if (!digits) { fail('phone', 'Phone number is required.'); }
+        else if (digits.length !== 10) { fail('phone', 'Enter a 10-digit US phone number.'); }
+
+        if (!val('address')) fail('address', 'Street address is required.');
+        if (!val('city'))    fail('city', 'City is required.');
+        if (!val('state'))   fail('state', 'State is required.');
+
+        var zip = val('zip');
+        if (!zip) { fail('zip', 'Zip code is required.'); }
+        else if (!/^\d{5}(-\d{4})?$/.test(zip)) { fail('zip', 'Enter a valid zip code (12345 or 12345-6789).'); }
+
+        if (!val('country'))  fail('country', 'Country is required.');
+        if (!val('timezone')) fail('timezone', 'Please choose your timezone.');
+
+        var pwd  = val('password');
+        var conf = val('password_confirmation');
+        if (!pwd) { fail('password', 'Password is required.'); }
+        else if (pwd.length < 8) { fail('password', 'Password must be at least 8 characters.'); }
+        if (pwd !== conf) { fail('password_confirmation', 'Passwords do not match.'); }
+
+        if (!val('shift_type_id'))   fail('shift_type_id', 'Shift is required.');
+        if (!val('account_type_id')) fail('account_type_id', 'Pay type is required.');
+
+        var terms = document.getElementById('termsAccepted');
+        if (terms && !terms.checked) { fail('terms_accepted', 'You must accept the Terms & Conditions to continue.'); }
+
+        if (firstBad) {
+            try { firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' }); firstBad.focus({ preventScroll: true }); } catch (err) {}
+            return false;
+        }
+        return true;
+    }
+
     // AJAX submit
     document.getElementById('signupForm').addEventListener('submit', function (e) {
         e.preventDefault();
@@ -468,6 +634,9 @@ html, body { height: 100%; margin: 0; }
             el.classList.remove('is-invalid');
         });
         document.getElementById('signupGlobalError').style.display = 'none';
+
+        // Front-end validation — stop before hitting the server.
+        if (!validateSignup()) { return; }
 
         var btn = document.getElementById('signupSubmitBtn');
         btn.disabled = true;
@@ -497,13 +666,9 @@ html, body { height: 100%; margin: 0; }
             if (res.status === 422 && res.data.errors) {
                 var errors = res.data.errors;
                 Object.keys(errors).forEach(function (field) {
-                    var input = document.querySelector('#signupForm [name="' + field + '"]');
-                    if (input) input.classList.add('is-invalid');
-                    var errEl = document.getElementById('err_' + field);
-                    if (errEl) {
-                        errEl.textContent = errors[field][0];
-                        errEl.style.display = 'block';
-                    }
+                    // Same renderer as the front-end validator, so server-side messages land on
+                    // the right control (e.g. `phone` flags the visible box, not the hidden input).
+                    showFieldError(field, errors[field][0]);
                 });
                 // Scroll to first error
                 var first = document.querySelector('.form-control.is-invalid');

@@ -45,9 +45,22 @@
                     }
                 };
 
+                // Documents also belong to a BRAND: the Pakistan-specific set (CNIC, rental
+                // agreement, workplace photos…) is tagged 'crazyrays', the US set 'hellotransport',
+                // and shared ones are NULL. Without this a Hello agent would be held behind the
+                // gate demanding CrazyRays paperwork that never applies to them.
+                $brandKey     = \App\Support\Brand::for(auth()->user())['key'] ?? 'hellotransport';
+                $hasBrandCol  = \Illuminate\Support\Facades\Schema::hasColumn('hr_document_settings', 'brand');
+                $brandFilter  = function ($q) use ($brandKey, $hasBrandCol) {
+                    if (!$hasBrandCol) { return; }   // pre-migration database — behave as before
+                    $q->whereNull('hr_document_settings.brand')
+                      ->orWhere('hr_document_settings.brand', $brandKey);
+                };
+
                 $requiredCount = \Illuminate\Support\Facades\DB::table('hr_document_settings')
                     ->where('is_required', 1)->where('status', 1)
                     ->where($conditionFilter)
+                    ->where($brandFilter)
                     ->count();
 
                 // #3: count DISTINCT required document types uploaded (not rows) — multi-file docs
@@ -59,6 +72,7 @@
                     ->where('hr_employee_documents.employee_id', $hrEmployee->id)
                     ->where('hr_document_settings.is_required', 1)
                     ->where($conditionFilter)
+                    ->where($brandFilter)
                     ->distinct()
                     ->count('hr_employee_documents.document_setting_id');
 
