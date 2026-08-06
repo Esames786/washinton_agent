@@ -17,6 +17,14 @@ return new class extends Migration
                 $table->tinyInteger('w9_required')->default(0);
             }
         });
+
+        // Absolute URL of the generated W-9 PDF so the HR panel (different cPanel account)
+        // can link to it regardless of which portal produced the file.
+        Schema::table('w9_forms', function (Blueprint $table) {
+            if (!Schema::hasColumn('w9_forms', 'document_url')) {
+                $table->string('document_url', 255)->nullable()->after('document_path');
+            }
+        });
     }
 
     public function down(): void

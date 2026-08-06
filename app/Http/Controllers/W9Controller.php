@@ -135,6 +135,11 @@ class W9Controller extends Controller
         // Render the PDF (non-blocking — the submission is already safely stored).
         try {
             $form->document_path = $this->buildPdf($form, $user);
+            // Absolute URL on the portal that generated it, so the HR panel (a different
+            // cPanel account) can link to the file directly.
+            if (\Illuminate\Support\Facades\Schema::hasColumn('w9_forms', 'document_url')) {
+                $form->document_url = url($form->document_path);
+            }
             $form->save();
         } catch (\Throwable $e) {
             Log::error('W9 PDF generation failed (submission still recorded)', [
