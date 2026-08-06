@@ -10,6 +10,20 @@ use Illuminate\Support\Facades\Mail;
 
 class FrontendController extends Controller
 {
+    public function __construct()
+    {
+        // #8 (round-2): florida is a PORTAL, not a marketing site — every public marketing page
+        // (About Us, Our Services, Get a Quote, FAQ, …) redirects straight to the login. The
+        // Hello landing keeps its marketing pages (is_agent_portal false there). GET only, so
+        // the Hello site's form POSTs (quote submit etc.) are untouched.
+        $this->middleware(function ($request, $next) {
+            if (config('app.is_agent_portal') && $request->isMethod('get')) {
+                return redirect('/loginn');
+            }
+            return $next($request);
+        });
+    }
+
     public function home(Request $request)
     {
         // On the agent-portal deployment (florida) there is no public marketing site —

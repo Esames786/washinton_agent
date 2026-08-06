@@ -55,13 +55,17 @@ class PublicSignupController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name'           => 'required|string|max:50',
-            'last_name'      => 'required|string|max:50',
-            'slug'           => 'required|string|max:50|unique:user,slug',
+            // Middle + last name optional (round-2); display name (slug) is auto-generated below.
+            'middle_name'    => 'nullable|string|max:50',
+            'last_name'      => 'nullable|string|max:50',
             'email'          => 'required|email|max:50|unique:user,email',
             'password'       => 'required|string|min:8|confirmed',
             'phone'          => 'required|string|max:50',
             'address'        => 'required|string|max:255',
-            'signup_type'    => 'required|in:agent,carrier',
+            // Hello public signup is Order Taker / Sales only (carrier removed from the form;
+            // the CrazyRays bridge has its own endpoint).
+            'signup_type'    => 'required|in:agent',
+            'experience'     => 'nullable|string|max:2000',
             'shift_type_id'  => 'required|integer|min:1',
             'account_type_id'=> 'required|integer|in:1,2,3',
             'father_name'    => 'nullable|string|max:100',
@@ -117,9 +121,18 @@ class PublicSignupController extends Controller
         DB::beginTransaction();
         try {
             $user = new User();
-            $user->name      = $request->name;
+            // "First Middle" (agreed: no new column for middle name).
+            $user->name      = trim($request->name . ' ' . (string) $request->middle_name);
             $user->last_name = $request->last_name;
-            $user->slug      = $request->slug;
+
+            // Display name is no longer asked on the form — generate a unique slug.
+            $slugBase = Str::slug(trim($request->name . ' ' . (string) $request->last_name), '.')
+                ?: Str::slug(strtok($request->email, '@'), '.');
+            $slug = $slugBase;
+            for ($n = 1; User::where('slug', $slug)->exists(); $n++) {
+                $slug = $slugBase . $n;
+            }
+            $user->slug      = $slug;
             $user->email     = $request->email;
             $user->password  = Hash::make($request->password);
             $user->phone     = $request->phone;
@@ -203,7 +216,9 @@ class PublicSignupController extends Controller
         // ── Mirror to HR portal (non-blocking) ──
         try {
             $this->hrBridge->createEmployee([
-                'name'            => $request->name . ' ' . $request->last_name,
+                'name'            => trim($request->name . ' ' . (string) $request->middle_name . ' ' . (string) $request->last_name),
+                // Optional experience block → HR profile skills.
+                'skills'          => $request->experience,
                 'email'           => $request->email,
                 'password'        => $request->password,
                 'phone'           => $request->phone,

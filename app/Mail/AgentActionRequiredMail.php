@@ -27,9 +27,11 @@ class AgentActionRequiredMail extends Mailable
         [$fromAddress, $fromName] = \App\Support\Brand::mailFrom($this->brand);
         $replyTo = $this->brand['email'] ?? $fromAddress;
 
-        $subject = $this->type === 'nda'
-            ? 'Action Required: Sign your NDA — ' . $fromName
-            : 'Action Required: Review your Contract — ' . $fromName;
+        $subject = match ($this->type) {
+            'nda'    => 'Action Required: Sign your NDA — ' . $fromName,
+            'w9'     => 'Action Required: Complete your W-9 Form — ' . $fromName,
+            default  => 'Action Required: Review your Contract — ' . $fromName,
+        };
 
         return $this->mailer(\App\Support\Brand::mailer($this->brand))
             ->from($fromAddress, $fromName)

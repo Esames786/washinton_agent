@@ -44,9 +44,14 @@
             <tr>
               <td style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:8px;padding:20px 24px;">
                 <p style="margin:0 0 6px;color:#134e4a;font-size:13px;font-weight:600;">🔗 Login URL</p>
+                @php
+                    // Per-PERSON brand URL: Hello staff → hr.hellotransport.com, CrazyRays staff →
+                    // hr.crazyrayssolutions.com.pk — never the sending deployment's own HR.
+                    $__hrUrl = $hrLoginUrl ?? (rtrim(config('bridge.hrportal.base_url'), '/') . '/subcontractor/login');
+                @endphp
                 <p style="margin:0 0 16px;color:#555;font-size:13px;">
-                  <a href="{{ rtrim(config('bridge.hrportal.base_url'), '/') }}/subcontractor/login" style="color:#062e39;word-break:break-all;">
-                    {{ rtrim(config('bridge.hrportal.base_url'), '/') }}/subcontractor/login
+                  <a href="{{ $__hrUrl }}" style="color:#062e39;word-break:break-all;">
+                    {{ $__hrUrl }}
                   </a>
                 </p>
                 <p style="margin:0 0 4px;color:#134e4a;font-size:13px;font-weight:600;">📧 Your Email</p>
@@ -58,7 +63,7 @@
           <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
             <tr>
               <td align="center">
-                <a href="{{ rtrim(config('bridge.hrportal.base_url'), '/') }}/subcontractor/login"
+                <a href="{{ $__hrUrl ?? (rtrim(config('bridge.hrportal.base_url'), '/') . '/subcontractor/login') }}"
                    style="display:inline-block;background:#0d9488;color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:13px 40px;border-radius:8px;letter-spacing:.5px;text-transform:uppercase;">
                   Login to HR Portal →
                 </a>

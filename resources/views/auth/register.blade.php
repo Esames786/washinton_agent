@@ -198,29 +198,9 @@ html, body { height: 100%; margin: 0; }
             <form id="signupForm" novalidate>
                 @csrf
 
-                {{-- Account Type --}}
-                <div class="mb-c">
-                    <label class="form-label">Account Type <span class="text-danger">*</span></label>
-                    <div class="row g-2">
-                        <div class="col-6 col-md-3">
-                            <label class="type-card w-100 selected" id="card-agent">
-                                <input type="radio" name="signup_type" value="agent" class="d-none" checked>
-                                <span class="type-icon">🧑‍💼</span>
-                                <span class="type-label">Agent</span>
-                                <span class="type-sub">Order Taker / Sales</span>
-                            </label>
-                        </div>
-                        <div class="col-6 col-md-3">
-                            <label class="type-card w-100" id="card-carrier">
-                                <input type="radio" name="signup_type" value="carrier" class="d-none">
-                                <span class="type-icon">🚛</span>
-                                <span class="type-label">Carrier</span>
-                                <span class="type-sub">Dispatcher / Driver</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="field-error" id="err_signup_type"></div>
-                </div>
+                {{-- Hello signup is Order Taker / Sales only (Carrier removed; Display Name is
+                     auto-generated server-side). --}}
+                <input type="hidden" name="signup_type" value="agent">
 
                 {{-- Personal Information --}}
                 <div class="form-section-title">Personal Information</div>
@@ -235,23 +215,20 @@ html, body { height: 100%; margin: 0; }
                         <div class="field-error" id="err_name"></div>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                        <label class="form-label">Middle Name <small class="text-muted">(optional)</small></label>
+                        <div class="input-icon-wrap">
+                            <i class="fas fa-user field-icon"></i>
+                            <input type="text" name="middle_name" class="form-control" placeholder="Middle name">
+                        </div>
+                        <div class="field-error" id="err_middle_name"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Last Name <small class="text-muted">(optional)</small></label>
                         <div class="input-icon-wrap">
                             <i class="fas fa-user field-icon"></i>
                             <input type="text" name="last_name" class="form-control" placeholder="Last name">
                         </div>
                         <div class="field-error" id="err_last_name"></div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">
-                            Display Name / Slug <span class="text-danger">*</span>
-                            <span class="text-muted fw-normal" style="font-size:10px;">(e.g. john.doe)</span>
-                        </label>
-                        <div class="input-icon-wrap">
-                            <i class="fas fa-id-badge field-icon"></i>
-                            <input type="text" name="slug" class="form-control" placeholder="e.g. john.doe">
-                        </div>
-                        <div class="field-error" id="err_slug"></div>
                     </div>
                 </div>
 
@@ -466,12 +443,24 @@ html, body { height: 100%; margin: 0; }
                     $tcBrand = \App\Support\Brand::byKey('hellotransport');
                     $tcHtml  = $tcTpl ? \App\Support\Brand::applyTokens($tcTpl->content, $tcBrand) : '';
                 @endphp
+                {{-- Optional experience — forwarded to the HR profile (skills). --}}
+                <div class="form-section-title">Experience <small class="text-muted" style="text-transform:none;font-weight:400;">(optional)</small></div>
+                <div class="mb-c">
+                    <textarea name="experience" rows="3" class="form-control"
+                              placeholder="Tell us about your relevant experience (sales, dispatch, logistics…)"></textarea>
+                    <div class="field-error" id="err_experience"></div>
+                </div>
+
                 <div class="form-section-title">Terms &amp; Conditions</div>
                 <div class="mb-c">
-                    {{-- The acceptance checkbox always renders (the server requires it); only the
-                         quoted text depends on a template being configured. --}}
+                    {{-- Hidden by default — the applicant opens it with the button, then accepts. --}}
                     @if($tcHtml)
-                    <div style="max-height:190px;overflow-y:auto;border:1px solid #dee2e6;border-radius:6px;padding:12px 14px;background:#fbfbfb;font-size:12.5px;line-height:1.6;color:#444;">
+                    <button type="button" id="tcToggleBtn" class="btn btn-sm"
+                            style="background:#062e39;color:#fff;font-weight:600;border-radius:6px;padding:8px 18px;"
+                            onclick="var b=document.getElementById('tcBox');var open=b.style.display!=='none';b.style.display=open?'none':'block';this.textContent=open?'View Terms and Conditions':'Hide Terms and Conditions';">
+                        View Terms and Conditions
+                    </button>
+                    <div id="tcBox" style="display:none;max-height:260px;overflow-y:auto;border:1px solid #dee2e6;border-radius:6px;padding:12px 14px;background:#fbfbfb;font-size:12.5px;line-height:1.6;color:#444;margin-top:10px;">
                         {!! $tcHtml !!}
                     </div>
                     @endif
@@ -515,13 +504,7 @@ html, body { height: 100%; margin: 0; }
 }());
 
 (function () {
-    // Account type card toggle
-    document.querySelectorAll('input[name="signup_type"]').forEach(function (radio) {
-        radio.addEventListener('change', function () {
-            document.querySelectorAll('.type-card').forEach(function (c) { c.classList.remove('selected'); });
-            this.closest('.type-card').classList.add('selected');
-        });
-    });
+    // Account type is fixed to Agent (Order Taker / Sales) — the carrier option was removed.
 
     // Clear field errors on input
     document.querySelectorAll('#signupForm .form-control').forEach(function (el) {
@@ -575,8 +558,7 @@ html, body { height: 100%; margin: 0; }
         };
 
         if (!val('name'))       fail('name', 'First name is required.');
-        if (!val('last_name'))  fail('last_name', 'Last name is required.');
-        if (!val('slug'))       fail('slug', 'Username is required.');
+        // Middle + last name are optional; the display name (slug) is generated server-side.
 
         var email = val('email');
         if (!email) { fail('email', 'Email address is required.'); }

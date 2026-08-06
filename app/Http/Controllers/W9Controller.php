@@ -35,7 +35,38 @@ class W9Controller extends Controller
             return false;
         }
 
+        // Round-2: the W-9 is admin-ASSIGNED (like the NDA) — only asked once the admin sends it.
+        if (\Illuminate\Support\Facades\Schema::hasColumn('user', 'w9_required')
+            && (int) ($user->w9_required ?? 0) !== 1) {
+            return false;
+        }
+
         return !W9Form::where('user_id', $user->id)->exists();
+    }
+
+    /** Admin/manager: send the W-9 to a (Hello) agent — NDA-style assign + notify. */
+    public function requireW9(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $request->validate(['user_id' => 'required|integer', 'w9_required' => 'required|in:0,1']);
+
+        $user = \App\User::findOrFail($request->user_id);
+        if (method_exists($user, 'isCrazyrays') && $user->isCrazyrays()) {
+            return response()->json(['success' => false, 'message' => 'W-9 applies to Hello Transport agents only.'], 422);
+        }
+
+        DB::table('user')->where('id', $user->id)->update(['w9_required' => (int) $request->w9_required]);
+
+        if ((int) $request->w9_required === 1 && $user->email) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($user->email)->send(
+                    new \App\Mail\AgentActionRequiredMail($user->name, \App\Support\Brand::for($user), 'w9')
+                );
+            } catch (\Throwable $e) {
+                Log::warning('requireW9: notify email failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+            }
+        }
+
+        return response()->json(['success' => true, 'w9_required' => (int) $request->w9_required]);
     }
 
     public function store(Request $request): JsonResponse

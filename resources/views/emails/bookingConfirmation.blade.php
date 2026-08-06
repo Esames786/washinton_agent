@@ -17,7 +17,7 @@
         <ul style="list-style-type: none; padding: 0;">
           <li style="margin: 5px 0;"><strong>ORDER #:</strong> {{ $autoorder->id }}</li>
           <li style="margin: 5px 0;"><strong>Name:</strong> {{ $autoorder->oname }}</li>
-          <li style="margin: 5px 0;"><strong>Phone:</strong> {{ substr_replace(str_repeat('x', strlen($autoorder->ophone) - 3), substr($autoorder->ophone, -3), -3) }}</li>
+          <li style="margin: 5px 0;"><strong>Phone:</strong> {{ mask_phone($autoorder->ophone) }}</li>
           <li style="margin: 5px 0;"><strong>Vehicle:</strong> {{ $autoorder->year . ' ' . $autoorder->make . ' ' . $autoorder->model }}</li>
           <li style="margin: 5px 0;"><strong>Origin:</strong> {{ $autoorder->originzsc }}</li>
           <li style="margin: 5px 0;"><strong>Destination:</strong> {{ $autoorder->destinationzsc }}</li>

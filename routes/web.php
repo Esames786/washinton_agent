@@ -194,6 +194,7 @@ Route::group(['middleware' => ['auth']], function () {
     // IRS Form W-9 — submitted by US (Hello) agents during onboarding; admins download the PDF.
     Route::post('/w9/submit', 'W9Controller@store')->name('w9.store');
     Route::get('/w9/download/{userId}', 'W9Controller@download')->name('w9.download');
+    Route::post('/w9/require', 'W9Controller@requireW9')->name('w9.require');
 
     // Agent active working-time heartbeat (cursor/keyboard activity)
     Route::post('/agent/activity-heartbeat', 'AgentActivityController@heartbeat')->name('agent.activity.heartbeat');

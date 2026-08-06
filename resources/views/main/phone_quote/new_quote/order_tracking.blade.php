@@ -107,7 +107,7 @@ Track Order
                 <div class="detail-row">
                     <div class="detail-label">Phone</div>
                     <div class="detail-value">
-                        {{ substr_replace(str_repeat('x', strlen($autoorder->ophone) - 3), substr($autoorder->ophone, -3), -3) }}
+                        {{ mask_phone($autoorder->ophone) }}
                     </div>
                 </div>
 

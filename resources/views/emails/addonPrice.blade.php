@@ -75,7 +75,7 @@
             </li>
             <li style="margin: 5px 0;">
                 Phone:
-                <span>{{ substr_replace(str_repeat('x', strlen($order->ophone) - 3), substr($order->ophone, -3), -3) }}</span>
+                <span>{{ mask_phone($order->ophone) }}</span>
             </li>
             <li style="margin: 5px 0;">
                 Your Transport number: <span>{{ $order->id }}</span>

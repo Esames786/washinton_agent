@@ -1061,8 +1061,19 @@
                         + '<a href="/w9/download/' + agent.id + '" target="_blank" class="btn btn-sm btn-outline-success btn-block mt-2">'
                         + '<i class="fe fe-download mr-1"></i>Download W-9</a>'
                     );
+                } else if (agent.brand_key !== 'crazyrays') {
+                    // Round-2: W-9 is admin-ASSIGNED (like the NDA) — send it from here, the agent
+                    // then completes and signs it in their portal.
+                    var w9Req = parseInt(agent.w9_required || 0, 10) === 1;
+                    $('#rev_w9_body').html(
+                        (w9Req
+                            ? '<span class="badge badge-warning">Sent — awaiting agent</span> '
+                            : '<span class="badge badge-secondary">Not submitted</span> ')
+                        + '<button type="button" class="btn btn-sm ' + (w9Req ? 'btn-outline-secondary' : 'btn-primary') + ' btn-block mt-2" id="rev_w9_send_btn" data-req="' + (w9Req ? 0 : 1) + '">'
+                        + (w9Req ? 'Cancel W-9 Request' : '📄 Send W-9 to Agent') + '</button>'
+                    );
                 } else {
-                    $('#rev_w9_body').html('<span class="badge badge-secondary">Not submitted</span>');
+                    $('#rev_w9_body').html('<span class="badge badge-secondary">Not applicable (CrazyRays)</span>');
                 }
 
                 // NDA card
@@ -1350,6 +1361,33 @@
                     $(self).prop('disabled', false).text('Save NDA Setting');
                     $('#rev_nda_msg').text('Error. Please try again.').css('color','#721c24').show();
                 }
+            });
+        });
+
+        // Round-2 #5: send / cancel the W-9 request (NDA-style assignment).
+        $(document).on('click', '#rev_w9_send_btn', function () {
+            if (!_reviewUserId) return;
+            var self = this, req = $(self).data('req');
+            $(self).prop('disabled', true).text('Saving…');
+            $.ajax({
+                url: '/w9/require',
+                type: 'POST',
+                data: { _token: $('meta[name="csrf-token"]').attr('content'), user_id: _reviewUserId, w9_required: req },
+                success: function (res) {
+                    if (res.success) {
+                        var sent = parseInt(res.w9_required, 10) === 1;
+                        $('#rev_w9_body').html(
+                            (sent ? '<span class="badge badge-warning">Sent — awaiting agent</span> '
+                                  : '<span class="badge badge-secondary">Not submitted</span> ')
+                            + '<button type="button" class="btn btn-sm ' + (sent ? 'btn-outline-secondary' : 'btn-primary') + ' btn-block mt-2" id="rev_w9_send_btn" data-req="' + (sent ? 0 : 1) + '">'
+                            + (sent ? 'Cancel W-9 Request' : '📄 Send W-9 to Agent') + '</button>'
+                        );
+                    } else {
+                        $(self).prop('disabled', false).text('Retry');
+                        alert(res.message || 'Failed.');
+                    }
+                },
+                error: function () { $(self).prop('disabled', false).text('Retry'); alert('Request failed.'); }
             });
         });
 

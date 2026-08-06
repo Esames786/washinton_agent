@@ -16,7 +16,7 @@ class NdaController extends Controller
     {
         $request->validate([
             'employee_name'  => 'required|string|max:255',
-            'father_name'    => 'required|string|max:255',
+            'father_name'    => 'nullable|string|max:255',   // #7: optional
             'address'        => 'required|string|max:500',
             'cnic'           => 'required|string|max:20',
             'signature_data' => 'required|string',
@@ -56,11 +56,17 @@ class NdaController extends Controller
         $cnicFrontPath = $this->storeUpload($request, 'cnic_front', $user->id, $signedAt);
         $cnicBackPath  = $this->storeUpload($request, 'cnic_back', $user->id, $signedAt);
 
-        // Mirror any newly-captured CNIC image into hr_employee_documents so it also shows in the
-        // normal documents list (#10 = Front, #11 = Back). Non-blocking.
+        // Mirror any newly-captured ID image into hr_employee_documents so it also shows in the
+        // normal documents list. #6: Hello agents upload a STATE ID (setting 21, up to 2 files);
+        // CrazyRays staff a CNIC (#10 front / #11 back). Non-blocking.
         if ($hrEmp) {
-            $this->mirrorCnicDoc($hrEmp->id, $user->id, 10, $cnicFrontPath, $signedAt);
-            $this->mirrorCnicDoc($hrEmp->id, $user->id, 11, $cnicBackPath, $signedAt);
+            if (($agentBrand['key'] ?? '') !== 'crazyrays') {
+                $this->mirrorCnicDoc($hrEmp->id, $user->id, 21, $cnicFrontPath, $signedAt, true);
+                $this->mirrorCnicDoc($hrEmp->id, $user->id, 21, $cnicBackPath, $signedAt, true);
+            } else {
+                $this->mirrorCnicDoc($hrEmp->id, $user->id, 10, $cnicFrontPath, $signedAt);
+                $this->mirrorCnicDoc($hrEmp->id, $user->id, 11, $cnicBackPath, $signedAt);
+            }
         }
 
         // Generate the signed PDF from the admin's HTML + the signature block.
@@ -182,18 +188,21 @@ class NdaController extends Controller
         return $dir . '/' . $fname;
     }
 
-    private function mirrorCnicDoc(int $hrEmployeeId, int $userId, int $settingId, ?string $relPath, $signedAt): void
+    private function mirrorCnicDoc(int $hrEmployeeId, int $userId, int $settingId, ?string $relPath, $signedAt, bool $allowMultiple = false): void
     {
         if (!$relPath) {
             return;
         }
         try {
-            $exists = DB::table('hr_employee_documents')
-                ->where('employee_id', $hrEmployeeId)
-                ->where('document_setting_id', $settingId)
-                ->exists();
-            if ($exists) {
-                return;
+            // Multi-file settings (State ID front+back share setting 21) may hold several rows.
+            if (!$allowMultiple) {
+                $exists = DB::table('hr_employee_documents')
+                    ->where('employee_id', $hrEmployeeId)
+                    ->where('document_setting_id', $settingId)
+                    ->exists();
+                if ($exists) {
+                    return;
+                }
             }
             DB::table('hr_employee_documents')->insert([
                 'employee_id'         => $hrEmployeeId,

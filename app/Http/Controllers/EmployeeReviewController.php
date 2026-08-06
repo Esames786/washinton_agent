@@ -117,6 +117,7 @@ class EmployeeReviewController extends Controller
                 'brand_key'       => $agentBrand['key']  ?? 'hellotransport',
                 'brand_name'      => $agentBrand['name'] ?? 'Hello Transport',
                 'nda_required'    => (int) ($agentUser->nda_required ?? 0),
+                'w9_required'     => (int) ($agentUser->w9_required ?? 0),
                 'nda_signed_at'   => $agentUser->nda_signed_at ?? null,
                 'nda_document_path' => $agentUser->nda_document_path ?? null,
                 'nda_content'     => $ndaContent,
@@ -212,10 +213,22 @@ class EmployeeReviewController extends Controller
                 $emailTo   = $hrEmployee->email ?: ($agentUser ? $agentUser->email : null);
                 $nameTo    = $hrEmployee->full_name ?: ($agentUser ? $agentUser->name : 'Employee');
                 if ($emailTo) {
-                    // Use the HR portal's mail class via a direct view since we share the DB
-                    Mail::send('emails.hr_activated_agent', ['employeeName' => $nameTo, 'employeeEmail' => $emailTo], function ($m) use ($emailTo, $nameTo) {
-                        $m->to($emailTo)->subject('Your Hello Transport HR Account is Now Active!');
-                    });
+                    // Per-PERSON brand: a Hello agent must get the hr.hellotransport.com login link
+                    // even when activated from florida (the old deployment-level URL sent everyone
+                    // to hr.crazyrayssolutions.com.pk).
+                    $empBrand = \App\Support\Brand::for($agentUser);
+                    Mail::mailer(\App\Support\Brand::mailer($empBrand))
+                        ->send('emails.hr_activated_agent', [
+                            'employeeName'  => $nameTo,
+                            'employeeEmail' => $emailTo,
+                            'brand'         => $empBrand,
+                            'hrLoginUrl'    => $empBrand['hr_login_url'] ?? (rtrim((string) config('bridge.hrportal.base_url'), '/') . '/subcontractor/login'),
+                        ], function ($m) use ($emailTo, $empBrand) {
+                            [$fromAddr, $fromName] = \App\Support\Brand::mailFrom($empBrand);
+                            $m->from($fromAddr, $fromName)
+                              ->to($emailTo)
+                              ->subject('Your ' . ($empBrand['name'] ?? 'Hello Transport') . ' HR Account is Now Active!');
+                        });
                 }
             } catch (\Throwable $e) {
                 Log::warning('changeHrStatus: HR activation email failed', ['user_id' => $request->user_id, 'error' => $e->getMessage()]);
