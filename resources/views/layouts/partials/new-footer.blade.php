@@ -1,5 +1,8 @@
 <footer class="footer-area pt-100 pb-60">
     <div class="container">
+        {{-- florida (is_agent_portal) is a pure portal — no marketing footer columns
+             (Services / Useful links / socials); only the copyright bar below renders. --}}
+        @if (!config('app.is_agent_portal'))
         <div class="row">
 
             <!-- ===== LOGO + ABOUT ===== -->
@@ -62,6 +65,7 @@
             </div>
 
         </div>
+        @endif
     </div>
 
     <!-- ===== COPYRIGHT AREA ===== -->

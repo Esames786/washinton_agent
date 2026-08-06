@@ -46,7 +46,7 @@
           </table>
 
           <p style="margin:24px 0 8px;color:#555;font-size:14px;line-height:1.7;">
-            While you wait, our team may contact you to complete your HR profile — including uploading required documents such as your CNIC, educational certificates, and experience letters.
+            While you wait, our team may contact you to complete your HR profile — including uploading required documents such as your State ID, educational certificates, and experience letters.
           </p>
 
           <p style="margin:0 0 24px;color:#555;font-size:14px;line-height:1.7;">

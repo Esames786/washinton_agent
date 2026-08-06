@@ -436,12 +436,11 @@ html, body { height: 100%; margin: 0; }
                     </div>
                 </div>
 
-                {{-- Terms & Conditions — Hello Transport wording, pulled from the shared contract
-                     template and branded for Hello (never CrazyRays on this form). --}}
+                {{-- Terms & Conditions — Round-3 #10: the OFFICIAL Hello Transport LLC T&C document
+                     (client-supplied, 10 sections incl. W-9/1099-NEC) replaces the generic contract
+                     template on this Hello-only signup form. --}}
                 @php
-                    $tcTpl   = \App\ContractTemplate::getDefault();
                     $tcBrand = \App\Support\Brand::byKey('hellotransport');
-                    $tcHtml  = $tcTpl ? \App\Support\Brand::applyTokens($tcTpl->content, $tcBrand) : '';
                 @endphp
                 {{-- Optional experience — forwarded to the HR profile (skills). --}}
                 <div class="form-section-title">Experience <small class="text-muted" style="text-transform:none;font-weight:400;">(optional)</small></div>
@@ -454,16 +453,14 @@ html, body { height: 100%; margin: 0; }
                 <div class="form-section-title">Terms &amp; Conditions</div>
                 <div class="mb-c">
                     {{-- Hidden by default — the applicant opens it with the button, then accepts. --}}
-                    @if($tcHtml)
                     <button type="button" id="tcToggleBtn" class="btn btn-sm"
                             style="background:#062e39;color:#fff;font-weight:600;border-radius:6px;padding:8px 18px;"
                             onclick="var b=document.getElementById('tcBox');var open=b.style.display!=='none';b.style.display=open?'none':'block';this.textContent=open?'View Terms and Conditions':'Hide Terms and Conditions';">
                         View Terms and Conditions
                     </button>
                     <div id="tcBox" style="display:none;max-height:260px;overflow-y:auto;border:1px solid #dee2e6;border-radius:6px;padding:12px 14px;background:#fbfbfb;font-size:12.5px;line-height:1.6;color:#444;margin-top:10px;">
-                        {!! $tcHtml !!}
+                        @include('partials.hello_terms')
                     </div>
-                    @endif
                     <label class="d-flex align-items-start gap-2 mt-2" style="cursor:pointer;">
                         <input type="checkbox" name="terms_accepted" id="termsAccepted" value="1" style="margin-top:3px;width:16px;height:16px;">
                         <span style="font-size:13px;color:#333;">

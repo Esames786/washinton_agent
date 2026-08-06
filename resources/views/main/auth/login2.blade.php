@@ -210,12 +210,15 @@
                             <h2>{{ $brandParts[0] }} <span>{{ $brandParts[1] ?? '' }}</span></h2>
                             <div class="divider"></div>
                             <p>Sign in to access your portal and manage your transport operations.</p>
+                            {{-- florida (is_agent_portal) is a pure portal — no marketing bullets. --}}
+                            @if (!config('app.is_agent_portal'))
                             <ul class="feature-list">
                                 <li><i class="fas fa-truck"></i> Real-time order tracking</li>
                                 <li><i class="fas fa-map-marker-alt"></i> Nationwide coverage</li>
                                 <li><i class="fas fa-shield-alt"></i> Secure & reliable platform</li>
                                 <li><i class="fas fa-headset"></i> 24/7 support team</li>
                             </ul>
+                            @endif
                         </div>
 
                         {{-- RIGHT FORM --}}

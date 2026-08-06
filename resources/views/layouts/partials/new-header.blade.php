@@ -89,7 +89,10 @@
 
                     <div class="collapse navbar-collapse mean-menu">
 
-                        {{-- MENU --}}
+                        {{-- MENU — marketing pages exist only on the Hello landing deployment.
+                             florida (is_agent_portal) is a pure portal: no About/Services/Quote
+                             links (their routes all redirect to /loginn there anyway). --}}
+                        @if (!config('app.is_agent_portal'))
                         <ul class="navbar-nav m-auto">
                             <li class="nav-item">
                                 <a href="{{ route('Frontend.index') }}"
@@ -252,6 +255,10 @@
                             </li>
 
                         </ul>
+                        @else
+                        {{-- keep the flex spacing so the auth buttons stay right-aligned --}}
+                        <ul class="navbar-nav m-auto"></ul>
+                        @endif
 
                         {{-- AUTH BUTTONS --}}
                         @if (!Auth::check())
