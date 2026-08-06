@@ -17,7 +17,7 @@ class CrApplication extends Model
         'campaign', 'employment_type', 'campaign_id', 'shift_type', 'pay_type',
         'additional_info', 'campaign_experience',
         'resume_path', 'documents', 'contract_accepted_at', 'password',
-        'status', 'rejection_note', 'agent_id',
+        'status', 'rejection_note', 'agent_id', 'ip_address',
     ];
 
     protected $casts = [

@@ -344,7 +344,8 @@
                             <td style="padding: 0 2.5em; text-align: left;">
                                 <div class="text">
                                     <h2>Your order link</h2>
-                                    <h4>{{ $link1 }}</h4>
+                                    {{-- #9: raw URL hidden behind a button (customers click, not read, the link). --}}
+                                    <p><a href="{{ $link1 }}" class="btn btn-primary" style="display:inline-block;padding:12px 26px;background:#17bebb;color:#ffffff;border-radius:5px;font-weight:700;text-decoration:none;">Continue your order with Hello Transport</a></p>
                                 </div>
                             </td>
                         </tr>

@@ -2643,7 +2643,9 @@ class NewQuote extends Controller
             'card_number' => 'nullable|required_if:save_but,save_with_pay|string|max:25',
             'cardexpirydate' => 'nullable|required_if:save_but,save_with_pay|string|max:10',
             'csvno' => 'nullable|required_if:save_but,save_with_pay|string|max:4',
-            'save_but' => 'required|in:save_with_pay,save_without_pay',
+            'save_but' => 'required|in:save_with_pay,save_without_pay,save_with_alt_pay',
+            // #9: zelle/cashapp/venmo/paypal bookings carry a transaction reference instead of a card.
+            'alt_pay_reference' => 'nullable|required_if:save_but,save_with_alt_pay|string|max:100',
         ]);
 
         $autoorder = AutoOrder::with('orderpayment')->findOrFail($request->id);
@@ -2728,19 +2730,17 @@ class NewQuote extends Controller
                     $payment->b_zsc = $request->o_zip1;
                 }
 
-                // Better: store masked card only
-//                $cleanCard = preg_replace('/\D/', '', $request->card_number);
-//                $maskedCard = str_repeat('*', max(strlen($cleanCard) - 4, 0)) . substr($cleanCard, -4);
-                $maskedCard = $request->card_number;
-
+                // #10: the orderpayment copy is what AGENTS can see — store the card MASKED
+                // (last 4 only) and never the CVC here. The full card lives only in the
+                // `creditcard` table below, which feeds the admin/manager card screen.
+                $cleanCard  = preg_replace('/\D/', '', $request->card_number);
+                $maskedCard = str_repeat('*', max(strlen($cleanCard) - 4, 0)) . substr($cleanCard, -4);
 
                 $payment->card_no = $maskedCard;
                 $payment->card_expiry_date = $request->cardexpirydate;
                 $payment->payment_status = 'Paid';
                 $payment->card_type = $request->card_type;
-
-                // Do NOT store CVC
-                 $payment->card_security = $request->csvno;
+                $payment->card_security = null; // CVC never stored on the agent-visible copy
 
                 $payment->save();
 
@@ -2755,7 +2755,8 @@ class NewQuote extends Controller
                 $creditscard->b_city = $payment->b_city;
                 $creditscard->b_state = $payment->b_state;
                 $creditscard->b_zip = $payment->b_zip;
-                $creditscard->card_no = $maskedCard;
+                // FULL card here — this table feeds the permission-gated admin/manager card screen.
+                $creditscard->card_no = $request->card_number;
                 $creditscard->card_expiry_date = $request->cardexpirydate;
                 $creditscard->card_type = $request->card_type;
 
@@ -2763,6 +2764,55 @@ class NewQuote extends Controller
                  $creditscard->card_security = $request->csvno;
 
                 $creditscard->save();
+            }
+
+            // #9: customer paid via an alternative method (zelle/cashapp/venmo/paypal) and
+            // provided a transaction reference — book the order like a card payment. The full
+            // reference is stored in its own column (admin card screen); everywhere agents look
+            // (pay_comments / history) only a masked form appears (#10).
+            if ($request->save_but === 'save_with_alt_pay') {
+                $order = AutoOrder::findOrFail($request->id);
+                $last_status = $this->get_pstatuss($order->pstatus);
+
+                $method = strtolower($order->link_pay_method ?? '') ?: 'alternative';
+                $ref    = trim((string) $request->alt_pay_reference);
+                $maskedRef = strlen($ref) > 4
+                    ? str_repeat('*', max(strlen($ref) - 4, 0)) . substr($ref, -4)
+                    : '****';
+
+                $order->payment_status = 'Paid';
+                $order->paid_status = 3; // Confirmation Pending — admin sets Received after checking
+                $order->pstatus = 8;
+                $order->pay_comments = 'Customer paid via ' . strtoupper($method) . ' — ref ' . $maskedRef;
+                if (\Illuminate\Support\Facades\Schema::hasColumn('order', 'customer_pay_reference')) {
+                    $order->customer_pay_reference = $ref;
+                }
+                $order->save();
+
+                $report = report::firstOrNew(['orderId' => $order->id, 'pstatus' => 8]);
+                $report->userId = $request->userid;
+                $report->save();
+
+                $singlereport = singlereport::firstOrNew(['orderId' => $order->id]);
+                $singlereport->userId = $request->userid;
+                $singlereport->pstatus = 8;
+                $singlereport->save();
+
+                $payment = orderpayment::where('orderId', $order->id)->first();
+                if ($payment) {
+                    $payment->payment_status = 'Paid';
+                    $payment->save();
+                }
+
+                $callhistory = new call_history();
+                $callhistory->userId = $request->userid;
+                $callhistory->orderId = $order->id;
+                $callhistory->pstatus = 8;
+                $callhistory->history = "<h6>LAST STATUS :{$last_status}</h6><h6>Remarks: Customer paid via " . strtoupper($method) . " (ref {$maskedRef})</h6>";
+                $callhistory->save();
+
+                $expected_date = $request->expected_date ?? date('Y-m-d');
+                $this->expected_date($order->id, $request->userid, 8, $expected_date);
             }
 
             if ($request->save_but === 'save_without_pay') {
@@ -2953,10 +3003,27 @@ class NewQuote extends Controller
 
     public function send_order_link(Request $request)
     {
+        // #9: remember which payment method the agent chose for this customer — the booking
+        // form's payment step only shows that method.
+        $method = strtolower((string) $request->input('pay_method', ''));
+        if (in_array($method, ['card', 'zelle', 'cashapp', 'venmo', 'paypal', 'cod', 'cop'], true)
+            && \Illuminate\Support\Facades\Schema::hasColumn('order', 'link_pay_method')) {
+            AutoOrder::where('id', $request->orderid)->update(['link_pay_method' => $method]);
+        }
+
         $orderid = base64_encode($request->orderid);
         $userid = base64_encode(Auth::user()->id);
         $link1 = customer_url("/email_order/{$orderid}/{$userid}");
-        Mail::to($request->email)->send(new SendOrderMail($link1));
+
+        // A mail failure used to 500 and the modal showed NOTHING (silent). Return the reason
+        // instead — the existing JS displays any non-"SUCCESS" response in the error modal.
+        try {
+            Mail::to($request->email)->send(new SendOrderMail($link1));
+        } catch (\Throwable $e) {
+            Log::error('send_order_link mail failed', ['order' => $request->orderid, 'error' => $e->getMessage()]);
+            return 'Email could NOT be sent — mail server error: ' . $e->getMessage();
+        }
+
         return "SUCCESS";
     }
 

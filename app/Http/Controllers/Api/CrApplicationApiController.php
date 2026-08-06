@@ -156,6 +156,11 @@ class CrApplicationApiController extends Controller
             'documents'            => $documents ?: null,
             'contract_accepted_at' => $request->contract_accepted_at,
             'password'             => $request->password ? Hash::make($request->password) : null,
+            // #1: applicant's real IP, forwarded by crazyrays (this server only ever sees the
+            // crazyrays server's own address, so never fall back to request()->ip() here).
+            'ip_address'           => \Illuminate\Support\Facades\Schema::hasColumn('cr_applications', 'ip_address')
+                ? ($request->input('ip_address') ?: null)
+                : null,
             'status'               => 'pending',
         ]);
 

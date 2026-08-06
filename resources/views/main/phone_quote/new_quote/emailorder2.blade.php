@@ -54,6 +54,8 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header" style="    border-bottom: 1px solid;">
+                        {{-- #9: company heading — customers always book with Hello Transport. --}}
+                        <h2 style="text-align:center;font-weight:800;letter-spacing:.5px;margin:2px 0 10px;color:#062e39;text-transform:uppercase;">Hello Transport</h2>
                         <div class=" mb-0 w-100"><strong class="heading">Order Online # {{ $data->id  }} </strong>
 
                             <p class="subhead">Your IP address - {{ $ip }}</p>
@@ -145,7 +147,52 @@
                                         </div>
                                     </div>
                                 </div>
+                                @php
+                                    // #9: the agent chose the customer's payment method when sending the link.
+                                    $__payMethod = strtolower($data->link_pay_method ?? 'card') ?: 'card';
+                                    $__altPay    = in_array($__payMethod, ['zelle', 'cashapp', 'venmo', 'paypal'], true);
+                                    $__codPay    = in_array($__payMethod, ['cod', 'cop'], true);
+                                    $__payAcct   = config('brands.payment_accounts.' . $__payMethod, null);
+                                @endphp
+
+                                {{-- Alternative method: show ONLY that method's company details + a reference field. --}}
+                                @if($__altPay || $__codPay)
                                 <div class="col-lg-6 col-sm-12">
+                                    <div class="card-header bg-secondary text-white font-weight-bold">
+                                        Payment — {{ $__payAcct['label'] ?? strtoupper($__payMethod) }}
+                                    </div>
+                                    <div class="card-body border">
+                                        @if($__altPay)
+                                            <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:14px 16px;margin-bottom:14px;">
+                                                <div style="font-weight:700;color:#166534;margin-bottom:6px;">Send your payment to:</div>
+                                                <div style="font-size:15px;color:#111;">
+                                                    <strong>Hello Transport</strong><br>
+                                                    {{ $__payAcct['label'] ?? strtoupper($__payMethod) }}:
+                                                    <strong>{{ ($__payAcct['details'] ?? '') !== '' ? $__payAcct['details'] : 'Details will be shared by your agent' }}</strong>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="alt_pay_reference"><strong>Transaction ID / Reference *</strong></label>
+                                                <input type="text" class="form-control" id="alt_pay_reference" name="alt_pay_reference"
+                                                       maxlength="100" placeholder="Enter the {{ $__payAcct['label'] ?? $__payMethod }} transaction ID / confirmation">
+                                                <small class="text-muted">After sending the payment, enter the transaction ID or confirmation reference here.</small>
+                                            </div>
+                                        @else
+                                            <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 16px;">
+                                                <div style="font-weight:700;color:#92400e;margin-bottom:6px;">
+                                                    {{ $__payMethod === 'cop' ? 'COP — full payment on pickup' : 'COD — payment on delivery' }}
+                                                </div>
+                                                <div style="font-size:13.5px;color:#444;">
+                                                    No online payment is needed now. Please confirm your booking below and pay
+                                                    {{ $__payMethod === 'cop' ? 'the full amount at pickup' : 'on delivery' }}.
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                @endif
+
+                                <div class="col-lg-6 col-sm-12" id="cardPayBlock" @if($__altPay || $__codPay) style="display:none;" @endif>
                                     <div class="card-header bg-secondary text-white font-weight-bold">
                                         Credit Card Information
                                     </div>
@@ -581,10 +628,12 @@
             const formData = form.serialize();
 
             Swal.fire({
-                title: actionValue === 'save_with_pay' ? 'Processing Payment' : 'Cancelling Payment',
+                // save_without_pay is a legitimate "book without card" submit — it was wrongly
+                // labelled "Cancelling Payment", which read as if the order was being cancelled.
+                title: actionValue === 'save_with_pay' ? 'Processing Payment' : 'Saving Your Booking',
                 text: actionValue === 'save_with_pay'
                     ? 'Please wait while we process your payment.'
-                    : 'Please wait while we update the order status.',
+                    : 'Please wait while we save your booking details.',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading();
@@ -636,9 +685,32 @@
             });
         }
 
+        // #9: the payment step follows the method the agent chose when sending the link.
+        var LINK_PAY_METHOD = @json($__payMethod ?? 'card');
+        var IS_ALT_PAY = ['zelle', 'cashapp', 'venmo', 'paypal'].indexOf(LINK_PAY_METHOD) !== -1;
+        var IS_COD_PAY = ['cod', 'cop'].indexOf(LINK_PAY_METHOD) !== -1;
+
         $('#btn-submit-payment').on('click', function () {
             if (!validateForm()) {
                 return false;
+            }
+
+            // Alternative method (zelle/cashapp/venmo/paypal): require the transaction reference,
+            // then submit as save_with_alt_pay — the backend books the order and stores the
+            // reference (masked for agents).
+            if (IS_ALT_PAY) {
+                var ref = ($('#alt_pay_reference').val() || '').trim();
+                if (!ref) {
+                    return swalError('Please enter your payment transaction ID / reference.', '#alt_pay_reference'), false;
+                }
+                postPaymentForm('save_with_alt_pay');
+                return;
+            }
+
+            // COD / COP: no online payment — save the booking.
+            if (IS_COD_PAY) {
+                postPaymentForm('save_without_pay');
+                return;
             }
 
             // Card info is OPTIONAL. If a card was entered, process the payment

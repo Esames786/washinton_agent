@@ -87,6 +87,8 @@
                                 <tr><td class="text-muted">City</td><td>{{ $application->city ?? '—' }}</td></tr>
                                 <tr><td class="text-muted">State/Province</td><td>{{ $application->state ?? '—' }}</td></tr>
                                 <tr><td class="text-muted">Address</td><td>{{ $application->address ?? '—' }}</td></tr>
+                                {{-- #1: applicant's real IP, captured on crazyrays at submission. --}}
+                                <tr><td class="text-muted">Signup IP</td><td>{{ $application->ip_address ?? '—' }}</td></tr>
                             </table>
                         </div>
                     </div>

@@ -2600,19 +2600,51 @@ Agent: Thank you for your cooperation. We appreciate your attention to these det
     </script>
 
     @include('partials.inspect_guard')
+<!-- #9: payment-method picker injected into every "Send Email Link" modal (reportmodal). The
+     chosen method is stored on the order and decides what the customer's booking form asks for. -->
+<script>
+(function(){
+  var modal = document.getElementById('reportmodal');
+  if(!modal) return;
+  var form = modal.querySelector('form');
+  if(!form || form.querySelector('input[name="pay_method"]')) return;
+  var methods = [
+    ['card','Credit / Debit Card',true],
+    ['zelle','Zelle',false],
+    ['cashapp','CashApp',false],
+    ['venmo','Venmo',false],
+    ['paypal','PayPal',false],
+    ['cod','COD',false],
+    ['cop','COP (full payment)',false]
+  ];
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'margin:10px 0 4px;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;';
+  var html = '<div style="font-size:12px;font-weight:700;color:#334155;margin-bottom:8px;">Customer payment method <span style="color:#e11d48;">*</span></div><div style="display:flex;flex-wrap:wrap;gap:8px 18px;">';
+  methods.forEach(function(m){
+    html += '<label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;margin:0;">'
+          + '<input type="radio" name="pay_method" value="'+m[0]+'"'+(m[2]?' checked':'')+' style="width:15px;height:15px;">'
+          + m[1] + '</label>';
+  });
+  html += '</div>';
+  wrap.innerHTML = html;
+  var btn = form.querySelector('button[type="submit"]');
+  if(btn && btn.parentNode){ btn.parentNode.insertBefore(wrap, btn); } else { form.appendChild(wrap); }
+})();
+</script>
+
 <!-- #11/#4: disable right-click + dev/copy shortcuts; lock copy of contract & NDA content -->
 <script>
 (function(){
   function editable(t){var g=(t&&t.tagName||'').toLowerCase();return g==='input'||g==='textarea'||(t&&t.isContentEditable);}
   document.addEventListener('contextmenu',function(e){e.preventDefault();});
-  ['copy','cut'].forEach(function(ev){document.addEventListener(ev,function(e){if(!editable(e.target))e.preventDefault();});});
+  // Ctrl+F / Ctrl+C / Ctrl+V (and copy/select) are ALLOWED per client — only devtools/save/print
+  // shortcuts stay blocked.
   document.addEventListener('keydown',function(e){
     if(e.keyCode===123){e.preventDefault();return false;}
     if(e.ctrlKey||e.metaKey){
       var k=(e.key||'').toLowerCase();
-      if(e.shiftKey&&(k==='i'||k==='j'||k==='c')){e.preventDefault();return false;}
+      if(e.shiftKey&&(k==='i'||k==='j')){e.preventDefault();return false;}
       if(k==='u'||k==='s'||k==='p'){e.preventDefault();return false;}
-      if((k==='c'||k==='x'||k==='a')&&!editable(e.target)){e.preventDefault();return false;}
     }
   });
 })();

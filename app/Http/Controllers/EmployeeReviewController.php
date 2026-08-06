@@ -291,10 +291,30 @@ class EmployeeReviewController extends Controller
 
     public function acceptContract(Request $request): JsonResponse
     {
-        $request->validate(['user_id' => 'required|integer']);
+        $request->validate([
+            'user_id'        => 'required|integer',
+            // #4: contract is e-signed like the NDA. Nullable so an old cached modal still works.
+            'signature_data' => 'nullable|string',
+        ]);
+
+        $update = ['contract_accepted_at' => now()];
+
+        // Store the drawn signature + the IP it was signed from (columns are guarded so a
+        // pre-migration DB can still accept).
+        if ($request->filled('signature_data')) {
+            $sigBinary = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $request->signature_data));
+            if ($sigBinary && strlen($sigBinary) >= 100) {
+                if (\Illuminate\Support\Facades\Schema::hasColumn('hr_employees', 'contract_signature')) {
+                    $update['contract_signature'] = $request->signature_data;
+                }
+                if (\Illuminate\Support\Facades\Schema::hasColumn('hr_employees', 'contract_signed_ip')) {
+                    $update['contract_signed_ip'] = $request->ip();
+                }
+            }
+        }
 
         $affected = DB::table('hr_employees')->where('agent_id', $request->user_id)
-            ->update(['contract_accepted_at' => now()]);
+            ->update($update);
 
         if (!$affected) {
             return response()->json(['error' => 'HR employee not found.'], 404);

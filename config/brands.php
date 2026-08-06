@@ -20,6 +20,16 @@ return [
     // Leave empty on the Hello landing so its per-user branding logic applies.
     'force' => env('PORTAL_BRAND'),
 
+    // #9: customer-facing payment accounts shown on the booking form per selected method.
+    // Customer orders are ALWAYS Hello's, so these are Hello Transport's accounts.
+    // TODO(client): fill cashapp / venmo / paypal when provided — empty entries are hidden.
+    'payment_accounts' => [
+        'zelle'   => ['label' => 'Zelle',   'details' => 'hellotransport26@gmail.com'],
+        'cashapp' => ['label' => 'CashApp', 'details' => env('PAY_CASHAPP', '')],
+        'venmo'   => ['label' => 'Venmo',   'details' => env('PAY_VENMO', '')],
+        'paypal'  => ['label' => 'PayPal',  'details' => env('PAY_PAYPAL', '')],
+    ],
+
     'brands' => [
 
         'hellotransport' => [
