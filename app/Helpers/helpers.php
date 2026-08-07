@@ -22,6 +22,33 @@ if (!function_exists('customer_url')) {
     }
 }
 
+if (!function_exists('portal_file_url')) {
+    /**
+     * URL for an uploaded file that may live on the SIBLING agent-portal deployment.
+     * hellotransport.com and florida.crazyrayssolutions.com.pk are separate cPanel sites
+     * sharing one database — a payment screenshot uploaded on one domain does not exist
+     * on the other's disk. If the file isn't here, it must be on the sibling.
+     */
+    function portal_file_url($path)
+    {
+        $path = ltrim((string) ($path ?? ''), '/');
+        if ($path === '') {
+            return '';
+        }
+        if (preg_match('#^https?://#i', $path)) {
+            return $path;
+        }
+        if (is_file(public_path($path))) {
+            return asset($path);
+        }
+        $host    = request()->getHost();
+        $sibling = (stripos($host, 'crazyrays') !== false)
+            ? 'https://hellotransport.com'
+            : 'https://florida.crazyrayssolutions.com.pk';
+        return $sibling . '/' . $path;
+    }
+}
+
 if (!function_exists('mask_phone')) {
     /**
      * Mask a phone number to its last 3 digits (e.g. xxxxxxx503). Safe on null/short/empty

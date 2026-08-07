@@ -118,8 +118,8 @@
                         <label class="font-weight-bold">Payment Screenshot / Proof</label>
                         @if($payment->screenshot_path)
                             <div class="mb-2">
-                                <a href="{{ asset($payment->screenshot_path) }}" target="_blank">
-                                    <img src="{{ asset($payment->screenshot_path) }}"
+                                <a href="{{ portal_file_url($payment->screenshot_path) }}" target="_blank">
+                                    <img src="{{ portal_file_url($payment->screenshot_path) }}"
                                          style="height:80px;border-radius:6px;border:1px solid #ddd;" alt="Current Screenshot">
                                 </a>
                                 <small class="text-muted ml-2">Current screenshot. Upload new to replace.</small>

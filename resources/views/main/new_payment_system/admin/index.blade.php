@@ -147,9 +147,9 @@
                         <td>{{ $p->confirmation_date ?? '-' }}</td>
                         <td>
                             @if($p->screenshot_path)
-                                <img src="{{ asset($p->screenshot_path) }}"
+                                <img src="{{ portal_file_url($p->screenshot_path) }}"
                                      class="screenshot-thumb"
-                                     onclick="window.open('{{ asset($p->screenshot_path) }}','_blank')"
+                                     onclick="window.open('{{ portal_file_url($p->screenshot_path) }}','_blank')"
                                      alt="Screenshot">
                             @else
                                 <span class="text-muted small">None</span>

@@ -759,7 +759,9 @@ class NewOrder extends Controller
                 return view('main.phone_quote.new.index', compact('data', 'link', 'label'));
             }
             // Carrier Update Approval (pstatus 36) — listed orders held for admin/manager approval
-            // after a carrier update. Same role-scoping as Listed.
+            // after a carrier update. Same role-scoping as Listed, BUT no paneltype or age filter:
+            // this is an approval QUEUE — an update on a Testing/Website/ShipA1-panel order (or an
+            // old order) must still reach the approver, who otherwise only sees their own panel.
             if (\Request::is('carrier_update_approval')) {
                 $data = AutoOrder::with('listed_sheet', 'filterHistory', 'latestHistory')->where('pstatus', '=', 36)
                     ->where(function ($q) use ($user) {
@@ -783,8 +785,6 @@ class NewOrder extends Controller
                             }
                         }
                     })
-                    ->where('paneltype', '=', $ptype)
-                    ->where('created_at', '>=', Carbon::today()->subDays($setting->no_days))
                     ->orderBy('id', 'DESC')->paginate(20);
                 return view('main.phone_quote.new.index', compact('data', 'link', 'label'));
             }
@@ -2666,7 +2666,12 @@ class NewOrder extends Controller
                             }
                         }
                     })
-                    ->where('paneltype', '=', $ptype)
+                    ->where(function ($q) use ($request, $ptype) {
+                        // Approval queue shows every panel's held orders (folder view does too).
+                        if ($request->titlee != 'carrier_update_approval') {
+                            $q->where('paneltype', '=', $ptype);
+                        }
+                    })
                     ->where(function ($q) use ($from, $too, $request, $setting, $from1, $too1) {
                         if (!empty($from) && !empty($too)) {
                             if ($from == $too) {
@@ -2674,7 +2679,8 @@ class NewOrder extends Controller
                             } else {
                                 $q->whereBetween('created_at', [$from, $too]);
                             }
-                        } else {
+                        } else if ($request->titlee != 'carrier_update_approval') {
+                            // Approval queue: no age cut-off — a held order must never expire out of view.
                             $q->where('created_at', '>=', Carbon::today()->subDays($setting->no_days));
                         }
                         if (!empty($from1) && !empty($too1)) {
@@ -4682,8 +4688,13 @@ class NewOrder extends Controller
                                 }
                             }
                         })
-                        ->where('paneltype', '=', $ptype)
-                        ->where('created_at', '>=', Carbon::today()->subDays($setting->no_days))
+                        ->where(function ($q) use ($request, $ptype, $setting) {
+                            // Approval queue shows every panel's held orders, with no age cut-off.
+                            if ($request->titlee != 'carrier_update_approval') {
+                                $q->where('paneltype', '=', $ptype)
+                                  ->where('created_at', '>=', Carbon::today()->subDays($setting->no_days));
+                            }
+                        })
                         ->where(function ($q) use ($search_by, $val, $user, $acutionaccountname) {
                             if (!empty($search_by) && !empty($val)) {
                                 if ($user->userRole->name == 'Delivery Boy' || $user->userRole->name == 'Admin') {
@@ -5629,8 +5640,13 @@ class NewOrder extends Controller
                                 }
                             }
                         })
-                        ->where('paneltype', '=', $ptype)
-                        ->where('created_at', '>=', Carbon::today()->subDays($setting->no_days))
+                        ->where(function ($q) use ($request, $ptype, $setting) {
+                            // Approval queue shows every panel's held orders, with no age cut-off.
+                            if ($request->titlee != 'carrier_update_approval') {
+                                $q->where('paneltype', '=', $ptype)
+                                  ->where('created_at', '>=', Carbon::today()->subDays($setting->no_days));
+                            }
+                        })
                         ->orderBy('id', 'DESC')->paginate(20);
                     return view('main.phone_quote.new.load', compact('data'));
                 }
@@ -6234,8 +6250,13 @@ class NewOrder extends Controller
                             }
                         }
                     })
-                    ->where('paneltype', '=', $ptype)
-                    ->where('created_at', '>=', Carbon::today()->subDays($setting->no_days))
+                    ->where(function ($q) use ($request, $ptype, $setting) {
+                        // Approval queue shows every panel's held orders, with no age cut-off.
+                        if ($request->titlee != 'carrier_update_approval') {
+                            $q->where('paneltype', '=', $ptype)
+                              ->where('created_at', '>=', Carbon::today()->subDays($setting->no_days));
+                        }
+                    })
                     ->orderBy('id', 'DESC')->paginate(20);
                 return view('main.phone_quote.new.load', compact('data'));
             }

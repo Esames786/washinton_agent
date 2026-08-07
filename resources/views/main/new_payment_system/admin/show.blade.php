@@ -89,13 +89,13 @@
             <div class="card-header"><strong>Payment Screenshot</strong></div>
             <div class="card-body text-center">
                 @if($payment->screenshot_path)
-                    <a href="{{ asset($payment->screenshot_path) }}" target="_blank">
-                        <img src="{{ asset($payment->screenshot_path) }}"
+                    <a href="{{ portal_file_url($payment->screenshot_path) }}" target="_blank">
+                        <img src="{{ portal_file_url($payment->screenshot_path) }}"
                              class="img-fluid rounded" style="max-height:300px;"
                              alt="Payment Screenshot">
                     </a>
                     <div class="mt-2">
-                        <a href="{{ asset($payment->screenshot_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                        <a href="{{ portal_file_url($payment->screenshot_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">
                             <i class="fa fa-external-link mr-1"></i> Open Full Size
                         </a>
                     </div>

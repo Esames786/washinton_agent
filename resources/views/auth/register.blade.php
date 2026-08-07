@@ -334,10 +334,10 @@ html, body { height: 100%; margin: 0; }
                         <div class="field-error" id="err_city"></div>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">State / Province</label>
+                        <label class="form-label">State</label>
                         <div class="input-icon-wrap">
                             <i class="fas fa-map field-icon"></i>
-                            <input type="text" name="state" class="form-control" placeholder="State / Province">
+                            <input type="text" name="state" class="form-control" placeholder="State">
                         </div>
                         <div class="field-error" id="err_state"></div>
                     </div>
