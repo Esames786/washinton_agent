@@ -2604,9 +2604,15 @@ Agent: Thank you for your cooperation. We appreciate your attention to these det
      chosen method is stored on the order and decides what the customer's booking form asks for. -->
 <script>
 (function(){
-  var modal = document.getElementById('reportmodal');
-  if(!modal) return;
-  var form = modal.querySelector('form');
+  // Several pages carry an element with id="reportmodal": the quote screens' SEND-LINK modal
+  // (the one this picker belongs in) and the layout's own "Report to Admin" modal (form
+  // #reportToAdmin). Only inject into a send-link form — never the report-to-admin form.
+  var modals = document.querySelectorAll('[id="reportmodal"]');
+  var form = null;
+  modals.forEach(function(m){
+    var f = m.querySelector('form');
+    if(f && f.id !== 'reportToAdmin' && !form){ form = f; }
+  });
   if(!form || form.querySelector('input[name="pay_method"]')) return;
   var methods = [
     ['card','Credit / Debit Card',true],

@@ -1696,6 +1696,9 @@
         </div> -->
         <!-- Preloader end -->
         <!-- header area start  -->
+        {{-- florida (is_agent_portal) is a pure staff portal — no marketing navbar on the
+             pages that use this layout (login OTP/verify, etc.). Hello keeps its full site chrome. --}}
+        @if (!config('app.is_agent_portal'))
         <header>
 {{--            <div class="header__top header__pad d-none d-md-block">--}}
 {{--                <div class="container">--}}
@@ -2060,6 +2063,7 @@
             <!-- Sidebar Area Start Here  -->
             <div class="body-overlay"></div>
         </header>
+        @endif
         <main>
         
             @yield('content')
@@ -2110,6 +2114,8 @@
                 </div>
             </div>
         </main>
+        {{-- florida: no marketing footer either (Contact/Useful Links/socials/T&C strip). --}}
+        @if (!config('app.is_agent_portal'))
         <footer>
             <section class="footer-area footer-area1 footer-area1-bg pt-100 pb-90">
                 <div class="container">
@@ -2263,6 +2269,7 @@
                 </div>
             </div>
         </footer>
+        @endif
         <div class="progress-wrap">
             <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
                 <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"/>

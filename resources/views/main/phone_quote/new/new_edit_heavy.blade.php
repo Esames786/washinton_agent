@@ -1536,6 +1536,11 @@
 
                         <div>
                             <div>
+                                <select id="checkPriceMode" class="form-control mb-1" style="width:auto;max-width:210px;display:inline-block;vertical-align:middle;margin-right:6px;">
+                                    <option value="">-- Transport Type * --</option>
+                                    <option value="open">Open Transport</option>
+                                    <option value="enclosed">Enclosed Transport</option>
+                                </select>
                                 <button href="javascript:void(0)" id="checkPriceNew" class="btn btn-success">
                                     Check Price (New)
                                 </button>
@@ -6438,6 +6443,9 @@
             // BUTTON: Check Price (New)
             // -------------------------------------------------------
             $('#checkPriceNew').on('click', function () {
+                // Open/Enclosed must be chosen BEFORE checking the price (client rule).
+                var __cpMode = ($('#checkPriceMode').val() || '').trim();
+                if (!__cpMode) { alert('Please select Open or Enclosed transport before checking the price.'); return; }
                 clearError();
                 $('#checkPriceNew').prop('disabled', true);
 
@@ -6451,6 +6459,7 @@
 
                 $.ajax({
                     url: `/orders/${ORDER_ID}/pricing/check`,
+                    data: { mode: __cpMode },
                     method: 'POST',
                     dataType: 'json',
                     success: function (res) {
@@ -6469,7 +6478,7 @@
                         // Pick primary mode (prefer primary_mode, then open, then first available)
                         const pmKey = (gw?.primary?.primary_mode) || (gw?.primary_mode) || (primary?.primary_mode) || null;
                         const primaryModes = primary?.modes || {};
-                        const primaryModeObj = (pmKey && primaryModes[pmKey]) ? primaryModes[pmKey] : pickFirstMode(primaryModes);
+                        const primaryModeObj = primaryModes[__cpMode] || ((pmKey && primaryModes[pmKey]) ? primaryModes[pmKey] : pickFirstMode(primaryModes));
 
                         const cacheHitAny = !!gw?.cache_hit || !!primaryModeObj?.cache_hit;
                         if (cacheHitAny) $('#cacheHitBadge').show();
@@ -6493,8 +6502,8 @@
               </div>
               <div class="card-body">
                 <div class="row">
-                  ${renderModeCard('Open', modes.open)}
-                  ${renderModeCard('Enclosed', modes.enclosed)}
+                  ${renderModeCard(__cpMode === 'enclosed' ? 'Enclosed' : 'Open', modes[__cpMode] || modes.open)}
+                  
                 </div>
               </div>
             </div>
@@ -6508,7 +6517,7 @@
                         items.forEach(v => {
                             const vKey = v.vehicle_key || '';
                             const modes = v.modes || {};
-                            ['open','enclosed'].forEach(k => {
+                            [__cpMode].forEach(k => {
                                 const m = modes[k];
                                 if (!m) return;
 

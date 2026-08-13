@@ -43,6 +43,15 @@ class OrderPricingController extends Controller
             'vehicles' => $vehicles,
             'referenceId' => 'WA-ORDER-' . $order->id,
         ];
+
+        // Open/Enclosed chosen by the agent BEFORE Check Price. Recorded in the snapshot
+        // (request_payload) and passed along; the gateway ignores unknown keys, so older
+        // deployments keep working. Missing/invalid = legacy behaviour (both modes shown).
+        $mode = strtolower(trim((string) $request->input('mode', '')));
+        if (in_array($mode, ['open', 'enclosed'], true)) {
+            $payload['requested_mode'] = $mode;
+        }
+
         $find_old =  OrderPriceRequest::query()
             ->where('order_id', $order->id)
             ->latest()->first();

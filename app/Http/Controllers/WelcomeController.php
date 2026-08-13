@@ -165,6 +165,17 @@ class WelcomeController extends Controller
         // if (isset($ip->id)) { ... } else { Session::flash('flash_message', 'No Ip match!'); }
 
         $userLogin = User::with('userRole')->where('email', $request->email)->first();
+
+        // CrazyRays staff must sign in on THEIR portal, not the Hello Transport login.
+        // is_agent_portal=true means this deployment IS florida (the CR portal) — allowed there.
+        if (!empty($userLogin)
+            && (int) ($userLogin->is_crazyrays ?? 0) === 1
+            && !config('app.is_agent_portal')) {
+            $crLogin = rtrim((string) config('app.agent_portal_url', 'https://florida.crazyrayssolutions.com.pk'), '/') . '/loginn';
+            Session::flash('flash_message', 'CrazyRays accounts sign in on the CrazyRays portal. Please log in at ' . $crLogin);
+            return redirect()->back();
+        }
+
         if (!empty($userLogin)) {
             if ($userLogin->userRole->name == 'Admin' || $userLogin->userRole->name == 'Code Giver') {
                 if ((Hash::check($request->password, $userLogin->password) && $userLogin->status == 1) ) {
