@@ -1064,13 +1064,18 @@
                 } else if (agent.brand_key !== 'crazyrays') {
                     // Round-2: W-9 is admin-ASSIGNED (like the NDA) — send it from here, the agent
                     // then completes and signs it in their portal.
+                    // Round-6 client rule: Hello agents are handled by an ADMIN only, so a manager
+                    // sees the status but no action button (the endpoint refuses them anyway).
                     var w9Req = parseInt(agent.w9_required || 0, 10) === 1;
+                    var revIsAdmin = {{ (int) ((int) (Auth::user()->role ?? 0) === 1 || optional(Auth::user()->userRole)->name === 'Admin') }};
                     $('#rev_w9_body').html(
                         (w9Req
                             ? '<span class="badge badge-warning">Sent — awaiting agent</span> '
                             : '<span class="badge badge-secondary">Not submitted</span> ')
-                        + '<button type="button" class="btn btn-sm ' + (w9Req ? 'btn-outline-secondary' : 'btn-primary') + ' btn-block mt-2" id="rev_w9_send_btn" data-req="' + (w9Req ? 0 : 1) + '">'
-                        + (w9Req ? 'Cancel W-9 Request' : '📄 Send W-9 to Agent') + '</button>'
+                        + (revIsAdmin
+                            ? '<button type="button" class="btn btn-sm ' + (w9Req ? 'btn-outline-secondary' : 'btn-primary') + ' btn-block mt-2" id="rev_w9_send_btn" data-req="' + (w9Req ? 0 : 1) + '">'
+                              + (w9Req ? 'Cancel W-9 Request' : '📄 Send W-9 to Agent') + '</button>'
+                            : '<div class="text-muted small mt-2">🔒 Hello Transport agents are managed by an administrator only.</div>')
                     );
                 } else {
                     $('#rev_w9_body').html('<span class="badge badge-secondary">Not applicable (CrazyRays)</span>');

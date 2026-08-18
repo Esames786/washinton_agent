@@ -1232,10 +1232,6 @@
 
                                                         <li class="text-justify">
                                                             <strong>Customer Ownership and Documentation:</strong> The customer affirms legal ownership and must provide documentation when requested.
-                                                        </li><br>
-
-                                                        <li class="text-justify">
-                                                            <strong>Shawn – 2024 Tesla Model S:</strong> Booked an Order (3 weeks ago)
                                                         </li>
                                                     </ol>
 

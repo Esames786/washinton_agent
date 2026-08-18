@@ -287,10 +287,16 @@ class CrApplicationController extends Controller
             ]);
         }
 
-        // Send approval email from CrazyRays (non-blocking)
+        // Send approval email from CrazyRays (non-blocking).
+        // The Portal link must be the AGENT PORTAL login (florida.crazyrayssolutions.com.pk/loginn) —
+        // it used to point at bridge.crazyrays.base_url, which is the public sign-up/careers site,
+        // so approved agents landed on the marketing page instead of a login screen.
         try {
+            $__crPortal = \App\Support\Brand::byKey('crazyrays')['login_url']
+                ?? rtrim((string) config('app.agent_portal_url', 'https://florida.crazyrayssolutions.com.pk'), '/') . '/loginn';
+
             Mail::to($application->email)
-                ->send(new CrApplicationApprovedMail($application, rtrim(config('bridge.crazyrays.base_url', url('/')), '/')));
+                ->send(new CrApplicationApprovedMail($application, $__crPortal));
         } catch (\Throwable $e) {
             Log::warning('CrApplicationController: approval email failed', ['error' => $e->getMessage()]);
         }

@@ -13,6 +13,29 @@ use Illuminate\Support\Facades\Mail;
 
 class EmployeeReviewController extends Controller
 {
+    /**
+     * Client rule: Hello Transport agents are handled by an ADMIN only — account approval /
+     * activation, W-9, NDA and contract assignment. Managers keep their existing rights over
+     * CrazyRays agents. Returns an error response when the actor may not act on this target,
+     * or null when the action is allowed.
+     */
+    public static function denyIfHelloAndNotAdmin($userId): ?JsonResponse
+    {
+        $actor = Auth::user();
+        if ($actor && ((int) ($actor->role ?? 0) === 1 || optional($actor->userRole)->name === 'Admin')) {
+            return null; // admins may do everything
+        }
+
+        $target = User::find($userId);
+        if ($target && (int) ($target->is_crazyrays ?? 0) !== 1) {
+            return response()->json([
+                'error' => 'Hello Transport agents are managed by an administrator only. Please ask an admin to complete this action.',
+            ], 403);
+        }
+
+        return null; // CrazyRays agent — unchanged manager workflow
+    }
+
     public function data(int $userId): JsonResponse
     {
         $agentUser = User::find($userId);
@@ -159,6 +182,10 @@ class EmployeeReviewController extends Controller
     {
         $request->validate(['user_id' => 'required|integer', 'status' => 'required|in:0,1']);
 
+        if ($deny = self::denyIfHelloAndNotAdmin($request->user_id)) {
+            return $deny;
+        }
+
         $user = User::findOrFail($request->user_id);
         $user->status = $request->status;
         $user->save();
@@ -180,6 +207,10 @@ class EmployeeReviewController extends Controller
     public function changeHrStatus(Request $request): JsonResponse
     {
         $request->validate(['user_id' => 'required|integer', 'hr_status_id' => 'required|integer']);
+
+        if ($deny = self::denyIfHelloAndNotAdmin($request->user_id)) {
+            return $deny;
+        }
 
         $hrEmployee = DB::table('hr_employees')->where('agent_id', $request->user_id)->first();
         if (!$hrEmployee) {
@@ -267,6 +298,10 @@ class EmployeeReviewController extends Controller
     public function saveContract(Request $request): JsonResponse
     {
         $request->validate(['user_id' => 'required|integer', 'contract' => 'required|string']);
+
+        if ($deny = self::denyIfHelloAndNotAdmin($request->user_id)) {
+            return $deny;
+        }
 
         $hrEmployee = DB::table('hr_employees')->where('agent_id', $request->user_id)->first();
         if (!$hrEmployee) {
@@ -393,6 +428,10 @@ class EmployeeReviewController extends Controller
     {
         $request->validate(['user_id' => 'required|integer', 'nda' => 'required|string']);
 
+        if ($deny = self::denyIfHelloAndNotAdmin($request->user_id)) {
+            return $deny;
+        }
+
         $hrEmployee = DB::table('hr_employees')->where('agent_id', $request->user_id)->first();
         if (!$hrEmployee) {
             return response()->json(['error' => 'HR employee not found.'], 404);
@@ -434,6 +473,10 @@ class EmployeeReviewController extends Controller
             'user_id'      => 'required|integer',
             'nda_required' => 'required|in:0,1',
         ]);
+
+        if ($deny = self::denyIfHelloAndNotAdmin($request->user_id)) {
+            return $deny;
+        }
 
         $user = User::findOrFail($request->user_id);
 

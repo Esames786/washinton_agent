@@ -33,6 +33,7 @@ php artisan route:clear   # WelcomeController route logic changed? no new routes
 ## 2. washinton_latest → deploy to washington.shawntransport.com (ShipA1 portal)
 
 **What's in it:**
+- **NEW: Mobile IP Manager** at `/mobile-ip` — phone-installable (Chrome → Add to Home screen), super-admin-only login, "Whitelist this IP" one-tap + manual add + Active/Disable toggle. Has its OWN login on purpose: the portal login rejects non-whitelisted IPs, so this tool must sit outside it. New files: MobileIpController, mobile/ip_manager blade, public/mobile-ip/* (manifest, sw, icons), routes, + `android-ip-app/` (optional APK wrapper, not deployed to the server's runtime).
 - **Zelle/CashApp booking fix** — "The firstname must be a string" is gone (nullable card fields). This is blocking live customer payments → deploy this one first.
 - Check Price Open/Enclosed selector on its 6 quote screens (same behaviour as hello).
 - (NewQuote.php also still carries the earlier paid_status 2→3 + Confirmation-Pending badge changes if not yet pulled — same file, same pull.)

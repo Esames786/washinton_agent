@@ -49,6 +49,11 @@ class W9Controller extends Controller
     {
         $request->validate(['user_id' => 'required|integer', 'w9_required' => 'required|in:0,1']);
 
+        // Client rule: Hello agents (the only ones a W-9 applies to) are handled by ADMIN only.
+        if ($deny = EmployeeReviewController::denyIfHelloAndNotAdmin($request->user_id)) {
+            return $deny;
+        }
+
         $user = \App\User::findOrFail($request->user_id);
         if (method_exists($user, 'isCrazyrays') && $user->isCrazyrays()) {
             return response()->json(['success' => false, 'message' => 'W-9 applies to Hello Transport agents only.'], 422);
