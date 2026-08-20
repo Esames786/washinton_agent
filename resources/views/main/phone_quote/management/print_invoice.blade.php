@@ -188,7 +188,9 @@
                             </tr>
                         </tbody>
                     </table>
-                    @if ($data->site == 'Ship A1(Broker)')
+                    {{-- "(Broker)" marker match: works for the new "Hello Transport (Broker)"
+                         value and for legacy "Ship A1(Broker)" invoices alike. --}}
+                    @if (strpos((string) ($data->site ?? ''), '(Broker)') !== false)
                         <p><b>Note: </b>{{ $brand['name'] ?? 'Hello Transport' }} operates as a broker,
                             arranging and assigning carriers to
                             complete your shipment. We coordinate

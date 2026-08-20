@@ -1014,8 +1014,20 @@
                     $('#rev_commission_value').text('—');
                 }
 
-                // Agent status buttons
-                if (agent.status == 1) {
+                // Agent status buttons.
+                // Hello agents are admin-only (client rule, 14-Aug): a manager sees the status and
+                // an explanatory note instead of buttons that the server would refuse anyway.
+                var revIsAdminActor = {{ (int) ((int) (Auth::user()->role ?? 0) === 1 || optional(Auth::user()->userRole)->name === 'Admin') }};
+                if (!revIsAdminActor && agent.brand_key !== 'crazyrays') {
+                    $('#rev_agent_status_btns').html(
+                        '<p class="small mb-0 ' + (agent.status == 1 ? 'text-success' : 'text-danger') + '">'
+                        + '<i class="fe fe-' + (agent.status == 1 ? 'check' : 'x') + '-circle mr-1"></i>'
+                        + (agent.status == 1 ? 'Currently Active — can log in' : 'Currently Inactive — cannot log in')
+                        + '</p>'
+                        + '<p class="small text-muted mt-1 mb-0" data-toggle="tooltip" title="Hello Transport agents are handled by an administrator only — account approval/activation, W-9, NDA and contract. CrazyRays agents are unaffected and can still be managed by a manager.">'
+                        + '<i class="fe fe-lock mr-1"></i>Admin only <i class="fe fe-help-circle"></i></p>'
+                    );
+                } else if (agent.status == 1) {
                     $('#rev_agent_status_btns').html(
                         '<button class="btn btn-sm btn-danger btn-block" id="rev_deactivate_btn"><i class="fe fe-user-x mr-1"></i>Deactivate Agent</button>'
                         + '<p class="text-success small mt-1 mb-0"><i class="fe fe-check-circle mr-1"></i>Currently Active — can log in</p>'
@@ -1265,7 +1277,8 @@
         // Activate agent
         $(document).on('click', '#rev_activate_btn', function () {
             if (!_reviewUserId) return;
-            $(this).prop('disabled', true).text('Saving...');
+            var $btn = $(this);
+            $btn.prop('disabled', true).text('Saving...');
             $.post('/employee-review/agent-status', {
                 _token: $('meta[name="csrf-token"]').attr('content'),
                 user_id: _reviewUserId, status: 1
@@ -1280,13 +1293,21 @@
                     if (res.email_note) msg += ' | ' + res.email_note;
                     $('#rev_agent_status_msg').text(msg).show();
                 }
+            }).fail(function (xhr) {
+                // Without this the button sat on "Saving..." forever on ANY server error
+                // (e.g. the admin-only rule returning 403).
+                var m = (xhr.responseJSON && (xhr.responseJSON.error || xhr.responseJSON.message))
+                        || 'Could not activate this agent. Please try again.';
+                $('#rev_agent_status_msg').text(m).removeClass('text-success').addClass('text-danger').show();
+                $btn.prop('disabled', false).html('<i class="fe fe-user-check mr-1"></i>Activate Agent');
             });
         });
 
         // Deactivate agent
         $(document).on('click', '#rev_deactivate_btn', function () {
             if (!_reviewUserId || !confirm('Deactivate this user from the agent portal?')) return;
-            $(this).prop('disabled', true).text('Saving...');
+            var $dbtn = $(this);
+            $dbtn.prop('disabled', true).text('Saving...');
             $.post('/employee-review/agent-status', {
                 _token: $('meta[name="csrf-token"]').attr('content'),
                 user_id: _reviewUserId, status: 0
@@ -1299,6 +1320,11 @@
                     );
                     $('#rev_agent_status_msg').text('Agent deactivated successfully.').show();
                 }
+            }).fail(function (xhr) {
+                var m = (xhr.responseJSON && (xhr.responseJSON.error || xhr.responseJSON.message))
+                        || 'Could not deactivate this agent. Please try again.';
+                $('#rev_agent_status_msg').text(m).removeClass('text-success').addClass('text-danger').show();
+                $dbtn.prop('disabled', false).html('<i class="fe fe-user-x mr-1"></i>Deactivate Agent');
             });
         });
 

@@ -282,7 +282,9 @@ class ManagementController extends Controller
             return redirect()->back()->with('error', 'Order not found.');
         }
 
-        $view = $data->site == 'Ship A1(Broker)'
+        // Match the "(Broker)" marker instead of an exact legacy string, so both the new
+        // "Hello Transport (Broker)" value and old "Ship A1(Broker)" rows pick the broker view.
+        $view = strpos((string) ($data->site ?? ''), '(Broker)') !== false
             ? 'main.phone_quote.management.print_invoice_broker'
             : 'main.phone_quote.management.print_invoice';
 

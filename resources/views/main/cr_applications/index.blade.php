@@ -9,7 +9,16 @@
 
     <div class="row mb-3 align-items-center">
         <div class="col-sm-6">
-            <h4 class="mb-0"><i class="fas fa-user-plus mr-2" style="color:#d4af37;"></i> CrazyRays Applications</h4>
+            <h4 class="mb-0">
+                <i class="fas fa-user-plus mr-2" style="color:#d4af37;"></i> CrazyRays Applications
+                {{-- Explains what this screen does and does NOT contain, and why the bell counter
+                     only reacts to these. --}}
+                <i class="fas fa-question-circle text-muted ml-1" style="font-size:15px;cursor:help;"
+                   data-toggle="tooltip" data-placement="bottom" data-html="true"
+                   title="Job applications submitted through the CrazyRays careers site (crazyrayssolutions.com.pk).<br><br>
+<b>Pending applications here are what the notification bell counts.</b><br><br>
+Agents who sign up directly on hellotransport.com/register do <b>not</b> create an application — they are created as an agent straight away and appear under <b>Subcontractors</b> with status <i>Inactive</i>, waiting for approval."></i>
+            </h4>
         </div>
         <div class="col-sm-6 text-right">
             <span class="badge badge-warning px-3 py-2">Permission: CrazyRays Applications (166)</span>

@@ -54,8 +54,11 @@
                                     <label class="form-label">Site</label>
                                     <select name="site" id="siteSelector" class="form-control" required>
                                         <option value="">Select Site</option>
-                                        <option value="Ship A1">Hello Transport</option>
-                                        <option value="Ship A1(Broker)">Hello Transport (Broker)</option>
+                                        {{-- The VALUE is what gets stored and printed on the invoice.
+                                             It used to stay "Ship A1" while only the label said Hello
+                                             Transport, so invoices showed the wrong company name. --}}
+                                        <option value="Hello Transport">Hello Transport</option>
+                                        <option value="Hello Transport (Broker)">Hello Transport (Broker)</option>
                                         <option value="All State To State">Hello Transport (All State to State)</option>
                                     </select>
                                 </div>
@@ -151,7 +154,9 @@
             $('#siteSelector').on('change', function() {
                 let selectedSite = $(this).val();
 
-                if (selectedSite === 'Ship A1(Broker)') {
+                // Match on the "(Broker)" marker so BOTH the new value ("Hello Transport (Broker)")
+                // and any legacy "Ship A1(Broker)" record keep working.
+                if (selectedSite.indexOf('(Broker)') !== -1) {
                     $('.ShipA1Broker').removeClass('d-none').find('input').prop('disabled',
                         false);
                     $('.noShipA1Broker').addClass('d-none').find('input').prop('disabled',

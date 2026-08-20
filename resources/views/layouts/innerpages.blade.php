@@ -2655,6 +2655,22 @@ Agent: Thank you for your cooperation. We appreciate your attention to these det
   });
 })();
 </script>
+
+<!-- Bootstrap tooltips for the explanatory [?] icons (CR Applications, Employee Review, …).
+     Guarded so a page without Bootstrap JS can never throw here. -->
+<script>
+    (function () {
+        if (window.jQuery && jQuery.fn && jQuery.fn.tooltip) {
+            jQuery(function ($) {
+                $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
+                // Re-bind for content rendered later (e.g. the Employee Review modal).
+                $(document).on('shown.bs.modal', function (e) {
+                    $(e.target).find('[data-toggle="tooltip"]').tooltip({ container: 'body' });
+                });
+            });
+        }
+    })();
+</script>
 </body>
 
 </html>
