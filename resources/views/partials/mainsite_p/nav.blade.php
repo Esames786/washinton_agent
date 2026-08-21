@@ -23,19 +23,14 @@
 @php
 $check_panel = check_panel();
 
-if($check_panel == 1){
-$phoneaccess=explode(',',Auth::user()->emp_access_phone);
-}
-elseif($check_panel == 3)
-{
-    $phoneaccess = explode(',',Auth::user()->emp_access_test);
-}
-elseif($check_panel >= 7){ /* B6: new dynamic panels read their own access (default Website) */
-    $phoneaccess = explode(',', Auth::user()->accessForPanel($check_panel));
-}
-else{
-$phoneaccess=explode(',',Auth::user()->emp_access_web);
-}
+/* FIX: resolve EVERY panel through accessForPanel(), which maps panels 1-6 to their own
+   columns (emp_access_phone / emp_access_web / emp_access_test / panel_type_4..6), panels
+   7+ to the user_panel_access link table, and falls back safely.
+   The old if/else chain only handled panels 1, 3 and 7+ — panels 2, 4, 5 AND 6 all fell into
+   the same "else" and read emp_access_web. So an agent working on e.g. MULTAN (panel 6) was
+   actually checked against ISLAMABAD's (panel 2) permissions, and anything granted on Multan
+   only (dialer / mailbox / guide videos) never appeared. */
+$phoneaccess = explode(',', (string) Auth::user()->accessForPanel($check_panel));
 @endphp
 <?php
 if (!function_exists('get_user_name123')) {

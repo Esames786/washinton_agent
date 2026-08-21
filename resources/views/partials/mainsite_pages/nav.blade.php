@@ -23,19 +23,12 @@
 @php
 $check_panel = check_panel();
 
-if($check_panel == 1){
-$phoneaccess=explode(',',Auth::user()->emp_access_phone);
-}
-elseif($check_panel == 3)
-{
-    $phoneaccess = explode(',',Auth::user()->emp_access_test);
-}
-elseif($check_panel >= 7){ /* B6: new dynamic panels read their own access (default Website) */
-    $phoneaccess = explode(',', Auth::user()->accessForPanel($check_panel));
-}
-else{
-$phoneaccess=explode(',',Auth::user()->emp_access_web);
-}
+/* FIX (same as mainsite_p/nav): resolve EVERY panel through accessForPanel(). The old chain
+   handled only panels 1, 3 and 7+, so panels 2, 4, 5 AND 6 all read emp_access_web — an agent
+   on MULTAN (6) was checked against ISLAMABAD's (2) permissions and anything granted on Multan
+   only (dialer / mailbox / guide videos) never showed. The sidebars already did this correctly,
+   which is why the left icons worked while these dropdown items did not. */
+$phoneaccess = explode(',', (string) Auth::user()->accessForPanel($check_panel));
 @endphp
 <?php
 if (!function_exists('get_user_name123')) {
