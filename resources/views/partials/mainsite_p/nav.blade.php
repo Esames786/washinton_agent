@@ -1085,6 +1085,7 @@ if (!function_exists('get_user_name123')) {
     $(function () {
         var _cuaPrev = null; // #1: previous Carrier Update Approval count (to detect new arrivals)
         var _docsPrevIds = null; // #3/A: previous set of pending-document agent ids (to name new submitters)
+        var _helloPrevIds = null; // previous set of Hello agents awaiting approval (to name new signups)
         function fetchNavCounts() {
             $.getJSON("{{ route('nav.counts') }}", function (d) {
                 var cr = parseInt(d.cr_pending || 0, 10);
@@ -1151,6 +1152,30 @@ if (!function_exists('get_user_name123')) {
                     });
                 }
                 _docsPrevIds = docsList.map(function (a) { return a.id; });
+
+                // NEW HELLO AGENT SIGNUPS — hellotransport.com signups never create a CR
+                // application row, so nothing used to alert anyone about them. Notify (by name)
+                // when a new Hello agent is waiting for approval, and add them to the same
+                // Campaign Users badge so the number reflects everything pending.
+                var helloList = d.hello_pending_list || [];
+                var hello = helloList.length;
+                $('#cr_app_count').text(cr + hello).css('display', (cr + hello) > 0 ? 'flex' : 'none');
+                if (_helloPrevIds !== null) {
+                    helloList.forEach(function (a) {
+                        if (_helloPrevIds.indexOf(a.id) === -1) {
+                            var nm = a.name || 'A new agent';
+                            try { var a3 = document.getElementById('noti'); if (a3) { a3.play(); } } catch (e) {}
+                            try {
+                                if (typeof notif === 'function') {
+                                    notif({ msg: "<b>New Hello agent:</b> " + nm + " signed up and is awaiting approval.", type: "info", position: "right", multiline: true });
+                                } else if ($.growl) {
+                                    $.growl.notice({ title: "New Hello Agent", message: nm + " signed up and is awaiting approval." });
+                                }
+                            } catch (e) {}
+                        }
+                    });
+                }
+                _helloPrevIds = helloList.map(function (a) { return a.id; });
             });
         }
         setInterval(fetchNavCounts, 20000); // #1/#2: poll every 20s so badges feel real-time

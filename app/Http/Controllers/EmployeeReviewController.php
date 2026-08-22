@@ -19,11 +19,19 @@ class EmployeeReviewController extends Controller
      * CrazyRays agents. Returns an error response when the actor may not act on this target,
      * or null when the action is allowed.
      */
-    public static function denyIfHelloAndNotAdmin($userId): ?JsonResponse
+    public static function denyIfHelloAndNotAdmin($userId, bool $allowManager = true): ?JsonResponse
     {
         $actor = Auth::user();
         if ($actor && ((int) ($actor->role ?? 0) === 1 || optional($actor->userRole)->name === 'Admin')) {
             return null; // admins may do everything
+        }
+
+        // 2026-08-21: managers were blocked from activating Hello agents, which stalled onboarding.
+        // Managers may now handle Hello agents (activation / HR status / NDA / contract).
+        // The W-9 stays ADMIN-ONLY — it passes $allowManager = false.
+        if ($allowManager && $actor
+            && ((int) ($actor->role ?? 0) === 9 || optional($actor->userRole)->name === 'Manager')) {
+            return null;
         }
 
         $target = User::find($userId);

@@ -1426,8 +1426,28 @@ Route::middleware(['auth'])->group(function () {
             ->limit(50)
             ->get(['e.id', 'e.full_name']);
 
+        // Hello agents awaiting approval: created by the hellotransport.com signup (is_crazyrays = 0),
+        // still inactive (status 0) and not deleted. These never appear in cr_applications.
+        $__helloPending = \App\User::where('deleted', 0)
+            ->where('status', 0)
+            ->where(function ($q) {
+                $q->where('is_crazyrays', 0)->orWhereNull('is_crazyrays');
+            })
+            ->whereNotNull('email')
+            ->orderByDesc('id')
+            ->limit(50)
+            ->get(['id', 'name', 'last_name']);
+
         return response()->json([
             'cr_pending'      => \App\CrApplication::where('status', 'pending')->count(),
+            // Hello signups never create a cr_applications row — they become an agent directly and
+            // sit Inactive until approved, so nothing ever alerted anyone about them. Count those
+            // waiting-for-approval Hello agents and return who they are, like subcontractor_docs.
+            'hello_pending'      => $__helloPending->count(),
+            'hello_pending_list' => $__helloPending->map(fn ($r) => [
+                'id'   => (int) $r->id,
+                'name' => trim((($r->name ?? '') . ' ' . ($r->last_name ?? ''))) ?: ('Agent #' . $r->id),
+            ])->values(),
             'payment_pending' => \App\AgentOrderPayment::where('payment_status', 'Payment Pending')->count(),
             // #1: live count for the Carrier Update Approval folder (pstatus 36) so its sidebar
             // badge feels real-time like the other polled badges + triggers a notification.

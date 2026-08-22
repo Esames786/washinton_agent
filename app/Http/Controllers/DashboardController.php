@@ -476,8 +476,11 @@ class DashboardController extends Controller
     public function view_employee()
     {
         $roles = role::with([
+            // Logged-in agents first, then NEWEST first. Without the id ordering a brand-new
+            // agent (never logged in) sank to the bottom of a 50-per-page table, so freshly
+            // created Hello signups looked "missing" from View Employees.
             'users' => function ($q) {
-                $q->orderBy('is_login', 'DESC');
+                $q->orderBy('is_login', 'DESC')->orderBy('id', 'DESC');
             }
         ])->withCount('users')
             ->where('level', 1)
@@ -1228,8 +1231,11 @@ class DashboardController extends Controller
     public function employees()
     {
         $roles = role::with([
+            // Logged-in agents first, then NEWEST first. Without the id ordering a brand-new
+            // agent (never logged in) sank to the bottom of a 50-per-page table, so freshly
+            // created Hello signups looked "missing" from View Employees.
             'users' => function ($q) {
-                $q->orderBy('is_login', 'DESC');
+                $q->orderBy('is_login', 'DESC')->orderBy('id', 'DESC');
             }
         ])->withCount('users')
             ->where('level', 1)

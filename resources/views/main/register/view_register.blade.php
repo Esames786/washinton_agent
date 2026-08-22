@@ -1017,7 +1017,12 @@
                 // Agent status buttons.
                 // Hello agents are admin-only (client rule, 14-Aug): a manager sees the status and
                 // an explanatory note instead of buttons that the server would refuse anyway.
-                var revIsAdminActor = {{ (int) ((int) (Auth::user()->role ?? 0) === 1 || optional(Auth::user()->userRole)->name === 'Admin') }};
+                // Admins AND managers may activate/deactivate Hello agents (2026-08-21).
+                // Only the W-9 remains admin-only.
+                var revIsAdminActor = {{ (int) (
+                    (int) (Auth::user()->role ?? 0) === 1 || optional(Auth::user()->userRole)->name === 'Admin'
+                    || (int) (Auth::user()->role ?? 0) === 9 || optional(Auth::user()->userRole)->name === 'Manager'
+                ) }};
                 if (!revIsAdminActor && agent.brand_key !== 'crazyrays') {
                     $('#rev_agent_status_btns').html(
                         '<p class="small mb-0 ' + (agent.status == 1 ? 'text-success' : 'text-danger') + '">'

@@ -20,15 +20,11 @@ class RingCentralAccess
         $setting = user_setting::where('user_id', $user->id)->first();
         $ptype = $setting ? $setting->penal_type : 1;
 
-        if ($ptype == 1) {
-            $access = $user->emp_access_phone;
-        } elseif ($ptype == 3) {
-            $access = $user->emp_access_test;
-        } elseif ($ptype >= 7) {
-            $access = $user->accessForPanel($ptype); // B6: new dynamic panels read their own access
-        } else {
-            $access = $user->emp_access_web;
-        }
+        // FIX: resolve EVERY panel through accessForPanel(). The old chain handled only panels
+        // 1, 3 and 7+, so panels 2, 4, 5 AND 6 all read emp_access_web — an agent on MULTAN (6)
+        // with the dialer granted on Multan was checked against ISLAMABAD's permissions, failed,
+        // and got bounced straight back to /dashboard ("clicking it just reloads the dashboard").
+        $access = $user->accessForPanel($ptype);
 
         $permissions = array_filter(explode(',', (string) $access));
 
