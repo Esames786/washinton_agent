@@ -54,10 +54,10 @@ class PublicSignupController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'name'           => 'required|string|max:50',
+            'name'           => ['required','string','max:50','regex:/^[A-Za-z][A-Za-z\s.\'\-]*$/'],
             // Middle + last name optional (round-2); display name (slug) is auto-generated below.
-            'middle_name'    => 'nullable|string|max:50',
-            'last_name'      => 'nullable|string|max:50',
+            'middle_name'    => ['nullable','string','max:50','regex:/^[A-Za-z][A-Za-z\s.\'\-]*$/'],
+            'last_name'      => ['nullable','string','max:50','regex:/^[A-Za-z][A-Za-z\s.\'\-]*$/'],
             'email'          => 'required|email|max:50|unique:user,email',
             'password'       => 'required|string|min:8|confirmed',
             'phone'          => 'required|string|max:50',
@@ -68,18 +68,18 @@ class PublicSignupController extends Controller
             'experience'     => 'nullable|string|max:2000',
             'shift_type_id'  => 'required|integer|min:1',
             'account_type_id'=> 'required|integer|in:1,2,3',
-            'father_name'    => 'nullable|string|max:100',
+            'father_name'    => ['nullable','string','max:100','regex:/^[A-Za-z][A-Za-z\s.\'\-]*$/'],
             // #13: must be at least 18 years old
             'dob'            => 'required|date|before_or_equal:' . \Carbon\Carbon::now()->subYears(18)->format('Y-m-d'),
             'gender'         => 'nullable|in:male,female,other',
             'marital_status' => 'nullable|in:single,married,divorced,widowed',
             // State ID (US) reuses the existing `cnic` column — no new column for it.
             'cnic'           => 'required|string|max:20',
-            'city'           => 'required|string|max:100',
-            'state'          => 'required|string|max:100',
+            'city'           => ['required','string','max:100','regex:/^[A-Za-z][A-Za-z\s.\'\-]*$/'],
+            'state'          => ['required','string','max:100','regex:/^[A-Za-z][A-Za-z\s.\'\-]*$/'],
             'country'        => 'required|string|max:100',
             // Hello onboarding additions — mirrored by the front-end validator in the form.
-            'mother_name'    => 'nullable|string|max:100',
+            'mother_name'    => ['nullable','string','max:100','regex:/^[A-Za-z][A-Za-z\s.\'\-]*$/'],
             'zip'            => ['required', 'string', 'max:20', 'regex:/^\d{5}(-\d{4})?$/'],
             'timezone'       => 'required|string|max:64|timezone',
             'terms_accepted' => 'accepted',

@@ -19,17 +19,10 @@
                 @php
                     $check_panel = check_panel();
                 
-                    if($check_panel == 1){
-                
-                    $phoneaccess=explode(',',Auth::user()->emp_access_phone);
-                    }
-                    elseif($check_panel == 3)
-                    {
-                        $phoneaccess = explode(',',Auth::user()->emp_access_test);
-                    }
-                    else{
-                    $phoneaccess=explode(',',Auth::user()->emp_access_web);
-                    }
+                    /* FIX: every panel resolves through accessForPanel() — the old chain sent panels
+   2/4/5/6 to emp_access_web, so agents on Multan etc. were checked against the wrong
+   panel's permissions (missing phone numbers, logout questions, etc.). */
+$phoneaccess = explode(',', (string) Auth::user()->accessForPanel($check_panel));
                 @endphp
                 <h4 style="font-size:16px;" class="m-auto text-center">Vehicle Name: <span class="text-primary ml-1" title="{{$order->ymk}}">{{$vehicle}}</span></h4>
             </div>

@@ -310,7 +310,7 @@
                             <td colspan="4" >Payment Status::
                                 <span class="badge badge-pill badge-default mt-2">Payment: {{$data->paid_status}}</span> </h5>
                                 @if($data->payment_status == "Paid")
-                                    <h5 class="list-group-item">Payment Date: : <span>{{ date("M-d-y h:i:s a",strtotime($val->created_at))}}</span></h5>
+                                    <h5 class="list-group-item">Payment Date: : <span>{{ date("M-d-y h:i:s a", strtotime(optional($data->orderpayment)->updated_at ?? $data->updated_at)) }}</span></h5>
                                 @endif
                             </td>
                         </tr>

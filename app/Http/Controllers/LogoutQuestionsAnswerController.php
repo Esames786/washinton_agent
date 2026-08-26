@@ -52,18 +52,10 @@ class LogoutQuestionsAnswerController extends Controller
     public function create()
     {
         $paneltype = $this->check_panel();
-        if($paneltype == 1)
-        {
-            $phoneaccess = explode(',',Auth::user()->emp_access_phone);
-        }
-        elseif($paneltype >= 7)
-        {
-            $phoneaccess = explode(',',Auth::user()->accessForPanel($paneltype));
-        }
-        else
-        {
-            $phoneaccess = explode(',',Auth::user()->emp_access_web);
-        }
+        // FIX: resolve EVERY panel via accessForPanel() — the old chain sent panels 2-6 to
+        // emp_access_web, so a Multan agent was checked against Islamabad permissions and
+        // could log out without answering (code 116 looked missing).
+        $phoneaccess = explode(',', (string) Auth::user()->accessForPanel($paneltype));
         if(in_array("116", $phoneaccess) && Auth::user()->role != 1)
         {
             $role = Auth()->user()->role;

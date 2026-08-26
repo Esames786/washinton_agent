@@ -888,11 +888,10 @@
                                     @php
                                         $check_panel = check_panel();
 
-                                        if ($check_panel == 1) {
-                                            $phoneaccess = explode(',', Auth::user()->emp_access_phone);
-                                        } else {
-                                            $phoneaccess = explode(',', Auth::user()->emp_access_web);
-                                        }
+                                        /* FIX: every panel resolves through accessForPanel() — the old chain sent panels
+   2/4/5/6 to emp_access_web, so agents on Multan etc. were checked against the wrong
+   panel's permissions (missing phone numbers, logout questions, etc.). */
+$phoneaccess = explode(',', (string) Auth::user()->accessForPanel($check_panel));
                                     @endphp
                                     <ul class="nav panel-tabs">
                                         <li class=""><a href="#tab1" class="active"

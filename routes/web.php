@@ -381,6 +381,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/save_subcontractor', 'DashboardController@save_employee')->name('save_subcontractor');
         Route::post('/save_employee', 'DashboardController@save_employee')->name('save_employee'); // legacy alias
         Route::get('/view_subcontractor', 'DashboardController@view_employee')->name('view_subcontractor');
+        // Access Guide — admin & manager reference: every permission code with a plain definition.
+        Route::get('/access-guide', function () {
+            return view('main.access_guide.index');
+        })->name('access.guide');
         Route::get('/view_employee', 'DashboardController@view_employee'); // legacy alias
         Route::post('/show_own_order', 'DashboardController@show_own_order');
         Route::post('/user-ss', 'DashboardController@user_ss');
@@ -1432,6 +1436,14 @@ Route::middleware(['auth'])->group(function () {
             ->where('status', 0)
             ->where(function ($q) {
                 $q->where('is_crazyrays', 0)->orWhereNull('is_crazyrays');
+            })
+            // Only REAL signups: every hello signup creates a linked HR record via the bridge.
+            // Legacy/system accounts (e.g. "Reference Order") that happen to be status=0 were
+            // inflating the badge past what the screens show.
+            ->whereExists(function ($q) {
+                $q->select(\Illuminate\Support\Facades\DB::raw(1))
+                  ->from('hr_employees')
+                  ->whereColumn('hr_employees.agent_id', 'user.id');
             })
             ->whereNotNull('email')
             ->orderByDesc('id')

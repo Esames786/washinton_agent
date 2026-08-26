@@ -949,6 +949,13 @@ if (!function_exists('get_user_name123')) {
                                 </a>
                             @endif
                             @if(in_array('168', $phoneaccess) || Auth::user()->role == 1)
+                            @if(Auth::user()->role == 1 || Auth::user()->role == 9)
+                                {{-- Access Guide: every permission code explained (admin & manager only) --}}
+                                <a class="dropdown-item d-flex" href="{{ route('access.guide') }}">
+                                    <i class="fa fa-key pr-2 mt-1 ml-1"></i>
+                                    <div class="">Access Guide</div>
+                                </a>
+                            @endif
                                 <a class="dropdown-item d-flex" href="{{ route('guide-videos.viewer') }}">
                                     <i class="fa fa-play-circle pr-2 mt-1 ml-1"></i>
                                     <div class="">Guide Videos</div>
@@ -1159,7 +1166,25 @@ if (!function_exists('get_user_name123')) {
                 // Campaign Users badge so the number reflects everything pending.
                 var helloList = d.hello_pending_list || [];
                 var hello = helloList.length;
-                $('#cr_app_count').text(cr + hello).css('display', (cr + hello) > 0 ? 'flex' : 'none');
+                // Hello signups belong on the SUBCONTRACTORS badge/dropdown (they live under
+                // View Subcontractors, not the CR Applications screen) — so the campaign badge
+                // counts CR applications ONLY and always matches its own screen.
+                var people = docs + hello;
+                $('#subcontractor_docs_count').text(people > 99 ? '99+' : people).toggle(people > 0);
+                if (hello > 0 && $menu.length) {
+                    var vUrl = "{{ url('view_employee') }}";
+                    var h2 = '';
+                    helloList.forEach(function (a) {
+                        var nm2 = $('<span>').text(a.name || 'Agent #' + a.id).html();
+                        h2 += '<a class="sc-doc-item" href="' + vUrl + '" style="position:static;float:none;display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-bottom:1px solid #f3f4f6;white-space:normal;line-height:1.35;text-decoration:none;color:#333;min-height:0;height:auto;">'
+                              + '<i class="fa fa-user-plus" style="color:#2563eb;margin-top:2px;flex-shrink:0;line-height:1.35;"></i>'
+                              + '<span style="display:block;line-height:1.35;">'
+                              + '<span style="display:block;font-weight:600;color:#111827;font-size:13px;line-height:1.35;">' + nm2 + '</span>'
+                              + '<span style="display:block;font-size:11px;color:#9ca3af;line-height:1.35;">signed up — awaiting approval</span>'
+                              + '</span></a>';
+                    });
+                    if (docs === 0) { $menu.html(h2); } else { $menu.append(h2); }
+                }
                 if (_helloPrevIds !== null) {
                     helloList.forEach(function (a) {
                         if (_helloPrevIds.indexOf(a.id) === -1) {
