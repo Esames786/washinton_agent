@@ -51,6 +51,15 @@ return [
             'days' => 7,
         ],
 
+        // R-Dialer history sync (ringcentral:sync-history) — was undefined, which made every
+        // daily cron run fall back to the EMERGENCY logger.
+        'ringcentral_sync_history' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/ringcentral_sync_history.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),

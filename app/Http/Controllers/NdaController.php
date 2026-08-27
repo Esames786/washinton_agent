@@ -209,7 +209,8 @@ class NdaController extends Controller
                 'document_setting_id' => $settingId,
                 'file_path'           => $relPath,
                 'file_name'           => basename($relPath),
-                'mime_type'           => null,
+                // hr_employee_documents.mime_type is NOT NULL — null made every CNIC mirror fail.
+                'mime_type'           => $this->mimeFromExtension($relPath),
                 'status'              => 0,
                 'created_at'          => $signedAt,
                 'updated_at'          => $signedAt,
@@ -217,6 +218,16 @@ class NdaController extends Controller
         } catch (\Throwable $e) {
             Log::warning('NDA mirror CNIC doc failed', ['user_id' => $userId, 'setting' => $settingId, 'error' => $e->getMessage()]);
         }
+    }
+
+    private function mimeFromExtension(string $path): string
+    {
+        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        $map = [
+            'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'jfif' => 'image/jpeg', 'png' => 'image/png',
+            'gif' => 'image/gif', 'webp' => 'image/webp', 'pdf' => 'application/pdf',
+        ];
+        return $map[$ext] ?? 'application/octet-stream';
     }
 
     private function buildPdf($user, string $ndaContent, Request $request, $signedAt, string $ip, ?string $cnicFrontPath, ?string $cnicBackPath): ?string

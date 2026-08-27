@@ -12,6 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
+        'r/webhook',        // RingCentral webhook (Verification-Token header) — 419 blocked registration
         'get-auto-chat2',
         'get-auto-convo',
         // Bridge endpoints called from external portals (crazyrays, washinton_hr)

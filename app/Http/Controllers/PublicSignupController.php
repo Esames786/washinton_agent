@@ -60,7 +60,7 @@ class PublicSignupController extends Controller
             'last_name'      => ['nullable','string','max:50','regex:/^[A-Za-z][A-Za-z\s.\'\-]*$/'],
             'email'          => 'required|email|max:50|unique:user,email',
             'password'       => 'required|string|min:8|confirmed',
-            'phone'          => 'required|string|max:50',
+            'phone'          => ['required', 'string', 'max:20', 'regex:/^(\+1\s?)?\d{10}$/'],
             'address'        => 'required|string|max:255',
             // Hello public signup is Order Taker / Sales only (carrier removed from the form;
             // the CrazyRays bridge has its own endpoint).
@@ -89,6 +89,7 @@ class PublicSignupController extends Controller
             'cnic.required'        => 'State ID is required.',
             'zip.required'         => 'Zip code is required.',
             'zip.regex'            => 'Enter a valid zip code (12345 or 12345-6789).',
+            'phone.regex'          => 'Enter a 10-digit US phone number.',
             'timezone.required'    => 'Please choose your timezone.',
             'timezone.timezone'    => 'Please choose a valid timezone.',
             'terms_accepted.accepted' => 'You must accept the Terms & Conditions to continue.',

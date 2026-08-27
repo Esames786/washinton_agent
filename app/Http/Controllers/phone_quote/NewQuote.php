@@ -1212,14 +1212,20 @@ class NewQuote extends Controller
 
             $autoorder->pickup_when = $request->when_pickup;
             $autoorder->delivery_when = $request->when_delivery;
-            if (isset($request->price)) {
-                $autoorder->payment = $request->price;
+            // Price columns are numeric — a pasted location string ("Freeport,TX,77541") used to
+            // throw a QueryException and 500 the whole update. Keep digits/decimal only; skip if empty.
+            $__num = function ($v) {
+                $v = preg_replace('/[^0-9.]/', '', (string) $v);
+                return ($v === '' || $v === '.') ? null : $v;
+            };
+            if (isset($request->price) && $__num($request->price) !== null) {
+                $autoorder->payment = $__num($request->price);
             }
-            if (isset($request->driver_price)) {
-                $autoorder->driver_price = $request->driver_price;
+            if (isset($request->driver_price) && $__num($request->driver_price) !== null) {
+                $autoorder->driver_price = $__num($request->driver_price);
             }
-            if (isset($request->start_price)) {
-                $autoorder->start_price = $request->start_price;
+            if (isset($request->start_price) && $__num($request->start_price) !== null) {
+                $autoorder->start_price = $__num($request->start_price);
             }
             if (isset($request->how_did_you_find_us)) {
                 $autoorder->how_did_you_find_us = $request->how_did_you_find_us;
@@ -3009,6 +3015,11 @@ class NewQuote extends Controller
         if (in_array($method, ['card', 'zelle', 'cashapp', 'venmo', 'paypal', 'cod', 'cop'], true)
             && \Illuminate\Support\Facades\Schema::hasColumn('order', 'link_pay_method')) {
             AutoOrder::where('id', $request->orderid)->update(['link_pay_method' => $method]);
+        }
+
+        $toEmail = trim((string) $request->email);
+        if ($toEmail === '' || !filter_var($toEmail, FILTER_VALIDATE_EMAIL)) {
+            return 'Email could NOT be sent — the customer has no valid email address on this order. Add the email first.';
         }
 
         $orderid = base64_encode($request->orderid);
@@ -6424,6 +6435,10 @@ class NewQuote extends Controller
 
     public function checkNewChat()
     {
+        // Polled every few seconds — after the session expires this used to 500 on every tick.
+        if (!Auth::check()) {
+            return response()->json(['new_found' => 0, 'logged_out' => true]);
+        }
         $id = Auth::user()->id;
 
         $chat = chat::where('touserId', $id)
