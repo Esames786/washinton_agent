@@ -57,6 +57,7 @@
 | NDA ID images (agent-portal signup) | hellotransport.com / florida | same doc-file route (probes agent portals too) |
 | W-9 PDFs | hellotransport.com | absolute `w9_forms.document_url` |
 | Agent payment screenshots | agent portal where uploaded | `portal_file_url()` helper (local → sibling domain) |
+| CR application resumes / documents (`cr_resumes/`, `cr_documents/`) | florida (applications are always POSTed there) | `portal_file_url()` in cr_applications/show + edit_employee; approve-flow HR transfer reads via `CrApplicationController::readPortalFile()` (local → sibling HTTPS) |
 | Customer links in emails | always hellotransport.com (`customer_url()`) / shipa1.com | n/a |
 
 ## 5. Danger zones (what breaks what)

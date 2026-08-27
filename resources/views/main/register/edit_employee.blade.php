@@ -2151,7 +2151,7 @@
                         </div>
                         <div class="col-md-4">
                             @if($crApp->resume_path)
-                                <a href="{{ asset('storage/' . $crApp->resume_path) }}" target="_blank" class="btn btn-sm btn-outline-primary mb-2 w-100">
+                                <a href="{{ portal_file_url('storage/' . $crApp->resume_path) }}" target="_blank" class="btn btn-sm btn-outline-primary mb-2 w-100">
                                     <i class="fas fa-download mr-1"></i> Download Resume
                                 </a>
                             @endif
@@ -2160,7 +2160,7 @@
                                 @foreach($crApp->documents as $doc)
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <small>{{ $doc['title'] ?? 'Document' }}</small>
-                                        <a href="{{ asset('storage/' . $doc['path']) }}" target="_blank" class="btn btn-xs btn-outline-secondary ml-2">
+                                        <a href="{{ portal_file_url('storage/' . $doc['path']) }}" target="_blank" class="btn btn-xs btn-outline-secondary ml-2">
                                             <i class="fas fa-download"></i>
                                         </a>
                                     </div>

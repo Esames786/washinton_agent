@@ -252,27 +252,27 @@ class CrApplicationController extends Controller
             $docsToTransfer = [];
 
             if ($application->resume_path) {
-                $fullPath = storage_path('app/public/' . $application->resume_path);
-                if (file_exists($fullPath)) {
-                    $ext = pathinfo($fullPath, PATHINFO_EXTENSION) ?: 'pdf';
+                $file = $this->readPortalFile($application->resume_path);
+                if ($file) {
+                    $ext = pathinfo($application->resume_path, PATHINFO_EXTENSION) ?: 'pdf';
                     $docsToTransfer[] = [
                         'doc_id'   => 12,
                         'filename' => 'resume.' . $ext,
-                        'mime_type'=> mime_content_type($fullPath) ?: 'application/octet-stream',
-                        'content'  => base64_encode(file_get_contents($fullPath)),
+                        'mime_type'=> $file['mime'],
+                        'content'  => base64_encode($file['content']),
                     ];
                 }
             }
 
             foreach ($application->documents ?? [] as $doc) {
                 if (empty($doc['path']) || empty($doc['doc_id'])) continue;
-                $fullPath = storage_path('app/public/' . $doc['path']);
-                if (!file_exists($fullPath)) continue;
+                $file = $this->readPortalFile($doc['path']);
+                if (!$file) continue;
                 $docsToTransfer[] = [
                     'doc_id'   => (int) $doc['doc_id'],
                     'filename' => $doc['filename'] ?? basename($doc['path']),
-                    'mime_type'=> mime_content_type($fullPath) ?: 'application/octet-stream',
-                    'content'  => base64_encode(file_get_contents($fullPath)),
+                    'mime_type'=> $file['mime'],
+                    'content'  => base64_encode($file['content']),
                 ];
             }
 
@@ -333,5 +333,54 @@ class CrApplicationController extends Controller
 
         return redirect()->route('cr-applications.index')
             ->with('success', "Application for {$application->full_name} has been rejected.");
+    }
+    /**
+     * Read an uploaded CR-application file (resume / documents) that may live on the SIBLING
+     * agent-portal disk — hellotransport.com and florida.crazyrayssolutions.com.pk share the DB
+     * but NOT the filesystem, and applications are always uploaded on florida. Local first,
+     * otherwise fetched over HTTPS from the sibling, so approving from EITHER domain still
+     * transfers the files to HR. Returns ['content' => ..., 'mime' => ...] or null.
+     */
+    private function readPortalFile($relativePath)
+    {
+        $relativePath = ltrim((string) $relativePath, '/');
+        if ($relativePath === '') {
+            return null;
+        }
+
+        $local = storage_path('app/public/' . $relativePath);
+        if (is_file($local)) {
+            return [
+                'content' => file_get_contents($local),
+                'mime'    => (@mime_content_type($local) ?: 'application/octet-stream'),
+            ];
+        }
+
+        $url = portal_file_url('storage/' . $relativePath);
+        if (!preg_match('#^https?://#i', $url)) {
+            return null;
+        }
+
+        try {
+            $ctx     = stream_context_create(['http' => ['timeout' => 20, 'ignore_errors' => true]]);
+            $content = @file_get_contents($url, false, $ctx);
+            $status  = 0;
+            $mime    = 'application/octet-stream';
+            foreach ((array) ($http_response_header ?? []) as $h) {
+                if (preg_match('#^HTTP/\S+\s+(\d{3})#', $h, $m)) {
+                    $status = (int) $m[1];
+                } elseif (stripos($h, 'Content-Type:') === 0) {
+                    $mime = trim(explode(';', substr($h, 13))[0]) ?: $mime;
+                }
+            }
+            if ($content === false || $content === '' || $status !== 200) {
+                Log::warning('CrApplicationController readPortalFile: sibling fetch failed', ['url' => $url, 'status' => $status]);
+                return null;
+            }
+            return ['content' => $content, 'mime' => $mime];
+        } catch (\Throwable $e) {
+            Log::warning('CrApplicationController readPortalFile: sibling fetch error', ['url' => $url, 'error' => $e->getMessage()]);
+            return null;
+        }
     }
 }

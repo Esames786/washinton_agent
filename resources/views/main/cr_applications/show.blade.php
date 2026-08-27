@@ -155,7 +155,7 @@
                 <div class="card-body">
                     @if($application->resume_path)
                         {{-- #10: View (opens in a new tab) instead of Download --}}
-                        <a href="{{ asset('storage/' . $application->resume_path) }}" target="_blank" class="btn btn-sm btn-outline-primary w-100">
+                        <a href="{{ portal_file_url('storage/' . $application->resume_path) }}" target="_blank" class="btn btn-sm btn-outline-primary w-100">
                             <i class="fas fa-eye mr-1"></i> View Resume
                         </a>
                     @else
@@ -198,7 +198,7 @@
                                 <span class="d-flex align-items-center">
                                     @if($received)
                                         <span class="badge badge-success mr-2"><i class="fas fa-check"></i> Received</span>
-                                        <a href="{{ asset('storage/' . $doc['path']) }}" target="_blank" class="btn btn-xs btn-outline-secondary">
+                                        <a href="{{ portal_file_url('storage/' . $doc['path']) }}" target="_blank" class="btn btn-xs btn-outline-secondary">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                     @else
