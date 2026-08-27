@@ -556,7 +556,7 @@ html, body { height: 100%; margin: 0; }
 
         if (!val('name'))       fail('name', 'First name is required.');
         // Letters-only format for people/place names (client rule): letters, spaces, . ' -
-        var NAME_RE = /^[A-Za-z][A-Za-zs.'-]* ;
+        var NAME_RE = /^[A-Za-z][A-Za-z\s.'-]*$/;
         [['name','First name'],['middle_name','Middle name'],['last_name','Last name'],['father_name',"Father / Mother name"],['mother_name','Mother name'],['city','City'],['state','State']].forEach(function (f) {
             var fv = val(f[0]);
             if (fv && !NAME_RE.test(fv)) fail(f[0], f[1] + ' may contain letters only.');
@@ -613,7 +613,7 @@ html, body { height: 100%; margin: 0; }
         ['name','middle_name','last_name','father_name','mother_name','city','state'].forEach(function (n) {
             var el = document.querySelector('#signupForm [name="' + n + '"]');
             if (el) el.addEventListener('input', function () {
-                var c = this.value.replace(/[^A-Za-zs.'-]/g, ''); if (c !== this.value) this.value = c;
+                var c = this.value.replace(/[^A-Za-z\s.'-]/g, ''); if (c !== this.value) this.value = c;
             });
         });
         var zipEl = document.querySelector('#signupForm [name="zip"]');
