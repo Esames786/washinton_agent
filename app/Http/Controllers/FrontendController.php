@@ -240,6 +240,18 @@ class FrontendController extends Controller
             Log::error('FrontendController submitQuoteRequest: ' . $e->getMessage());
         }
 
+        // Client (26-Aug): website quotes must appear in the NEW folder / search IMMEDIATELY,
+        // not only after an order taker is assigned. Create the unassigned order right away —
+        // shipa1_queryAssignDirect already reassigns an existing linked order instead of creating
+        // a duplicate, so the Assign OT flow keeps working unchanged.
+        if (isset($query)) {
+            try {
+                $this->createUnassignedOrderFromQuery($query);
+            } catch (\Throwable $e) {
+                Log::error('FrontendController: unassigned order creation failed', ['query_id' => $query->id ?? null, 'error' => $e->getMessage()]);
+            }
+        }
+
         // Send confirmation emails — non-blocking, failure does not affect the redirect
         if (isset($query)) {
             try {
@@ -258,6 +270,111 @@ class FrontendController extends Controller
         }
 
         return redirect()->route('Frontend.qoute.confirmation');
+    }
+
+    /**
+     * Create the UNASSIGNED order for a fresh website quote so it is visible in the New
+     * folder / search / dashboard summary immediately. Field-copy mirrors the create branch
+     * of DashboardController@shipa1_queryAssignDirect — that method finds this order via
+     * $query->order_id and simply assigns it (its existing dedupe branch), never duplicating.
+     * Contact-form leads (no vehicle/route) intentionally do NOT come through here.
+     */
+    private function createUnassignedOrderFromQuery(\App\ShipaQuery $query): void
+    {
+        if (!empty($query->order_id)) {
+            return; // already linked
+        }
+
+        $order = new \App\AutoOrder();
+        $order->order_taker_id  = null; // unassigned — “Assign To: Not Assigned” until Assign OT
+        $order->oname           = $query->oname;
+        $order->oemail          = $query->oemail;
+        $order->ophone          = $query->ophone;
+        $order->main_ph         = $query->main_ph;
+        $order->ymk             = $query->ymk;
+        $order->year            = $query->year;
+        $order->make            = $query->make;
+        $order->model           = $query->model;
+        $order->vehicle_price   = $query->vehicle_price ?? '';
+        $order->type            = $query->type;
+        $order->vehicle_opt     = $query->vehicle_opt;
+        $order->condition       = $query->condition;
+        $order->car_type        = $query->car_type;
+        $order->transport       = $query->transport;
+        $order->originzsc       = $query->originzsc;
+        $order->originzip       = $query->originzip;
+        $order->originstate     = $query->originstate;
+        $order->origincity      = $query->origincity;
+        $order->destinationzsc  = $query->destinationzsc;
+        $order->destinationzip  = $query->destinationzip;
+        $order->destinationstate= $query->destinationstate;
+        $order->destinationcity = $query->destinationcity;
+        $order->add_info        = $query->add_info;
+        $order->cname           = $query->cname;
+        $order->cemail          = $query->cemail;
+        $order->paneltype       = $query->paneltype;
+        $order->ip_address      = $query->ip_address;
+        $order->ip_details      = $query->ip_details ?? null;
+        $order->ipcity          = $query->ipcity;
+        $order->ipregion        = $query->ipregion;
+        $order->ipcountry       = $query->ipcountry;
+        $order->iploc           = $query->iploc ?? null;
+        $order->ippostal        = $query->ippostal;
+        $order->source          = $query->source ?? 'Website';
+        $order->pstatus         = 0;
+
+        // Heavy Equipment dimensions (car_type=2)
+        $order->length_ft       = $query->length_ft ?? null;
+        $order->width_ft        = $query->width_ft  ?? null;
+        $order->height_ft       = $query->height_ft ?? null;
+        $order->weight          = $query->weight    ?? null;
+
+        $order->save();
+
+        // Freight detail row (car_type=3 → Dryvan)
+        if ((int) $query->car_type === 3) {
+            $freight = new \App\order_freight();
+            $freight->order_id         = $order->id;
+            $freight->total_weight_lbs = $query->weight ?? null;
+            if ($query->add_info) {
+                foreach (explode(' | ', $query->add_info) as $part) {
+                    if (strpos($part, 'Freight Class: ') === 0) {
+                        $freight->frieght_class = trim(str_replace('Freight Class: ', '', $part));
+                    } elseif (strpos($part, 'Commodity: ') === 0) {
+                        $freight->shipment_prefences = trim(str_replace('Commodity: ', '', $part));
+                        $freight->commodity_detail   = $freight->shipment_prefences;
+                    } elseif (strpos($part, 'Shipping Mode: ') === 0) {
+                        $freight->trailer_type = trim(str_replace('Shipping Mode: ', '', $part));
+                    }
+                }
+            }
+            $freight->save();
+        }
+
+        // Linked records (userId 1 = system, like other customer-originated flows)
+        $payment = new \App\orderpayment();
+        $payment->orderId = $order->id;
+        $payment->save();
+
+        $card = new \App\creditcard();
+        $card->orderId = $order->id;
+        $card->save();
+
+        $rep = new \App\report();
+        $rep->userId  = 1;
+        $rep->orderId = $order->id;
+        $rep->pstatus = 0;
+        $rep->save();
+
+        $single = new \App\singlereport();
+        $single->userId  = 1;
+        $single->orderId = $order->id;
+        $single->pstatus = 0;
+        $single->save();
+
+        // Link the query to its order — this is what makes Assign OT reuse it.
+        $query->order_id = $order->id;
+        $query->save();
     }
 
     /**
