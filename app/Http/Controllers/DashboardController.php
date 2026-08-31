@@ -2544,9 +2544,19 @@ class DashboardController extends Controller
                 }
             }
 
+            // Search is an admin/manager tool — the box is hidden for agents in the blade and the
+            // param is ignored here too (front+back). NOTE: the old ungrouped ->orWhere() leaked
+            // past the unassigned/state filters, so any random text matching one email showed
+            // EVERY website quote to the agent.
             if ($request->has('search') && $request->search !== null) {
-                $query->where('oname', 'LIKE', '%' . $request->search . '%')
-                    ->orWhere('oemail', 'LIKE', '%' . $request->search . '%');
+                $ptype  = $this->check_user_setting($user->id);
+                $access = explode(',', (string) $user->accessForPanel($ptype));
+                if ($user->role == 1 || $user->role == 9 || in_array('147', $access) || in_array('148', $access)) {
+                    $query->where(function ($q) use ($request) {
+                        $q->where('oname', 'LIKE', '%' . $request->search . '%')
+                          ->orWhere('oemail', 'LIKE', '%' . $request->search . '%');
+                    });
+                }
             }
 
             if ($request->has('withHistory') && $request->withHistory !== null) {

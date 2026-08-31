@@ -287,39 +287,10 @@
                             </div>
                         </div>
                     @else
-
-                        <div class="card-header">
-                            <div class="container-fluid">
-                                <div class="col-lg-12 p-0">
-                                    <div class="row">
-                                        <div class="col-lg-3">
-                                            <label style="float: left">Search</label>
-                                            <div class='input-group'>
-                                                <input type='text' required name="searchComp" id="searchComp"
-                                                       class="form-control searchComp"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {{-- Client (31-Aug): no search box for non-admin users on Website Query --}}
                     @endif
                 @else
-                    <div class="card-header">
-                        <div class="container-fluid">
-                            <div class="col-lg-12 p-0">
-                                <div class="row">
-                                    <div class="col-lg-3">
-                                        <label style="float: left">Search</label>
-                                        <div class='input-group'>
-                                            <input type='text' required name="searchComp" id="searchComp"
-                                                   class="form-control searchComp"/>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {{-- Client (31-Aug): no search box for agents on Website Query --}}
                 @endif
 
                 <div class="card-body">
