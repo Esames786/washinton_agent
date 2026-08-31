@@ -67,12 +67,13 @@ class HrPortalBridgeService
      * @param  int    $agentId    The washinton_agent user.id (stored as hr_employees.agent_id)
      * @param  array  $documents  [['doc_id'=>int, 'filename'=>str, 'mime_type'=>str, 'content'=>base64str], ...]
      */
-    public function attachDocuments(int $agentId, array $documents): array
+    public function attachDocuments(int $agentId, array $documents, ?string $baseUrl = null): array
     {
         return $this->post(
             '/bridge/employee/attach-documents',
             ['agent_id' => $agentId, 'documents' => $documents],
-            'Unable to attach documents to HR employee.'
+            'Unable to attach documents to HR employee.',
+            $baseUrl
         );
     }
 
@@ -95,9 +96,9 @@ class HrPortalBridgeService
     /**
      * Shared HTTP POST logic for all HR portal bridge calls.
      */
-    protected function post(string $endpoint, array $payload, string $fallbackMessage): array
+    protected function post(string $endpoint, array $payload, string $fallbackMessage, ?string $baseOverride = null): array
     {
-        $baseUrl   = rtrim((string) config('bridge.hrportal.base_url'), '/');
+        $baseUrl   = rtrim((string) ($baseOverride ?: config('bridge.hrportal.base_url')), '/');
         $sharedKey = (string) config('bridge.hrportal.shared_key');
 
         if (blank($baseUrl)) {

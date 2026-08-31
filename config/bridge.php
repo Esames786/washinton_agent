@@ -15,6 +15,9 @@ return [
         'agent_login_endpoint'        => env('HRPORTAL_AGENT_LOGIN_ENDPOINT', '/bridge/agent/login'),
         'agent_status_endpoint'       => env('HRPORTAL_AGENT_STATUS_ENDPOINT', '/bridge/agent/status'),
         'create_employee_endpoint'    => env('HRPORTAL_CREATE_EMPLOYEE_ENDPOINT', '/bridge/employee/create'),
+        // CrazyRays employees' documents must land on the CR HR portal's DISK (four portals
+        // share the DB but not the filesystem) — base_url points at hr.hellotransport.com.
+        'cr_base_url'                 => env('HRPORTAL_CR_BASE_URL', 'https://hr.crazyrayssolutions.com.pk'),
     ],
 
     /*

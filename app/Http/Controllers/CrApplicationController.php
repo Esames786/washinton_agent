@@ -277,7 +277,9 @@ class CrApplicationController extends Controller
             }
 
             if ($docsToTransfer) {
-                $this->hrBridge->attachDocuments($user->id, $docsToTransfer);
+                // CR applicants use hr.crazyrayssolutions.com.pk — send the files to THAT disk
+                // so their subcontractor profile can serve them locally.
+                $this->hrBridge->attachDocuments($user->id, $docsToTransfer, (string) config('bridge.hrportal.cr_base_url'));
             }
         } catch (\Throwable $e) {
             Log::warning('CrApplicationController approve: document transfer to HR failed', [
