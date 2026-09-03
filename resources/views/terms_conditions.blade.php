@@ -55,11 +55,7 @@
         <h2>9. Customer Ownership and Documentation</h2>
         <p>The customer affirms legal ownership and must provide documentation when requested.</p>
 
-        <h2>10. Brokerage Role and Independent Subcontractors</h2>
-        <p>HelloTransport operates solely as a brokerage company; CrazyRays users and subcontractors have no dependency on, or engagement with, HelloTransport.</p>
-        <p>Subcontractors have no employment association or relationship with HelloTransport.</p>
-
-        <h2>11. Eligibility (18+)</h2>
+        <h2>10. Eligibility (18+)</h2>
         <p>You must be at least 18 years of age to register, sign up, or enter into any agreement. Individuals under 18 are not eligible.</p>
     </div>
     <div class="foot">
