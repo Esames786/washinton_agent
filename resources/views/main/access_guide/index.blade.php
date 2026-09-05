@@ -1,6 +1,10 @@
 @extends('layouts.innerpages')
 @section('template_title', 'Portal Access Guide')
 @section('content')
+{{-- innerpages sidebar calls check_panel()/count helpers defined in this (function_exists-
+     guarded) partial — every innerpages page must include it itself, this one was missing it
+     (500 "Call to undefined function check_panel()" for managers/admins, client 2026-09-04). --}}
+@include('partials.mainsite_pages.return_function')
 @php
     /* Admin + Manager only — everyone else bounces to the dashboard. */
     $__u = Auth::user();
