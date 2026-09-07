@@ -13,8 +13,7 @@
     .dropdown-item[href*="price_request_assign_dispatcher"],
     .dropdown-item[href*="/commission"],
     .dropdown-item[href$="/quote_listing"], /* #3: Show Data */
-    /* G. User dropdown items */
-    .dropdown-item[href$="/guides"],
+    /* G. User dropdown items — /guides UN-hidden 2026-09-07 (client: 4 washington guides back for all) */
     .dropdown-item[href$="/r/portal"] { display: none !important; }
     /* H. Header people icons (Add / View Subcontractor) */
     li.nav-item:has(> a.icon[href*="add_subcontractor"]) { display: none !important; }
