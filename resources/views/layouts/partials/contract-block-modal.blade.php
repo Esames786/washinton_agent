@@ -91,31 +91,47 @@ function acceptPendingContract() {
     btn.disabled = true;
     btn.textContent = 'Saving...';
     var token = document.querySelector('meta[name="csrf-token"]');
+    // Hardened (2026-09-12): surface the REAL failure. A stale/kicked session used to come back
+    // as a login-page redirect, blow up r.json() and show a useless "Network error".
     fetch('/employee-review/accept-contract', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
             'X-CSRF-TOKEN': token ? token.getAttribute('content') : ''
         },
         body: JSON.stringify({ user_id: {{ auth()->id() }}, signature_data: _csCanvas.toDataURL('image/png') })
     })
-    .then(function(r) { return r.json(); })
-    .then(function(res) {
-        if (res.success) {
+    .then(function(r) {
+        if (r.status === 419 || r.status === 401 || r.redirected) {
+            msg.style.color = '#dc3545';
+            msg.textContent = 'Your session expired — reloading, please sign in and try again...';
+            msg.style.display = 'inline';
+            setTimeout(function() { window.location.reload(); }, 1800);
+            throw new Error('session');
+        }
+        return r.json().then(function(res) { return { ok: r.ok, res: res }; });
+    })
+    .then(function(out) {
+        if (out.res && out.res.success) {
             document.getElementById('contractBlockOverlay').style.display = 'none';
         } else {
             btn.disabled = false;
             btn.textContent = '✓ Sign & Accept this Contract';
             msg.style.color = '#dc3545';
-            msg.textContent = 'Could not record acceptance. Please try again.';
+            msg.textContent = (out.res && (out.res.error || out.res.message))
+                ? 'Could not record acceptance: ' + (out.res.error || out.res.message)
+                : 'Could not record acceptance. Please try again.';
             msg.style.display = 'inline';
         }
     })
-    .catch(function() {
+    .catch(function(e) {
+        if (e && e.message === 'session') return;
         btn.disabled = false;
         btn.textContent = '✓ Sign & Accept this Contract';
         msg.style.color = '#dc3545';
-        msg.textContent = 'Network error. Please try again.';
+        msg.textContent = 'Network/session error — please refresh the page and try again.';
         msg.style.display = 'inline';
     });
 }

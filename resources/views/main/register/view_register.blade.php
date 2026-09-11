@@ -105,7 +105,7 @@
                     <div class="">
                         <div class="table-responsive">
                             {{-- B6: only these roles are shown; the rest are hidden (kept in code). --}}
-                            @php $roleWhitelist = ['Admin','Order Taker','Dispatcher','Manager','QA']; @endphp
+                            @php $roleWhitelist = ['Admin','Order Taker','Dispatcher','Manager','QA','Onsite']; @endphp
                             <!-- Tab links -->
                             <div class="tab">
                                 @foreach ($roles as $key => $val)
