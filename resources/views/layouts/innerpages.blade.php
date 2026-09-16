@@ -535,23 +535,9 @@
                       }
                      $check_panel = check_panel2();
 
-                      if ($check_panel == 1) {
-                          $phoneaccess = explode(',', Auth::user()->emp_access_phone);
-                      } elseif ($check_panel == 2) {
-                          $phoneaccess = explode(',', Auth::user()->emp_access_web);
-                      } elseif ($check_panel == 3) {
-                          $phoneaccess = explode(',', Auth::user()->emp_access_test);
-                      } elseif ($check_panel == 4) {
-                          $phoneaccess = explode(',', Auth::user()->panel_type_4);
-                      } elseif ($check_panel == 5) {
-                          $phoneaccess = explode(',', Auth::user()->panel_type_5);
-                      } elseif ($check_panel == 6) {
-                          $phoneaccess = explode(',', Auth::user()->panel_type_6);
-                      } elseif ($check_panel >= 7) {
-                          $phoneaccess = explode(',', Auth::user()->accessForPanel($check_panel));
-                      } else {
-                          $phoneaccess = [];
-                      }
+                      // Panels 7+ exist now; accessForPanel() resolves any panel (the old 1-6
+                      // chain left new-panel agents with an empty permission list).
+                      $phoneaccess = explode(',', (string) Auth::user()->accessForPanel($check_panel));
                     @endphp
                     @if(auth()->user()->role == 1 || in_array('151', $phoneaccess))
                         <div class="chat">

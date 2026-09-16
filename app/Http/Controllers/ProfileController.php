@@ -52,21 +52,9 @@ class ProfileController extends Controller
         if (isset($request->user)) {
             $uid = $request->user;
         } else {
-            if ($paneltype == 1) {
-                $phoneaccess = explode(',', Auth::user()->emp_access_phone);
-            } elseif ($paneltype == 3) {
-                $phoneaccess = explode(',', Auth::user()->emp_access_test);
-            } elseif ($paneltype == 4) {
-                $phoneaccess = explode(',', Auth::user()->panel_type_4);
-            } elseif ($paneltype == 5) {
-                $phoneaccess = explode(',', Auth::user()->panel_type_5);
-            } elseif ($paneltype == 6) {
-                $phoneaccess = explode(',', Auth::user()->panel_type_6);
-            } elseif ($paneltype >= 7) { // B6: new dynamic panels read their own link-table access
-                $phoneaccess = explode(',', Auth::user()->accessForPanel($paneltype));
-            } else {
-                $phoneaccess = explode(',', Auth::user()->emp_access_web);
-            }
+            // Panels 7+ exist now; accessForPanel() resolves any panel (the old 1-6
+            // chain left new-panel agents with an empty permission list).
+            $phoneaccess = explode(',', (string) Auth::user()->accessForPanel($paneltype));
 
             if (in_array("86", $phoneaccess)) {
                 $uid = '';

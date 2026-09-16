@@ -708,21 +708,9 @@ foreach ($data as $val) {
                     $ptype = $query['penal_type'];
                 }
 
-                if ($ptype == 1) {
-                    $phoneaccess = explode(',', Auth::user()->emp_access_phone);
-                } elseif ($ptype == 2) {
-                    $phoneaccess = explode(',', Auth::user()->emp_access_web);
-                } elseif ($ptype == 3) {
-                    $phoneaccess = explode(',', Auth::user()->emp_access_test);
-                } elseif ($ptype == 4) {
-                    $phoneaccess = explode(',', Auth::user()->panel_type_4);
-                } elseif ($ptype == 5) {
-                    $phoneaccess = explode(',', Auth::user()->panel_type_5);
-                } elseif ($ptype == 6) {
-                    $phoneaccess = explode(',', Auth::user()->panel_type_6);
-                } else {
-                    $phoneaccess = [];
-                }
+                // Panels 7+ exist now; accessForPanel() resolves any panel (the old 1-6
+                // chain left new-panel agents with an empty permission list).
+                $phoneaccess = explode(',', (string) Auth::user()->accessForPanel($ptype));
             @endphp
             @if (in_array('76', $phoneaccess))
                 <?php
@@ -940,21 +928,9 @@ foreach ($data as $val) {
                     $ptype = $query['penal_type'];
                 }
 
-                if ($ptype == 1) {
-                    $phoneaccess = explode(',', Auth::user()->emp_access_phone);
-                } elseif ($ptype == 2) {
-                    $phoneaccess = explode(',', Auth::user()->emp_access_web);
-                } elseif ($ptype == 3) {
-                    $phoneaccess = explode(',', Auth::user()->emp_access_test);
-                } elseif ($ptype == 4) {
-                    $phoneaccess = explode(',', Auth::user()->panel_type_4);
-                } elseif ($ptype == 5) {
-                    $phoneaccess = explode(',', Auth::user()->panel_type_5);
-                } elseif ($ptype == 6) {
-                    $phoneaccess = explode(',', Auth::user()->panel_type_6);
-                } else {
-                    $phoneaccess = [];
-                }
+                // Panels 7+ exist now; accessForPanel() resolves any panel (the old 1-6
+                // chain left new-panel agents with an empty permission list).
+                $phoneaccess = explode(',', (string) Auth::user()->accessForPanel($ptype));
             @endphp
             @if (in_array('76', $phoneaccess))
                 <?php
@@ -2660,21 +2636,9 @@ foreach ($data as $val) {
                     $ptype = $query['penal_type'];
                 }
 
-                if ($ptype == 1) {
-                    $phoneaccess = explode(',', Auth::user()->emp_access_phone);
-                } elseif ($ptype == 2) {
-                    $phoneaccess = explode(',', Auth::user()->emp_access_web);
-                } elseif ($ptype == 3) {
-                    $phoneaccess = explode(',', Auth::user()->emp_access_test);
-                } elseif ($ptype == 4) {
-                    $phoneaccess = explode(',', Auth::user()->panel_type_4);
-                } elseif ($ptype == 5) {
-                    $phoneaccess = explode(',', Auth::user()->panel_type_5);
-                } elseif ($ptype == 6) {
-                    $phoneaccess = explode(',', Auth::user()->panel_type_6);
-                } else {
-                    $phoneaccess = [];
-                }
+                // Panels 7+ exist now; accessForPanel() resolves any panel (the old 1-6
+                // chain left new-panel agents with an empty permission list).
+                $phoneaccess = explode(',', (string) Auth::user()->accessForPanel($ptype));
             @endphp
             @if (in_array('76', $phoneaccess))
                 <?php
@@ -2870,21 +2834,9 @@ foreach ($data as $val) {
                     $ptype = $query['penal_type'];
                 }
 
-                if ($ptype == 1) {
-                    $phoneaccess = explode(',', Auth::user()->emp_access_phone);
-                } elseif ($ptype == 2) {
-                    $phoneaccess = explode(',', Auth::user()->emp_access_web);
-                } elseif ($ptype == 3) {
-                    $phoneaccess = explode(',', Auth::user()->emp_access_test);
-                } elseif ($ptype == 4) {
-                    $phoneaccess = explode(',', Auth::user()->panel_type_4);
-                } elseif ($ptype == 5) {
-                    $phoneaccess = explode(',', Auth::user()->panel_type_5);
-                } elseif ($ptype == 6) {
-                    $phoneaccess = explode(',', Auth::user()->panel_type_6);
-                } else {
-                    $phoneaccess = [];
-                }
+                // Panels 7+ exist now; accessForPanel() resolves any panel (the old 1-6
+                // chain left new-panel agents with an empty permission list).
+                $phoneaccess = explode(',', (string) Auth::user()->accessForPanel($ptype));
 
             @endphp
             <div class="col-sm-6 col-md-6">

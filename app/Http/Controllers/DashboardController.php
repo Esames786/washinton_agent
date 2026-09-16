@@ -2696,23 +2696,9 @@ class DashboardController extends Controller
             $ptype = $this->check_user_setting(Auth::user()->id);
             $user = Auth::user();
 
-            if ($ptype == 1) {
-                $phoneaccess = explode(',', Auth::user()->emp_access_phone);
-            } elseif ($ptype == 2) {
-                $phoneaccess = explode(',', Auth::user()->emp_access_web);
-            } elseif ($ptype == 3) {
-                $phoneaccess = explode(',', Auth::user()->emp_access_test);
-            } elseif ($ptype == 4) {
-                $phoneaccess = explode(',', Auth::user()->panel_type_4);
-            } elseif ($ptype == 5) {
-                $phoneaccess = explode(',', Auth::user()->panel_type_5);
-            } elseif ($ptype == 6) {
-                $phoneaccess = explode(',', Auth::user()->panel_type_6);
-            } elseif ($ptype >= 7) {
-                $phoneaccess = explode(',', Auth::user()->accessForPanel($ptype));
-            } else {
-                $phoneaccess = [];
-            }
+            // Panels 7+ exist now; accessForPanel() resolves any panel (the old 1-6
+            // chain left new-panel agents with an empty permission list).
+            $phoneaccess = explode(',', (string) Auth::user()->accessForPanel($ptype));
 
             // Check if the user has role 1 or 2
             if ($user->role == 1 || $user->role == 9 || in_array('148', $phoneaccess)) {
