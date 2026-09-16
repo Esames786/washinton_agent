@@ -1196,7 +1196,9 @@
                 if (docs.length > 0) {
                     docs.forEach(function (doc) {
                         var ext = doc.file_path ? doc.file_path.split('.').pop().toLowerCase() : '';
-                        var fullUrl = doc.file_path ? hrBaseUrl + '/' + doc.file_path : '';
+                        // file_url is resolved server-side against the portal that holds the file
+                        // (HR uploads vs. the agent portal's NDA State-ID pair); hrBaseUrl is the fallback.
+                        var fullUrl = doc.file_url || (doc.file_path ? hrBaseUrl + '/' + doc.file_path : '');
                         var thumb = '';
                         if (['jpg','jpeg','png','gif','bmp','webp'].indexOf(ext) !== -1) {
                             thumb = '<a href="' + fullUrl + '" target="_blank">'

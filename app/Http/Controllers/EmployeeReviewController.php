@@ -91,6 +91,24 @@ class EmployeeReviewController extends Controller
                 ->where('doc.employee_id', $hrEmp->hr_id)
                 ->get();
 
+            // Documents come from TWO different deployments. HR-uploaded files
+            // (Uploads/employees/...) live on the HR portal; the NDA State-ID pair
+            // (Uploads/nda_cnic/...) is written by this agent portal, so an HR URL 404s.
+            // Resolve each one against the deployment that actually holds it.
+            $hrBase = rtrim((string) config('bridge.hrportal.base_url'), '/');
+            foreach ($documents as $doc) {
+                $path = ltrim((string) ($doc->file_path ?? ''), '/');
+                if ($path === '') { $doc->file_url = ''; continue; }
+                if (preg_match('#^https?://#i', $path)) { $doc->file_url = $path; continue; }
+                if (is_file(public_path($path))) {
+                    $doc->file_url = asset($path);                 // on this portal's disk
+                } elseif (stripos($path, 'Uploads/nda_') === 0) {
+                    $doc->file_url = portal_file_url($path);        // sibling agent portal
+                } else {
+                    $doc->file_url = $hrBase . '/' . $path;        // HR-uploaded document
+                }
+            }
+
             $leaveQuotas = DB::table('hr_employee_assign_leaves as al')
                 ->leftJoin('hr_leave_types as lt', 'al.leave_type_id', '=', 'lt.id')
                 ->select(
