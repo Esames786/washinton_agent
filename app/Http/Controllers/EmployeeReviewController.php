@@ -91,21 +91,37 @@ class EmployeeReviewController extends Controller
                 ->where('doc.employee_id', $hrEmp->hr_id)
                 ->get();
 
-            // Documents come from TWO different deployments. HR-uploaded files
-            // (Uploads/employees/...) live on the HR portal; the NDA State-ID pair
-            // (Uploads/nda_cnic/...) is written by this agent portal, so an HR URL 404s.
-            // Resolve each one against the deployment that actually holds it.
-            $hrBase = rtrim((string) config('bridge.hrportal.base_url'), '/');
+            // Documents live on FOUR deployments that share this database but not the filesystem,
+            // and which one holds a file depends on the AGENT, not on the portal doing the viewing.
+            // Verified against live before writing this:
+            //
+            //   Uploads/employees/...  Hello agent -> hr.hellotransport.com        (CR portal 404s)
+            //                          CR agent    -> hr.crazyrayssolutions.com.pk (HR-hello 404s)
+            //   Uploads/nda_...        Hello agent -> hellotransport.com           (florida 404s, 8/8)
+            //                          CR agent    -> florida.crazyrayssolutions.com.pk
+            //
+            // The earlier version picked the sibling portal from the REQUEST HOST, so reviewing a
+            // Hello agent on hellotransport.com sent their State-ID to florida and 404'd — exactly
+            // the "fine on crazyrays agents, broken on hello agents" report. is_crazyrays on the
+            // agent is what actually decides it, so that is what is used here.
+            $isCrAgent = (int) ($agentUser->is_crazyrays ?? 0) === 1;
+            $hrBase    = rtrim((string) ($isCrAgent
+                ? config('bridge.hrportal.cr_base_url')
+                : config('bridge.hrportal.base_url')), '/');
+            $ndaBase   = rtrim((string) ($isCrAgent
+                ? config('bridge.portals.florida')
+                : config('bridge.portals.hello')), '/');
+
             foreach ($documents as $doc) {
                 $path = ltrim((string) ($doc->file_path ?? ''), '/');
                 if ($path === '') { $doc->file_url = ''; continue; }
                 if (preg_match('#^https?://#i', $path)) { $doc->file_url = $path; continue; }
                 if (is_file(public_path($path))) {
-                    $doc->file_url = asset($path);                 // on this portal's disk
+                    $doc->file_url = asset($path);                  // genuinely on this portal's disk
                 } elseif (stripos($path, 'Uploads/nda_') === 0) {
-                    $doc->file_url = portal_file_url($path);        // sibling agent portal
+                    $doc->file_url = $ndaBase . '/' . $path;        // the portal the agent signed up on
                 } else {
-                    $doc->file_url = $hrBase . '/' . $path;        // HR-uploaded document
+                    $doc->file_url = $hrBase . '/' . $path;         // that agent's HR deployment
                 }
             }
 

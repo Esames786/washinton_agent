@@ -22,6 +22,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Agent-facing deployments
+    |--------------------------------------------------------------------------
+    | These two share the database but NOT the filesystem. An NDA State-ID upload is written by
+    | whichever of them the agent registered on, so only that one can ever serve the file back.
+    | Verified against live: every nda_cnic document belongs to a Hello agent and is served by
+    | hellotransport.com — florida 404s on all of them.
+    */
+    'portals' => [
+        'hello'   => env('HELLO_PORTAL_BASE_URL', 'https://hellotransport.com'),
+        'florida' => env('FLORIDA_PORTAL_BASE_URL', 'https://florida.crazyrayssolutions.com.pk'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Washington inbound bridge key
     |--------------------------------------------------------------------------
     | The HR portal sends this key when calling Washington's bridge endpoints.
