@@ -78,6 +78,22 @@
 
     $openDriverPrice = $q->offer_open;
     $encDriverPrice  = $q->offer_enclosed;
+
+    // ── Price visibility (client request via ShipA1, 17 Sep 2026) ─────────────
+    // No figure may appear in the quote email — "these prices are hitting directly". Each amount
+    // becomes an Unlock Price button pointing at the SAME link its Place Order button already
+    // used, so the customer lands on the order page and sees the price there. This is the Hello
+    // twin of the ShipA1 email; both follow one rule so the brands cannot disagree.
+    $hidePrices  = (bool) config('quote.email_hide_prices', true);
+    $unlockLabel = config('quote.unlock_label', 'Unlock Price');
+
+    $unlockBtn = function ($href, $bg = '#c9a020', $fg = '#ffffff', $label = null) use ($unlockLabel) {
+        $label = $label ?: $unlockLabel;
+        return '<a href="' . e($href) . '" target="_blank" style="display:inline-block;background:' . $bg
+            . ';color:' . $fg . ';font-family:\'Poppins\',Arial,sans-serif;font-size:11px;font-weight:700;'
+            . 'padding:7px 14px;border-radius:6px;text-decoration:none;white-space:nowrap">&#128274; '
+            . e($label) . '</a>';
+    };
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -219,8 +235,12 @@
                 </td>
                 @foreach($tiers as $i => $tier)
                 <td style="padding:14px 10px;text-align:center;border-left:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;background:{{ $i === 0 ? '#fdf8ec' : '#ffffff' }}">
+                  @if($hidePrices)
+                  {!! $unlockBtn($tier['open_link'], '#c9a020', '#ffffff') !!}
+                  @else
                   <div style="font-family:'DM Sans',Arial,sans-serif;font-size:20px;font-weight:700;color:#1a1a1a">${{ $money($tier['open']) }}</div>
                   <a href="{{ $tier['open_link'] }}" target="_blank" style="display:inline-block;margin-top:6px;background:#c9a020;color:#ffffff;font-family:'Poppins',Arial,sans-serif;font-size:11px;font-weight:600;padding:5px 12px;border-radius:6px;text-decoration:none">Place Order</a>
+                  @endif
                 </td>
                 @endforeach
               </tr>
@@ -231,8 +251,12 @@
                 </td>
                 @foreach($tiers as $i => $tier)
                 <td style="padding:14px 10px;text-align:center;border-left:1px solid #e2e8f0;background:{{ $i === 0 ? '#fdf8ec' : '#ffffff' }}">
+                  @if($hidePrices)
+                  {!! $unlockBtn($tier['enclosed_link'], '#1a1a1a', '#c9a020') !!}
+                  @else
                   <div style="font-family:'DM Sans',Arial,sans-serif;font-size:20px;font-weight:700;color:#1a1a1a">${{ $money($tier['enclosed']) }}</div>
                   <a href="{{ $tier['enclosed_link'] }}" target="_blank" style="display:inline-block;margin-top:6px;background:#1a1a1a;color:#c9a020;font-family:'Poppins',Arial,sans-serif;font-size:11px;font-weight:600;padding:5px 12px;border-radius:6px;text-decoration:none">Place Order</a>
+                  @endif
                 </td>
                 @endforeach
               </tr>
@@ -244,13 +268,25 @@
               <tr>
                 <td style="padding:16px 20px;border-bottom:1px solid #e2e8f0">
                   <span style="font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:#1a1a1a">🚗 Open Transport</span>
-                  <span style="float:right;font-family:'DM Sans',Arial,sans-serif;font-size:20px;font-weight:700;color:#c9a020">${{ $money($openDriverPrice) }}</span>
+                  <span style="float:right">
+                    @if($hidePrices)
+                    {!! $unlockBtn($wash_link, '#c9a020', '#ffffff') !!}
+                    @else
+                    <span style="font-family:'DM Sans',Arial,sans-serif;font-size:20px;font-weight:700;color:#c9a020">${{ $money($openDriverPrice) }}</span>
+                    @endif
+                  </span>
                 </td>
               </tr>
               <tr>
                 <td style="padding:16px 20px">
                   <span style="font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:#1a1a1a">🔒 Enclosed Transport</span>
-                  <span style="float:right;font-family:'DM Sans',Arial,sans-serif;font-size:20px;font-weight:700;color:#c9a020">${{ $money($encDriverPrice) }}</span>
+                  <span style="float:right">
+                    @if($hidePrices)
+                    {!! $unlockBtn($wash_link, '#1a1a1a', '#c9a020') !!}
+                    @else
+                    <span style="font-family:'DM Sans',Arial,sans-serif;font-size:20px;font-weight:700;color:#c9a020">${{ $money($encDriverPrice) }}</span>
+                    @endif
+                  </span>
                 </td>
               </tr>
             </table>
@@ -294,16 +330,24 @@
                   <table cellpadding="0" cellspacing="0" border="0">
                     <tr>
                       <td style="padding-right:8px">
-                        <span style="font-family:'DM Sans',Arial,sans-serif;font-size:16px;font-weight:700;color:#1a1a1a">Open: ${{ $money($tier['open']) }}</span>
+                        <span style="font-family:'DM Sans',Arial,sans-serif;font-size:{{ $hidePrices ? '14' : '16' }}px;font-weight:700;color:#1a1a1a">Open:@if(!$hidePrices) ${{ $money($tier['open']) }}@endif</span>
                       </td>
                       <td style="padding-right:16px">
+                        @if($hidePrices)
+                        {!! $unlockBtn($tier['open_link'], '#c9a020', '#ffffff') !!}
+                        @else
                         <a href="{{ $tier['open_link'] }}" target="_blank" style="display:inline-block;background:#c9a020;color:#fff;font-family:'Poppins',Arial,sans-serif;font-size:11px;font-weight:600;padding:5px 12px;border-radius:6px;text-decoration:none">Book Open</a>
+                        @endif
                       </td>
                       <td style="padding-right:8px">
-                        <span style="font-family:'DM Sans',Arial,sans-serif;font-size:16px;font-weight:700;color:#1a1a1a">Enclosed: ${{ $money($tier['enclosed']) }}</span>
+                        <span style="font-family:'DM Sans',Arial,sans-serif;font-size:{{ $hidePrices ? '14' : '16' }}px;font-weight:700;color:#1a1a1a">Enclosed:@if(!$hidePrices) ${{ $money($tier['enclosed']) }}@endif</span>
                       </td>
                       <td>
+                        @if($hidePrices)
+                        {!! $unlockBtn($tier['enclosed_link'], '#1a1a1a', '#c9a020') !!}
+                        @else
                         <a href="{{ $tier['enclosed_link'] }}" target="_blank" style="display:inline-block;background:#1a1a1a;color:#c9a020;font-family:'Poppins',Arial,sans-serif;font-size:11px;font-weight:600;padding:5px 12px;border-radius:6px;text-decoration:none">Book Enclosed</a>
+                        @endif
                       </td>
                     </tr>
                   </table>
