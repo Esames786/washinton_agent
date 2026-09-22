@@ -69,22 +69,28 @@ class NdaController extends Controller
             }
         }
 
-        // Generate the signed PDF from the admin's HTML + the signature block.
-        $relPath = $this->buildPdf($user, $ndaContent, $request, $signedAt, $ip, $cnicFrontPath, $cnicBackPath);
-
-        // Persist the signed state (signature + IP + CNIC stored in the shared DB so the PDF can
-        // always be regenerated on demand — no dependency on a single server's filesystem).
+        // Persist the signed state BEFORE building the PDF.
+        //
+        // Reported 22 Sep 2026: an agent signed, the page hung, and nothing at all was saved — he
+        // had to start again. The PDF used to be generated first, and DomPDF's first run on a
+        // server builds its font cache: measured at 5.9s cold against 1.6s warm here, and far
+        // worse on a loaded shared host. If PHP hit max_execution_time during that, the request
+        // died before a single row was written, so a genuinely completed signature was lost.
+        //
+        // The signature, the NDA text and the IP are all the record actually needs — download()
+        // already regenerates the PDF from exactly those when the file is missing. So the legal
+        // record is committed first and the PDF becomes a best-effort cache of it.
         try {
             DB::table('user')->where('id', $user->id)->update([
                 'nda_required'      => 0,
                 'nda_signed_at'     => $signedAt,
-                'nda_document_path' => $relPath,
+                'nda_document_path' => null,
             ]);
 
             DB::table('hr_employees')->where('agent_id', $user->id)->update([
                 'nda_required'     => 0,
                 'nda_signed_at'    => $signedAt,
-                'nda_document_url' => $relPath ? url($relPath) : null,
+                'nda_document_url' => null,
                 'nda_content'      => $ndaContent,
                 'nda_signature'    => $request->signature_data,
                 'nda_signed_ip'    => $ip,
@@ -96,6 +102,23 @@ class NdaController extends Controller
         } catch (\Throwable $e) {
             Log::error('NDA flag clear failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
             return response()->json(['success' => false, 'message' => 'Server error saving signature. Please try again.'], 500);
+        }
+
+        // The signature is safely recorded from here on, so the PDF is best-effort: if it fails or
+        // the worker is killed mid-render, the agent stays signed and download() rebuilds the file
+        // on demand. They never have to sign a second time because of a slow PDF.
+        try {
+            $relPath = $this->buildPdf($user, $ndaContent, $request, $signedAt, $ip, $cnicFrontPath, $cnicBackPath);
+
+            if ($relPath) {
+                DB::table('user')->where('id', $user->id)->update(['nda_document_path' => $relPath]);
+                DB::table('hr_employees')->where('agent_id', $user->id)
+                    ->update(['nda_document_url' => url($relPath)]);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('NDA PDF build failed; signature already saved and is regenerated on download', [
+                'user_id' => $user->id, 'error' => $e->getMessage(),
+            ]);
         }
 
         return response()->json(['success' => true]);
