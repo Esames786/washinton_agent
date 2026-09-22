@@ -4,7 +4,13 @@
 // ═══════════════════════════════════════════════════════════════
 
 var phoneaccessArray = <?php echo isset($phoneaccessJson) ? $phoneaccessJson : '[]'; ?>;
-var hasRDialerAccess = ({{ Auth::user()->role == 1 ? 'true' : 'false' }} || phoneaccessArray.includes('161'));
+// R-Dialer is permission 169 — the code the "R-Dialer (RingCentral Phone)" checkbox writes, and the
+// one RingCentralAccess middleware, the nav entry and the mainsite RC stream all check.
+// This line checked 161, which is "Commission Report": an unrelated feature. An agent granted
+// R-Dialer but not Commission Report therefore fell through to the tel:/rcapp:// links, which only
+// work if the RingCentral DESKTOP app is installed and registered for those protocols — so the call
+// and message buttons did nothing at all, with no error. Reported 22 Sep 2026.
+var hasRDialerAccess = ({{ Auth::user()->role == 1 ? 'true' : 'false' }} || phoneaccessArray.includes('169'));
 
 var RC_PENDING_DIAL_REQUEST_KEY = 'rcPendingDialRequest';
 var RC_PENDING_MESSAGE_REQUEST_KEY = 'rcPendingMessageRequest';
