@@ -70,3 +70,33 @@ if (!function_exists('mask_phone')) {
         return str_repeat('x', $len - 3) . substr($phone, -3);
     }
 }
+
+if (!function_exists('asset_v')) {
+    /**
+     * A versioned URL for a file in public/, so browsers pick up a changed asset by themselves.
+     *
+     * Requested 22 Sep 2026: after a deploy, agents had to be told to hard-refresh (Ctrl+F5) or
+     * they kept running the old JS. The version is the file's own modification time, so:
+     *
+     *   - a file that changed in the deploy gets a new URL and is re-fetched once, automatically;
+     *   - a file that did NOT change keeps its URL and stays cached, which a single global version
+     *     number would needlessly throw away on every release;
+     *   - nothing has to be remembered or bumped by hand at release time.
+     *
+     * Falls back to the plain URL when the file is missing (CDN paths, generated files), so a
+     * wrong path can never take the page down.
+     */
+    function asset_v($path)
+    {
+        $clean = ltrim((string) $path, '/');
+        $full  = public_path($clean);
+
+        if (!is_file($full)) {
+            return url($clean);
+        }
+
+        $stamp = @filemtime($full);
+
+        return url($clean) . ($stamp ? '?v=' . $stamp : '');
+    }
+}

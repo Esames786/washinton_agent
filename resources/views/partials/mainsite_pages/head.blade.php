@@ -17,80 +17,80 @@
 <link rel="icon" href="{{ url('assets/images/brand/favicon.ico')}}" type="image/x-icon"/>
 
 <!--Bootstrap css -->
-<link href="{{ url('assets/plugins/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+<link href="{{ asset_v('assets/plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
 
-<link rel="stylesheet" href="{{ url('assets/js/jquery-ui-1.12.1/jquery-ui.min.css')}}">
+<link rel="stylesheet" href="{{ asset_v('assets/js/jquery-ui-1.12.1/jquery-ui.min.css') }}">
 
 <!-- Style css -->
 <link href="{{ url('assets/css/style.css')}}?id=1" rel="stylesheet"/>
-<link href="{{ url('assets/css/dark.css')}}" rel="stylesheet"/>
-<link href="{{ url('assets/css/skin-modes.css')}}" rel="stylesheet"/>
+<link href="{{ asset_v('assets/css/dark.css') }}" rel="stylesheet"/>
+<link href="{{ asset_v('assets/css/skin-modes.css') }}" rel="stylesheet"/>
 
 
 <!-- Animate css -->
-<link href="{{ url('assets/css/animated.css')}}" rel="stylesheet"/>
+<link href="{{ asset_v('assets/css/animated.css') }}" rel="stylesheet"/>
 
 <!--Sidemenu css -->
-<link href="{{ url('assets/css/sidemenu.css')}}" rel="stylesheet">
+<link href="{{ asset_v('assets/css/sidemenu.css') }}" rel="stylesheet">
 
 <!-- P-scroll bar css-->
-<link href="{{ url('assets/plugins/p-scrollbar/p-scrollbar.css')}}" rel="stylesheet"/>
+<link href="{{ asset_v('assets/plugins/p-scrollbar/p-scrollbar.css') }}" rel="stylesheet"/>
 
 <!---Icons css-->
-<link href="{{ url('assets/css/icons.css')}}" rel="stylesheet"/>
+<link href="{{ asset_v('assets/css/icons.css') }}" rel="stylesheet"/>
 
 
-<link href="{{ url('assets/plugins/notify/css/jquery.growl.css')}}" rel="stylesheet" />
-<link href="{{ url('assets/plugins/notify/css/notifIt.css')}}" rel="stylesheet" />
+<link href="{{ asset_v('assets/plugins/notify/css/jquery.growl.css') }}" rel="stylesheet" />
+<link href="{{ asset_v('assets/plugins/notify/css/notifIt.css') }}" rel="stylesheet" />
 
 <!-- INTERNAl WYSIWYG Editor css -->
-<link href="{{ url('assets/plugins/wysiwyag/richtext.css')}}" rel="stylesheet"/>
+<link href="{{ asset_v('assets/plugins/wysiwyag/richtext.css') }}" rel="stylesheet"/>
 
 <!-- Data table css -->
-<link href="{{ url('assets/plugins/datatable/css/dataTables.bootstrap4.min.css')}}" rel="stylesheet"/>
-<link href="{{ url('assets/plugins/datatable/css/buttons.bootstrap4.min.css')}}" rel="stylesheet">
-<link href="{{ url('assets/plugins/datatable/responsive.bootstrap4.min.css')}}" rel="stylesheet"/>
+<link href="{{ asset_v('assets/plugins/datatable/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet"/>
+<link href="{{ asset_v('assets/plugins/datatable/css/buttons.bootstrap4.min.css') }}" rel="stylesheet">
+<link href="{{ asset_v('assets/plugins/datatable/responsive.bootstrap4.min.css') }}" rel="stylesheet"/>
 
 <!-- INTERNAL Select2 css -->
-<link href="{{ url('assets/plugins/select2/select2.min.css')}}" rel="stylesheet"/>
+<link href="{{ asset_v('assets/plugins/select2/select2.min.css') }}" rel="stylesheet"/>
 
 <!-- INTERNAL File Uploads css -->
-<link href="{{ url('assets/plugins/fancyuploder/fancy_fileupload.css')}}" rel="stylesheet"/>
+<link href="{{ asset_v('assets/plugins/fancyuploder/fancy_fileupload.css') }}" rel="stylesheet"/>
 
 <!-- INTERNAL Time picker css -->
-<link href="{{ url('assets/plugins/time-picker/jquery.timepicker.css')}}" rel="stylesheet"/>
+<link href="{{ asset_v('assets/plugins/time-picker/jquery.timepicker.css') }}" rel="stylesheet"/>
 
 <!-- INTERNAL Date Picker css -->
-<link href="{{ url('assets/plugins/date-picker/date-picker.css')}}" rel="stylesheet"/>
+<link href="{{ asset_v('assets/plugins/date-picker/date-picker.css') }}" rel="stylesheet"/>
 
 <!-- INTERNAL File Uploads css-->
-<link href="{{ url('assets/plugins/fileupload/css/fileupload.css')}}" rel="stylesheet" type="text/css"/>
+<link href="{{ asset_v('assets/plugins/fileupload/css/fileupload.css') }}" rel="stylesheet" type="text/css"/>
 
 <!-- INTERNAL Mutipleselect css-->
-<link rel="stylesheet" href="{{ url('assets/plugins/multipleselect/multiple-select.css')}}">
+<link rel="stylesheet" href="{{ asset_v('assets/plugins/multipleselect/multiple-select.css') }}">
 
 <!-- INTERNAL Sumoselect css-->
-<link rel="stylesheet" href="{{ url('assets/plugins/sumoselect/sumoselect.css')}}">
+<link rel="stylesheet" href="{{ asset_v('assets/plugins/sumoselect/sumoselect.css') }}">
 
 <!-- INTERNAL telephoneinput css-->
-<link rel="stylesheet" href="{{ url('assets/plugins/telephoneinput/telephoneinput.css')}}">
+<link rel="stylesheet" href="{{ asset_v('assets/plugins/telephoneinput/telephoneinput.css') }}">
 
 <!-- INTERNAL Jquerytransfer css-->
-<link rel="stylesheet" href="{{ url('assets/plugins/jQuerytransfer/jquery.transfer.css')}}">
-<link rel="stylesheet" href="{{ url('assets/plugins/jQuerytransfer/icon_font/icon_font.css')}}">
+<link rel="stylesheet" href="{{ asset_v('assets/plugins/jQuerytransfer/jquery.transfer.css') }}">
+<link rel="stylesheet" href="{{ asset_v('assets/plugins/jQuerytransfer/icon_font/icon_font.css') }}">
 
 <!-- INTERNAL multi css-->
-<link rel="stylesheet" href="{{ url('assets/plugins/multi/multi.min.css')}}">
+<link rel="stylesheet" href="{{ asset_v('assets/plugins/multi/multi.min.css') }}">
 
 <!-- Simplebar css -->
-<link rel="stylesheet" href="{{ url('assets/plugins/simplebar/css/simplebar.css')}}">
+<link rel="stylesheet" href="{{ asset_v('assets/plugins/simplebar/css/simplebar.css') }}">
 
 <!-- Color Skin css -->
 <link id="theme" href="{{ url('assets/colors/color1.css" rel="stylesheet')}}" type="text/css"/>
 
 <!-- Switcher css -->
-<link rel="stylesheet" href="{{ url('assets/switcher/css/switcher.css')}}">
-<link rel="stylesheet" href="{{ url('assets/switcher/demo.css')}}">
+<link rel="stylesheet" href="{{ asset_v('assets/switcher/css/switcher.css') }}">
+<link rel="stylesheet" href="{{ asset_v('assets/switcher/demo.css') }}">
 
 <style>
     .img_border {

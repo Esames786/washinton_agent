@@ -12,40 +12,40 @@
     <link rel="icon" href="{{ url('assets/images/brand/favicon.ico')}}" type="image/x-icon"/>
 
     <!--Bootstrap css -->
-    <link href="{{ url('assets/plugins/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+    <link href="{{ asset_v('assets/plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ url('assets/js/jquery-ui-1.12.1/jquery-ui.min.css')}}">
+    <link rel="stylesheet" href="{{ asset_v('assets/js/jquery-ui-1.12.1/jquery-ui.min.css') }}">
 
     <!-- Style css -->
     <link href="{{ url('assets/css/style.css')}}?id=1" rel="stylesheet"/>
-    <link href="{{ url('assets/css/dark.css')}}" rel="stylesheet"/>
-    <link href="{{ url('assets/css/skin-modes.css')}}" rel="stylesheet"/>
+    <link href="{{ asset_v('assets/css/dark.css') }}" rel="stylesheet"/>
+    <link href="{{ asset_v('assets/css/skin-modes.css') }}" rel="stylesheet"/>
 
     <!-- Animate css -->
-    <link href="{{ url('assets/css/animated.css')}}" rel="stylesheet"/>
+    <link href="{{ asset_v('assets/css/animated.css') }}" rel="stylesheet"/>
 
     <!--Sidemenu css -->
-    <link href="{{ url('assets/css/sidemenu.css')}}" rel="stylesheet">
+    <link href="{{ asset_v('assets/css/sidemenu.css') }}" rel="stylesheet">
 
     <!-- P-scroll bar css-->
-    <link href="{{ url('assets/plugins/p-scrollbar/p-scrollbar.css')}}" rel="stylesheet"/>
+    <link href="{{ asset_v('assets/plugins/p-scrollbar/p-scrollbar.css') }}" rel="stylesheet"/>
 
     <!---Icons css-->
-    <link href="{{ url('assets/css/icons.css')}}" rel="stylesheet"/>
+    <link href="{{ asset_v('assets/css/icons.css') }}" rel="stylesheet"/>
 
 
     <!-- INTERNAl WYSIWYG Editor css -->
-    <link href="{{ url('assets/plugins/wysiwyag/richtext.css')}}" rel="stylesheet"/>
+    <link href="{{ asset_v('assets/plugins/wysiwyag/richtext.css') }}" rel="stylesheet"/>
 
     <!-- Simplebar css -->
-    <link rel="stylesheet" href="{{ url('assets/plugins/simplebar/css/simplebar.css')}}">
+    <link rel="stylesheet" href="{{ asset_v('assets/plugins/simplebar/css/simplebar.css') }}">
 
     <!-- Color Skin css -->
-    <link id="theme" href="{{ url('assets/colors/color1.css')}}" rel="stylesheet" type="text/css"/>
+    <link id="theme" href="{{ asset_v('assets/colors/color1.css') }}" rel="stylesheet" type="text/css"/>
 
     <!-- Switcher css -->
-    <link rel="stylesheet" href="{{ url('assets/switcher/css/switcher.css')}}">
-    <link rel="stylesheet" href="{{ url('assets/switcher/demo.css')}}">
+    <link rel="stylesheet" href="{{ asset_v('assets/switcher/css/switcher.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/switcher/demo.css') }}">
 
     <style>
         .img_border {

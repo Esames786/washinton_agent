@@ -7,71 +7,71 @@
 </style>
 
 <!-- Jquery js-->
-<script src="{{ url('assets/js/jquery-3.5.1.min.js') }}"></script>
-<script src="{{ url('assets/js/htmlCanva.min.js') }}"></script>
-<script src="{{ url('assets/js/canva.js') }}"></script>
+<script src="{{ asset_v('assets/js/jquery-3.5.1.min.js') }}"></script>
+<script src="{{ asset_v('assets/js/htmlCanva.min.js') }}"></script>
+<script src="{{ asset_v('assets/js/canva.js') }}"></script>
 
-<script src="{{ url('assets/js/jquery-ui-1.12.1/jquery-ui.min.js') }}"></script>
+<script src="{{ asset_v('assets/js/jquery-ui-1.12.1/jquery-ui.min.js') }}"></script>
 
 <!-- Bootstrap4 js-->
-<script src="{{ url('assets/plugins/bootstrap/popper.min.js') }}"></script>
-<script src="{{ url('assets/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset_v('assets/plugins/bootstrap/popper.min.js') }}"></script>
+<script src="{{ asset_v('assets/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
 
 <!--Othercharts js-->
-<script src="{{ url('assets/plugins/othercharts/jquery.sparkline.min.js') }}"></script>
+<script src="{{ asset_v('assets/plugins/othercharts/jquery.sparkline.min.js') }}"></script>
 
 <!-- Circle-progress js-->
-<script src="{{ url('assets/js/circle-progress.min.js') }}"></script>
+<script src="{{ asset_v('assets/js/circle-progress.min.js') }}"></script>
 
 <!-- Jquery-rating js-->
-<script src="{{ url('assets/plugins/rating/jquery.rating-stars.js') }}"></script>
+<script src="{{ asset_v('assets/plugins/rating/jquery.rating-stars.js') }}"></script>
 
 <!--Sidemenu js-->
-<script src="{{ url('assets/plugins/sidemenu/sidemenu.js') }}"></script>
+<script src="{{ asset_v('assets/plugins/sidemenu/sidemenu.js') }}"></script>
 
 <!-- P-scroll js-->
-<script src="{{ url('assets/plugins/p-scrollbar/p-scrollbar.js') }}"></script>
-<script src="{{ url('assets/plugins/p-scrollbar/p-scroll1.js') }}"></script>
-<script src="{{ url('assets/plugins/p-scrollbar/p-scroll.js') }}"></script>
+<script src="{{ asset_v('assets/plugins/p-scrollbar/p-scrollbar.js') }}"></script>
+<script src="{{ asset_v('assets/plugins/p-scrollbar/p-scroll1.js') }}"></script>
+<script src="{{ asset_v('assets/plugins/p-scrollbar/p-scroll.js') }}"></script>
 
 <!-- INTERNAL WYSIWYG Editor js -->
-<script src="{{ url('assets/plugins/wysiwyag/jquery.richtext.js') }}"></script>
-<script src="{{ url('assets/js/form-editor.js') }}"></script>
+<script src="{{ asset_v('assets/plugins/wysiwyag/jquery.richtext.js') }}"></script>
+<script src="{{ asset_v('assets/js/form-editor.js') }}"></script>
 
 
 <!--INTERNAL Peitychart js-->
-<script src="{{ url('assets/plugins/peitychart/jquery.peity.min.js') }}"></script>
-<script src="{{ url('assets/plugins/peitychart/peitychart.init.js') }}"></script>
+<script src="{{ asset_v('assets/plugins/peitychart/jquery.peity.min.js') }}"></script>
+<script src="{{ asset_v('assets/plugins/peitychart/peitychart.init.js') }}"></script>
 
 <!--INTERNAL Apexchart js-->
-<script src="{{ url('assets/js/apexcharts.js') }}"></script>
-<script src="{{ url('assets/js/apexchart-custom.js') }}"></script>
+<script src="{{ asset_v('assets/js/apexcharts.js') }}"></script>
+<script src="{{ asset_v('assets/js/apexchart-custom.js') }}"></script>
 
 <!--INTERNAL ECharts js-->
-<script src="{{ url('assets/plugins/echarts/echarts.js') }}"></script>
+<script src="{{ asset_v('assets/plugins/echarts/echarts.js') }}"></script>
 
 <!--INTERNAL Chart js -->
-<script src="{{ url('assets/plugins/chart/chart.bundle.js') }}"></script>
-<script src="{{ url('assets/plugins/chart/utils.js') }}"></script>
+<script src="{{ asset_v('assets/plugins/chart/chart.bundle.js') }}"></script>
+<script src="{{ asset_v('assets/plugins/chart/utils.js') }}"></script>
 
 <!-- INTERNAL Select2 js -->
-<script src="{{ url('assets/plugins/select2/select2.full.min.js') }}"></script>
-<script src="{{ url('assets/js/select2.js') }}"></script>
+<script src="{{ asset_v('assets/plugins/select2/select2.full.min.js') }}"></script>
+<script src="{{ asset_v('assets/js/select2.js') }}"></script>
 
 <!--INTERNAL Moment js-->
-<script src="{{ url('assets/plugins/moment/moment.js') }}"></script>
+<script src="{{ asset_v('assets/plugins/moment/moment.js') }}"></script>
 
 <!--INTERNAL Index js-->
 {{--
-<script src="{{ url('assets/js/index1.js')}}"></script> --}}
+<script src="{{ asset_v('assets/js/index1.js') }}"></script> --}}
 
 <!-- Simplebar JS -->
-<script src="{{ url('assets/plugins/simplebar/js/simplebar.min.js') }}"></script>
+<script src="{{ asset_v('assets/plugins/simplebar/js/simplebar.min.js') }}"></script>
 <!-- Custom js-->
-<script src="{{ url('assets/js/custom.js') }}"></script>
+<script src="{{ asset_v('assets/js/custom.js') }}"></script>
 
 <!-- Switcher js-->
-<script src="{{ url('assets/switcher/js/switcher.js') }}"></script>
+<script src="{{ asset_v('assets/switcher/js/switcher.js') }}"></script>
 
 @if (Auth::check())
     @if (Auth::user()->role != 6 || Auth::user()->role != 7)
