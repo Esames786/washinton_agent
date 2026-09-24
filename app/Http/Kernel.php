@@ -37,6 +37,8 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             // Batch 6 (D2): single-session + per-user IP restriction (fail-open).
             \App\Http\Middleware\EnforceUserSecurity::class,
+            // An outstanding NDA is served on its own page, not over the dashboard.
+            \App\Http\Middleware\RequireNdaSignature::class,
         ],
 
         'api' => [

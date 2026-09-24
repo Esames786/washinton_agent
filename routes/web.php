@@ -189,6 +189,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/employee-review/save-nda', 'EmployeeReviewController@saveNda')->name('employee.review.save_nda');
 
     // NDA signing (employee)
+    // The NDA on its own page — see RequireNdaSignature.
+    Route::get('/nda', 'NdaController@page')->name('nda.page');
     Route::post('/nda/sign', 'NdaController@sign')->name('nda.sign');
     Route::get('/nda/download/{userId}', 'NdaController@download')->name('nda.download');
     // IRS Form W-9 — submitted by US (Hello) agents during onboarding; admins download the PDF.

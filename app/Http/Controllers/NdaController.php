@@ -12,6 +12,20 @@ use Illuminate\Support\Facades\Log;
 
 class NdaController extends Controller
 {
+    /**
+     * The NDA on its own page. Someone who has already signed has no business here, so
+     * they go straight back to the portal rather than being shown a form again.
+     */
+    public function page()
+    {
+        $user = Auth::user();
+        if (! $user || empty($user->nda_required)) {
+            return redirect('/dashboard');
+        }
+
+        return view('nda.page', ['signRoute' => route('nda.sign')]);
+    }
+
     public function sign(Request $request): JsonResponse
     {
         $request->validate([
