@@ -46,6 +46,22 @@ class EnforceUserSecurity
         return $next($request);
     }
 
+    /**
+     * End the session and send the user back to the portal login WITH the reason visible.
+     *
+     * Reported 24 Sep 2026: an IP-restricted account just "kicked out, no error shows". Two causes,
+     * both fixed here:
+     *
+     *  1. It redirected to route('login'), which resolves to the Laravel auth scaffold on the
+     *     hellotransport.com domain — not the portal's own /loginn page, and on CrazyRays a
+     *     different host entirely. A flash written for this domain's session cannot be read on
+     *     another one, so the reason was thrown away with the redirect. Now it stays on the host
+     *     the user is already using.
+     *  2. It passed the reason via withErrors(), but login2.blade.php only renders
+     *     session('flash_message') — it has no $errors block. So even on the right page nothing
+     *     appeared. Both are now set: flash_message for this portal, withErrors for anything else
+     *     that reads the standard bag.
+     */
     private function kick($request, string $message)
     {
         Auth::logout();
@@ -56,6 +72,9 @@ class EnforceUserSecurity
         if ($request->expectsJson()) {
             return response()->json(['message' => $message], 401);
         }
-        return redirect()->route('login')->withErrors(['email' => $message]);
+
+        return redirect('/loginn')
+            ->with('flash_message', $message)
+            ->withErrors(['email' => $message]);
     }
 }
