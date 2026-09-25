@@ -69,6 +69,33 @@ class WelcomeController extends Controller
         }
     }
 
+    /**
+     * Email the login code — and never let a mail failure block the login.
+     *
+     * 26 Sep 2026: admin@hellotransport.com could not sign in at all. The password was
+     * fine; the mailbox does not exist on the mail server, so SMTP answered
+     * "550 No Such User Here" on RCPT TO and the uncaught exception killed the request
+     * before the redirect to the verify page. Authentication had already succeeded at
+     * that point, so a bounced notification was locking a valid user out of the portal.
+     *
+     * The failure is logged so a dead mailbox is still visible to us, but the user
+     * continues to the verification step.
+     */
+    private function sendLoginCode($userLogin, $code): void
+    {
+        try {
+            Mail::to($userLogin->email)
+                ->cc([config('custom.CODE_GIVER')])
+                ->send(new SendCodeMail($userLogin->name, $code, \App\Support\Brand::for($userLogin)));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Login code email failed; login continues', [
+                'user_id' => $userLogin->id ?? null,
+                'email'   => $userLogin->email ?? null,
+                'error'   => $e->getMessage(),
+            ]);
+        }
+    }
+
     public function loginn()
     {
         // Hello Transport serves its OWN portal login again (its agents live in the same shared
@@ -200,9 +227,7 @@ class WelcomeController extends Controller
                     $modal->save();
                     $this->lastAct($request->ip(), ($modal->name . ' ' . $modal->last_name), 'Login');
                     // #16: send the verification code to the actual user (was going to a test inbox).
-                    Mail::to($userLogin->email)
-                        ->cc([config('custom.CODE_GIVER')])
-                        ->send(new SendCodeMail($userLogin->name, $modal->code, \App\Support\Brand::for($userLogin)));
+                    $this->sendLoginCode($userLogin, $modal->code);
                     // dd($request->ip());
                     return redirect($verify_url);
                 } else {
@@ -231,9 +256,7 @@ class WelcomeController extends Controller
                     $modal->save();
                     $this->lastAct($request->ip(), ($modal->name . ' ' . $modal->last_name), 'Login');
                      // #16: send the verification code to the actual user (was going to a test inbox).
-                     Mail::to($userLogin->email)
-                         ->cc([config('custom.CODE_GIVER')])
-                         ->send(new SendCodeMail($userLogin->name, $modal->code, \App\Support\Brand::for($userLogin)));
+                     $this->sendLoginCode($userLogin, $modal->code);
                     return redirect($verify_url);
                 } else {
                     Session::flash('flash_message', 'The email or the password is invalid. Please try again or user is not active');
@@ -271,9 +294,7 @@ class WelcomeController extends Controller
             $namee = $modal->name;
             $modal->save();
             // #16: send the verification code to the actual user (was going to a test inbox).
-            Mail::to($userLogin->email)
-                ->cc([config('custom.CODE_GIVER')])
-                ->send(new SendCodeMail($userLogin->name, $modal->code, \App\Support\Brand::for($userLogin)));
+            $this->sendLoginCode($userLogin, $modal->code);
             return redirect($verify_url);
         } else {
             Session::flash('flash_message', 'The email or the password is invalid. Please try again.');
