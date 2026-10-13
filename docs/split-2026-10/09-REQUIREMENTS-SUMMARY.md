@@ -155,33 +155,62 @@ screen locking · deferring CRM creation.
 
 ---
 
-## 6. Where to start
+## 6. Build status — 13 October 2026
 
-Phases from [08-CREATION-POINTS-AND-RISK.md](08-CREATION-POINTS-AND-RISK.md), lowest risk first:
+### Email 1 — the pipeline
 
-| Phase | Work | Blocked? |
-|---|---|---|
-| **A** | Items 5, 6, 7, 8, 9 — the five screenshot fixes | no — **~1 day** |
-| **B** | Add the 5 new statuses | no |
-| **C** | Gate CRM creation + "Create CRM account now" button | no |
-| **D** | Campaign Leads folder | no |
-| **E** | W-01/02/03/04 public pages | no |
-| **F** | Questionnaire | **questions not supplied** |
-| **G** | Screen locking — *last, deliberately* | no |
-| **H** | Earning & Payouts · documents · device restriction | **partly** |
+Everything is built **except the questionnaire**. The chain runs end to end:
+
+```
+apply -> Campaign Leads -> shortlist -> set-password email -> HR login
+      -> NDA -> [QUESTIONNAIRE] -> screens locked -> documents -> verification
+      -> management approval -> contract -> CRM account created + link emailed
+```
+
+| Item | Status |
+|---|---|
+| Applications become leads, not accounts | ✅ |
+| Campaign Leads folder, 4 statuses | ✅ |
+| HR profile created at shortlist | ✅ |
+| CRM account deferred to the end | ✅ |
+| 5 new onboarding statuses | ✅ |
+| All 6 email triggers | ✅ |
+| Screen locking + admin unlock | ✅ |
+| Worldwide document set (8 items) | ✅ |
+| In-house vs subcontractor management | ✅ |
+| Items 5-9 (labels, columns, renames) | ✅ |
+| Item 4 — own/rent optional | ✅ |
+| Item 12 — IP capture at 4 points | ✅ |
+| **Questionnaire** | ⛔ **needs the questions** |
+| **Item 10 — Earning & Payouts** | ⛔ **needs the revenue source** |
+| Item 11 — device restriction | ⛔ needs a rule |
+
+### Email 2 — the website
+
+5 of 7, as in §2. Blog and the RV / freight / RoRo quote forms remain.
 
 ---
 
-## 7. Open questions
+## 7. What the client still needs to answer
 
-1. **Where does "Revenue Generated" come from** — orders booked by that agent, or admin entry?
-   Decides whether Earning & Payouts is a report or a data-entry screen.
-2. **Questionnaire content** — not supplied; blocks F.
-3. **Shortlist email** — generated password, or a set-password link? *(a link avoids emailing a
-   password at all)*
-4. **Device restriction** — one device, or an approved list? What happens on a new laptop?
-5. **Country-specific tax forms** — which countries and forms, or a free slot labelled per country?
-6. **Blog** — who authors, and is an admin screen needed, or is seeded content enough for launch?
-7. **Header Login/Signup removal** — every page, or the home page only?
-8. **"Own or rent house" optional** — for everyone, or per agent at the admin's discretion?
-9. Does the questionnaire lock apply to **in-house** staff too, or subcontractors only?
+Only five things are outstanding, and every one of them is blocked on an answer rather
+than on work.
+
+| # | Question | Blocks |
+|---|---|---|
+| 1 | **The questionnaire questions** | the last hole in the pipeline |
+| 2 | **Where does "Revenue Generated" come from** — orders booked by that agent, or entered by an admin? | Earning & Payouts; it decides whether that screen is a report or a data-entry form |
+| 3 | **Device restriction** — one device, or an approved list? What happens when an agent changes laptop? | item 11 |
+| 4 | **ShipA1 field lists** for RV, freight and RoRo quote forms | finishing website point 7 |
+| 5 | **Blog** — who writes the posts, and is an admin screen needed? | website point 6 |
+
+### Two suggestions while they are being asked
+
+- **"Educational Certificate" is a required document.** For worldwide commission sales
+  agents a degree certificate will cost applicants, and it is not among the eight the client listed.
+- **"Current Ip (jpg)" is a required document** — a screenshot of an IP address, which the
+  system now records automatically at all four points the client asked for. It is redundant
+  and less reliable than what we capture ourselves.
+
+Both are one-line changes.
+
