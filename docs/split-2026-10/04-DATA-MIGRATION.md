@@ -104,12 +104,45 @@ Of 150 accounts, 138 are Order Takers (role 2). Every other role is privileged o
 kept on both sides, and user id 1 is never deleted under any condition. Keeping twelve accounts costs
 nothing; deleting the wrong one locks people out of a live portal.
 
+### Orders and all other data stay on both sides
+
+**Client instruction, 13 Oct 2026:** *"do not remove any orders keep it there — on both sides"* and
+*"admin manager will stay on both the sides."*
+
+Both already hold under this plan, and both are now enforced rather than assumed:
+
+- The split statement names **only `user`**. No other table appears in it.
+- **No foreign key references `user`** — verified on the copied database — so there is no cascade
+  path by which deleting an account could remove a row anywhere else.
+- The migration script snapshots `order`, `order_history`, `orderpayments`, `order_payments`,
+  `not_respond_orders`, `shipa_query`, `sheet_details`, `carriers`, `hr_employees`,
+  `call_histories` and `report_new` **before and after** the delete and reports any difference.
+  It also aborts outright if a cascading foreign key is ever introduced.
+
+Counts that must be identical either side of the split, and on both portals:
+
+| Table | Rows |
+|---|---|
+| `order` | 268 |
+| `order_history` | 7,166 |
+| `orderpayments` | 268 |
+| `not_respond_orders` | 745 |
+| `sheet_details` | 944 |
+| `shipa_query` | 186 |
+| `report_new` | 1,060 |
+| `call_histories` | 980 |
+| `hr_employees` | 145 |
+| `carriers` | 84 |
+
+Deleting an Order Taker leaves their orders in place with the agent name blank — the behaviour
+already described in §3. No order is ever removed, on either side.
+
 ### What the split actually removes
 
 | Side | Removed | Kept |
 |---|---|---|
-| CrazyRays copy | 52 Hello Order Takers | Super Admin, Reference Dispatcher, Hello Manager + all 95 CrazyRays |
-| Hello (Phase 5) | 86 CrazyRays Order Takers | all 12 privileged accounts + its own 52 OTs |
+| CrazyRays copy | 52 Hello Order Takers — **accounts only** | Super Admin, Reference Dispatcher, Hello Manager + all 95 CrazyRays. **All orders and history kept.** |
+| Hello (Phase 5) | 86 CrazyRays Order Takers — **accounts only** | all 12 privileged accounts + its own 52 OTs. **All orders and history kept.** |
 
 ---
 
