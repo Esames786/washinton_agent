@@ -159,8 +159,10 @@ a:hover { color: var(--ht-accent-text); }
     border-bottom: 1px solid var(--ht-border);
     box-shadow: 0 2px 14px rgba(11, 31, 58, .06);
 }
-.navbar-area .desktop-nav { padding: 10px 0; }
-.navbar-area .desktop-nav .navbar-brand img { height: 66px !important; width: auto; }
+.navbar-area .desktop-nav { padding: 4px 0; }
+.navbar-area .desktop-nav .navbar-brand img { height: 88px !important; width: auto; }
+.navbar-area .desktop-nav .navbar-brand { padding: 0; }
+@media (min-width: 992px) { .navbar-area .others-option { display: flex; align-items: center; } }
 
 .navbar-area .desktop-nav .navbar .navbar-nav .nav-item a,
 .navbar-nav .nav-item a {
@@ -174,8 +176,8 @@ a:hover { color: var(--ht-accent-text); }
 .navbar-area .desktop-nav .navbar .navbar-nav .nav-item.active > a {
     color: var(--ht-accent-text) !important;
 }
-.navbar-area .desktop-nav .navbar .navbar-nav .nav-item > a.active,
-.navbar-area .desktop-nav .navbar .navbar-nav .nav-item.active > a {
+.navbar-area .desktop-nav .navbar .navbar-nav > .nav-item > a.active,
+.navbar-area .desktop-nav .navbar .navbar-nav > .nav-item.active > a {
     box-shadow: inset 0 -2px 0 var(--ht-accent);
 }
 .navbar-area .desktop-nav .navbar .navbar-nav .nav-item a i { color: inherit !important; }
@@ -186,8 +188,7 @@ a:hover { color: var(--ht-accent-text); }
     border: 1px solid var(--ht-border) !important;
     border-radius: var(--ht-radius) !important;
     box-shadow: var(--ht-shadow-lg) !important;
-    padding: 8px 0;
-    border-top: 3px solid var(--ht-accent) !important;
+    padding: 8px !important;
 }
 .navbar .dropdown-menu a.title,
 .navbar .dropdown-menu a.nav-link,
@@ -464,7 +465,7 @@ a:hover { color: var(--ht-accent-text); }
     outline: none;
 }
 /* Bootstrap gives .form-control selects no arrow; add one so they read as dropdowns. */
-.main-contact-area select.form-control,
+.main-contact-area select.form-control:not([multiple]),
 #quote-form select.form-control:not([multiple]) {
     -webkit-appearance: none;
     appearance: none;
@@ -474,7 +475,27 @@ a:hover { color: var(--ht-accent-text); }
     background-size: 14px 10px !important;
     padding-right: 44px !important;
 }
-#quote-form select[multiple].form-control { height: auto; padding: 8px 12px; }
+/* Multi-select lists (equipment type, trailer specification): a plain list, no caret. */
+.main-contact-area select[multiple].form-control,
+#quote-form select[multiple].form-control {
+    height: 150px !important;
+    padding: 6px !important;
+    background-image: none !important;
+    -webkit-appearance: auto;
+    appearance: auto;
+    font-size: 14.5px;
+}
+#quote-form select[multiple].form-control option,
+.main-contact-area select[multiple].form-control option {
+    padding: 7px 10px;
+    border-radius: 6px;
+    margin-bottom: 2px;
+}
+#quote-form select[multiple].form-control option:checked,
+.main-contact-area select[multiple].form-control option:checked {
+    background: var(--ht-navy) linear-gradient(0deg, var(--ht-navy) 0%, var(--ht-navy) 100%) !important;
+    color: #fff !important;
+}
 #quote-form input[type="file"].form-control,
 .main-contact-area input[type="file"].form-control { height: auto; padding: 12px 14px; line-height: 1.4; }
 #quote-form select.form-control option,
@@ -690,3 +711,9 @@ a:hover { color: var(--ht-accent-text); }
    viewport, which showed as a sideways scrollbar. Clip it (keeps sticky working). */
 body { overflow-x: hidden; }
 @supports (overflow-x: clip) { body { overflow-x: clip; } }
+
+/* Dropdown entries: no dashed separators, animated lines or underline — one clean list. */
+.navbar-area .desktop-nav .navbar .navbar-nav .nav-item .dropdown-menu li a { border-bottom: 0 !important; box-shadow: none !important; }
+.navbar-area .desktop-nav .navbar .navbar-nav .nav-item .dropdown-menu li a::before,
+.navbar-area .desktop-nav .navbar .navbar-nav .nav-item .dropdown-menu li a::after { display: none !important; }
+.navbar-area .desktop-nav .navbar .navbar-nav .nav-item .dropdown-menu li a.active { background: var(--ht-bg-soft) !important; color: var(--ht-navy) !important; font-weight: 600 !important; }

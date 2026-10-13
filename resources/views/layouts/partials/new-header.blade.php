@@ -47,7 +47,7 @@
                 <div class="mobile-menu">
                     <div class="logo">
                         <a href="{{ url('') }}">
-                            <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" alt="logo" style="height:52px;width:auto;">
+                            <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" alt="{{ $brand['name'] ?? 'Hello Transport' }}" style="height:60px;width:auto;">
                         </a>
                     </div>
                 </div>
@@ -59,7 +59,7 @@
 
                     {{-- LOGO --}}
                     <a class="navbar-brand" href="{{ route('Frontend.index') }}">
-                        <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" alt="{{ $brand['name'] ?? 'Hello Transport' }}" style="height:66px;width:auto;">
+                        <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" alt="{{ $brand['name'] ?? 'Hello Transport' }}" style="height:88px;width:auto;">
                     </a>
 
                     <div class="collapse navbar-collapse mean-menu">
