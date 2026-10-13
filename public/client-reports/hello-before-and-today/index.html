@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Hello Transport Before &amp; Today</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a progress report. Navy masthead, then one section per client email;
+   each change is a Before / Today pair of real screenshots with a live link. */
+:root {
+    --bg:        #f4f6f9;
+    --surface:   #ffffff;
+    --fg:        #13233b;
+    --muted:     #5a6a7f;
+    --line:      #dde4ee;
+    --navy:      #0b1f3a;
+    --navy-fg:   #ffffff;
+    --gold:      #c9a13b;
+    --gold-text: #876914;
+    --before:    #a2422c;
+    --before-bg: #fbeee9;
+    --today:     #23704a;
+    --today-bg:  #e7f4ec;
+    --wait:      #8a5a00;
+    --wait-bg:   #fdf3dc;
+    --shadow:    0 1px 2px rgba(11, 31, 58, .06), 0 8px 24px rgba(11, 31, 58, .06);
+    --display:   "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+    --body:      "Inter", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg: #0a111e; --surface: #111b2c; --fg: #e5eaf2; --muted: #9caabd; --line: #22314a;
+        --navy: #0d2342; --navy-fg: #ffffff; --gold: #d4ae4c; --gold-text: #dcbb62;
+        --before: #f08c74; --before-bg: #3a1d17; --today: #6fd29d; --today-bg: #143424;
+        --wait: #f2c45a; --wait-bg: #3a2c0c; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+        color-scheme: dark;
+    }
+}
+:root[data-theme="dark"] {
+    --bg: #0a111e; --surface: #111b2c; --fg: #e5eaf2; --muted: #9caabd; --line: #22314a;
+    --navy: #0d2342; --navy-fg: #ffffff; --gold: #d4ae4c; --gold-text: #dcbb62;
+    --before: #f08c74; --before-bg: #3a1d17; --today: #6fd29d; --today-bg: #143424;
+    --wait: #f2c45a; --wait-bg: #3a2c0c; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+    color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+:root { color-scheme: light; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.6; }
+a { color: inherit; }
+img { max-width: 100%; display: block; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.15; text-wrap: balance; margin: 0; letter-spacing: -.01em; }
+p { margin: 0; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; }
+
+/* Masthead */
+.mast { background: var(--navy); color: var(--navy-fg); padding-block: 44px 40px; border-bottom: 4px solid var(--gold); }
+.mast .eyebrow { color: var(--gold); font-size: 12.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.mast h1 { font-size: clamp(32px, 5vw, 52px); font-weight: 800; margin-top: 10px; }
+.mast .lede { color: rgba(255,255,255,.8); max-width: 680px; margin-top: 14px; font-size: 17px; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 22px; font-size: 14px; color: rgba(255,255,255,.72); }
+.meta b { color: #fff; font-weight: 600; }
+
+/* Status strip */
+.strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: -26px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; box-shadow: var(--shadow); }
+.stat .k { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.stat .v { font-family: var(--display); font-weight: 800; font-size: 26px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.stat .n { font-size: 13.5px; color: var(--muted); margin-top: 2px; }
+
+/* Section nav */
+.toc { display: flex; flex-wrap: wrap; gap: 8px; margin-block: 28px 8px; }
+.toc a { text-decoration: none; font-size: 14px; font-weight: 600; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); }
+.toc a:hover, .toc a:focus-visible { border-color: var(--gold); outline: none; }
+
+/* Sections */
+section { padding-block: 44px 8px; }
+.sec-head { display: grid; gap: 8px; margin-bottom: 26px; max-width: 760px; }
+.sec-head .eyebrow { color: var(--gold-text); font-size: 12.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.sec-head h2 { font-size: clamp(26px, 3.4vw, 36px); font-weight: 800; }
+.sec-head p { color: var(--muted); }
+
+/* A change: heading row + Before/Today pair */
+.change { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px; margin-bottom: 18px; box-shadow: var(--shadow); }
+.change-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; margin-bottom: 14px; }
+.change-top h3 { font-size: 21px; font-weight: 700; }
+.ref { font-size: 12.5px; font-weight: 600; color: var(--muted); letter-spacing: .04em; margin-right: auto; }
+.live { font-size: 14px; font-weight: 600; text-decoration: none; color: var(--gold-text); white-space: nowrap; }
+.live:hover, .live:focus-visible { text-decoration: underline; outline: none; }
+.pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.side { min-width: 0; display: grid; gap: 10px; align-content: start; }
+.tag { justify-self: start; font-size: 11.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; }
+.tag.b { color: var(--before); background: var(--before-bg); }
+.tag.t { color: var(--today); background: var(--today-bg); }
+.side p { font-size: 14.5px; color: var(--fg); }
+.shot { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--bg); cursor: zoom-in; padding: 0; width: 100%; }
+.shot img { width: 100%; height: auto; }
+.shot.tall img { max-height: 520px; object-fit: cover; object-position: top; }
+.shot:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.empty { border: 1px dashed var(--line); border-radius: 10px; padding: 28px 18px; text-align: center; color: var(--muted); font-size: 14.5px; }
+.quote { border-left: 3px solid var(--gold); padding: 10px 14px; background: var(--bg); border-radius: 0 8px 8px 0; font-size: 14.5px; }
+.quote b { display: block; margin-bottom: 4px; }
+
+/* Pipeline */
+.flows { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 16px; }
+.flow { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px; box-shadow: var(--shadow); min-width: 0; }
+.flow h3 { font-size: 19px; margin-bottom: 14px; }
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: s; display: grid; gap: 0; }
+.steps li { counter-increment: s; position: relative; padding: 0 0 14px 40px; font-size: 14.5px; }
+.steps li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.steps li::after { content: ""; position: absolute; left: 12.5px; top: 28px; bottom: 2px; width: 1px; background: var(--line); }
+.steps li:last-child { padding-bottom: 0; }
+.steps li:last-child::after { display: none; }
+.steps.b li::before { background: var(--before-bg); color: var(--before); }
+.steps.t li::before { background: var(--navy); color: var(--gold); }
+.steps b { font-weight: 600; }
+.steps span { display: block; color: var(--muted); font-size: 13.5px; }
+.mail { display: inline-block; font-size: 11.5px; font-weight: 700; color: var(--gold-text); margin-left: 6px; letter-spacing: .04em; }
+
+/* Tables */
+.tbl-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); margin-bottom: 18px; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14.5px; }
+th, td { text-align: left; vertical-align: top; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+th { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td:first-child { font-weight: 600; white-space: nowrap; }
+td.b { color: var(--before); }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Statement example */
+.stmt { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+.stmt div { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.stmt .k { font-size: 12px; color: var(--muted); font-weight: 600; }
+.stmt .v { font-family: var(--display); font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* Thumbs */
+.thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+.thumbs figure { margin: 0; display: grid; gap: 6px; }
+.thumbs figcaption { font-size: 13px; color: var(--muted); }
+
+/* Left to do */
+.todo { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.todo .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; box-shadow: var(--shadow); display: grid; gap: 8px; align-content: start; }
+.pill { justify-self: start; font-size: 11.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; color: var(--wait); background: var(--wait-bg); }
+.todo h3 { font-size: 18px; }
+.todo p { font-size: 14.5px; color: var(--muted); }
+
+/* Links */
+.links { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.links .group { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; box-shadow: var(--shadow); min-width: 0; }
+.links h3 { font-size: 15px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-family: var(--body); font-weight: 700; margin-bottom: 10px; }
+.links ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+.links a { font-size: 14.5px; font-weight: 600; text-decoration: none; color: var(--fg); overflow-wrap: anywhere; }
+.links a:hover, .links a:focus-visible { color: var(--gold-text); text-decoration: underline; outline: none; }
+.links small { display: block; color: var(--muted); font-size: 12.5px; font-weight: 400; }
+
+footer { padding-block: 40px 56px; color: var(--muted); font-size: 13.5px; }
+
+/* Lightbox */
+.lb { position: fixed; inset: 0; background: rgba(5, 12, 24, .88); display: grid; place-items: center; padding: 24px; z-index: 50; cursor: zoom-out; }
+.lb img { max-width: min(1200px, 100%); max-height: 100%; object-fit: contain; border-radius: 8px; background: #fff; }
+.lb button { position: fixed; top: calc(14px + env(safe-area-inset-top, 0px)); right: 16px; background: #fff; color: #0b1f3a; border: 0; border-radius: 999px; padding: 8px 14px; font-weight: 700; cursor: pointer; }
+
+@media (max-width: 860px) {
+    .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .pair, .flows { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 420px) {
+    .strip { grid-template-columns: minmax(0, 1fr); }
+    .change, .flow { padding: 16px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+    .toc a, .live, .links a { transition: color .15s ease, border-color .15s ease; }
+}
+</style>
+</head>
+<body>
+<header class="mast">
+    <div class="wrap">
+        <div class="eyebrow">Progress report</div>
+        <h1>Hello Transport: Before &amp; Today</h1>
+        <p class="lede">What the website and the agent recruitment process looked like when the two
+            October emails came in, and what is live today. Every change below has a screenshot of
+            each state and a link to the live page.</p>
+        <div class="meta">
+            <span>Report date <b>14 October 2026</b></span>
+            <span>Covers the emails of <b>8 October</b> (recruitment) and <b>12 October</b> (website)</span>
+            <span>Live site <b>hellotransport.com</b></span>
+        </div>
+    </div>
+</header>
+
+<main class="wrap">
+
+    <div class="strip" aria-label="Status summary">
+        <div class="stat"><div class="k">Website email</div><div class="v num">7 of 7</div><div class="n">points done</div></div>
+        <div class="stat"><div class="k">Recruitment email</div><div class="v">Built</div><div class="n">application to CRM account</div></div>
+        <div class="stat"><div class="k">Look &amp; feel</div><div class="v">New theme</div><div class="n">every customer-facing page</div></div>
+        <div class="stat"><div class="k">Waiting on you</div><div class="v num">2</div><div class="n">questions and one decision</div></div>
+    </div>
+
+    <nav class="toc" aria-label="Sections">
+        <a href="#website">Website</a>
+        <a href="#theme">Look &amp; feel</a>
+        <a href="#pipeline">Recruitment process</a>
+        <a href="#hr">HR portal</a>
+        <a href="#left">Still to do</a>
+        <a href="#links">All links</a>
+    </nav>
+
+    <!-- ===================== WEBSITE ===================== -->
+    <section id="website">
+        <div class="sec-head">
+            <span class="eyebrow">Email of 12 October</span>
+            <h2>The website</h2>
+            <p>Seven points: the agent programme, a shorter application, clearer wording, a blog, and
+                a proper quote form for every service.</p>
+        </div>
+
+        <article class="change">
+            <div class="change-top">
+                <h3>Agent programme on the home page</h3>
+                <span class="ref">Point 1</span>
+                <a class="live" href="https://hellotransport.com/" target="_blank" rel="noopener">Open the home page →</a>
+            </div>
+            <div class="pair">
+                <div class="side">
+                    <span class="tag b">Before</span>
+                    <p>Nothing on the home page pointed people to the agent programme. The header
+                        offered <b>Login</b> and <b>Signup</b> to every visitor.</p>
+                    <button class="shot" type="button"><img src="img/before-header.webp" alt="Old header with Login and Signup buttons" loading="lazy"></button>
+                </div>
+                <div class="side">
+                    <span class="tag t">Today</span>
+                    <p>A band partway down the home page introduces the programme and links to it with
+                        <b>See the Program</b>. The header shows <b>Earn With Us</b> instead of Login/Signup.</p>
+                    <button class="shot" type="button"><img src="img/after-teaser.webp" alt="Earn With Hello Transport band on the home page" loading="lazy"></button>
+                </div>
+            </div>
+        </article>
+
+        <article class="change">
+            <div class="change-top">
+                <h3>Earn With Hello Transport page</h3>
+                <span class="ref">Point 2</span>
+                <a class="live" href="https://hellotransport.com/earn-with-hello-transport" target="_blank" rel="noopener">Open the Earn page →</a>
+            </div>
+            <div class="pair">
+                <div class="side">
+                    <span class="tag b">Before</span>
+                    <div class="empty">No page existed. Agents went straight to a signup form with no
+                        explanation of the role, the pay or the process.</div>
+                </div>
+                <div class="side">
+                    <span class="tag t">Today</span>
+                    <p>One page with six sections: overview, why work with us, how to become an agent
+                        (six steps), apply, sign in for existing agents, and FAQs.</p>
+                    <button class="shot tall" type="button"><img src="img/after-earn.webp" alt="Earn With Hello Transport page" loading="lazy"></button>
+                </div>
+            </div>
+        </article>
+
+        <article class="change">
+            <div class="change-top">
+                <h3>Apply for an Opportunity</h3>
+                <span class="ref">Point 3</span>
+                <a class="live" href="https://hellotransport.com/register" target="_blank" rel="noopener">Open the application →</a>
+            </div>
+            <div class="pair">
+                <div class="side">
+                    <span class="tag b">Before</span>
+                    <p>A long account form: father and mother names, date of birth, gender, marital
+                        status, ID, full address and a password, before anyone had reviewed the person.</p>
+                    <button class="shot" type="button"><img src="img/before-register.webp" alt="Old long signup form" loading="lazy"></button>
+                </div>
+                <div class="side">
+                    <span class="tag t">Today</span>
+                    <p>The short form from the email: name, email, phone, country, city, timezone, two
+                        U.S. questions, optional CV and LinkedIn, and the terms. Choosing a country fills
+                        in the phone code and timezone, and the applicant can still change both.</p>
+                    <button class="shot tall" type="button"><img src="img/after-register.webp" alt="New application form" loading="lazy"></button>
+                </div>
+            </div>
+        </article>
+
+        <article class="change">
+            <div class="change-top">
+                <h3>After applying</h3>
+                <span class="ref">Point 4</span>
+            </div>
+            <div class="pair">
+                <div class="side">
+                    <span class="tag b">Before</span>
+                    <p>The form created a portal account on the spot and said so.</p>
+                    <button class="shot" type="button"><img src="img/before-account.webp" alt="Old Account Created screen" loading="lazy"></button>
+                </div>
+                <div class="side">
+                    <span class="tag t">Today</span>
+                    <p>No account is created. The applicant sees your wording, and the application
+                        goes to the HR team for review.</p>
+                    <div class="quote"><b>Application Submitted</b>Thank you for applying to join our
+                        team. Your application has been successfully received and is now under review.
+                        Our recruitment team will review your application and contact you if your
+                        profile matches an available opportunity.</div>
+                </div>
+            </div>
+        </article>
+
+        <article class="change">
+            <div class="change-top">
+                <h3>Sign-in page wording</h3>
+                <span class="ref">Point 5</span>
+                <a class="live" href="https://hellotransport.com/loginn" target="_blank" rel="noopener">Open sign-in →</a>
+            </div>
+            <div class="pair">
+                <div class="side">
+                    <span class="tag b">Before</span>
+                    <p>Customer-style wording, marked a to d in the email.</p>
+                    <button class="shot" type="button"><img src="img/before-login.webp" alt="Old sign-in page with markings a to d" loading="lazy"></button>
+                </div>
+                <div class="side">
+                    <span class="tag t">Today</span>
+                    <p>Written for agents: <b>Access Your Account</b>, what the workspace is for, and
+                        <b>New to the Hello Transport network? Create Account</b>.</p>
+                    <button class="shot" type="button"><img src="img/after-login.webp" alt="New sign-in page" loading="lazy"></button>
+                </div>
+            </div>
+        </article>
+
+        <article class="change">
+            <div class="change-top">
+                <h3>Blog</h3>
+                <span class="ref">Point 6</span>
+                <a class="live" href="https://hellotransport.com/blog" target="_blank" rel="noopener">Open the blog →</a>
+            </div>
+            <div class="pair">
+                <div class="side">
+                    <span class="tag b">Before</span>
+                    <div class="empty">No blog.</div>
+                </div>
+                <div class="side">
+                    <span class="tag t">Today</span>
+                    <p>A blog with categories and <b>10 original articles</b>: car shipping, open vs
+                        enclosed, heavy equipment, boats, RVs, LTL vs FTL freight, reefer, RoRo, a vehicle
+                        preparation checklist, and the agent role.</p>
+                    <button class="shot tall" type="button"><img src="img/after-blog.webp" alt="Blog listing" loading="lazy"></button>
+                    <p>Each article carries search-engine fields (title, description, image text,
+                        schema), as on ShipA1. Admins and managers write and schedule posts in the portal
+                        under <b>Blog Posts</b>.</p>
+                    <button class="shot tall" type="button"><img src="img/after-article.webp" alt="A blog article" loading="lazy"></button>
+                </div>
+            </div>
+        </article>
+
+        <article class="change">
+            <div class="change-top">
+                <h3>A quote form for every service</h3>
+                <span class="ref">Point 7a</span>
+                <a class="live" href="https://hellotransport.com/Quote-Request?type=Heavy%20Equipment" target="_blank" rel="noopener">Open a heavy equipment quote →</a>
+            </div>
+            <div class="pair">
+                <div class="side">
+                    <span class="tag b">Before</span>
+                    <p>Every service page, boat included, opened the same car form.</p>
+                    <button class="shot" type="button"><img src="img/before-service.webp" alt="Boat service page opening the car quote" loading="lazy"></button>
+                </div>
+                <div class="side">
+                    <span class="tag t">Today</span>
+                    <p>Each service opens its own form with ShipA1's fields: heavy equipment (size,
+                        weight, trailer, loading method, auction, photo), boat, RV, freight (LTL/FTL,
+                        freight class with a calculator, equipment, pickup and delivery services) and
+                        RoRo (destination country and city). The details reach the order in the CRM.</p>
+                    <button class="shot" type="button"><img src="img/after-heavy.webp" alt="Heavy equipment quote form" loading="lazy"></button>
+                    <button class="shot" type="button"><img src="img/after-freight.webp" alt="Freight quote form" loading="lazy"></button>
+                </div>
+            </div>
+        </article>
+
+        <article class="change">
+            <div class="change-top">
+                <h3>Vehicle Price removed</h3>
+                <span class="ref">Point 7b</span>
+                <a class="live" href="https://hellotransport.com/Quote-Request?type=Car" target="_blank" rel="noopener">Open a car quote →</a>
+            </div>
+            <div class="pair">
+                <div class="side">
+                    <span class="tag b">Before</span>
+                    <button class="shot" type="button"><img src="img/before-vprice.webp" alt="Car quote form with Vehicle Price field" loading="lazy"></button>
+                </div>
+                <div class="side">
+                    <span class="tag t">Today</span>
+                    <button class="shot" type="button"><img src="img/after-quote.webp" alt="Car quote form without Vehicle Price" loading="lazy"></button>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <!-- ===================== THEME ===================== -->
+    <section id="theme">
+        <div class="sec-head">
+            <span class="eyebrow">Requested after the emails</span>
+            <h2>Look &amp; feel</h2>
+            <p>The black and gold theme was replaced on every customer-facing page with navy and gold,
+                keeping the gold of the logo. Text is readable everywhere, forms are light and clear,
+                and the site works on phones.</p>
+        </div>
+
+        <article class="change">
+            <div class="change-top">
+                <h3>Home page</h3>
+                <a class="live" href="https://hellotransport.com/" target="_blank" rel="noopener">Open the home page →</a>
+            </div>
+            <div class="pair">
+                <div class="side">
+                    <span class="tag b">Before</span>
+                    <p>A washed-out photo with gold text, then black sections throughout.</p>
+                    <button class="shot" type="button"><img src="img/before-home.webp" alt="Old home page" loading="lazy"></button>
+                </div>
+                <div class="side">
+                    <span class="tag t">Today</span>
+                    <p>A car-carrier photo with a navy overlay, a white headline, a clear quote button and
+                        three service highlights.</p>
+                    <button class="shot" type="button"><img src="img/after-home.webp" alt="New home page" loading="lazy"></button>
+                </div>
+            </div>
+        </article>
+
+        <article class="change">
+            <div class="change-top">
+                <h3>Quote form</h3>
+                <a class="live" href="https://hellotransport.com/Quote-Request?type=Car" target="_blank" rel="noopener">Open a car quote →</a>
+            </div>
+            <div class="pair">
+                <div class="side">
+                    <span class="tag b">Before</span>
+                    <button class="shot tall" type="button"><img src="img/before-quote.webp" alt="Old dark quote page" loading="lazy"></button>
+                </div>
+                <div class="side">
+                    <span class="tag t">Today</span>
+                    <button class="shot" type="button"><img src="img/after-quote.webp" alt="New quote form" loading="lazy"></button>
+                    <p>On a phone, the home page, application and quote form:</p>
+                    <button class="shot" type="button"><img src="img/after-mobile.webp" alt="Three pages at phone width" loading="lazy"></button>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <!-- ===================== PIPELINE ===================== -->
+    <section id="pipeline">
+        <div class="sec-head">
+            <span class="eyebrow">Email of 8 October</span>
+            <h2>Recruitment process</h2>
+            <p>Everything is now managed step by step in the HR portal. The CRM account is created
+                at the end, once the person has been through every step.</p>
+        </div>
+
+        <div class="flows">
+            <div class="flow">
+                <span class="tag b">Before</span>
+                <h3 style="margin-top:10px">Signup created the account</h3>
+                <ol class="steps b">
+                    <li><b>Signup form</b><span>Long form with a password.</span></li>
+                    <li><b>CRM account created immediately</b><span>"Pending admin approval".</span></li>
+                    <li><b>Admin approves</b><span>NDA, documents and contract existed, but not as one ordered process.</span></li>
+                </ol>
+            </div>
+            <div class="flow">
+                <span class="tag t">Today</span>
+                <h3 style="margin-top:10px">Application to active agent</h3>
+                <ol class="steps t">
+                    <li><b>Application</b> <span class="mail">EMAIL 1</span><span>Short form on the website. No account yet.</span></li>
+                    <li><b>Campaign Leads</b><span>New folder in HR: Pending, Under Review, Shortlisted, Rejected.</span></li>
+                    <li><b>Shortlisted</b> <span class="mail">EMAIL 2</span><span>HR profile created; the agent gets a link to set their password.</span></li>
+                    <li><b>Not selected</b> <span class="mail">EMAIL 3</span><span>Rejection email with the reason.</span></li>
+                    <li><b>NDA</b> <span class="mail">EMAIL 4</span><span>Signed in the HR portal.</span></li>
+                    <li><b>Questionnaire</b> <span class="mail">EMAIL 4</span><span>Questions written by the admin in settings.</span></li>
+                    <li><b>In progress</b><span>Interview, practical test and offer. The agent's screens are locked meanwhile.</span></li>
+                    <li><b>Documents</b><span>Worldwide document set, below.</span></li>
+                    <li><b>Verification and management approval</b> <span class="mail">EMAIL 5</span></li>
+                    <li><b>Contract</b> <span class="mail">EMAIL 4</span><span>Signed and accepted in the portal.</span></li>
+                    <li><b>Onboarding</b> <span class="mail">EMAIL 6</span><span>CRM account created and the sign-in link emailed.</span></li>
+                    <li><b>Active</b></li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="tbl-wrap" style="margin-top:18px">
+            <table>
+                <thead><tr><th>Email</th><th>When it is sent</th><th>What it contains</th></tr></thead>
+                <tbody>
+                    <tr><td>1</td><td>Right after applying</td><td>Confirmation that the application was received</td></tr>
+                    <tr><td>2</td><td>Shortlisted</td><td>HR portal link and a link to set a password (no password is ever emailed)</td></tr>
+                    <tr><td>3</td><td>Not selected</td><td>A polite rejection with the reason</td></tr>
+                    <tr><td>4</td><td>NDA, questionnaire or contract is ready</td><td>A link straight to that step</td></tr>
+                    <tr><td>5</td><td>Moved to management approval</td><td>A status update</td></tr>
+                    <tr><td>6</td><td>CRM account created</td><td>The CRM sign-in link</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="color:var(--muted);font-size:14.5px">Admins can still create an employee directly in HR
+            when they need to; that path is unchanged.</p>
+    </section>
+
+    <!-- ===================== HR ===================== -->
+    <section id="hr">
+        <div class="sec-head">
+            <span class="eyebrow">Email of 8 October, items 1 to 12</span>
+            <h2>HR portal</h2>
+            <p>The "before" screenshots are the ones sent with the email.</p>
+        </div>
+
+        <div class="tbl-wrap">
+            <table>
+                <thead><tr><th>Area</th><th>Before</th><th>Today</th></tr></thead>
+                <tbody>
+                    <tr><td>Menus</td><td class="b">In-house staff and subcontractors mixed together</td><td>Separate <b>Subcontractor Management</b> and <b>In-House Management</b> menus</td></tr>
+                    <tr><td>Documents</td><td class="b">U.S.-only set (State ID, W-9)</td><td>Works for any country: government photo ID, proof of address, tax ID for the agent's country, other tax or payment forms, selfie, workstation and computer photos</td></tr>
+                    <tr><td>Own or rent house</td><td class="b">Required for everyone</td><td>Optional; the admin decides per agent</td></tr>
+                    <tr><td>Profile</td><td class="b">Gender and Pay shown; "State ID"</td><td>Gender removed, Pay shown for in-house staff only, renamed <b>ID Number</b></td></tr>
+                    <tr><td>Dashboard</td><td class="b">Today's Orders table</td><td>Removed; orders stay in the sidebar</td></tr>
+                    <tr><td>Break list</td><td class="b">Subcontractor Name column</td><td>Removed (it is the agent's own list)</td></tr>
+                    <tr><td>Tickets</td><td class="b">Subcontractor column</td><td>Removed</td></tr>
+                    <tr><td>Payslips</td><td class="b">Salary payslips</td><td>Renamed <b>Earning &amp; Payouts</b>, as a commission statement</td></tr>
+                    <tr><td>IP address</td><td class="b">Partly recorded</td><td>Recorded at application, NDA, contract and login</td></tr>
+                    <tr><td>Device restriction</td><td class="b">None</td><td><span class="pill">Waiting on your decision</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <article class="change">
+            <div class="change-top">
+                <h3>Earning &amp; Payouts: a commission statement</h3>
+                <a class="live" href="https://hr.hellotransport.com" target="_blank" rel="noopener">Open the HR portal →</a>
+            </div>
+            <div class="pair">
+                <div class="side">
+                    <span class="tag b">Before</span>
+                    <p>Salary columns that do not apply to commission agents.</p>
+                    <button class="shot" type="button"><img src="img/hr-payslips.webp" alt="Old payslips list" loading="lazy"></button>
+                </div>
+                <div class="side">
+                    <span class="tag t">Today</span>
+                    <p>The admin enters the revenue each agent generated; the statement works out the
+                        rest. Using the example from the email:</p>
+                    <div class="stmt">
+                        <div><div class="k">Revenue generated</div><div class="v num">18,500</div></div>
+                        <div><div class="k">Commission rate</div><div class="v num">10%</div></div>
+                        <div><div class="k">Gross commission</div><div class="v num">1,850</div></div>
+                        <div><div class="k">Deductions</div><div class="v num">−100</div></div>
+                        <div><div class="k">Net payable</div><div class="v num">1,750</div></div>
+                    </div>
+                    <p>Payment method, reference and status are recorded on each statement, as in the
+                        layout you sent.</p>
+                    <button class="shot" type="button"><img src="img/hr-statement.webp" alt="Statement layout from the email" loading="lazy"></button>
+                </div>
+            </div>
+        </article>
+
+        <div class="thumbs" aria-label="Before screenshots from the email">
+            <figure><button class="shot" type="button"><img src="img/hr-dashboard.webp" alt="Dashboard with Today's Orders" loading="lazy"></button><figcaption>Before: dashboard with Today's Orders</figcaption></figure>
+            <figure><button class="shot" type="button"><img src="img/hr-profile.webp" alt="Profile with State ID, Gender and Pay" loading="lazy"></button><figcaption>Before: profile with State ID, Gender, Pay</figcaption></figure>
+            <figure><button class="shot" type="button"><img src="img/hr-breaks.webp" alt="Break list with Subcontractor Name" loading="lazy"></button><figcaption>Before: break list name column</figcaption></figure>
+            <figure><button class="shot" type="button"><img src="img/hr-tickets.webp" alt="Tickets with Subcontractor column" loading="lazy"></button><figcaption>Before: tickets name column</figcaption></figure>
+        </div>
+    </section>
+
+    <!-- ===================== LEFT ===================== -->
+    <section id="left">
+        <div class="sec-head">
+            <span class="eyebrow">Waiting on you</span>
+            <h2>Still to do</h2>
+            <p>Both items need a decision or content from your side. The work around them is done.</p>
+        </div>
+        <div class="todo">
+            <div class="card">
+                <span class="pill">Needs content</span>
+                <h3>Questionnaire questions</h3>
+                <p>The questionnaire step is built, but no questions have been entered yet. Until
+                    there are some, shortlisted agents stop at that step. An admin adds them in the
+                    HR portal under <b>Settings → Onboarding Questionnaire</b>.</p>
+            </div>
+            <div class="card">
+                <span class="pill">Needs a decision</span>
+                <h3>Device restriction (item 11)</h3>
+                <p>Proposed rule: the CRM records each device an agent signs in from, and the admin
+                    sets a policy per agent: <b>Off</b> (default), <b>One device</b> or <b>Approved
+                    devices only</b>. A new device asks for admin approval instead of signing straight in.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== LINKS ===================== -->
+    <section id="links">
+        <div class="sec-head">
+            <span class="eyebrow">Live today</span>
+            <h2>All links</h2>
+        </div>
+        <div class="links">
+            <div class="group">
+                <h3>Website</h3>
+                <ul>
+                    <li><a href="https://hellotransport.com/" target="_blank" rel="noopener">Home page<small>hellotransport.com</small></a></li>
+                    <li><a href="https://hellotransport.com/earn-with-hello-transport" target="_blank" rel="noopener">Earn With Hello Transport<small>/earn-with-hello-transport</small></a></li>
+                    <li><a href="https://hellotransport.com/services" target="_blank" rel="noopener">Services<small>/services</small></a></li>
+                    <li><a href="https://hellotransport.com/blog" target="_blank" rel="noopener">Blog<small>/blog</small></a></li>
+                    <li><a href="https://hellotransport.com/blog/how-car-shipping-works" target="_blank" rel="noopener">Example article<small>/blog/how-car-shipping-works</small></a></li>
+                </ul>
+            </div>
+            <div class="group">
+                <h3>Quote forms</h3>
+                <ul>
+                    <li><a href="https://hellotransport.com/Quote-Request?type=Car" target="_blank" rel="noopener">Car</a></li>
+                    <li><a href="https://hellotransport.com/Quote-Request?type=Heavy%20Equipment" target="_blank" rel="noopener">Heavy equipment</a></li>
+                    <li><a href="https://hellotransport.com/Quote-Request?type=Boat" target="_blank" rel="noopener">Boat</a></li>
+                    <li><a href="https://hellotransport.com/Quote-Request?type=RV" target="_blank" rel="noopener">RV</a></li>
+                    <li><a href="https://hellotransport.com/Quote-Request?type=Dryvan" target="_blank" rel="noopener">Freight</a></li>
+                    <li><a href="https://hellotransport.com/Quote-Request?type=RoRo" target="_blank" rel="noopener">RoRo</a></li>
+                </ul>
+            </div>
+            <div class="group">
+                <h3>Agents</h3>
+                <ul>
+                    <li><a href="https://hellotransport.com/register" target="_blank" rel="noopener">Apply for an Opportunity<small>/register</small></a></li>
+                    <li><a href="https://hellotransport.com/loginn" target="_blank" rel="noopener">Agent sign-in<small>/loginn</small></a></li>
+                    <li><a href="https://hr.hellotransport.com" target="_blank" rel="noopener">HR portal<small>hr.hellotransport.com: Campaign Leads, onboarding, Earning &amp; Payouts</small></a></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="wrap">
+    "Before" screenshots are the ones sent with the 8 and 12 October emails, plus the site as it
+    looked on 13 October. "Today" screenshots were taken on 14 October 2026. Click any screenshot
+    to see it full size.
+</footer>
+
+<script>
+(function () {
+    var open = null;
+    function close() { if (open) { open.remove(); open = null; } }
+    document.addEventListener('click', function (e) {
+        var btn = e.target.closest('.shot');
+        if (!btn) return;
+        var img = btn.querySelector('img');
+        if (!img) return;
+        close();
+        var lb = document.createElement('div');
+        lb.className = 'lb';
+        lb.setAttribute('role', 'dialog');
+        lb.setAttribute('aria-label', img.alt || 'Screenshot');
+        var big = document.createElement('img');
+        big.src = img.src;
+        big.alt = img.alt;
+        var x = document.createElement('button');
+        x.type = 'button';
+        x.textContent = 'Close';
+        lb.appendChild(big);
+        lb.appendChild(x);
+        lb.addEventListener('click', close);
+        document.body.appendChild(lb);
+        open = lb;
+        x.focus();
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+})();
+</script>
+
+</body>
+</html>
