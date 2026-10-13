@@ -3,204 +3,174 @@
 
 @section('content')
 <style>
-/* ── Full-screen split layout ── */
-html, body { height: 100%; margin: 0; }
+/* Apply page — follows hello-theme.css (navy + gold). Form on the left,
+   programme summary on the right; stacks with the form first on mobile. */
+.apply-section { background: var(--ht-bg-soft); padding: 70px 0 100px; }
 
-.signup-wrap {
-    display: flex;
-    min-height: 100vh;
-    width: 100%;
+.apply-card {
+    background: #fff;
+    border: 1px solid var(--ht-border);
+    border-radius: 16px;
+    box-shadow: var(--ht-shadow);
+    padding: 40px 44px;
 }
-
-/* LEFT PANEL */
-.signup-left {
-    width: 300px;
-    flex-shrink: 0;
-    background: linear-gradient(160deg, #062e39 0%, #0a4a5a 60%, #0d5c70 100%);
-    padding: 40px 30px;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow-y: auto;
-}
-.signup-left .brand-logo { width: 110px; margin-bottom: 22px; }
-.signup-left h2 {
-    font-size: 22px; font-weight: 800; line-height: 1.3; margin-bottom: 10px;
-    font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 1px;
-}
-.signup-left h2 span { color: #8fc445; }
-.signup-left p { font-size: 13px; color: rgba(255,255,255,.75); line-height: 1.7; margin-bottom: 16px; }
-.signup-left .feature-list { list-style: none; padding: 0; margin: 0; }
-.signup-left .feature-list li {
-    display: flex; align-items: center; gap: 8px;
-    font-size: 12px; color: rgba(255,255,255,.85); margin-bottom: 9px;
-}
-.signup-left .feature-list li i { color: #8fc445; font-size: 14px; flex-shrink: 0; }
-.signup-left .divider { width: 40px; height: 3px; background: #8fc445; border-radius: 2px; margin: 12px 0; }
-
-/* RIGHT FORM PANEL */
-.signup-right {
-    flex: 1;
-    background: #f0f4f8;
-    padding: 40px 60px;
-    overflow-y: auto;
-}
-.signup-right h3 {
-    font-size: 22px; font-weight: 800; color: #062e39; margin-bottom: 2px;
-    font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: .5px;
-}
-.signup-right .sub-title { font-size: 12px; color: #6c757d; margin-bottom: 20px; }
-
-/* Account type cards */
-.type-card {
-    border: 2px solid #dee2e6; border-radius: 8px; padding: 10px 8px;
-    text-align: center; cursor: pointer; transition: all .2s; background: #fff; height: 100%;
-}
-.type-card:hover { border-color: #8fc445; background: #f8fdf0; }
-.type-card.selected { border-color: #8fc445; background: #f4fbe8; box-shadow: 0 0 0 3px rgba(143,196,69,.15); }
-.type-card .type-icon { font-size: 22px; display: block; margin-bottom: 3px; }
-.type-card .type-label { font-weight: 700; font-size: 13px; color: #062e39; display: block; }
-.type-card .type-sub { font-size: 10px; color: #888; display: block; margin-top: 1px; }
+.apply-card .card-heading { font-size: 26px; font-weight: 800; color: var(--ht-navy); margin: 0 0 6px; }
+.apply-card .sub-title { font-size: 15px; color: var(--ht-muted); margin-bottom: 8px; }
 
 /* Form fields */
-.form-label { font-size: 12px; font-weight: 600; color: #062e39; margin-bottom: 4px; display: block; }
-.signup-right .form-control,
-.signup-right input.form-control,
-.signup-right textarea.form-control,
-.signup-right select.form-control {
-    border: 1.5px solid #dee2e6; border-radius: 7px;
-    padding: 8px 12px; font-size: 13px;
-    transition: border-color .2s, box-shadow .2s; width: 100%;
+.apply-card .form-label { font-size: 14px; font-weight: 600; color: var(--ht-navy); margin-bottom: 6px; display: block; }
+.apply-card .form-control,
+.apply-card select.form-control {
+    height: 48px;
+    border: 1px solid #cfd8e3;
+    border-radius: 8px;
+    padding: 0 14px;
+    font-size: 15px;
+    width: 100%;
     background: #fff !important;
-    color: #333 !important;
+    color: var(--ht-navy) !important;
+    box-shadow: none;
+    transition: border-color .2s, box-shadow .2s;
     appearance: auto; -webkit-appearance: auto;
 }
-.signup-right .form-control::placeholder { color: #aaa !important; }
-.signup-right .form-control:focus, .signup-right select.form-control:focus {
-    border-color: #8fc445; box-shadow: 0 0 0 3px rgba(143,196,69,.15); outline: none;
+.apply-card textarea.form-control { height: auto; padding: 12px 14px; }
+.apply-card input[type="file"].form-control { height: auto; padding: 10px 12px; font-size: 14px; }
+.apply-card .form-control::placeholder { color: #8a96a8 !important; }
+.apply-card .form-control:focus {
+    border-color: var(--ht-navy-3);
+    box-shadow: 0 0 0 4px rgba(29, 65, 116, .12);
+    outline: none;
 }
-/* Make sure native select options are readable */
-.signup-right select.form-control option {
-    background: #fff !important;
-    color: #333 !important;
-}
-/* Hide any nice-select wrapper the plugin may create for signup selects */
-.signup-right .nice-select { display: none !important; }
-.signup-right select { display: block !important; }
-.signup-right .form-control.is-invalid { border-color: #dc3545 !important; }
+.apply-card select.form-control option { background: #fff !important; color: var(--ht-navy) !important; }
+.apply-card .nice-select { display: none !important; }
+.apply-card select { display: block !important; }
+.apply-card .form-control.is-invalid { border-color: #c53030 !important; }
+
 .input-icon-wrap { position: relative; }
-.input-icon-wrap .form-control { padding-left: 36px !important; }
+.input-icon-wrap .form-control { padding-left: 40px !important; }
 .input-icon-wrap .field-icon {
-    position: absolute;
-    left: 11px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #8fc445;
-    font-size: 13px;
-    pointer-events: none;
-    z-index: 2;
-    line-height: 1;
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    color: #94a3b8 !important; font-size: 14px; pointer-events: none; z-index: 2; line-height: 1;
 }
-.input-icon-wrap textarea.form-control { padding-left: 36px !important; }
-.input-icon-wrap .field-icon.textarea-icon { top: 12px; transform: none; }
-.field-error { color: #dc3545; font-size: 11px; margin-top: 3px; display: none; }
+.field-error { color: #c53030; font-size: 12.5px; margin-top: 4px; display: none; }
 
-/* Submit button */
-.btn-signup {
-    background: #8fc445; border: none; color: #fff; font-weight: 700;
-    padding: 12px 0; font-size: 15px; border-radius: 8px; width: 100%;
-    letter-spacing: .5px; text-transform: uppercase;
-    font-family: 'Oswald', sans-serif; transition: background .2s, transform .1s;
-    cursor: pointer;
-}
-.btn-signup:hover:not(:disabled) { background: #7aad38; transform: translateY(-1px); }
-.btn-signup:disabled { opacity: .7; cursor: not-allowed; }
-
-/* Section divider */
 .form-section-title {
-    font-size: 10px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 1px; color: #adb5bd; margin: 16px 0 10px;
-    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em;
+    color: var(--ht-accent-text); margin: 30px 0 14px;
+    display: flex; align-items: center; gap: 10px;
 }
-.form-section-title::after { content: ''; flex: 1; height: 1px; background: #dee2e6; }
-.mb-c { margin-bottom: 12px; }
-
-/* Success overlay */
-.signup-success {
-    display: none;
-    text-align: center;
-    padding: 60px 20px;
-}
-.signup-success .success-icon {
-    width: 80px; height: 80px; background: #8fc445; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 20px; font-size: 36px; color: #fff;
-}
-.signup-success h3 { color: #062e39; font-family: 'Oswald', sans-serif; font-size: 26px; margin-bottom: 10px; }
-.signup-success p { color: #555; font-size: 14px; line-height: 1.7; max-width: 480px; margin: 0 auto 24px; }
-
-/* Responsive */
-@media (max-width: 768px) {
-    .signup-wrap { flex-direction: column; }
-    .signup-left { width: 100%; height: auto; position: relative; padding: 28px 20px; }
-    .signup-right { padding: 24px 16px; }
-}
+.form-section-title::after { content: ''; flex: 1; height: 1px; background: var(--ht-border); }
+.mb-c { margin-bottom: 16px; }
+.linked-note { font-size: 12.5px; color: var(--ht-muted); margin-top: 5px; display: block; }
 
 /* Country-linked phone control */
 .phone-combo {
-    display: flex;
-    align-items: stretch;
-    border: 1px solid #ced4da;
-    border-radius: 6px;
-    overflow: hidden;
-    background: #fff;
+    display: flex; align-items: stretch; height: 48px;
+    border: 1px solid #cfd8e3; border-radius: 8px; overflow: hidden; background: #fff;
 }
+.phone-combo:focus-within { border-color: var(--ht-navy-3); box-shadow: 0 0 0 4px rgba(29, 65, 116, .12); }
 .phone-combo .dial {
-    display: flex;
-    align-items: center;
-    padding: 0 12px;
-    background: #f1f3f5;
-    color: #343a40;
-    font-weight: 600;
-    white-space: nowrap;
-    border-right: 1px solid #ced4da;
-    min-width: 58px;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 14px; min-width: 64px;
+    background: var(--ht-bg-soft); color: var(--ht-navy); font-weight: 600;
+    border-right: 1px solid #cfd8e3; white-space: nowrap;
 }
-.phone-combo input { border: 0 !important; box-shadow: none !important; }
-.linked-note { font-size: 11.5px; color: #6c757d; margin-top: 4px; display: block; }
+.phone-combo input { border: 0 !important; box-shadow: none !important; height: 46px !important; }
+
+.btn-terms {
+    background: var(--ht-bg-soft); color: var(--ht-navy); font-weight: 600;
+    border: 1px solid var(--ht-border); border-radius: 8px; padding: 9px 18px; font-size: 14px;
+}
+.btn-terms:hover { background: var(--ht-navy); color: #fff; border-color: var(--ht-navy); }
+
+/* Submit */
+.btn-signup {
+    background: var(--ht-accent); border: 1.5px solid var(--ht-accent); color: var(--ht-navy);
+    font-weight: 700; font-size: 16px; height: 52px; border-radius: 8px; width: 100%;
+    box-shadow: 0 6px 18px rgba(201, 161, 59, .28);
+    transition: background .2s, color .2s, transform .1s; cursor: pointer;
+}
+.btn-signup:hover:not(:disabled) { background: var(--ht-navy); border-color: var(--ht-navy); color: #fff; transform: translateY(-1px); }
+.btn-signup:disabled { opacity: .7; cursor: not-allowed; }
+
+/* Success state */
+.signup-success { display: none; text-align: center; padding: 40px 10px; }
+.signup-success .success-icon {
+    width: 76px; height: 76px; border-radius: 50%;
+    background: var(--ht-navy); color: var(--ht-accent);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px; font-size: 34px; font-weight: 700;
+}
+.signup-success h3 { color: var(--ht-navy); font-size: 26px; font-weight: 800; margin-bottom: 10px; }
+.signup-success p { color: var(--ht-text); font-size: 15px; line-height: 1.75; max-width: 520px; margin: 0 auto 22px; }
+
+/* Programme summary */
+.apply-aside {
+    position: sticky; top: 24px;
+    background: var(--ht-navy); border-radius: 16px; padding: 34px 30px; color: #fff;
+    box-shadow: var(--ht-shadow-lg);
+}
+.apply-aside .brand-logo { width: 68px; margin-bottom: 16px; }
+.apply-aside h4 { color: #fff !important; font-size: 21px; font-weight: 800; margin-bottom: 10px; }
+.apply-aside p { color: rgba(255, 255, 255, .75) !important; font-size: 14.5px; line-height: 1.7; margin-bottom: 18px; }
+.apply-aside .feature-list, .apply-aside .step-list { list-style: none; padding: 0; margin: 0; }
+.apply-aside .feature-list li {
+    display: flex; align-items: flex-start; gap: 10px;
+    color: rgba(255, 255, 255, .88); font-size: 14.5px; margin-bottom: 11px;
+}
+.apply-aside .feature-list li i { color: var(--ht-accent) !important; margin-top: 3px; }
+.apply-aside .aside-label {
+    display: block; color: var(--ht-accent); font-size: 12px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; margin: 24px 0 12px;
+}
+.apply-aside .step-list { counter-reset: step; }
+.apply-aside .step-list li {
+    counter-increment: step; display: flex; align-items: center; gap: 12px;
+    color: rgba(255, 255, 255, .85); font-size: 14px; margin-bottom: 10px;
+}
+.apply-aside .step-list li::before {
+    content: counter(step);
+    flex: 0 0 26px; height: 26px; border-radius: 50%;
+    background: rgba(201, 161, 59, .18); color: var(--ht-accent);
+    font-size: 12.5px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+}
+.apply-aside .signin-box {
+    margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, .14);
+    font-size: 14px; color: rgba(255, 255, 255, .7);
+}
+.apply-aside .signin-box a { color: var(--ht-accent); font-weight: 700; }
+
+@media (max-width: 991.98px) {
+    .apply-aside { position: static; margin-top: 24px; }
+}
+@media (max-width: 575.98px) {
+    .apply-section { padding: 30px 0 60px; }
+    .apply-card { padding: 24px 18px; border-radius: 12px; }
+}
 </style>
 
-<div class="signup-wrap">
-
-    {{-- ── LEFT PANEL ── --}}
-    <div class="signup-left">
-        <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}"
-             alt="Hello Transport" class="brand-logo">
-        <h2>Earn With <span>Hello Transport</span></h2>
-        <div class="divider"></div>
-        <p>Join our network of sales agents. Build your own book of business with the
-           operational support, compliance and back-office work handled for you.</p>
-        <ul class="feature-list">
-            <li><i class="fas fa-check-circle"></i> Work remotely, on your own schedule</li>
-            <li><i class="fas fa-check-circle"></i> Commission on every load you move</li>
-            <li><i class="fas fa-check-circle"></i> Dispatch &amp; back-office support</li>
-            <li><i class="fas fa-check-circle"></i> Training and onboarding provided</li>
-            <li><i class="fas fa-check-circle"></i> Paid by bank transfer, Wise or PayPal</li>
-        </ul>
-        <div class="mt-auto pt-3" style="border-top:1px solid rgba(255,255,255,.15);margin-top:24px;">
-            <p class="mb-0" style="font-size:11px;color:rgba(255,255,255,.5);">
-                Already part of our team?
-                <a href="{{ url('/loginn') }}" style="color:#8fc445;font-weight:700;">Sign In Here</a>
-            </p>
+{{-- ── Page header ── --}}
+<section class="page-title-area pt-100 pb-100">
+    <div class="container">
+        <div class="page-title-content text-center">
+            <h2>Apply for an Opportunity</h2>
+            <ul>
+                <li><a href="{{ route('Frontend.index') }}">Home</a></li>
+                <li><a href="{{ route('Frontend.earn') }}">Earn With Us</a></li>
+                <li>Apply</li>
+            </ul>
         </div>
     </div>
+</section>
 
-    {{-- ── RIGHT PANEL ── --}}
-    <div class="signup-right">
+<section class="apply-section">
+<div class="container">
+<div class="row g-4">
+
+    {{-- ── FORM ── --}}
+    <div class="col-lg-8">
+    <div class="apply-card">
 
         {{-- Success state (W-04) --}}
         <div class="signup-success" id="signupSuccess">
@@ -217,14 +187,14 @@ html, body { height: 100%; margin: 0; }
                 <a href="mailto:info@hellotransport.com">info@hellotransport.com</a>
             </p>
             <a href="{{ url('/') }}" class="btn-signup"
-               style="max-width:300px;display:inline-block;text-decoration:none;padding:12px 40px;width:auto;">
+               style="display:inline-flex;align-items:center;text-decoration:none;padding:0 40px;width:auto;">
                 Back to Homepage
             </a>
         </div>
 
         {{-- Form state --}}
         <div id="signupFormWrap">
-            <h3>Apply for an Opportunity</h3>
+            <h3 class="card-heading">Tell Us About Yourself</h3>
             <p class="sub-title">Complete the form below. It takes only a few minutes.</p>
 
             <div id="signupGlobalError" class="alert alert-danger py-2 small" style="display:none;"></div>
@@ -243,11 +213,6 @@ html, body { height: 100%; margin: 0; }
                     }
                     ksort($tzGroups);
                 @endphp
-
-                {{-- ── Tell Us About Yourself ── --}}
-                <h4 style="font-size:17px;font-weight:700;color:#062e39;margin:4px 0 18px;">
-                    Tell Us About Yourself
-                </h4>
 
                 <div class="form-section-title">Contact Information</div>
 
@@ -342,7 +307,7 @@ html, body { height: 100%; margin: 0; }
 
                 {{-- ── Experience ── --}}
                 <div class="form-section-title">Experience</div>
-                <div class="row g-2 mb-c">
+                <div class="row g-2 mb-c align-items-end">
                     <div class="col-md-6">
                         <label class="form-label">
                             Previously worked with U.S. customers or businesses?
@@ -403,18 +368,17 @@ html, body { height: 100%; margin: 0; }
                 {{-- ── Terms ── --}}
                 <div class="form-section-title">Terms &amp; Conditions</div>
                 <div class="mb-c">
-                    <button type="button" id="tcToggleBtn" class="btn btn-sm"
-                            style="background:#062e39;color:#fff;font-weight:600;border-radius:6px;padding:8px 18px;"
+                    <button type="button" id="tcToggleBtn" class="btn btn-terms"
                             onclick="var b=document.getElementById('tcBox');var open=b.style.display!=='none';b.style.display=open?'none':'block';this.textContent=open?'View Terms and Conditions':'Hide Terms and Conditions';">
                         View Terms and Conditions
                     </button>
-                    <div id="tcBox" style="display:none;max-height:260px;overflow-y:auto;border:1px solid #dee2e6;border-radius:6px;padding:12px 14px;background:#fbfbfb;font-size:12.5px;line-height:1.6;color:#444;margin-top:10px;">
+                    <div id="tcBox" style="display:none;max-height:260px;overflow-y:auto;border:1px solid var(--ht-border);border-radius:8px;padding:14px 16px;background:var(--ht-bg-soft);font-size:13px;line-height:1.65;color:var(--ht-text);margin-top:10px;">
                         @include('partials.hello_terms')
                     </div>
-                    <label class="d-flex align-items-start gap-2 mt-2" style="cursor:pointer;">
+                    <label class="d-flex align-items-start gap-2 mt-3" style="cursor:pointer;">
                         <input type="checkbox" name="terms_accepted" id="termsAccepted" value="1"
-                               style="margin-top:3px;width:16px;height:16px;">
-                        <span style="font-size:13px;color:#333;">
+                               style="margin-top:3px;width:17px;height:17px;accent-color:var(--ht-navy);">
+                        <span style="font-size:14px;color:var(--ht-navy);">
                             I have read and accept the {{ $tcBrand['name'] }} Terms &amp; Conditions.
                             <span class="text-danger">*</span>
                         </span>
@@ -422,23 +386,60 @@ html, body { height: 100%; margin: 0; }
                     <div class="field-error" id="err_terms_accepted"></div>
                 </div>
 
-                <div class="row g-2 mt-3">
-                    <div class="col-md-5">
+                <div class="row g-2 mt-4 align-items-center">
+                    <div class="col-md-6">
                         <button type="submit" class="btn-signup" id="applySubmitBtn">
                             <i class="fas fa-paper-plane me-2"></i> Apply to Join the Network
                         </button>
                     </div>
-                    <div class="col-md-7 d-flex align-items-center">
-                        <p class="text-muted mb-0" style="font-size:12px;">
+                    <div class="col-md-6">
+                        <p class="mb-0" style="font-size:14px;color:var(--ht-muted);">
                             Already part of our team?
-                            <a href="{{ url('/loginn') }}" style="color:#062e39;font-weight:700;">Sign In</a>
+                            <a href="{{ url('/loginn') }}" style="color:var(--ht-navy);font-weight:700;">Sign In</a>
                         </p>
                     </div>
                 </div>
             </form>
         </div>{{-- /signupFormWrap --}}
+    </div>{{-- /apply-card --}}
     </div>
+
+    {{-- ── PROGRAMME SUMMARY ── --}}
+    <div class="col-lg-4">
+        <aside class="apply-aside">
+            <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}"
+                 alt="Hello Transport" class="brand-logo">
+            <h4>Earn With Hello Transport</h4>
+            <p>Join our network of sales agents. Build your own book of business with the
+               operational support, compliance and back-office work handled for you.</p>
+            <ul class="feature-list">
+                <li><i class="fas fa-check-circle"></i> Work remotely, on your own schedule</li>
+                <li><i class="fas fa-check-circle"></i> Commission on every load you move</li>
+                <li><i class="fas fa-check-circle"></i> Dispatch &amp; back-office support</li>
+                <li><i class="fas fa-check-circle"></i> Training and onboarding provided</li>
+                <li><i class="fas fa-check-circle"></i> Paid by bank transfer, Wise or PayPal</li>
+            </ul>
+
+            <span class="aside-label">How it works</span>
+            <ol class="step-list">
+                <li>Apply</li>
+                <li>Get reviewed</li>
+                <li>Get approved</li>
+                <li>Onboarding</li>
+                <li>Start selling</li>
+                <li>Earn</li>
+            </ol>
+
+            <div class="signin-box">
+                Already part of our team?
+                <a href="{{ url('/loginn') }}">Sign in here</a>
+            </div>
+        </aside>
+    </div>
+
 </div>
+</div>
+</section>
 
 <script>
 (function () {

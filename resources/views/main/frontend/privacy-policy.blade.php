@@ -7,9 +7,9 @@
 
 <style>
 :root {
-    --ht-primary: #d4af37;
-    --ht-secondary: #111;
-    --bg-light: #f8faff;
+    --ht-primary: var(--ht-accent-dark);
+    --ht-secondary: var(--ht-navy);
+    --bg-light: var(--ht-bg-soft);
     --text-main: #2d3436;
 }
 .ht-content-section { padding: 60px 0; background-color: var(--bg-light); }

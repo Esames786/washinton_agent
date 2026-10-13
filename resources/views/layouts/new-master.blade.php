@@ -39,11 +39,14 @@
     <link rel="stylesheet" href="{{ asset('frontend/newtheme-assets/css/odometer.min.css') }}">
     <!-- Style CSS -->
     <link rel="stylesheet" href="{{ asset('frontend/newtheme-assets/css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('frontend/newtheme-assets/css/old-theme-override.css') }}">
-    <!-- Dark CSS -->
-    <link rel="stylesheet" href="{{ asset('frontend/newtheme-assets/css/dark.css') }}">
     <!-- Responsive CSS -->
     <link rel="stylesheet" href="{{ asset('frontend/newtheme-assets/css/responsive.css') }}">
+    {{-- Customer-facing theme (navy + gold). Replaces the old black/gold layer
+         (old-theme-override.css + dark.css), which is no longer loaded here. --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="{{ asset('frontend/newtheme-assets/css/hello-theme.css') }}?v={{ @filemtime(public_path('frontend/newtheme-assets/css/hello-theme.css')) }}">
     <!-- Font Awesome -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
@@ -105,7 +108,7 @@
 </div>
 
 <button id="chat_with_us"
-        style="position:fixed;bottom:20px;right:20px;z-index:100000;background:#111;color:#d4af37;border:2px solid #d4af37;border-radius:50px;padding:10px 18px;font-weight:600;box-shadow:0 8px 20px rgba(0,0,0,0.35);display:flex;align-items:center;gap:8px;">
+        style="position:fixed;bottom:20px;right:20px;z-index:100000;border-radius:50px;font-weight:600;display:flex;align-items:center;gap:8px;">
     <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" alt="" style="height:28px;width:28px;border-radius:50%;background:#fff;padding:2px;">
     <span>Live Chat</span>
 </button>

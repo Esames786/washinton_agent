@@ -117,7 +117,7 @@
 </section>
 
 <!-- Ask a Question -->
-<section class="main-contact-area faq-contact-area pb-100">
+<section class="main-contact-area faq-contact-area ptb-100">
     <div class="container">
         <div class="section-title">
             <h2>Ask a Question</h2>

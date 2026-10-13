@@ -1,30 +1,11 @@
 <style>
-    /* Force all dropdown links visible on white background */
+    /* Layout only — colours live in hello-theme.css. */
     .navbar .dropdown-menu a.title,
     .navbar .dropdown-menu a.nav-link {
-        color: #222 !important;
-        font-weight: 500;
         text-decoration: none;
         display: block;
-        padding: 6px 12px;
-        font-size: 14px;
     }
-    .navbar .dropdown-menu a.title:hover,
-    .navbar .dropdown-menu a.nav-link:hover {
-        color: #d4af37 !important;
-        background: #f5f5f5;
-        text-decoration: none;
-    }
-    .navbar .dropdown-menu .ul-child-custom-heading {
-        font-weight: 700;
-        font-size: 15px;
-        color: #111 !important;
-        border-bottom: 2px solid #d4af37;
-        padding-bottom: 6px;
-    }
-    .navbar .dropdown-menu {
-        z-index: 99999 !important;
-    }
+    .navbar .dropdown-menu { z-index: 99999 !important; }
     /* Make sure dropdown is not clipped by hero parallax layers */
     .header-area { position: relative; z-index: 9999; }
     .navbar-area { position: relative; z-index: 9999; }
@@ -45,20 +26,14 @@
         right: auto !important;
         float: right;
         margin-top: 0 !important;
-        color: #d4af37 !important;
-        border-color: #d4af37 !important;
         background: transparent !important;
     }
-    /* Hamburger lines — gold */
     .meanmenu-reveal span {
-        background: #d4af37 !important;
         display: block;
         height: 3px;
         border-radius: 2px;
     }
-    /* X close button text color */
     .meanmenu-reveal.meanclose {
-        color: #d4af37 !important;
         font-size: 22px !important;
         font-weight: 700 !important;
     }
@@ -84,7 +59,7 @@
 
                     {{-- LOGO --}}
                     <a class="navbar-brand" href="{{ route('Frontend.index') }}">
-                        <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" alt="Logo" style="height:100px">
+                        <img src="{{ asset(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" alt="{{ $brand['name'] ?? 'Hello Transport' }}" style="height:66px;width:auto;">
                     </a>
 
                     <div class="collapse navbar-collapse mean-menu">

@@ -1118,7 +1118,7 @@ Continuer Custom Width Area Style*/
     font-size: 15px;
   }
   .mobile-nav .mobile-menu.mean-container .mean-nav ul li a.active {
-    color: #0383ff;
+    color: var(--ht-accent, #c9a13b);
   }
   .mobile-nav .mobile-menu.mean-container .mean-nav ul li li a {
     font-size: 14.5px;
@@ -1134,7 +1134,7 @@ Continuer Custom Width Area Style*/
     padding-top: 14px;
   }
   .mobile-nav .mobile-menu.mean-container a.meanmenu-reveal span {
-    background: #000024;
+    background: var(--ht-navy, #0b1f3a);
   }
   .desktop-nav {
     display: none;

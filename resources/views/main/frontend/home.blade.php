@@ -44,7 +44,7 @@
     </style>
 
     <!-- ================= BANNER AREA ================= -->
-    <section class="banner-area bg-1 jarallax" data-jarallax='{"speed": 0.3}'>
+    <section class="banner-area bg-1">
         <div class="d-table">
             <div class="d-table-cell">
                 <div class="container">
@@ -65,12 +65,18 @@
 
                                 <div class="banner-btn">
                                     <a href="{{ route('Frontend.qoute.request') }}" class="default-btn">
-                                        <span>Get Estimation</span>
+                                        <span>Get a Free Quote</span>
                                     </a>
-                                    <a href="{{ route('Frontend.is.me') }}" class="default-btn active">
+                                    <a href="{{ route('Frontend.services') }}" class="default-btn active">
                                         <span>Our Services</span>
                                     </a>
                                 </div>
+
+                                <ul class="ht-hero-points">
+                                    <li><i class="fa-solid fa-circle-check"></i> Door-to-door service</li>
+                                    <li><i class="fa-solid fa-circle-check"></i> Open &amp; enclosed transport</li>
+                                    <li><i class="fa-solid fa-circle-check"></i> Nationwide coverage</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -289,19 +295,15 @@
 
     <!-- ================= EARN WITH HELLO TRANSPORT (W-01) ================= -->
     {{-- Small teaser partway down the home page, leading to the agent programme. --}}
-    <section class="ptb-70" style="background:#062e39;">
+    <section class="ptb-70 ht-dark">
         <div class="container">
             <div class="row align-items-center justify-content-between g-4">
                 <div class="col-lg-8">
-                    <span style="display:inline-block;color:#8fc445;font-weight:700;
-                                 letter-spacing:1px;text-transform:uppercase;font-size:13px;
-                                 margin-bottom:10px;">
-                        Agent Program
-                    </span>
-                    <h2 style="color:#fff;font-size:30px;line-height:1.35;margin-bottom:12px;">
+                    <span class="ht-eyebrow">Agent Program</span>
+                    <h2 style="font-size:32px;line-height:1.3;margin-bottom:12px;">
                         Earn With Hello Transport
                     </h2>
-                    <p style="color:rgba(255,255,255,.75);font-size:15px;line-height:1.8;margin:0;max-width:680px;">
+                    <p style="font-size:16px;line-height:1.8;margin:0;max-width:680px;">
                         Grow your own book of business while we handle dispatch, compliance and the
                         back-office work. Work remotely, on your own schedule, and earn commission
                         on every load you move.

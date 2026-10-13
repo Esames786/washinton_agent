@@ -92,10 +92,10 @@
     </section>
 
     {{-- ================= 3. HOW IT WORKS ================= --}}
-    <section class="pt-100 pb-70" style="background:#062e39;">
+    <section class="pt-100 pb-70 ht-dark">
         <div class="container">
             <div class="section-title">
-                <span style="color:#8fc445;">The Process</span>
+                <span class="ht-eyebrow">The Process</span>
                 <h2 style="color:#fff;">How To Become An Agent</h2>
                 <p style="color:rgba(255,255,255,.7);">
                     Six steps from application to your first commission.
@@ -118,7 +118,7 @@
                     <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
                         <div class="text-center px-2">
                             <div style="width:62px;height:62px;line-height:62px;margin:0 auto 18px;
-                                        border-radius:50%;background:#8fc445;color:#062e39;
+                                        border-radius:50%;background:var(--ht-accent);color:var(--ht-navy);
                                         font-size:24px;font-weight:800;">
                                 {{ $s['n'] }}
                             </div>
@@ -148,7 +148,7 @@
             <div class="row justify-content-center">
                 <div class="col-lg-8 text-center">
                     <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:10px;padding:40px 30px;">
-                        <i class="fa-solid fa-paper-plane" style="font-size:42px;color:#062e39;margin-bottom:18px;"></i>
+                        <i class="fa-solid fa-paper-plane" style="font-size:42px;color:var(--ht-navy);margin-bottom:18px;"></i>
                         <h3 style="margin-bottom:12px;">Apply for an Opportunity</h3>
                         <p style="color:#6c757d;margin-bottom:24px;">
                             The application takes only a few minutes. You will need your contact
@@ -169,7 +169,7 @@
             <div class="row justify-content-center">
                 <div class="col-lg-8">
                     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3"
-                         style="background:#062e39;border-radius:10px;padding:28px 34px;">
+                         style="background:var(--ht-navy);border-radius:12px;padding:28px 34px;">
                         <div>
                             <h4 style="color:#fff;margin-bottom:6px;">Already part of our team?</h4>
                             <p style="color:rgba(255,255,255,.7);margin:0;font-size:14px;">

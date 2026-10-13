@@ -35,7 +35,7 @@
         <div class="container">
 
             @if($categories->isNotEmpty())
-                <div class="d-flex flex-wrap justify-content-center gap-2 mb-5">
+                <div class="d-flex flex-wrap justify-content-center gap-2 mb-5 ht-filter-pills">
                     <a href="{{ route('Frontend.blog') }}"
                        class="btn btn-sm {{ $category ? 'btn-outline-secondary' : 'btn-dark' }}">All</a>
                     @foreach($categories as $c)

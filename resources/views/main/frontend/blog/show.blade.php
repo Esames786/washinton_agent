@@ -97,7 +97,7 @@
                     </article>
 
                     {{-- A quote is the action every reader of a transport blog should be one click from. --}}
-                    <div class="mt-5 p-4 text-center" style="background:#062e39;border-radius:10px;">
+                    <div class="mt-5 p-4 text-center" style="background:var(--ht-navy);border-radius:12px;">
                         <h4 style="color:#fff;margin-bottom:8px;">Ready to ship?</h4>
                         <p style="color:rgba(255,255,255,.75);margin-bottom:18px;">
                             Get a free, no-obligation quote in a few minutes.

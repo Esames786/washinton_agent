@@ -51,7 +51,7 @@
                         {{-- `service` lets one freight form open correctly for dry van, hazmat
                              or reefer, which ShipA1 keeps as three separate forms. --}}
                         <a class="default-btn" href="{{ route('Frontend.qoute.request', ['type' => $service['quote_type'] ?? 'Car', 'service' => $service['slug'] ?? null]) }}">Get a Quote</a>
-                        <a class="default-btn" style="margin-left:10px;" href="{{ route('Frontend.services') }}">Back to Services</a>
+                        <a class="default-btn active" style="margin-left:10px;" href="{{ route('Frontend.services') }}">Back to Services</a>
                     </div>
                 </div>
             </div>

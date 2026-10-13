@@ -40,10 +40,12 @@
                     <h3>Services</h3>
 
                     <ul class="import-link">
-                        <li><a href="#">Car Transportation</a></li>
-                        <li><a href="#">Heavy Equipment Transport</a></li>
-                        <li><a href="#">Freight Transportation</a></li>
-                        <li><a href="#">Logistics Solutions</a></li>
+                        <li><a href="{{ route('Frontend.services.show', 'car') }}">Car Transportation</a></li>
+                        <li><a href="{{ route('Frontend.services.show', 'heavy-equipment') }}">Heavy Equipment Transport</a></li>
+                        <li><a href="{{ route('Frontend.services.show', 'dry-van') }}">Freight Transportation</a></li>
+                        <li><a href="{{ route('Frontend.services.show', 'boat') }}">Boat Transport</a></li>
+                        <li><a href="{{ route('Frontend.services.show', 'rv') }}">RV Transport</a></li>
+                        <li><a href="{{ route('Frontend.services.show', 'roro') }}">RoRo Shipping</a></li>
                     </ul>
                 </div>
             </div>
@@ -51,15 +53,29 @@
             <!-- ===== USEFUL LINKS ===== -->
             <div class="col-lg-3 col-md-6">
                 <div class="single-footer-widget">
-                    <h3>Useful links</h3>
+                    <h3>Company</h3>
 
                     <ul class="import-link">
                         <li><a href="{{ route('Frontend.about.us') }}">About Us</a></li>
+                        <li><a href="{{ route('Frontend.blog') }}">Blog</a></li>
                         <li><a href="{{ route('Frontend.Testimonials') }}">Testimonials</a></li>
                         <li><a href="{{ route('Frontend.faq') }}">FAQ</a></li>
                         <li><a href="{{ route('Frontend.privacy') }}">Privacy Policy</a></li>
                         <li><a href="{{ route('Frontend.terms') }}">Terms &amp; Conditions</a></li>
-                        <li><a href="{{ url('/loginn') }}">Login</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ===== GET STARTED ===== -->
+            <div class="col-lg-3 col-md-6">
+                <div class="single-footer-widget">
+                    <h3>Get Started</h3>
+
+                    <ul class="import-link">
+                        <li><a href="{{ route('Frontend.qoute.request') }}">Get a Quote</a></li>
+                        <li><a href="{{ route('Frontend.contact.us') }}">Contact Us</a></li>
+                        <li><a href="{{ route('Frontend.earn') }}">Earn With Us</a></li>
+                        <li><a href="{{ url('/loginn') }}">Agent Sign In</a></li>
                     </ul>
                 </div>
             </div>
@@ -74,7 +90,7 @@
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <p>
-                        Copyright &copy; 2025 {{ $brand['footer'] ?? 'Hello Transport. All Rights Reserved.' }}
+                        Copyright &copy; {{ date('Y') }} {{ $brand['footer'] ?? 'Hello Transport. All Rights Reserved.' }}
                     </p>
                 </div>
             </div>

@@ -39,25 +39,11 @@
         cursor: pointer;
     }
     .suggestion-list li a:hover,
-    .suggestion-list li.active a { background: #0d6efd; color: #fff; }
+    .suggestion-list li.active a { background: var(--ht-navy); color: #fff; }
 
     /* Wrapper needs position:relative for absolute dropdown */
     .zip-wrap, .make-wrap, .model-wrap { position: relative; }
-
-    /* Dark select boxes to match the form theme */
-    #quote-form select.form-control {
-        background-color: #111 !important;
-        color: #fff !important;
-        border: 1px solid #d4af37 !important;
-    }
-    #quote-form select.form-control option {
-        background-color: #111 !important;
-        color: #fff !important;
-    }
-    #quote-form select.form-control:focus {
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(212,175,55,0.4);
-    }
+    /* Field colours, borders and focus come from hello-theme.css. */
 </style>
 
 {{-- Page Title --}}
@@ -695,8 +681,7 @@
             {{-- Submit --}}
             <div class="row mt-4">
                 <div class="col-lg-12">
-                    <button type="submit"
-                            style="width:100%;padding:16px 24px;background:#d4af37;color:#000;font-weight:700;font-size:16px;border:none;border-radius:4px;cursor:pointer;text-transform:uppercase;letter-spacing:1px;">
+                    <button type="submit" class="default-btn" style="width:100%;font-weight:700;font-size:16px;">
                         Submit Quote Request
                     </button>
                 </div>
