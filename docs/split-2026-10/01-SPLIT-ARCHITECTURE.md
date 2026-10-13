@@ -27,6 +27,13 @@ orders         53 Hello  / 212 CrazyRays   (agent-portal order table, 266 rows)
 
 ---
 
+> **Corrected 13 Oct 2026.** The orphan claim below was based on eight hand-picked tables and was
+> too optimistic. Two corrections are in [`04-DATA-MIGRATION.md §3`](04-DATA-MIGRATION.md):
+> `employee_id` resolves through `hr_employees`, not `user`; and several large tables carry a
+> `user_id` belonging to the Washington CRM, so they are shared reference data, not brand-owned.
+> The conclusion still holds — the split is clean — but the table classification in `04` is the
+> one to migrate from.
+
 ## 2. The finding that makes this feasible
 
 **Every user-keyed table splits cleanly on `user.is_crazyrays`, with zero orphans.**

@@ -17,3 +17,6 @@ Split the systems **before** building the website changes, or every website item
 twice.
 
 Three questions block the fork — see `03-START-HERE.md`.
+
+| [04-DATA-MIGRATION.md](04-DATA-MIGRATION.md) | How the data moves into the new CrazyRays database. Measured, with a corrected table classification. |
+| [TABLE-CLASSIFICATION.md](TABLE-CLASSIFICATION.md) | Generated per-table list. Regenerate at migration time; do not migrate from a stale copy. |
