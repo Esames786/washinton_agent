@@ -84,28 +84,61 @@ public function created(Employee $employee)
 Creating an HR profile **immediately creates the CRM account**. There is no status check. That single
 line is the entire reason the current flow is "backwards" from what the client wants.
 
-**The fix is not a rebuild — it is a gate:**
+### Direct admin creation must keep working
+
+A blanket gate would break something valuable: an admin creating an employee **directly** in HR —
+an experienced hire, an in-house staff member, a manager — and getting the CRM account straight
+away. That path is useful and must not be lost.
+
+So the gate is **narrow, not blanket**. The default stays exactly as it is today, and only
+recruitment-pipeline hires defer:
 
 ```php
 public function created(Employee $employee)
 {
-    // CRM account is created at the END of onboarding, not here.
-    // Left to the status transition below.
+    // Pipeline hires (created from a shortlisted lead) get their CRM account at the END
+    // of onboarding. Anyone an admin creates directly behaves exactly as before.
+    if ($employee->cr_application_id) {
+        return;
+    }
+
+    $this->syncEmployeeToAgent($employee);   // unchanged path
 }
 
 public function updated(Employee $employee)
 {
-    if ($this->reachedOnboarding($employee)) {
+    // Pipeline hire reaching Onboarding — create the CRM account now.
+    if ($employee->cr_application_id && $this->reachedOnboarding($employee)) {
         $this->syncEmployeeToAgent($employee);   // same proven bridge
     }
     // ... existing field-change sync, unchanged
 }
 ```
 
+This needs one new nullable column, `hr_employees.cr_application_id`, which also gives a useful
+link from the employee back to the application they came from.
+
+Three ways an account gets created, all supported:
+
+| Path | CRM account |
+|---|---|
+| Admin creates an employee directly | **immediately** — exactly as today |
+| Shortlisted from a Campaign Lead | at the end, on contract acceptance |
+| Admin presses **Create CRM account now** on the employee record | immediately, at any point |
+
+That third one is the escape hatch: if someone is stuck mid-pipeline and needs access now, an admin
+can grant it without waiting for the remaining steps.
+
 The bridge itself, the user creation, the role mapping, the slug generation and the permission
-defaults all stay exactly as they are. **We change *when* it fires, not *what* it does.**
+defaults all stay exactly as they are. **We change *when* it fires for one new category, and nothing
+else.**
 
 That is the difference between a week of risk and an afternoon of it.
+
+> **Why this ordering is safe:** today **all 145 employees have a CRM account**, because the observer
+> always creates one. "An employee with no CRM account yet" is therefore a genuinely *new* state —
+> no existing row can be affected by the change, because none of them will carry a
+> `cr_application_id`.
 
 ---
 
@@ -125,12 +158,15 @@ Documents Pending, Onboarding). **Adding a status changes nothing until somethin
 existing employee moves.
 
 ### Phase C — the gate *(~1 day, the highest-value change)*
-Gate `EmployeeObserver` as in §4. **Risk is real but contained:** if the gate is wrong, new agents
-don't get a CRM account — visible immediately, and fixed by flipping one condition. No data is lost
-and no existing agent is touched.
+Gate `EmployeeObserver` as in §4, plus the `cr_application_id` column and the **Create CRM account
+now** button.
 
-> Guard rail: run it first with the gate **logging but not blocking**, so we can confirm the status
-> transition fires exactly once before it actually controls anything.
+**Risk is close to zero, because the gate only applies to rows that do not exist yet.** Until
+Campaign Leads ships (Phase D), nothing sets `cr_application_id`, so the condition is never true and
+behaviour is byte-for-byte identical to today. Direct admin creation is untouched throughout.
+
+> Guard rail: ship the **Create CRM account now** button in this phase, before anything can defer.
+> Then there is always a manual way to finish the job.
 
 ### Phase D — Campaign Leads *(~3–4 days)*
 The new HR folder reading `cr_applications` where `brand = hello`. **Purely additive** — a new screen
@@ -171,7 +207,8 @@ Independent of the pipeline, can slot in anywhere after A.
 
 | Risk | Containment |
 |---|---|
-| The gate (C) stops CRM accounts being created at all | Log-only first; one condition to revert; no data loss |
+| The gate (C) stops CRM accounts being created at all | It only fires when `cr_application_id` is set, which nothing does until D. Direct admin creation is unchanged, and the **Create CRM account now** button ships first |
+| An agent is stuck mid-pipeline and needs access urgently | **Create CRM account now** — admin grants it in one click, skipping the remaining steps |
 | Screen lock (G) traps a live agent | Apply to new pipeline entrants only; exempt Active; ship the unlock first |
 | Two application tables drift apart | There is only one — `cr_applications` with a `brand` column |
 | HR profile created but onboarding abandoned | The employee simply sits at their status; no CRM account is ever made, which is the desired behaviour |
