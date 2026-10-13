@@ -48,7 +48,9 @@
 
                     <div class="mt-4">
                         {{-- W-07(a): open the quote form for THIS service, not the generic car form --}}
-                        <a class="default-btn" href="{{ route('Frontend.qoute.request', ['type' => $service['quote_type'] ?? 'Car']) }}">Get a Quote</a>
+                        {{-- `service` lets one freight form open correctly for dry van, hazmat
+                             or reefer, which ShipA1 keeps as three separate forms. --}}
+                        <a class="default-btn" href="{{ route('Frontend.qoute.request', ['type' => $service['quote_type'] ?? 'Car', 'service' => $service['slug'] ?? null]) }}">Get a Quote</a>
                         <a class="default-btn" style="margin-left:10px;" href="{{ route('Frontend.services') }}">Back to Services</a>
                     </div>
                 </div>

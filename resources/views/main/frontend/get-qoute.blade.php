@@ -474,48 +474,221 @@
                 </script>
             @endif
 
-            {{-- Freight (Dryvan) --}}
+            {{-- ── Freight: dry van, hazmat, reefer — ShipA1 parity (website point 7) ────────
+                 Fields and options come from ShipA1's dryvan / hazmattransport / reefertrucking
+                 forms. Every one of them has a column waiting in order_freight, which was built
+                 for this and had never been filled from the website.
+
+                 ShipA1's "Category" already says LTL or FTL, so it replaces the separate
+                 Shipping Mode select this form used to have. --}}
             @if($type === 'Dryvan')
+                @php
+                    // dry-van / hazmat / reefer all arrive here; the service tunes the defaults.
+                    $frService = request('service');
+                    $frEquipDefault = match ($frService) {
+                        'reefer' => ['REEFER (RE)'],
+                        'hazmat' => ['HAZMAT (hazardous materials)'],
+                        default  => ['VAN (V)'],
+                    };
+                    $frEquip = old('equipment_type', $frEquipDefault);
+                    $frSpecs = old('trailer_specification', []);
+
+                    $frCategories = ['LTL USED COMMERCIAL GOODS', 'LTL NEW COMMERCIAL GOODS', 'LTL USED GOODS',
+                                     'LTL NEW GOODS', 'FTL FULL TRUCK LOAD'];
+                    $frTrailers   = ['RGN', 'Stepdeck', 'Flatbed', 'Hotshot', 'Landoll'];
+                    $frUnits      = ['Pallet', 'Crate', 'Box', 'Bag', 'Bale', 'Bundle', 'Can', 'Carton', 'Case',
+                                     'Coil', 'Cylinder', 'Drum', 'Loose', 'Pail', 'Reel', 'Roll', 'Pipe', 'Other'];
+                    $frSpecList   = ['Air Ride(A)', 'Blanket Wrap (B)', 'B-Train (BT)', 'Chain(CH)', 'Chassis (CS)',
+                                     'Conestoga(CO)', 'Curtain(C)', 'Double(2)', 'Extendable (E)', 'E-Track (ET)',
+                                     'Hazmat (Z)', 'Hot Shot (HS)', 'Insulated (N)', 'Lift Gate (LG)', 'Load Out (LO)',
+                                     'Load Ramp (LR)', 'Moving (MV)', 'Open Top (OT)', 'Oversized (O)',
+                                     'Pallet Exchange (X)', 'Side Kit (S)', 'Tarp(T)', 'Team Driver(M)',
+                                     'Temp Control (TC)', 'Triple (3)', 'Vented (V)', 'Walking Floor (WF)'];
+                    $frEquipList  = ['VAN (V)', 'REEFER (RE)', 'FLATBED (F)', 'STEP DECK (SD)',
+                                     'REMOVABLE GOOSENECK (RGN)', 'CONESTOGA (CS)', 'CONTAINER / DRAYAGE (C)',
+                                     'TRUCK (T)', 'HAZMAT (hazardous materials)', 'POWER ONLY (PO)', 'HOT SHOT (HS)',
+                                     'LOWBOY (LB)', 'ENDUMP (ED)', 'LANDOLL (LD)', 'PARTIAL (PT)',
+                                     '20ft container', '40ft container', '48ft container', '53ft container'];
+                    $frPickup     = ['Construction / Utility', 'Container Station', 'Exhibition', 'Inside Pickup',
+                                     'Lift Gate Service', 'Residential', 'Single Shipment', 'Sorting / Segregation'];
+                    $frDeliver    = ['After Business Hours Delivery', 'Construction / Utility', 'Appointment',
+                                     'Container Station', 'Exhibition', 'In Bond Freight', 'In Bond TIR Caret',
+                                     'Inside - Same Level as Delivery Vehicle', 'Lift Gate Service', 'Residential',
+                                     'Mine / Govt / Airport', 'Notification Prior Delivery',
+                                     'Delivery appointment required'];
+                @endphp
+
+                {{-- What is being shipped --}}
                 <div class="row mt-2">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <select name="Freight_Category" class="form-control w-100" required>
+                                <option value="">Category (LTL / FTL)</option>
+                                @foreach($frCategories as $o)
+                                    <option value="{{ $o }}" @selected(old('Freight_Category') === $o)>{{ $o }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                     <div class="col-lg-6">
                         <div class="form-group">
                             <select name="frieght_class" class="form-control w-100">
-                                <option value="">Freight Class</option>
-                                <option>50</option><option>55</option><option>60</option>
-                                <option>70</option><option>85</option><option>100</option><option>125</option>
+                                <option value="">Freight Class (or use the calculator)</option>
+                                @foreach(['50','55','60','65','70','77.5','85','92.5','100','110','125','150','175','200','250','300','400','500'] as $fc)
+                                    <option value="{{ $fc }}" @selected(old('frieght_class') === $fc)>{{ $fc }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-2">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <input type="text" name="commodity_detail" class="form-control"
+                                   placeholder="Commodity detail — what is being shipped?" value="{{ old('commodity_detail') }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-2">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <select name="handling_unit" class="form-control w-100">
+                                <option value="">Handling Unit</option>
+                                @foreach($frUnits as $o)
+                                    <option value="{{ $o }}" @selected(old('handling_unit') === $o)>{{ $o }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <input type="number" min="1" name="commodity_unit" class="form-control"
+                                   placeholder="Number of units" value="{{ old('commodity_unit') }}">
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <select name="Freight_Trailer_Type" class="form-control w-100">
+                                <option value="">Trailer Type</option>
+                                @foreach($frTrailers as $o)
+                                    <option value="{{ $o }}" @selected(old('Freight_Trailer_Type') === $o)>{{ $o }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Equipment & trailer specifications — multiple choice, as on ShipA1 --}}
+                <div class="row mt-2">
+                    <div class="col-lg-6">
+                        <label style="font-size:13px;font-weight:600;color:#555;">Equipment Type</label>
+                        <select name="equipment_type[]" multiple class="form-control w-100" size="5">
+                            @foreach($frEquipList as $o)
+                                <option value="{{ $o }}" @selected(in_array($o, (array) $frEquip, true))>{{ $o }}</option>
+                            @endforeach
+                        </select>
+                        <small style="color:#888;">Hold Ctrl / Cmd to choose more than one.</small>
+                    </div>
+                    <div class="col-lg-6">
+                        <label style="font-size:13px;font-weight:600;color:#555;">Trailer Specification</label>
+                        <select name="trailer_specification[]" multiple class="form-control w-100" size="5">
+                            @foreach($frSpecList as $o)
+                                <option value="{{ $o }}" @selected(in_array($o, (array) $frSpecs, true))>{{ $o }}</option>
+                            @endforeach
+                        </select>
+                        <small style="color:#888;">Optional.</small>
+                    </div>
+                </div>
+
+                {{-- Dimensions and weight --}}
+                <div class="row mt-3">
+                    @foreach(['Length', 'Width', 'Height'] as $dim)
+                        <div class="col-lg-3">
+                            <label style="font-size:13px;font-weight:600;color:#555;">{{ $dim }}</label>
+                            <div class="d-flex gap-2">
+                                <input type="number" min="0" name="{{ $dim }}_Ft" class="form-control" placeholder="ft"
+                                       value="{{ old($dim . '_Ft') }}">
+                                <input type="number" min="0" max="11" name="{{ $dim }}_In" class="form-control" placeholder="in"
+                                       value="{{ old($dim . '_In') }}">
+                            </div>
+                        </div>
+                    @endforeach
+                    <div class="col-lg-3">
+                        <label style="font-size:13px;font-weight:600;color:#555;">Weight</label>
+                        <input type="number" min="0" name="Freight_Weight" class="form-control" placeholder="lbs"
+                               value="{{ old('Freight_Weight') }}">
+                    </div>
+                </div>
+
+                {{-- Pickup and delivery --}}
+                <div class="row mt-3">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <select name="pick_up_services" class="form-control w-100">
+                                <option value="">Pickup Services (optional)</option>
+                                @foreach($frPickup as $o)
+                                    <option value="{{ $o }}" @selected(old('pick_up_services') === $o)>{{ $o }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
                     <div class="col-lg-6">
                         <div class="form-group">
-                            <input type="number" name="Freight_Weight" class="form-control"
-                                   placeholder="Freight Weight (lbs)" value="{{ old('Freight_Weight') }}">
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-lg-12">
-                        <div class="form-group">
-                            <input type="text" name="Shipment_Preferences" class="form-control"
-                                   placeholder="Commodity Details" value="{{ old('Shipment_Preferences') }}">
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-            {{-- Shipping mode — freight only. ShipA1's heavy-equipment forms have no FTL/LTL
-                 choice; the RV form asks it as "Load Type", inside its own section above. --}}
-            @if($type === 'Dryvan')
-                <div class="row mt-2">
-                    <div class="col-lg-12">
-                        <div class="form-group">
-                            <select name="Shipping_Mode" class="form-control w-100">
-                                <option value="">Shipping Mode</option>
-                                <option value="FTL (Full Truck Load)">FTL (Full Truck Load)</option>
-                                <option value="LTL (Less Than Truck Load)">LTL (Less Than Truck Load)</option>
+                            <select name="deliver_services" class="form-control w-100">
+                                <option value="">Delivery Services (optional)</option>
+                                @foreach($frDeliver as $o)
+                                    <option value="{{ $o }}" @selected(old('deliver_services') === $o)>{{ $o }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
+                </div>
+
+                <div class="row mt-2">
+                    <div class="col-lg-3">
+                        <label style="font-size:13px;font-weight:600;color:#555;">Pickup Date</label>
+                        <input type="date" name="ex_pickup_date" class="form-control" value="{{ old('ex_pickup_date') }}">
+                    </div>
+                    <div class="col-lg-3">
+                        <label style="font-size:13px;font-weight:600;color:#555;">Pickup Time</label>
+                        <input type="time" name="ex_pickup_time" class="form-control" value="{{ old('ex_pickup_time') }}">
+                    </div>
+                    {{-- ShipA1's reefer form has no delivery date/time; dry van and hazmat do. --}}
+                    @unless($frService === 'reefer')
+                        <div class="col-lg-3">
+                            <label style="font-size:13px;font-weight:600;color:#555;">Delivery Date</label>
+                            <input type="date" name="ex_delivery_date" class="form-control" value="{{ old('ex_delivery_date') }}">
+                        </div>
+                        <div class="col-lg-3">
+                            <label style="font-size:13px;font-weight:600;color:#555;">Delivery Time</label>
+                            <input type="time" name="ex_delivery_time" class="form-control" value="{{ old('ex_delivery_time') }}">
+                        </div>
+                    @endunless
+                </div>
+
+                {{-- Handling flags --}}
+                @php
+                    $frFlags = [
+                        'hazardous'             => ['Hazardous materials',              $frService === 'hazmat'],
+                        'stackable'             => ['Stackable',                         false],
+                        'freight_on_trailer'    => ['Freight already on a trailer',      false],
+                        'protect_from_freezing' => ['Protect from freezing',             $frService === 'reefer'],
+                        'sort_segregate'        => ['Sort / segregate',                  false],
+                        'blind_shipment'        => ['Blind shipment',                    false],
+                    ];
+                @endphp
+                <div class="row mt-3">
+                    @foreach($frFlags as $flag => [$label, $default])
+                        <div class="col-lg-4 col-sm-6">
+                            <label class="d-flex align-items-center gap-2" style="cursor:pointer;font-size:14px;">
+                                <input type="checkbox" name="{{ $flag }}" value="1"
+                                       @checked(old($flag, $default ? '1' : null) === '1')>
+                                {{ $label }}
+                            </label>
+                        </div>
+                    @endforeach
                 </div>
             @endif
 

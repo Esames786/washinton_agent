@@ -176,11 +176,16 @@ class FrontendController extends Controller
         $vehiclePrice = $request->Vehicle_Price ?? null;
 
         // Transport / shipping mode
-        // Cars/Motorcycles/ATV/Golf Cart → Carrier_Type (Open/Enclosed/Drive Away)
-        // Heavy Equipment & Dryvan      → Shipping_Mode (FTL/LTL)
-        // RV asks it as Load Type; heavy and boat carry their trailer in trailer_type instead.
+        //   Car / Motorcycle / ATV / Golf Cart → Carrier_Type (Open / Enclosed / Drive Away)
+        //   Freight                             → LTL or FTL, read from its Category
+        //   RV                                  → Load Type
+        //   Heavy equipment and boat            → none; their trailer is in trailer_type
         $transport = match (true) {
-            $type === 'Dryvan'                              => $request->Shipping_Mode ?? null,
+            // ShipA1's freight Category already says LTL or FTL ("LTL USED GOODS",
+            // "FTL FULL TRUCK LOAD"), so the mode is read from it.
+            $type === 'Dryvan' => str_starts_with((string) $request->Freight_Category, 'FTL')
+                ? 'FTL (Full Truck Load)'
+                : ($request->Freight_Category ? 'LTL (Less Than Truck Load)' : null),
             $type === 'RV'                                  => $request->Load_Type ?? null,
             in_array($type, ['Heavy Equipment', 'Boat'])    => null,
             default                                         => $request->Carrier_Type ?? null,
@@ -194,15 +199,16 @@ class FrontendController extends Controller
             $weight = $request->Freight_Weight ?? null;
         }
 
-        // Dimensions — Heavy Equipment only
-        // Feet and inches arrive separately, as ShipA1 asks for them.
+        // Dimensions — feet and inches arrive separately, as ShipA1 asks for them. Heavy,
+        // boat and RV measure the vehicle; freight measures the load.
         $isDim    = in_array($type, $dimensional);
-        $lengthFt = $isDim ? ($request->Length_Ft ?? null) : null;
-        $lengthIn = $isDim ? ($request->Length_In ?? null) : null;
-        $widthFt  = $isDim ? ($request->Width_Ft  ?? null) : null;
-        $widthIn  = $isDim ? ($request->Width_In  ?? null) : null;
-        $heightFt = $isDim ? ($request->Height_Ft ?? null) : null;
-        $heightIn = $isDim ? ($request->Height_In ?? null) : null;
+        $hasDims  = $isDim || $type === 'Dryvan';
+        $lengthFt = $hasDims ? ($request->Length_Ft ?? null) : null;
+        $lengthIn = $hasDims ? ($request->Length_In ?? null) : null;
+        $widthFt  = $hasDims ? ($request->Width_Ft  ?? null) : null;
+        $widthIn  = $hasDims ? ($request->Width_In  ?? null) : null;
+        $heightFt = $hasDims ? ($request->Height_Ft ?? null) : null;
+        $heightIn = $hasDims ? ($request->Height_In ?? null) : null;
 
         // car_type drives which table the order taker moves the lead into:
         //   1 = Car / Motorcycle / ATV / Golf Cart  → order table (standard)
@@ -214,15 +220,54 @@ class FrontendController extends Controller
             default                                 => 1,
         };
 
-        // Additional info — freight class + commodity for Dryvan
-        // Stored in add_info so it transfers when the lead is converted to an order
+        // Freight (dry van / hazmat / reefer) — website point 7, ShipA1 parity.
+        //
+        // These go to order_freight as STRUCTURED values, one column each. The old approach
+        // encoded freight into add_info as "Freight Class: X | Commodity: Y" and parsed it
+        // back out when the order was created — workable for three fields, brittle for
+        // seventeen, and broken by any commodity description containing a "|".
+        //
+        // add_info still gets a readable summary, because that is what the order taker sees.
+        $freight = null;
         $addInfo = null;
         if ($type === 'Dryvan') {
-            $parts = [];
-            if ($request->frieght_class)        $parts[] = 'Freight Class: '  . $request->frieght_class;
-            if ($request->Shipment_Preferences) $parts[] = 'Commodity: '      . $request->Shipment_Preferences;
-            if ($request->Shipping_Mode)        $parts[] = 'Shipping Mode: '  . $request->Shipping_Mode;
-            $addInfo = implode(' | ', $parts) ?: null;
+            $multi = fn ($v) => is_array($v) ? implode(', ', array_filter($v)) : ($v ?: null);
+            $flag  = fn ($k) => $request->boolean($k) ? 1 : 0;
+
+            $freight = [
+                'frieght_class'         => $request->frieght_class ?: null,
+                'commodity_detail'      => $request->commodity_detail ?: null,
+                'shipment_prefences'    => $request->Freight_Category ?: null,
+                'handling_unit'         => $request->handling_unit ?: null,
+                'commodity_unit'        => $request->commodity_unit ?: null,
+                'trailer_type'          => $request->Freight_Trailer_Type ?: null,
+                'equipment_type'        => $multi($request->input('equipment_type')),
+                'trailer_specification' => $multi($request->input('trailer_specification')),
+                'pick_up_services'      => $request->pick_up_services ?: null,
+                'deliver_services'      => $request->deliver_services ?: null,
+                'ex_pickup_date'        => $request->ex_pickup_date ?: null,
+                'ex_pickup_time'        => $request->ex_pickup_time ?: null,
+                'ex_delivery_date'      => $request->ex_delivery_date ?: null,
+                'ex_delivery_time'      => $request->ex_delivery_time ?: null,
+                'total_weight_lbs'      => $request->Freight_Weight ?: null,
+                'hazardous'             => $flag('hazardous'),
+                'stackable'             => $flag('stackable'),
+                'protect_from_freezing' => $flag('protect_from_freezing'),
+                'sort_segregate'        => $flag('sort_segregate'),
+                'blind_shipment'        => $flag('blind_shipment'),
+            ];
+
+            $summary = array_filter([
+                'Category'      => $freight['shipment_prefences'],
+                'Freight Class' => $freight['frieght_class'],
+                'Commodity'     => $freight['commodity_detail'],
+                'Units'         => trim(($freight['commodity_unit'] ?? '') . ' ' . ($freight['handling_unit'] ?? '')) ?: null,
+                'Equipment'     => $freight['equipment_type'],
+                'Trailer'       => $freight['trailer_type'],
+                'Hazardous'     => $freight['hazardous'] ? 'Yes' : null,
+                'Reefer'        => $freight['protect_from_freezing'] ? 'Protect from freezing' : null,
+            ]);
+            $addInfo = implode(' · ', array_map(fn ($k, $v) => "$k: $v", array_keys($summary), $summary)) ?: null;
         }
 
         // Heavy / boat / RV photo (optional) — now offered on all three, as ShipA1 does.
@@ -296,7 +341,12 @@ class FrontendController extends Controller
                 'load_type'            => $type === 'RV' ? ($request->Load_Type ?? null) : null,
                 'category'             => $category,
                 'rv_type'              => $type === 'RV' ? ($request->RV_Type ?? null) : null,
-                'boat_on_trailer'      => $type === 'Boat' ? ($request->Boat_On_Trailer ?? null) : null,
+                // ShipA1 reuses this column for freight's "already on a trailer?" question.
+                'boat_on_trailer'      => match ($type) {
+                    'Boat'   => $request->Boat_On_Trailer ?? null,
+                    'Dryvan' => $request->boolean('freight_on_trailer') ? 'Yes' : null,
+                    default  => null,
+                },
                 'available_at_auction' => $request->Available_At_Auction ?? null,
                 'link'                 => $request->Available_At_Auction === 'Yes' ? ($request->Auction_Link ?? null) : null,
                 'modification'         => $request->Modification ?? null,
@@ -324,7 +374,7 @@ class FrontendController extends Controller
         // a duplicate, so the Assign OT flow keeps working unchanged.
         if (isset($query)) {
             try {
-                $this->createUnassignedOrderFromQuery($query);
+                $this->createUnassignedOrderFromQuery($query, $freight);
             } catch (\Throwable $e) {
                 Log::error('FrontendController: unassigned order creation failed', ['query_id' => $query->id ?? null, 'error' => $e->getMessage()]);
             }
@@ -357,7 +407,7 @@ class FrontendController extends Controller
      * $query->order_id and simply assigns it (its existing dedupe branch), never duplicating.
      * Contact-form leads (no vehicle/route) intentionally do NOT come through here.
      */
-    private function createUnassignedOrderFromQuery(\App\ShipaQuery $query): void
+    private function createUnassignedOrderFromQuery(\App\ShipaQuery $query, ?array $freight = null): void
     {
         if (!empty($query->order_id)) {
             return; // already linked
@@ -401,32 +451,54 @@ class FrontendController extends Controller
         $order->source          = $query->source ?? 'Website';
         $order->pstatus         = 0;
 
-        // Heavy Equipment dimensions (car_type=2)
+        // Dimensions — feet AND inches. Inches were previously dropped here, so a 20ft 7in
+        // boat reached the order taker as a flat 20ft.
         $order->length_ft       = $query->length_ft ?? null;
+        $order->length_in       = $query->length_in ?? null;
         $order->width_ft        = $query->width_ft  ?? null;
+        $order->width_in        = $query->width_in  ?? null;
         $order->height_ft       = $query->height_ft ?? null;
+        $order->height_in       = $query->height_in ?? null;
         $order->weight          = $query->weight    ?? null;
+
+        // Website point 7 — the ShipA1 details. These were being saved on the quote but
+        // never copied here, so the order taker who has to price the job never saw them.
+        //
+        // Only columns that actually exist on `order` are written, so this cannot break
+        // quote submission if the code is deployed a moment before its migration runs.
+        static $orderCols = null;
+        $orderCols ??= array_flip(\Illuminate\Support\Facades\Schema::getColumnListing('order'));
+
+        foreach (['year', 'make', 'model', 'condition', 'trailer_type', 'load_method', 'unload_method',
+                  'load_type', 'category', 'rv_type', 'boat_on_trailer', 'available_at_auction', 'link',
+                  'modification', 'modify_info', 'image', 'to_country', 'to_city', 'roro'] as $col) {
+            if (isset($orderCols[$col]) && $query->{$col} !== null && $query->{$col} !== '') {
+                $order->{$col} = $query->{$col};
+            }
+        }
 
         $order->save();
 
-        // Freight detail row (car_type=3 → Dryvan)
+        // Freight detail row (car_type=3 → dry van / hazmat / reefer).
+        //
+        // Written from the structured values the form posted, one column each. This
+        // replaces a parse of add_info that split on " | " — it also wrote Shipping Mode
+        // (LTL/FTL) into trailer_type, which is a different thing entirely.
         if ((int) $query->car_type === 3) {
-            $freight = new \App\order_freight();
-            $freight->order_id         = $order->id;
-            $freight->total_weight_lbs = $query->weight ?? null;
-            if ($query->add_info) {
-                foreach (explode(' | ', $query->add_info) as $part) {
-                    if (strpos($part, 'Freight Class: ') === 0) {
-                        $freight->frieght_class = trim(str_replace('Freight Class: ', '', $part));
-                    } elseif (strpos($part, 'Commodity: ') === 0) {
-                        $freight->shipment_prefences = trim(str_replace('Commodity: ', '', $part));
-                        $freight->commodity_detail   = $freight->shipment_prefences;
-                    } elseif (strpos($part, 'Shipping Mode: ') === 0) {
-                        $freight->trailer_type = trim(str_replace('Shipping Mode: ', '', $part));
-                    }
+            static $freightCols = null;
+            $freightCols ??= array_flip(\Illuminate\Support\Facades\Schema::getColumnListing('order_freight'));
+
+            $row = new \App\order_freight();
+            $row->order_id         = $order->id;
+            $row->total_weight_lbs = $query->weight ?? null;
+
+            foreach ((array) $freight as $col => $value) {
+                if (isset($freightCols[$col]) && $value !== null && $value !== '') {
+                    $row->{$col} = $value;
                 }
             }
-            $freight->save();
+
+            $row->save();
         }
 
         // Linked records (userId 1 = system, like other customer-originated flows)
