@@ -150,16 +150,42 @@
                         <span class="zip-error" id="from_zip_error" style="color:#e74c3c;font-size:12px;display:none;"></span>
                     </div>
                 </div>
-                <div class="col-lg-6">
-                    <div class="form-group zip-wrap">
-                        <input type="text" id="to_zip" name="To_ZipCode"
-                               class="form-control" autocomplete="off"
-                               placeholder="Destination: City, State, Zip (e.g. Dallas, TX, 75201)"
-                               required value="{{ old('To_ZipCode') }}">
-                        <ul class="suggestion-list" id="to_zip_list"></ul>
-                        <span class="zip-error" id="to_zip_error" style="color:#e74c3c;font-size:12px;display:none;"></span>
+                @if($type === 'RoRo')
+                    {{-- RoRo is international: the vehicle is shipped OVERSEAS, so the
+                         destination is a country and city, not a US zip. As ShipA1's RoRo
+                         form asks — country and city required, zip optional. --}}
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <input type="text" name="To_Country" class="form-control"
+                                   placeholder="Destination country" required value="{{ old('To_Country') }}">
+                        </div>
                     </div>
                 </div>
+                <div class="row mt-2">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <input type="text" name="To_City" class="form-control"
+                                   placeholder="Destination city" required value="{{ old('To_City') }}">
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <input type="text" name="To_ZipCode" class="form-control"
+                                   placeholder="Destination zip / postcode (optional)" value="{{ old('To_ZipCode') }}">
+                        </div>
+                    </div>
+                @else
+                    <div class="col-lg-6">
+                        <div class="form-group zip-wrap">
+                            <input type="text" id="to_zip" name="To_ZipCode"
+                                   class="form-control" autocomplete="off"
+                                   placeholder="Destination: City, State, Zip (e.g. Dallas, TX, 75201)"
+                                   required value="{{ old('To_ZipCode') }}">
+                            <ul class="suggestion-list" id="to_zip_list"></ul>
+                            <span class="zip-error" id="to_zip_error" style="color:#e74c3c;font-size:12px;display:none;"></span>
+                        </div>
+                    </div>
+                @endif
             </div>
 
             {{-- Vehicle type display --}}
@@ -228,131 +254,224 @@
             @endif
 
             {{-- Heavy Equipment --}}
-            {{-- Dimensions — heavy equipment, boats, RVs and RoRo all ship on measurements --}}
-            @if(in_array($type, ['Heavy Equipment', 'Boat', 'RV', 'RoRo']))
-                <div class="row mt-2">
-                    <div class="col-lg-12">
-                        <div class="form-group">
-                            <input type="text" name="Year_Make_Model" class="form-control"
-                                   placeholder="Enter Year, Make, Model"
-                                   value="{{ old('Year_Make_Model') }}">
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <input type="text" name="Vehicle_Length" class="form-control"
-                                   placeholder="Length (e.g. 20ft 7in)" value="{{ old('Vehicle_Length') }}">
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <input type="text" name="Vehicle_Width" class="form-control"
-                                   placeholder="Width (e.g. 8ft)" value="{{ old('Vehicle_Width') }}">
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <input type="text" name="Vehicle_Height" class="form-control"
-                                   placeholder="Height (e.g. 10ft)" value="{{ old('Vehicle_Height') }}">
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <input type="text" name="Vehicle_Weight" class="form-control"
-                                   placeholder="Weight (e.g. 5000 lbs)" value="{{ old('Vehicle_Weight') }}">
-                        </div>
-                    </div>
-                </div>
-            @endif
+            {{-- ── Heavy equipment, boats and RVs — ShipA1 parity (website point 7) ──────────
+                 Fields and options are taken from ShipA1's own forms
+                 (heavyEquipment / boat / rv .blade.php). Its five heavy forms —
+                 construction, commercial truck, excavator, farm, heavy equipment — are
+                 identical, so one section serves all five here. --}}
+            @if(in_array($type, ['Heavy Equipment', 'Boat', 'RV']))
+                @php
+                    $hvTrailers = $type === 'Boat'
+                        ? ['REMOVABLE GOOSENECK (RGN)', 'STEP DECK (SD)', 'FLATBED (F)', 'HOT SHOT (HS)', 'LANDOLL (LD)']
+                        : ['VAN (V)', 'FLATBED (F)', 'STEP DECK (SD)', 'REMOVABLE GOOSENECK (RGN)', 'CONESTOGA (CS)',
+                           'CONTAINER / DRAYAGE (C)', 'TRUCK (T)', 'POWER ONLY (PO)', 'HOT SHOT (HS)', 'LOWBOY (LB)',
+                           'ENDUMP (ED)', 'LANDOLL (LD)', 'PARTIAL (PT)'];
+                    $hvMethods = ['LOADING DOCK', 'CRANE', 'FORKLIFT', 'DRIVE ROLL'];
+                @endphp
 
-            {{-- Boat-specific — fields as specified in the client email (ShipA1 boat form parity) --}}
-            @if($type === 'Boat')
+                {{-- What it is --}}
+                @if($type === 'Boat')
+                    <div class="row mt-2">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <select name="Boat_Category" class="form-control w-100">
+                                    <option value="">Boat Type</option>
+                                    @foreach(['Power Boat', 'Sail Boat', 'Personal Watercraft', 'Boat Parts', 'Motor Boat', 'Others'] as $o)
+                                        <option value="{{ $o }}" @selected(old('Boat_Category') === $o)>{{ $o }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                @elseif($type === 'RV')
+                    <div class="row mt-2">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <select name="RV_Type" class="form-control w-100">
+                                    <option value="">RV Type</option>
+                                    @foreach(['Class A Motorhome', 'Class B Motorhome', 'Class C Motorhome', 'Travel Trailer',
+                                              'Folding Tent Trailer', 'Fifth-Wheel', 'Truck Camper', 'Other'] as $o)
+                                        <option value="{{ $o }}" @selected(old('RV_Type') === $o)>{{ $o }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Year / Make / Model — separate, as ShipA1 asks --}}
                 <div class="row mt-2">
-                    <div class="col-lg-6">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <input type="text" name="Vehicle_Year" class="form-control" placeholder="Year"
+                                   value="{{ old('Vehicle_Year') }}">
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <input type="text" name="Vehicle_Make" class="form-control" placeholder="Make"
+                                   value="{{ old('Vehicle_Make') }}">
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <input type="text" name="Vehicle_Model" class="form-control" placeholder="Model"
+                                   value="{{ old('Vehicle_Model') }}">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Dimensions in feet AND inches, as ShipA1 splits them --}}
+                <div class="row mt-2">
+                    @foreach(['Length', 'Width', 'Height'] as $dim)
+                        <div class="col-lg-4">
+                            <label style="font-size:13px;font-weight:600;color:#555;">{{ $dim }}</label>
+                            <div class="d-flex gap-2">
+                                <input type="number" min="0" name="{{ $dim }}_Ft" class="form-control" placeholder="ft"
+                                       value="{{ old($dim . '_Ft') }}">
+                                <input type="number" min="0" max="11" name="{{ $dim }}_In" class="form-control" placeholder="in"
+                                       value="{{ old($dim . '_In') }}">
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+                <div class="row mt-2">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <input type="number" min="0" name="Vehicle_Weight" class="form-control" placeholder="Weight (lbs)"
+                                   value="{{ old('Vehicle_Weight') }}">
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
                         <div class="form-group">
                             <select name="Trailer_Type" class="form-control w-100">
                                 <option value="">Trailer Type</option>
-                                <option value="With Trailer">With Trailer</option>
-                                <option value="Without Trailer">Without Trailer</option>
+                                @foreach($hvTrailers as $o)
+                                    <option value="{{ $o }}" @selected(old('Trailer_Type') === $o)>{{ $o }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-4">
                         <div class="form-group">
                             <select name="Carrier_Condition" class="form-control w-100">
                                 <option value="">Condition</option>
-                                <option value="1">Running</option>
-                                <option value="2">Not Running</option>
+                                <option value="1" @selected(old('Carrier_Condition') === '1')>Running</option>
+                                <option value="2" @selected(old('Carrier_Condition') === '2')>Non Running</option>
                             </select>
                         </div>
                     </div>
                 </div>
+
                 <div class="row mt-2">
-                    <div class="col-lg-6">
+                    <div class="col-lg-{{ $type === 'RV' ? '4' : '6' }}">
                         <div class="form-group">
                             <select name="Load_Method" class="form-control w-100">
                                 <option value="">Load Method</option>
-                                <option value="Forklift">Forklift</option>
-                                <option value="Crane">Crane</option>
-                                <option value="Drive On">Drive On</option>
-                                <option value="Winch">Winch</option>
+                                @foreach($hvMethods as $o)
+                                    <option value="{{ $o }}" @selected(old('Load_Method') === $o)>{{ $o }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-{{ $type === 'RV' ? '4' : '6' }}">
                         <div class="form-group">
                             <select name="Unload_Method" class="form-control w-100">
                                 <option value="">Unload Method</option>
-                                <option value="Forklift">Forklift</option>
-                                <option value="Crane">Crane</option>
-                                <option value="Drive Off">Drive Off</option>
-                                <option value="Winch">Winch</option>
+                                @foreach($hvMethods as $o)
+                                    <option value="{{ $o }}" @selected(old('Unload_Method') === $o)>{{ $o }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
+                    @if($type === 'RV')
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <select name="Load_Type" class="form-control w-100">
+                                    <option value="">Load Type</option>
+                                    <option value="LTL" @selected(old('Load_Type') === 'LTL')>LTL (Less Than Truck Load)</option>
+                                    <option value="FTL" @selected(old('Load_Type') === 'FTL')>FTL (Full Truck Load)</option>
+                                </select>
+                            </div>
+                        </div>
+                    @endif
                 </div>
+
                 <div class="row mt-2">
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <select name="Boat_On_Trailer" class="form-control w-100">
-                                <option value="">Is your boat on a trailer?</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
+                    @if($type === 'Boat')
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <select name="Boat_On_Trailer" class="form-control w-100">
+                                    <option value="">Is your boat on a trailer?</option>
+                                    <option value="Yes" @selected(old('Boat_On_Trailer') === 'Yes')>Yes</option>
+                                    <option value="No" @selected(old('Boat_On_Trailer') === 'No')>No</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-lg-6">
+                    @endif
+                    <div class="col-lg-{{ $type === 'Boat' ? '6' : '12' }}">
                         <div class="form-group">
-                            <select name="Modification" class="form-control w-100">
-                                <option value="">Modified?</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
+                            <select name="Available_At_Auction" id="hvAuction" class="form-control w-100">
+                                <option value="">Available at auction?</option>
+                                <option value="Yes" @selected(old('Available_At_Auction') === 'Yes')>Yes</option>
+                                <option value="No" @selected(old('Available_At_Auction') === 'No')>No</option>
                             </select>
                         </div>
                     </div>
                 </div>
+                <div class="row mt-2" id="hvAuctionLinkRow"
+                     style="{{ old('Available_At_Auction') === 'Yes' ? '' : 'display:none;' }}">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <input type="url" name="Auction_Link" class="form-control"
+                                   placeholder="Auction listing link (https://…)" value="{{ old('Auction_Link') }}">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ShipA1's RV form does not ask about modifications; the others do. --}}
+                @unless($type === 'RV')
+                    <div class="row mt-2">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <select name="Modification" id="hvModified" class="form-control w-100">
+                                    <option value="">Modified?</option>
+                                    <option value="Yes" @selected(old('Modification') === 'Yes')>Yes</option>
+                                    <option value="No" @selected(old('Modification') === 'No')>No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-8" id="hvModifyInfoCol"
+                             style="{{ old('Modification') === 'Yes' ? '' : 'display:none;' }}">
+                            <div class="form-group">
+                                <input type="text" name="Modify_Info" class="form-control"
+                                       placeholder="What has been modified?" value="{{ old('Modify_Info') }}">
+                            </div>
+                        </div>
+                    </div>
+                @endunless
+
                 <div class="row mt-2">
-                    <div class="col-lg-6">
+                    <div class="col-lg-12">
                         <div class="form-group">
-                            <select name="Available_At_Auction" class="form-control w-100">
-                                <option value="">Available at Auction?</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <input type="file" name="Vehicle_Image" class="form-control"
-                                   accept="image/*">
-                            <small style="color:#888;">Photo of the boat (optional)</small>
+                            <input type="file" name="Vehicle_Image" class="form-control" accept="image/*">
+                            <small style="color:#888;">Photo (optional)</small>
                         </div>
                     </div>
                 </div>
+
+                <script>
+                    // Only ask for the auction link / modification details when they apply.
+                    (function () {
+                        function toggle(selId, targetId) {
+                            var s = document.getElementById(selId), t = document.getElementById(targetId);
+                            if (!s || !t) return;
+                            s.addEventListener('change', function () { t.style.display = s.value === 'Yes' ? '' : 'none'; });
+                        }
+                        toggle('hvAuction', 'hvAuctionLinkRow');
+                        toggle('hvModified', 'hvModifyInfoCol');
+                    })();
+                </script>
             @endif
 
             {{-- Freight (Dryvan) --}}
@@ -384,8 +503,9 @@
                 </div>
             @endif
 
-            {{-- Shipping mode --}}
-            @if(in_array($type, ['Heavy Equipment', 'Dryvan']))
+            {{-- Shipping mode — freight only. ShipA1's heavy-equipment forms have no FTL/LTL
+                 choice; the RV form asks it as "Load Type", inside its own section above. --}}
+            @if($type === 'Dryvan')
                 <div class="row mt-2">
                     <div class="col-lg-12">
                         <div class="form-group">

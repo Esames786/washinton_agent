@@ -103,15 +103,24 @@ class FrontendController extends Controller
 
         $zipPattern = ['required', 'string', 'max:100', 'regex:/^[^,]+,\s*[A-Za-z]{2},\s*\d{5}$/'];
 
+        // RoRo ships OVERSEAS, so its destination is a country and city. Holding it to the
+        // US "City, ST, 12345" pattern rejected every genuine RoRo enquiry — the only way
+        // through was to type a fake US address.
+        $isRoro = $type === 'RoRo';
+
         $request->validate([
             'Custo_Name'        => 'required|string|max:100',
             'Custo_Phone'       => 'required|string|max:30',
             'Custo_Email'       => 'required|email|max:150',
             'From_ZipCode'      => $zipPattern,
-            'To_ZipCode'        => $zipPattern,
+            'To_ZipCode'        => $isRoro ? 'nullable|string|max:30' : $zipPattern,
+            'To_Country'        => $isRoro ? 'required|string|max:100' : 'nullable',
+            'To_City'           => $isRoro ? 'required|string|max:100' : 'nullable',
             'Carrier_Type'      => $isVehicle ? 'required|string' : 'nullable',
             'Carrier_Condition' => $isVehicle ? 'required|string' : 'nullable',
         ], [
+            'To_Country.required'     => 'Please enter the destination country.',
+            'To_City.required'        => 'Please enter the destination city.',
             'From_ZipCode.regex'      => 'Origin must be in format: City, ST, 12345 (e.g. Brooklyn, NY, 11234)',
             'To_ZipCode.regex'        => 'Destination must be in format: City, ST, 12345 (e.g. Dallas, TX, 75201)',
             'Carrier_Type.required'   => 'Please select a carrier type.',
@@ -127,23 +136,35 @@ class FrontendController extends Controller
         $originzip        = $originParts[2] ?? $originParts[0] ?? '';
         $originzsc        = trim("{$origincity},{$originstate},{$originzip}", ',');
 
-        $destinationcity  = $destinationParts[0] ?? '';
-        $destinationstate = $destinationParts[1] ?? '';
-        $destinationzip   = $destinationParts[2] ?? $destinationParts[0] ?? '';
-        $destinationzsc   = trim("{$destinationcity},{$destinationstate},{$destinationzip}", ',');
+        if ($isRoro) {
+            // International: city + country stand in for city + state, so the order taker
+            // still sees a readable destination in the usual column.
+            $destinationcity  = trim((string) $request->To_City);
+            $destinationstate = trim((string) $request->To_Country);
+            $destinationzip   = trim((string) $request->To_ZipCode);
+            $destinationzsc   = trim("{$destinationcity},{$destinationstate},{$destinationzip}", ',');
+        } else {
+            $destinationcity  = $destinationParts[0] ?? '';
+            $destinationstate = $destinationParts[1] ?? '';
+            $destinationzip   = $destinationParts[2] ?? $destinationParts[0] ?? '';
+            $destinationzsc   = trim("{$destinationcity},{$destinationstate},{$destinationzip}", ',');
+        }
 
         // Vehicle identity — varies by type
         $year  = null;
         $make  = null;
         $model = null;
 
-        // W-07(a): boats, RVs and RoRo share heavy equipment's shape — one "Year Make Model"
-        // field plus physical dimensions — so they follow the same branches throughout.
-        $dimensional = ['Heavy Equipment', 'Boat', 'RV', 'RoRo'];
+        // Website point 7 — heavy equipment, boats and RVs follow ShipA1's forms: separate
+        // year / make / model, dimensions in feet AND inches, trailer type, load and unload
+        // method, condition, auction and modification. RoRo is NOT here: it is international
+        // and asks for a destination country rather than measurements.
+        $dimensional = ['Heavy Equipment', 'Boat', 'RV'];
 
         if (in_array($type, $dimensional)) {
-            // Single "Year Make Model" field
-            $make = $request->Year_Make_Model ?? null;
+            $year  = $request->Vehicle_Year  ?? null;
+            $make  = $request->Vehicle_Make  ?? null;
+            $model = $request->Vehicle_Model ?? null;
         } elseif (in_array($type, ['Car', 'Motorcycle', 'ATV/UTV', 'Golf Cart'])) {
             $year  = $request->Car_Year  ?? null;
             $make  = $request->Car_Make  ?? null;
@@ -157,9 +178,13 @@ class FrontendController extends Controller
         // Transport / shipping mode
         // Cars/Motorcycles/ATV/Golf Cart → Carrier_Type (Open/Enclosed/Drive Away)
         // Heavy Equipment & Dryvan      → Shipping_Mode (FTL/LTL)
-        $transport = in_array($type, ['Heavy Equipment', 'Dryvan'])
-            ? ($request->Shipping_Mode ?? null)
-            : ($request->Carrier_Type  ?? null);
+        // RV asks it as Load Type; heavy and boat carry their trailer in trailer_type instead.
+        $transport = match (true) {
+            $type === 'Dryvan'                              => $request->Shipping_Mode ?? null,
+            $type === 'RV'                                  => $request->Load_Type ?? null,
+            in_array($type, ['Heavy Equipment', 'Boat'])    => null,
+            default                                         => $request->Carrier_Type ?? null,
+        };
 
         // Weight — dedicated field per type
         $weight = null;
@@ -170,9 +195,14 @@ class FrontendController extends Controller
         }
 
         // Dimensions — Heavy Equipment only
-        $lengthFt = in_array($type, $dimensional) ? ($request->Vehicle_Length ?? null) : null;
-        $widthFt  = in_array($type, $dimensional) ? ($request->Vehicle_Width  ?? null) : null;
-        $heightFt = in_array($type, $dimensional) ? ($request->Vehicle_Height ?? null) : null;
+        // Feet and inches arrive separately, as ShipA1 asks for them.
+        $isDim    = in_array($type, $dimensional);
+        $lengthFt = $isDim ? ($request->Length_Ft ?? null) : null;
+        $lengthIn = $isDim ? ($request->Length_In ?? null) : null;
+        $widthFt  = $isDim ? ($request->Width_Ft  ?? null) : null;
+        $widthIn  = $isDim ? ($request->Width_In  ?? null) : null;
+        $heightFt = $isDim ? ($request->Height_Ft ?? null) : null;
+        $heightIn = $isDim ? ($request->Height_In ?? null) : null;
 
         // car_type drives which table the order taker moves the lead into:
         //   1 = Car / Motorcycle / ATV / Golf Cart  → order table (standard)
@@ -195,23 +225,23 @@ class FrontendController extends Controller
             $addInfo = implode(' | ', $parts) ?: null;
         }
 
-        // W-07(a) boat extras. Most map to real columns; Trailer Type has none, so it rides
-        // in add_info the same way freight details do.
-        $boat  = [];
+        // Heavy / boat / RV photo (optional) — now offered on all three, as ShipA1 does.
         $image = null;
-        if ($type === 'Boat') {
-            if ($request->Trailer_Type) { $boat[] = 'Trailer Type: ' . $request->Trailer_Type; }
-            $addInfo = implode(' | ', array_filter([$addInfo, implode(' | ', $boat)])) ?: null;
-
-            // Photo of the boat (optional) — same public disk the rest of the site uses.
-            if ($request->hasFile('Vehicle_Image')) {
-                try {
-                    $image = $request->file('Vehicle_Image')->store('quote-images', 'public');
-                } catch (\Throwable $e) {
-                    Log::warning('FrontendController: boat image upload failed: ' . $e->getMessage());
-                }
+        if ($isDim && $request->hasFile('Vehicle_Image')) {
+            try {
+                $image = $request->file('Vehicle_Image')->store('quote-images', 'public');
+            } catch (\Throwable $e) {
+                Log::warning('FrontendController: quote image upload failed: ' . $e->getMessage());
             }
         }
+
+        // Boat type and RV type both land in the `category` column ShipA1 uses for them;
+        // RV also has its own rv_type column, which is filled too so either reader works.
+        $category = match ($type) {
+            'Boat'  => $request->Boat_Category ?? null,
+            'RV'    => $request->RV_Type ?? null,
+            default => null,
+        };
 
         try {
             $query = \App\ShipaQuery::create([
@@ -246,22 +276,37 @@ class FrontendController extends Controller
                 'transport'        => $transport,
                 'vehicle_opt'      => 'make',
 
-                // Dimensions — Heavy Equipment
+                // Dimensions — feet and inches, as ShipA1 records them
                 'length_ft'        => $lengthFt,
+                'length_in'        => $lengthIn,
                 'width_ft'         => $widthFt,
+                'width_in'         => $widthIn,
                 'height_ft'        => $heightFt,
+                'height_in'        => $heightIn,
                 'weight'           => $weight,
 
                 // Freight details encoded in add_info (order taker reads on conversion)
                 'add_info'         => $addInfo,
 
-                // W-07(a) boat fields — null for every other service type
-                'boat_on_trailer'     => $request->Boat_On_Trailer ?? null,
-                'load_method'         => $request->Load_Method ?? null,
-                'unload_method'       => $request->Unload_Method ?? null,
-                'modification'        => $request->Modification ?? null,
+                // Website point 7 — heavy / boat / RV fields (ShipA1 parity).
+                // All null for car-like and freight quotes.
+                'trailer_type'         => $isDim ? ($request->Trailer_Type ?? null) : null,
+                'load_method'          => $request->Load_Method ?? null,
+                'unload_method'        => $request->Unload_Method ?? null,
+                'load_type'            => $type === 'RV' ? ($request->Load_Type ?? null) : null,
+                'category'             => $category,
+                'rv_type'              => $type === 'RV' ? ($request->RV_Type ?? null) : null,
+                'boat_on_trailer'      => $type === 'Boat' ? ($request->Boat_On_Trailer ?? null) : null,
                 'available_at_auction' => $request->Available_At_Auction ?? null,
-                'image'               => $image,
+                'link'                 => $request->Available_At_Auction === 'Yes' ? ($request->Auction_Link ?? null) : null,
+                'modification'         => $request->Modification ?? null,
+                'modify_info'          => $request->Modification === 'Yes' ? ($request->Modify_Info ?? null) : null,
+                'image'                => $image,
+
+                // RoRo destination, kept in its own columns as well as destinationzsc
+                'to_country'           => $isRoro ? $request->To_Country : null,
+                'to_city'              => $isRoro ? $request->To_City : null,
+                'roro'                 => $isRoro ? 'RORO SHIPMENT' : null,
 
                 // Meta — car_type tells order taker which pipeline to use
                 'paneltype'        => 4, // Batch 6: Hello website quotes land on Website Quote panel (4), not Panel 2

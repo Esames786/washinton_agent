@@ -19,9 +19,12 @@ class ShipaQuery extends Model
         // Dimensions
         'length_ft', 'length_in', 'width_ft', 'width_in',
         'height_ft', 'height_in', 'weight',
-        // Boat / RoRo specifics (W-07a — public site per-service quote forms)
-        'boat_on_trailer', 'load_method', 'unload_method',
-        'modification', 'available_at_auction', 'image',
+        // Heavy / boat / RV specifics (website point 7 — ShipA1 parity)
+        'boat_on_trailer', 'load_method', 'unload_method', 'load_type',
+        'modification', 'modify_info', 'available_at_auction', 'link', 'image',
+        'trailer_type', 'category', 'rv_type',
+        // RoRo is international: a destination country and city
+        'to_country', 'to_city', 'roro',
         // Meta
         'paneltype', 'pstatus', 'source',
         'add_info', 'cname', 'cemail',
