@@ -82,7 +82,10 @@ class FrontendController extends Controller
      */
     public function quoteRequest(Request $request)
     {
-        $allowed = ['Car', 'Heavy Equipment', 'Dryvan', 'Motorcycle', 'ATV/UTV', 'Golf Cart'];
+        // W-07(a): each service page opens its own form. Types come from
+        // config/hello_services.php `quote_type`; keep the two lists in step.
+        $allowed = ['Car', 'Heavy Equipment', 'Dryvan', 'Motorcycle', 'ATV/UTV', 'Golf Cart',
+                    'Boat', 'RV', 'RoRo'];
         $type = in_array($request->query('type'), $allowed)
             ? $request->query('type')
             : 'Car';
@@ -134,7 +137,11 @@ class FrontendController extends Controller
         $make  = null;
         $model = null;
 
-        if ($type === 'Heavy Equipment') {
+        // W-07(a): boats, RVs and RoRo share heavy equipment's shape — one "Year Make Model"
+        // field plus physical dimensions — so they follow the same branches throughout.
+        $dimensional = ['Heavy Equipment', 'Boat', 'RV', 'RoRo'];
+
+        if (in_array($type, $dimensional)) {
             // Single "Year Make Model" field
             $make = $request->Year_Make_Model ?? null;
         } elseif (in_array($type, ['Car', 'Motorcycle', 'ATV/UTV', 'Golf Cart'])) {
@@ -156,25 +163,25 @@ class FrontendController extends Controller
 
         // Weight — dedicated field per type
         $weight = null;
-        if ($type === 'Heavy Equipment') {
+        if (in_array($type, $dimensional)) {
             $weight = $request->Vehicle_Weight ?? null;
         } elseif ($type === 'Dryvan') {
             $weight = $request->Freight_Weight ?? null;
         }
 
         // Dimensions — Heavy Equipment only
-        $lengthFt = $type === 'Heavy Equipment' ? ($request->Vehicle_Length ?? null) : null;
-        $widthFt  = $type === 'Heavy Equipment' ? ($request->Vehicle_Width  ?? null) : null;
-        $heightFt = $type === 'Heavy Equipment' ? ($request->Vehicle_Height ?? null) : null;
+        $lengthFt = in_array($type, $dimensional) ? ($request->Vehicle_Length ?? null) : null;
+        $widthFt  = in_array($type, $dimensional) ? ($request->Vehicle_Width  ?? null) : null;
+        $heightFt = in_array($type, $dimensional) ? ($request->Vehicle_Height ?? null) : null;
 
         // car_type drives which table the order taker moves the lead into:
         //   1 = Car / Motorcycle / ATV / Golf Cart  → order table (standard)
         //   2 = Heavy Equipment                     → order table (heavy fields)
         //   3 = Dryvan / Freight                    → order table + order_freight table
         $carType = match($type) {
-            'Heavy Equipment' => 2,
-            'Dryvan'          => 3,
-            default           => 1,
+            'Heavy Equipment', 'Boat', 'RV', 'RoRo' => 2,
+            'Dryvan'                                => 3,
+            default                                 => 1,
         };
 
         // Additional info — freight class + commodity for Dryvan
@@ -186,6 +193,24 @@ class FrontendController extends Controller
             if ($request->Shipment_Preferences) $parts[] = 'Commodity: '      . $request->Shipment_Preferences;
             if ($request->Shipping_Mode)        $parts[] = 'Shipping Mode: '  . $request->Shipping_Mode;
             $addInfo = implode(' | ', $parts) ?: null;
+        }
+
+        // W-07(a) boat extras. Most map to real columns; Trailer Type has none, so it rides
+        // in add_info the same way freight details do.
+        $boat  = [];
+        $image = null;
+        if ($type === 'Boat') {
+            if ($request->Trailer_Type) { $boat[] = 'Trailer Type: ' . $request->Trailer_Type; }
+            $addInfo = implode(' | ', array_filter([$addInfo, implode(' | ', $boat)])) ?: null;
+
+            // Photo of the boat (optional) — same public disk the rest of the site uses.
+            if ($request->hasFile('Vehicle_Image')) {
+                try {
+                    $image = $request->file('Vehicle_Image')->store('quote-images', 'public');
+                } catch (\Throwable $e) {
+                    Log::warning('FrontendController: boat image upload failed: ' . $e->getMessage());
+                }
+            }
         }
 
         try {
@@ -229,6 +254,14 @@ class FrontendController extends Controller
 
                 // Freight details encoded in add_info (order taker reads on conversion)
                 'add_info'         => $addInfo,
+
+                // W-07(a) boat fields — null for every other service type
+                'boat_on_trailer'     => $request->Boat_On_Trailer ?? null,
+                'load_method'         => $request->Load_Method ?? null,
+                'unload_method'       => $request->Unload_Method ?? null,
+                'modification'        => $request->Modification ?? null,
+                'available_at_auction' => $request->Available_At_Auction ?? null,
+                'image'               => $image,
 
                 // Meta — car_type tells order taker which pipeline to use
                 'paneltype'        => 4, // Batch 6: Hello website quotes land on Website Quote panel (4), not Panel 2

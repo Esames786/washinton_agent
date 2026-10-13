@@ -19,6 +19,9 @@ class ShipaQuery extends Model
         // Dimensions
         'length_ft', 'length_in', 'width_ft', 'width_in',
         'height_ft', 'height_in', 'weight',
+        // Boat / RoRo specifics (W-07a — public site per-service quote forms)
+        'boat_on_trailer', 'load_method', 'unload_method',
+        'modification', 'available_at_auction', 'image',
         // Meta
         'paneltype', 'pstatus', 'source',
         'add_info', 'cname', 'cemail',

@@ -111,7 +111,8 @@
             </div>
         @endif
 
-        <form id="quote-form" action="{{ route('Post.Instant.Quote') }}" method="POST">
+        {{-- enctype is required for the boat photo upload (W-07a) --}}
+        <form id="quote-form" action="{{ route('Post.Instant.Quote') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="Select_Vehicle" value="{{ $type }}">
 
@@ -198,14 +199,6 @@
                             <ul class="suggestion-list" id="model_list"></ul>
                         </div>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="form-group">
-                            <input type="text" id="car_price" name="Vehicle_Price"
-                                   class="form-control"
-                                   placeholder="Vehicle Price"
-                                   value="{{ old('Vehicle_Price') }}">
-                        </div>
-                    </div>
                 </div>
             @endif
 
@@ -235,7 +228,8 @@
             @endif
 
             {{-- Heavy Equipment --}}
-            @if($type === 'Heavy Equipment')
+            {{-- Dimensions — heavy equipment, boats, RVs and RoRo all ship on measurements --}}
+            @if(in_array($type, ['Heavy Equipment', 'Boat', 'RV', 'RoRo']))
                 <div class="row mt-2">
                     <div class="col-lg-12">
                         <div class="form-group">
@@ -270,6 +264,92 @@
                         <div class="form-group">
                             <input type="text" name="Vehicle_Weight" class="form-control"
                                    placeholder="Weight (e.g. 5000 lbs)" value="{{ old('Vehicle_Weight') }}">
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Boat-specific — fields as specified in the client email (ShipA1 boat form parity) --}}
+            @if($type === 'Boat')
+                <div class="row mt-2">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <select name="Trailer_Type" class="form-control w-100">
+                                <option value="">Trailer Type</option>
+                                <option value="With Trailer">With Trailer</option>
+                                <option value="Without Trailer">Without Trailer</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <select name="Carrier_Condition" class="form-control w-100">
+                                <option value="">Condition</option>
+                                <option value="1">Running</option>
+                                <option value="2">Not Running</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <select name="Load_Method" class="form-control w-100">
+                                <option value="">Load Method</option>
+                                <option value="Forklift">Forklift</option>
+                                <option value="Crane">Crane</option>
+                                <option value="Drive On">Drive On</option>
+                                <option value="Winch">Winch</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <select name="Unload_Method" class="form-control w-100">
+                                <option value="">Unload Method</option>
+                                <option value="Forklift">Forklift</option>
+                                <option value="Crane">Crane</option>
+                                <option value="Drive Off">Drive Off</option>
+                                <option value="Winch">Winch</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <select name="Boat_On_Trailer" class="form-control w-100">
+                                <option value="">Is your boat on a trailer?</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <select name="Modification" class="form-control w-100">
+                                <option value="">Modified?</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <select name="Available_At_Auction" class="form-control w-100">
+                                <option value="">Available at Auction?</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <input type="file" name="Vehicle_Image" class="form-control"
+                                   accept="image/*">
+                            <small style="color:#888;">Photo of the boat (optional)</small>
                         </div>
                     </div>
                 </div>

@@ -47,7 +47,8 @@
                     @endif
 
                     <div class="mt-4">
-                        <a class="default-btn" href="{{ route('Frontend.qoute.request') }}">Get a Quote</a>
+                        {{-- W-07(a): open the quote form for THIS service, not the generic car form --}}
+                        <a class="default-btn" href="{{ route('Frontend.qoute.request', ['type' => $service['quote_type'] ?? 'Car']) }}">Get a Quote</a>
                         <a class="default-btn" style="margin-left:10px;" href="{{ route('Frontend.services') }}">Back to Services</a>
                     </div>
                 </div>

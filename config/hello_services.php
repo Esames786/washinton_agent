@@ -8,6 +8,7 @@ return [
                 'car' => [
                     'title' => 'Car Transport Service',
                     'slug' => 'car',
+                    'quote_type' => 'Car',
                     'image' => 'frontend/newtheme-assets/img/services/car-transports.webp',
                     'excerpt' => 'Safe, insured car shipping with open or enclosed trailer options and clear timelines.',
                     'content' => [
@@ -27,6 +28,7 @@ return [
                 'motorcycle' => [
                     'title' => 'Motorcycle Transport Service',
                     'slug' => 'motorcycle',
+                    'quote_type' => 'Motorcycle',
                     'image' => 'frontend/newtheme-assets/img/services/Bike.webp',
                     'excerpt' => 'Secure motorcycle transport with careful strapping, scheduling support, and nationwide coverage.',
                     'content' => [
@@ -45,6 +47,7 @@ return [
                 'atv-utv' => [
                     'title' => 'ATV/UTV Transport Service',
                     'slug' => 'atv-utv',
+                    'quote_type' => 'ATV/UTV',
                     'image' => 'frontend/newtheme-assets/img/services/ATV.webp',
                     'excerpt' => 'Convenient ATV/UTV hauling with options for open or enclosed transport and careful handling.',
                     'content' => [
@@ -63,6 +66,7 @@ return [
                 'golf-cart' => [
                     'title' => 'Golf Cart Transport Service',
                     'slug' => 'golf-cart',
+                    'quote_type' => 'Golf Cart',
                     'image' => 'frontend/newtheme-assets/img/services/Golf.webp',
                     'excerpt' => 'Golf cart shipping with packaging care, protection options, and dependable delivery.',
                     'content' => [
@@ -87,6 +91,7 @@ return [
                 'boat' => [
                     'title' => 'Boat Transport Services',
                     'slug' => 'boat',
+                    'quote_type' => 'Boat',
                     'image' => 'frontend/newtheme-assets/img/services/BOAT-BANNER.webp',
                     'excerpt' => 'Boat shipping for different watercraft types with trailer selection and safe loading.',
                     'content' => [
@@ -105,6 +110,7 @@ return [
                 'construction-equipment' => [
                     'title' => 'Construction Equipment Services',
                     'slug' => 'construction-equipment',
+                    'quote_type' => 'Heavy Equipment',
                     'image' => 'frontend/newtheme-assets/img/services/Construction.webp',
                     'excerpt' => 'Construction equipment hauling with the right trailer choice and route planning support.',
                     'content' => [
@@ -123,6 +129,7 @@ return [
                 'commercial-truck' => [
                     'title' => 'Commercial Truck Transport',
                     'slug' => 'commercial-truck',
+                    'quote_type' => 'Heavy Equipment',
                     'image' => 'frontend/newtheme-assets/img/services/Commercial.webp',
                     'excerpt' => 'Commercial truck transport with specialized handling and scheduling for heavy-duty moves.',
                     'content' => [
@@ -141,6 +148,7 @@ return [
                 'excavator' => [
                     'title' => 'Excavator Transport Services',
                     'slug' => 'excavator',
+                    'quote_type' => 'Heavy Equipment',
                     'image' => 'frontend/newtheme-assets/img/services/Excavator.webp',
                     'excerpt' => 'Excavator transport designed for heavy loads with planning and safe delivery execution.',
                     'content' => [
@@ -159,6 +167,7 @@ return [
                 'farm-equipment' => [
                     'title' => 'Farm Transport Services',
                     'slug' => 'farm-equipment',
+                    'quote_type' => 'Heavy Equipment',
                     'image' => 'frontend/newtheme-assets/img/services/Farm.webp',
                     'excerpt' => 'Farm equipment shipping with careful handling, scheduling, and route coordination.',
                     'content' => [
@@ -177,6 +186,7 @@ return [
                 'heavy-equipment' => [
                     'title' => 'Heavy Equipment Services',
                     'slug' => 'heavy-equipment',
+                    'quote_type' => 'Heavy Equipment',
                     'image' => 'frontend/newtheme-assets/img/services/Heavy.webp',
                     'excerpt' => 'Heavy equipment transport for industrial loads with planning, safety checks, and reliable delivery.',
                     'content' => [
@@ -195,6 +205,7 @@ return [
                 'rv' => [
                     'title' => 'RV Transport Services',
                     'slug' => 'rv',
+                    'quote_type' => 'RV',
                     'image' => 'frontend/newtheme-assets/img/services/RV.webp',
                     'excerpt' => 'RV transport with safe handling, planning, and nationwide delivery coordination.',
                     'content' => [
@@ -219,6 +230,7 @@ return [
                 'dry-van' => [
                     'title' => 'Dry Van Transport',
                     'slug' => 'dry-van',
+                    'quote_type' => 'Dryvan',
                     'image' => 'frontend/newtheme-assets/img/services/dry-van.webp',
                     'excerpt' => 'Dry van freight shipping for general cargo with dependable scheduling and support.',
                     'content' => [
@@ -237,6 +249,7 @@ return [
                 'hazmat' => [
                     'title' => 'Hazmat Transport',
                     'slug' => 'hazmat',
+                    'quote_type' => 'Dryvan',
                     'image' => 'frontend/newtheme-assets/img/services/HAZMAT-BANNER.webp',
                     'excerpt' => 'Hazmat transport with safety-first handling, compliance awareness, and careful planning.',
                     'content' => [
@@ -255,6 +268,7 @@ return [
                 'reefer' => [
                     'title' => 'Reefer Transport',
                     'slug' => 'reefer',
+                    'quote_type' => 'Dryvan',
                     'image' => 'frontend/newtheme-assets/img/services/ReeferTruck3.webp',
                     'excerpt' => 'Reefer logistics for temperature-sensitive freight with careful scheduling and coordination.',
                     'content' => [
@@ -279,6 +293,7 @@ return [
                 'roro' => [
                     'title' => 'Roro Shipping International',
                     'slug' => 'roro',
+                    'quote_type' => 'RoRo',
                     'image' => 'frontend/newtheme-assets/img/services/roro-banner.webp',
                     'excerpt' => 'RoRo shipping support with planning, documentation flow, and delivery coordination.',
                     'content' => [
