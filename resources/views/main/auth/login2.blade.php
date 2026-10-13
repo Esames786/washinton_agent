@@ -209,22 +209,25 @@
                                  class="brand-logo" alt="{{ $brandName }}">
                             <h2>{{ $brandParts[0] }} <span>{{ $brandParts[1] ?? '' }}</span></h2>
                             <div class="divider"></div>
-                            <p>Sign in to access your portal and manage your transport operations.</p>
+                            {{-- W-05(a) --}}
+                            <p>Your {{ $brandName }} workspace for managing orders, customers, and opportunities.</p>
                             {{-- florida (is_agent_portal) is a pure portal — no marketing bullets. --}}
                             @if (!config('app.is_agent_portal'))
                             <ul class="feature-list">
-                                <li><i class="fas fa-truck"></i> Real-time order tracking</li>
-                                <li><i class="fas fa-map-marker-alt"></i> Nationwide coverage</li>
-                                <li><i class="fas fa-shield-alt"></i> Secure & reliable platform</li>
-                                <li><i class="fas fa-headset"></i> 24/7 support team</li>
+                                {{-- W-05(c): the audience here is agents, not customers --}}
+                                <li><i class="fas fa-users"></i> Manage leads, customers &amp; opportunities</li>
+                                <li><i class="fas fa-file-invoice-dollar"></i> Create quotes and manage orders</li>
+                                <li><i class="fas fa-truck"></i> Track shipments and customer activity</li>
+                                <li><i class="fas fa-shield-alt"></i> Secure &amp; reliable workspace</li>
                             </ul>
                             @endif
                         </div>
 
                         {{-- RIGHT FORM --}}
                         <div class="col-md-7 auth-right">
-                            <div class="auth-title">Sign In</div>
-                            <div class="auth-subtitle">Enter your credentials to access your account</div>
+                            {{-- W-05(b) --}}
+                            <div class="auth-title">Access Your Account</div>
+                            <div class="auth-subtitle">Enter your credentials to continue to your account.</div>
 
                             @if(session('flash_message'))
                                 <div class="alert-danger">
@@ -261,13 +264,15 @@
 
                             <div class="auth-divider"><span>OR</span></div>
 
+                            {{-- W-05(d). The link points at register until the "Earn with
+                                 Hello Transport" page (W-02) exists, then it moves there. --}}
                             <div class="auth-footer-text">
-                                New agent or carrier?
+                                New to the {{ $brandName }} network?
                                 <a href="{{ route('register') }}">Create Account</a>
                             </div>
                             <div class="auth-footer-text mt-2">
                                 <a href="{{ url('/') }}">
-                                    <i class="fas fa-arrow-left me-1"></i> Back to Home
+                                    <i class="fas fa-arrow-left me-1"></i> Back to Homepage
                                 </a>
                             </div>
                         </div>
