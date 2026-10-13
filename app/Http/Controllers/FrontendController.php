@@ -690,6 +690,17 @@ class FrontendController extends Controller
             ->limit(3)
             ->get();
 
+        // Most categories hold one or two posts, so top up with the latest from the rest.
+        if ($related->count() < 3) {
+            $related = $related->concat(
+                \App\Blog::published()
+                    ->whereNotIn('id', $related->pluck('id')->push($post->id))
+                    ->orderByRaw('COALESCE(scheduled_at, created_at) DESC')
+                    ->limit(3 - $related->count())
+                    ->get()
+            );
+        }
+
         return view('main.frontend.blog.show', compact('post', 'related'));
     }
 

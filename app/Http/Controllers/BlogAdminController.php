@@ -94,7 +94,7 @@ class BlogAdminController extends Controller
         }
 
         if ($request->hasFile('post_image')) {
-            if ($post->post_image && ! Str::startsWith($post->post_image, 'http')) {
+            if ($post->post_image && ! Str::startsWith($post->post_image, 'http') && ! Blog::isThemeImage($post->post_image)) {
                 Storage::disk('public')->delete($post->post_image);
             }
             $data['post_image'] = $request->file('post_image')->store('blog', 'public');

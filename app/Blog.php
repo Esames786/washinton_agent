@@ -58,9 +58,19 @@ class Blog extends Model
             return null;
         }
 
-        return Str::startsWith($this->post_image, ['http://', 'https://'])
-            ? $this->post_image
+        if (Str::startsWith($this->post_image, ['http://', 'https://'])) {
+            return $this->post_image;
+        }
+
+        // Starter posts use theme images that ship in public/; uploads live on the public disk.
+        return static::isThemeImage($this->post_image)
+            ? asset($this->post_image)
             : asset('storage/' . ltrim($this->post_image, '/'));
+    }
+
+    public static function isThemeImage(?string $path): bool
+    {
+        return $path !== null && Str::startsWith($path, 'frontend/');
     }
 
     /** Date shown on the post: when it went (or goes) live, else when it was written. */
