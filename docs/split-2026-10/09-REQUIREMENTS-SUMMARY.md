@@ -23,21 +23,21 @@ Campaign Leads folder (email 1). Build the pipeline's intake and the website's f
 
 ## 2. Email 2 (12 Oct) — the website
 
-| ID | Change | Status |
+**5 of 7 done.** Live on hellotransport.com.
+
+| # | Change | Status |
 |---|---|---|
-| **W-01** | "Earn with Hello Transport" teaser section on the home page | ready |
-| **W-02** | New page: Earn with Hello Transport (6 sections) + remove Login/Signup from header | ready |
-| **W-03** | "Apply for an Opportunity" form | **feeds email 1** |
-| **W-04** | "Application Submitted" screen, replacing "Account Created" | ready |
-| **W-05** | Login page wording, 4 changes | ✅ **done** — `ee5f758` |
-| **W-06** | Blog section, modelled on shipa1.com | blocked — who authors? |
-| **W-07a** | Each service opens its own quote form | ✅ **done** — `5d9c41a` |
-| **W-07b** | Remove "Vehicle Price" from quote forms | ✅ **done** — `5d9c41a` |
+| 1 | Home page teaser + "See the Program" button | ✅ `b4059ba` |
+| 2 | Earn With Hello Transport page (6 sections) + header Login/Signup removed | ✅ `b4059ba` |
+| 3 | "Apply for an Opportunity" form, short field set, country-linked phone + timezone | ✅ `7431141` |
+| 4 | Application Submitted screen, client wording verbatim | ✅ `b4059ba` |
+| 5 | Login page wording (a–d) | ✅ `ee5f758` |
+| 6 | Blog section | ⛔ **blocked** — who authors? admin screen needed? |
+| 7a | Per-service quote forms | ⚠️ **partial** — all 15 services route correctly and **Boat** is built to the ShipA1 field list; **RV, freight and RoRo** still use the generic dimensional form |
+| 7b | Remove Vehicle Price from car quote forms | ✅ `5d9c41a` |
 
-**Done:** 3 of 8. All 15 services now open the right form, boat has its dedicated fields, and the
-login page is reworded for an agent audience.
-
----
+**To finish 7a** I need the same field list for RV, freight and RoRo that was supplied for boat —
+a screenshot of each ShipA1 form would do it.
 
 ## 3. Email 1 (8 Oct) — the pipeline
 
