@@ -44,8 +44,9 @@ Full list: [`TABLE-CLASSIFICATION.md`](TABLE-CLASSIFICATION.md).
 | Class | Tables | Action |
 |---|---|---|
 | **A** — brand-owned | 113 | Copy, then delete the other brand's rows |
-| **B** — shared reference / config | 142 | Copy whole, to both sides |
+| **B** — shared reference / config | 141 | Copy whole, to both sides |
 | **C** — CrazyRays-only (`cr_campaigns`, `cr_applications`) | 2 | Copy whole to CrazyRays; delete from Hello |
+| **H** — Hello-only by origin (`shipa_query`) | 1 | Keep on Hello; do not copy — see §4b |
 
 ### Correction to the first draft
 
@@ -95,6 +96,85 @@ duplicating them.
 
 ---
 
+## 4b. The client's rule, applied
+
+**Client direction, 13 Oct 2026:** *master data (carriers and similar) is copied to both; users,
+signups and leads are split between them.* Checked against the live data. The rule holds, with three
+refinements it does not cover.
+
+### Refinement 1 — "carrier data" is two different things
+
+| Table | Rows | What it actually is | Action |
+|---|---|---|---|
+| `carriers` | 84 | **Per-order** carrier assignments — all 84 tied to an order, only 6 distinct companies | **SPLIT** |
+| `carriers_archive` | 38,725 | Historical carrier records; 96% of user IDs are not local | **COPY** |
+| `shipper_details_fetch` | 681,809 | Carrier/shipper master lookup | **COPY** |
+| `shipper_details_carriers` | 23,073 | Carrier master detail | **COPY** |
+| `shipper_details_fetch_edge` | 69,097 | Carrier lookup (edge) | **COPY** |
+| `used_new_car_dealers` | 617,379 | Dealer master | **COPY** |
+| `zipcodes` | 43,054 | Reference | **COPY** |
+
+"Carrier data is master" is right for the big lookups. But `carriers` itself is per-order work, so it
+follows the agent and splits.
+
+### Refinement 2 — signups
+
+| Table | Rows | Goes to |
+|---|---|---|
+| `cr_applications` | 111 (94 linked to a CR agent, 17 not yet linked) | **all to CrazyRays** |
+| `cr_campaigns` | 9 | CrazyRays |
+| `signup_defaults` | 2 | config — copy to both |
+
+Hello has **no application table at all** today. Its new apply flow
+(`02-WEBSITE-CHANGES.md` W-03) needs one; build it on the `cr_applications` shape so the two brands
+stay comparable and reportable.
+
+### Refinement 3 — the leads were not ambiguous after all
+
+`shipa_query` holds 186 website quote enquiries. By `user_id` they look unplaceable — 161 have no
+agent, and no other column helps: `platform` is blank on all 186, `source` is `"Website"` on all 186,
+`paneltype` is `4` on all 186, and `emp_id` / `order_taker_id` / `u_id` / `dispatcher_id` /
+`status_user_id` are empty on every one of the 161. Splitting by user was impossible.
+
+**The code answers it instead.** Only one place writes this table:
+
+- [`FrontendController::submitQuoteRequest`](../../app/Http/Controllers/FrontendController.php#L236)
+  — the **hellotransport.com public website** (routes `/`, `/Quote-Request`, `/Post-Instant-Quote`).
+  It stamps `source = 'Website'`, `paneltype = 4`, and its own comment reads *"Hello website quotes
+  land on Website Quote panel (4)"*.
+- The CrazyRays public site is a **separate repository** and writes nothing to this table.
+  `florida.crazyrayssolutions.com.pk` is the agent portal, not a quote-taking site.
+
+> **All 186 `shipa_query` rows are hellotransport.com leads. They all go to Hello.**
+
+Same for the one unplaceable order: **#447** is `source=Website`, `paneltype=4`, `pstatus=0`,
+created 22 Sep 2026 by `createUnassignedOrderFromQuery` — a Hello website order nobody has picked up.
+**It goes to Hello.**
+
+So `shipa_query` moves from Class B to **"assign wholesale to Hello"** — not split row by row.
+
+### One live anomaly this turned up
+
+8 Hello website leads are currently assigned to **CrazyRays** agents, because the round-robin that
+distributes website leads does not filter on `is_crazyrays`. Six of the eight are test accounts
+(`test crazy` ×3, `Ali Test`, `Alisha new test`, `arbaz test`); two look real (`hiba`,
+`Shaheer Employee`).
+
+The split fixes this by itself — once the databases are separate a Hello lead cannot reach a
+CrazyRays agent. Worth knowing that it has been happening, and worth deciding whether those two real
+leads follow the agent or stay with Hello. Recommendation: **stay with Hello**, consistent with the
+rule above; they are two records.
+
+### Net effect on the plan
+
+| Data | Rule | Action |
+|---|---|---|
+| Users, HR, calls, attendance, activities, documents | split | partition on `is_crazyrays` |
+| `order` (267 assigned) | split | partition on `order_taker_id` |
+| `order` #447 + all 186 `shipa_query` leads | **origin = Hello website** | **Hello only** |
+| `cr_applications`, `cr_campaigns` | CrazyRays-only | CrazyRays only |
+| `carriers` (per-order) | split | partition |
+| Carrier/dealer/zip masters, settings, templates | master | copy to both |
 ## 5. Method
 
 A migration script holding both PDO connections, run from a controlled machine. Resumable, with a
@@ -124,6 +204,14 @@ WHERE employee_id IN (
   SELECT h.id FROM hr_employees h
   JOIN user u ON u.id = h.agent_id
   WHERE u.is_crazyrays = 0);
+```
+
+The one Class-H table is dropped from the CrazyRays copy outright — every row is a Hello website
+lead (§4b), so none of it belongs there:
+
+```sql
+DELETE FROM shipa_query;            -- target only; all 186 rows are Hello website leads
+DELETE FROM `order` WHERE id = 447; -- the unassigned Hello website order
 ```
 
 Then `DELETE FROM user WHERE is_crazyrays = 0;` **last** — the queries above depend on it.
@@ -172,7 +260,7 @@ CrazyRays is pointed back at the old database and nothing is lost.
 ## 8. What I need to proceed
 
 1. **Confirmation that `crazyrayssolutio_crazzy` is the intended target** and is safe to populate
-2. A decision on the 182 rows in §4
+2. A decision on the 182 rows in §4 (recommendation: copy to both)
 3. Confirmation that a **full backup** of the source has been taken and verified
 4. A quiet window for Phase 2
 
