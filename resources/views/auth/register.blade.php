@@ -1,5 +1,5 @@
 @extends('layouts.new-master')
-@section('page_title', 'Create Account')
+@section('page_title', 'Apply for an Opportunity')
 
 @section('content')
 <style>
@@ -177,20 +177,29 @@ html, body { height: 100%; margin: 0; }
     {{-- ── RIGHT PANEL ── --}}
     <div class="signup-right">
 
-        {{-- Success state --}}
+        {{-- Success state — W-04. This is an APPLICATION, not an account: there is nothing
+             to log into yet, so the old "Go to Login" button would be a dead end. --}}
         <div class="signup-success" id="signupSuccess">
             <div class="success-icon">✓</div>
-            <h3>Account Created!</h3>
-            <p id="signupSuccessMsg">Your account has been created and is pending admin approval.</p>
-            <a href="{{ url('/loginn') }}" class="btn-signup" style="max-width:300px;display:inline-block;text-decoration:none;padding:12px 40px;width:auto;">
-                Go to Login
+            <h3>Application Submitted</h3>
+            <p id="signupSuccessMsg">
+                Thank you for applying to join our team. Your application has been received and is
+                now under review. Our recruitment team will review your application and contact you
+                if your profile matches an available opportunity.
+            </p>
+            <p style="font-size:13px;opacity:.75;margin-top:14px;">
+                Questions? For recruitment-related enquiries, contact
+                <a href="mailto:info@hellotransport.com">info@hellotransport.com</a>
+            </p>
+            <a href="{{ url('/') }}" class="btn-signup" style="max-width:300px;display:inline-block;text-decoration:none;padding:12px 40px;width:auto;">
+                Back to Homepage
             </a>
         </div>
 
         {{-- Form state --}}
         <div id="signupFormWrap">
-            <h3>Create Account</h3>
-            <p class="sub-title">Fill in the details below to request portal access</p>
+            <h3>Apply for an Opportunity</h3>
+            <p class="sub-title">Complete the form below. It takes only a few minutes.</p>
 
             {{-- Global error --}}
             <div id="signupGlobalError" class="alert alert-danger py-2 small" style="display:none;"></div>
@@ -475,7 +484,7 @@ html, body { height: 100%; margin: 0; }
                 <div class="row g-2 mt-3">
                     <div class="col-md-5">
                         <button type="submit" class="btn-signup" id="signupSubmitBtn">
-                            <i class="fas fa-user-plus me-2"></i> Create Account
+                            <i class="fas fa-user-plus me-2"></i> Apply to Join the Network
                         </button>
                     </div>
                     <div class="col-md-7 d-flex align-items-center">
@@ -652,7 +661,7 @@ html, body { height: 100%; margin: 0; }
         .then(function (res) { return res.json().then(function (data) { return { status: res.status, data: data }; }); })
         .then(function (res) {
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-user-plus me-2"></i> Create Account';
+            btn.innerHTML = '<i class="fas fa-user-plus me-2"></i> Apply to Join the Network';
 
             if (res.status === 200 && res.data.success) {
                 // Show success screen
@@ -683,7 +692,7 @@ html, body { height: 100%; margin: 0; }
         })
         .catch(function () {
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-user-plus me-2"></i> Create Account';
+            btn.innerHTML = '<i class="fas fa-user-plus me-2"></i> Apply to Join the Network';
             var errBox = document.getElementById('signupGlobalError');
             errBox.textContent = 'Network error. Please check your connection and try again.';
             errBox.style.display = 'block';

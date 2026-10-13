@@ -113,8 +113,11 @@ Route::post('/code_verify', 'WelcomeController@codeVerify')->name('code_verify')
 Route::post('/resend_verify', 'WelcomeController@resend_verify')->name('resend_verify');
 
 // Public self-service signup (no auth required)
-Route::get('/register', 'PublicSignupController@showForm')->name('register');
-Route::post('/register', 'PublicSignupController@store')->name('register.store');
+// W-03/W-04: Hello signup records an APPLICATION, not a CRM account. The account is
+// created at the end of HR onboarding. PublicSignupController is kept, unrouted, until
+// this flow is proven in production.
+Route::get('/register', 'HelloApplicationController@showForm')->name('register');
+Route::post('/register', 'HelloApplicationController@store')->name('register.store');
 
 // DASHBOARD
 Route::get('/dashboard', 'DashboardController@getDashboard')->name('dashboard');
