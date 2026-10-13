@@ -86,6 +86,8 @@ Route::post('/Post-Instant-Quote', 'FrontendController@submitQuoteRequest')->nam
 Route::post('/Submit-Contact-Lead', 'FrontendController@submitContactLead')->name('Post.Contact.Lead');
 Route::get('/autocomplete', 'FrontendController@autocomplete')->name('autocomplete');
 Route::get('/Quote-Request/confirmation', 'FrontendController@quoteConfirmation')->name('Frontend.qoute.confirmation');
+// W-02: the agent programme page. Replaces the header Login/Signup links as the way in.
+Route::get('/earn-with-hello-transport', 'FrontendController@earn')->name('Frontend.earn');
 Route::get('/Is-It-For-Me', 'FrontendController@isItForMe')->name('Frontend.is.me');
 // Additional frontend routes referenced in the layout
 Route::get('/Carriers', 'FrontendController@carriers')->name('Frontend.Carrier');

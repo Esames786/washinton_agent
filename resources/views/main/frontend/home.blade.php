@@ -287,6 +287,35 @@
         </div>
     </section>
 
+    <!-- ================= EARN WITH HELLO TRANSPORT (W-01) ================= -->
+    {{-- Small teaser partway down the home page, leading to the agent programme. --}}
+    <section class="ptb-70" style="background:#062e39;">
+        <div class="container">
+            <div class="row align-items-center justify-content-between g-4">
+                <div class="col-lg-8">
+                    <span style="display:inline-block;color:#8fc445;font-weight:700;
+                                 letter-spacing:1px;text-transform:uppercase;font-size:13px;
+                                 margin-bottom:10px;">
+                        Agent Program
+                    </span>
+                    <h2 style="color:#fff;font-size:30px;line-height:1.35;margin-bottom:12px;">
+                        Earn With Hello Transport
+                    </h2>
+                    <p style="color:rgba(255,255,255,.75);font-size:15px;line-height:1.8;margin:0;max-width:680px;">
+                        Grow your own book of business while we handle dispatch, compliance and the
+                        back-office work. Work remotely, on your own schedule, and earn commission
+                        on every load you move.
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a href="{{ route('Frontend.earn') }}" class="default-btn">
+                        See the Program
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- ================= COUNTERS ================= -->
     <section class="counter-area bg-color pt-100 pb-70">
         <div class="container">

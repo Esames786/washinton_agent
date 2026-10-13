@@ -534,6 +534,12 @@ class FrontendController extends Controller
         return view('main.frontend.services');
     }
 
+    /** W-02 — "Earn With Hello Transport", the agent recruitment page. */
+    public function earn()
+    {
+        return view('main.frontend.earn');
+    }
+
     public function serviceShow($slug)
     {
         $cats = config('hello_services.categories', []);

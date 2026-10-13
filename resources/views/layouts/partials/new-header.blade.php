@@ -262,14 +262,12 @@
 
                         {{-- AUTH BUTTONS --}}
                         @if (!Auth::check())
+                            {{-- W-02: Login and Signup are removed from the public header. The
+                                 agent programme page is now the way in — it carries both the
+                                 application form and a sign-in link for existing agents. --}}
                             <div class="others-option ms-3">
-                                <a href="{{ url('/loginn') }}" class="default-btn">
-                                    Login
-                                </a>
-                            </div>
-                            <div class="others-option ms-3">
-                                <a href="{{ url('/register') }}" class="default-btn">
-                                    Signup
+                                <a href="{{ route('Frontend.earn') }}" class="default-btn">
+                                    Earn With Us
                                 </a>
                             </div>
                         @else

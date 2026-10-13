@@ -153,12 +153,15 @@ class HelloApplicationController extends Controller
             'email'          => $application->email,
         ]);
 
+        // Wording is the client's, verbatim from the 12 Oct email.
         return response()->json([
             'success'     => true,
             'application' => true,
-            'message'     => 'Application submitted. Your application has been received and is now under review. '
+            'message'     => 'Thank you for applying to join our team. '
+                           . 'Your application has been successfully received and is now under review. '
                            . 'A confirmation email has been sent to ' . $application->email . '. '
-                           . 'Our recruitment team will contact you if your profile matches an available opportunity.',
+                           . 'Our recruitment team will review your application and contact you if your '
+                           . 'profile matches an available opportunity.',
         ]);
     }
 }

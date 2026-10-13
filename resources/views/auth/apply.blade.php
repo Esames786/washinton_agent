@@ -207,11 +207,13 @@ html, body { height: 100%; margin: 0; }
             <div class="success-icon">✓</div>
             <h3>Application Submitted</h3>
             <p id="signupSuccessMsg">
-                Thank you for applying to join our team. Your application has been received and is
-                now under review.
+                Thank you for applying to join our team. Your application has been successfully
+                received and is now under review. Our recruitment team will review your application
+                and contact you if your profile matches an available opportunity.
             </p>
             <p style="font-size:13px;opacity:.75;margin-top:14px;">
-                Questions? For recruitment-related enquiries, contact
+                <strong>Questions?</strong><br>
+                For recruitment-related questions, contact
                 <a href="mailto:info@hellotransport.com">info@hellotransport.com</a>
             </p>
             <a href="{{ url('/') }}" class="btn-signup"
@@ -242,7 +244,11 @@ html, body { height: 100%; margin: 0; }
                     ksort($tzGroups);
                 @endphp
 
-                {{-- ── Contact Information ── --}}
+                {{-- ── Tell Us About Yourself ── --}}
+                <h4 style="font-size:17px;font-weight:700;color:#062e39;margin:4px 0 18px;">
+                    Tell Us About Yourself
+                </h4>
+
                 <div class="form-section-title">Contact Information</div>
 
                 <div class="row g-2 mb-c">
@@ -264,6 +270,7 @@ html, body { height: 100%; margin: 0; }
                     </div>
                 </div>
 
+                {{-- Order follows the email: Email, Phone, Country, City. --}}
                 <div class="row g-2 mb-c">
                     <div class="col-md-6">
                         <label class="form-label">Email Address <span class="text-danger">*</span></label>
@@ -274,12 +281,14 @@ html, body { height: 100%; margin: 0; }
                         <div class="field-error" id="err_email"></div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">City <span class="text-danger">*</span></label>
-                        <div class="input-icon-wrap">
-                            <i class="fas fa-city field-icon"></i>
-                            <input type="text" name="city" class="form-control" placeholder="City">
+                        <label class="form-label">Phone <span class="text-danger">*</span></label>
+                        <div class="phone-combo">
+                            <span class="dial" id="phoneDial">+1</span>
+                            <input type="text" id="phoneLocal" class="form-control"
+                                   placeholder="555 000 0000" inputmode="tel" maxlength="15">
                         </div>
-                        <div class="field-error" id="err_city"></div>
+                        <input type="hidden" name="phone" id="phoneFull">
+                        <div class="field-error" id="err_phone"></div>
                     </div>
                 </div>
 
@@ -299,14 +308,12 @@ html, body { height: 100%; margin: 0; }
                         <div class="field-error" id="err_country"></div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Phone Number <span class="text-danger">*</span></label>
-                        <div class="phone-combo">
-                            <span class="dial" id="phoneDial">+1</span>
-                            <input type="text" id="phoneLocal" class="form-control"
-                                   placeholder="555 000 0000" inputmode="tel" maxlength="15">
+                        <label class="form-label">City <span class="text-danger">*</span></label>
+                        <div class="input-icon-wrap">
+                            <i class="fas fa-city field-icon"></i>
+                            <input type="text" name="city" class="form-control" placeholder="City">
                         </div>
-                        <input type="hidden" name="phone" id="phoneFull">
-                        <div class="field-error" id="err_phone"></div>
+                        <div class="field-error" id="err_city"></div>
                     </div>
                 </div>
 
@@ -327,7 +334,8 @@ html, body { height: 100%; margin: 0; }
                         </select>
                     </div>
                     <small class="linked-note">
-                        Set from your country. Your attendance, breaks and all portal times use this.
+                        Automatically detected based on your location — change it if it is wrong.
+                        Your attendance, breaks and all portal times use this.
                     </small>
                     <div class="field-error" id="err_timezone"></div>
                 </div>
@@ -362,20 +370,20 @@ html, body { height: 100%; margin: 0; }
                     </div>
                 </div>
 
-                {{-- ── Additional ── --}}
-                <div class="form-section-title">
-                    Additional
-                    <small class="text-muted" style="text-transform:none;font-weight:400;">(optional)</small>
-                </div>
+                {{-- ── Additional Information ── --}}
+                <div class="form-section-title">Additional Information</div>
                 <div class="row g-2 mb-c">
                     <div class="col-md-6">
                         <label class="form-label">Resume / CV</label>
                         <input type="file" name="resume" class="form-control" accept=".pdf,.doc,.docx">
-                        <small class="linked-note">PDF or Word, up to 5&nbsp;MB.</small>
+                        <small class="linked-note">Upload your resume (optional) — PDF or Word, up to 5&nbsp;MB.</small>
                         <div class="field-error" id="err_resume"></div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">LinkedIn Profile</label>
+                        <label class="form-label">
+                            LinkedIn Profile
+                            <small class="text-muted" style="font-weight:400;">(optional)</small>
+                        </label>
                         <div class="input-icon-wrap">
                             <i class="fab fa-linkedin field-icon"></i>
                             <input type="url" name="linkedin_url" class="form-control"
@@ -387,8 +395,8 @@ html, body { height: 100%; margin: 0; }
 
                 <div class="mb-c">
                     <label class="form-label">Tell us about yourself</label>
-                    <textarea name="experience" rows="3" class="form-control"
-                              placeholder="Your relevant experience — sales, dispatch, logistics, customer service…"></textarea>
+                    <textarea name="experience" rows="4" class="form-control"
+                              placeholder="Briefly describe your experience, skills, and why you're interested in the opportunity."></textarea>
                     <div class="field-error" id="err_experience"></div>
                 </div>
 
