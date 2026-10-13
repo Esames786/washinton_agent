@@ -6,7 +6,6 @@ use App\CrApplication;
 use App\Mail\WelcomeEmail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -35,51 +34,45 @@ class HelloApplicationController extends Controller
             return redirect()->away($crBase ?: 'https://crazyrayssolutions.com.pk');
         }
 
-        return view('auth.register');
+        return view('auth.apply');
     }
 
     public function store(Request $request): JsonResponse
     {
+        // W-03: only what is needed to decide whether to talk to someone. ID number, date of
+        // birth, family details, address and documents are gathered during HR onboarding,
+        // once the applicant has been shortlisted.
         $validator = Validator::make($request->all(), [
             'name'           => ['required', 'string', 'max:50', 'regex:/^[A-Za-z][A-Za-z\s.\'\-]*$/'],
-            'middle_name'    => ['nullable', 'string', 'max:50', 'regex:/^[A-Za-z][A-Za-z\s.\'\-]*$/'],
-            'last_name'      => ['nullable', 'string', 'max:50', 'regex:/^[A-Za-z][A-Za-z\s.\'\-]*$/'],
-            // An email may not already hold an account OR an open application.
+            'last_name'      => ['required', 'string', 'max:50', 'regex:/^[A-Za-z][A-Za-z\s.\'\-]*$/'],
             'email'          => 'required|email|max:50|unique:user,email',
-            'password'       => 'required|string|min:8|confirmed',
-            'phone'          => ['required', 'string', 'max:20', 'regex:/^(\+1\s?)?\d{10}$/'],
-            'address'        => 'required|string|max:255',
-            'signup_type'    => 'required|in:agent',
-            'experience'     => 'nullable|string|max:2000',
-            'shift_type_id'  => 'required|integer|min:1',
-            'account_type_id' => 'required|integer|in:1,2,3',
-            'father_name'    => ['nullable', 'string', 'max:100', 'regex:/^[A-Za-z][A-Za-z\s.\'\-]*$/'],
-            'dob'            => 'required|date|before_or_equal:' . \Carbon\Carbon::now()->subYears(18)->format('Y-m-d'),
-            'gender'         => 'nullable|in:male,female,other',
-            'marital_status' => 'nullable|in:single,married,divorced,widowed',
-            'cnic'           => 'required|string|max:20',
-            'city'           => ['required', 'string', 'max:100', 'regex:/^[A-Za-z][A-Za-z\s.\'\-]*$/'],
-            'state'          => ['required', 'string', 'max:100', 'regex:/^[A-Za-z][A-Za-z\s.\'\-]*$/'],
-            'country'        => 'required|string|max:100',
-            'mother_name'    => ['nullable', 'string', 'max:100', 'regex:/^[A-Za-z][A-Za-z\s.\'\-]*$/'],
-            'zip'            => ['required', 'string', 'max:20', 'regex:/^\d{5}(-\d{4})?$/'],
-            'timezone'       => 'required|string|max:64|timezone',
-            'terms_accepted' => 'accepted',
 
-            // W-03 additions. Optional so the existing form keeps working before it is rebuilt.
-            'us_experience'  => 'nullable|in:yes,no',
-            'us_hours'       => 'nullable|in:yes,no,flexible',
+            // Agents are worldwide, so the number is validated by shape, not a US pattern.
+            // The form submits it as "<dial> <digits>", e.g. "+92 3001234567".
+            'phone'          => ['required', 'string', 'max:25', 'regex:/^\+\d{1,4}\s?\d{6,15}$/'],
+
+            'country'        => 'required|string|max:100',
+            'city'           => ['required', 'string', 'max:100', 'regex:/^[A-Za-z][A-Za-z\s.\'\-]*$/'],
+            'timezone'       => 'required|string|max:64|timezone',
+
+            'us_experience'  => 'required|in:yes,no',
+            'us_hours'       => 'required|in:yes,no,flexible',
+
+            'experience'     => 'nullable|string|max:2000',
             'linkedin_url'   => 'nullable|url|max:255',
             'resume'         => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+
+            'terms_accepted' => 'accepted',
         ], [
-            'dob.required'            => 'Date of birth is required.',
-            'dob.before_or_equal'     => 'You must be at least 18 years old to apply.',
-            'cnic.required'           => 'ID number is required.',
-            'zip.required'            => 'Zip code is required.',
-            'zip.regex'               => 'Enter a valid zip code (12345 or 12345-6789).',
-            'phone.regex'             => 'Enter a 10-digit US phone number.',
+            'name.required'           => 'First name is required.',
+            'last_name.required'      => 'Last name is required.',
+            'phone.regex'             => 'Enter a valid phone number for the country you selected.',
+            'city.regex'              => 'Enter a valid city name.',
             'timezone.required'       => 'Please choose your timezone.',
             'timezone.timezone'       => 'Please choose a valid timezone.',
+            'us_experience.required'  => 'Please tell us whether you have worked with U.S. customers.',
+            'us_hours.required'       => 'Please tell us whether you can work U.S. hours.',
+            'linkedin_url.url'        => 'Enter the full LinkedIn URL, starting with https://',
             'terms_accepted.accepted' => 'You must accept the Terms & Conditions to continue.',
             'resume.mimes'            => 'Upload your CV as a PDF or Word document.',
             'resume.max'              => 'Your CV must be under 5 MB.',
@@ -108,38 +101,30 @@ class HelloApplicationController extends Controller
             }
 
             $application = CrApplication::create([
-                'brand'          => CrApplication::BRAND_HELLO,
+                'brand'     => CrApplication::BRAND_HELLO,
 
-                'full_name'      => trim($request->name . ' ' . (string) $request->middle_name . ' ' . (string) $request->last_name),
-                'father_name'    => $request->father_name,
-                // State/National ID reuses the column CrazyRays already stores a CNIC in.
-                'national_id'    => $request->cnic,
-                'dob'            => $request->dob,
-                'gender'         => $request->gender,
-                'marital_status' => $request->marital_status,
-
-                'email'          => $request->email,
-                'phone'          => $request->phone,
-                'country'        => $request->country,
-                'city'           => $request->city,
-                'state'          => $request->state,
-                'address'        => $request->address,
-                'time_zone'      => $request->input('timezone'),
+                'full_name' => trim($request->name . ' ' . (string) $request->last_name),
+                'email'     => $request->email,
+                'phone'     => $request->phone,
+                'country'   => $request->country,
+                'city'      => $request->city,
+                'time_zone' => $request->input('timezone'),
 
                 // Item 12: record where the application was submitted from.
-                'ip_address'     => $request->ip(),
+                'ip_address' => $request->ip(),
 
                 'additional_info' => $request->experience,
-                'us_experience'  => $request->input('us_experience'),
-                'us_hours'       => $request->input('us_hours'),
-                'linkedin_url'   => $request->input('linkedin_url'),
-                'resume_path'    => $resumePath,
+                'us_experience'   => $request->input('us_experience'),
+                'us_hours'        => $request->input('us_hours'),
+                'linkedin_url'    => $request->input('linkedin_url'),
+                'resume_path'     => $resumePath,
 
-                // Held so the CRM account can be created with the applicant's own password
-                // at the end of onboarding, rather than emailing them a generated one.
-                'password'       => Hash::make($request->password),
+                // No password is asked for at application time. One is set when the applicant
+                // is shortlisted and receives their HR portal link, so a password is never
+                // emailed and never stored before it is needed.
+                'password' => null,
 
-                'status'         => 'pending',
+                'status'               => 'pending',
                 'contract_accepted_at' => $request->boolean('terms_accepted') ? now() : null,
             ]);
         } catch (\Throwable $e) {
