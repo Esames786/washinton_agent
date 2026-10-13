@@ -33,7 +33,7 @@ So the migration is far simpler than the earlier draft assumed:
 | | Treatment |
 |---|---|
 | **Everything** — orders, calls, HR, attendance, activities, carriers, zipcodes, settings, templates, leads | **copy to both sides, equally** |
-| **`user`** | **split** on `is_crazyrays` |
+| **`user`** | **split on `is_crazyrays` — but Order Takers only**, see §2a |
 | **`cr_applications`, `cr_campaigns`** | **CrazyRays** |
 
 That is the whole classification. There is no per-table analysis to get wrong, no orphan question, no
@@ -69,6 +69,47 @@ Including the parts previously flagged for a decision, now moot:
 Hello has **no equivalent of `cr_applications`**. Its new apply flow
 (`02-WEBSITE-CHANGES.md` W-03) needs one built. Build it on the `cr_applications` shape so the two
 brands stay comparable and reportable.
+
+---
+
+## 2a. Privileged accounts are never deleted — on either side
+
+**Client instruction, 13 Oct 2026:** *"make sure do not delete admin manager and important account on
+either side."* This is not a refinement; without it the split breaks the CrazyRays portal outright.
+
+### The system has exactly one admin
+
+| id | Name | Email | Role | Brand |
+|---|---|---|---|---|
+| **1** | Super Admin | `admin@hellotransport.com` | **Admin** | **Hello** |
+
+It is the **only** `role = 1` account in the database, and it is flagged Hello. The original
+`DELETE FROM user WHERE is_crazyrays = 0` would have removed it from the CrazyRays copy, leaving that
+portal **with no administrator at all** and no way to create one. User id 1 is also the system
+fallback owner for unassigned website orders (`report.userId = 1`), so deleting it would break intake
+as well.
+
+### Only Order Takers are brand workforce
+
+Of 150 accounts, 138 are Order Takers (role 2). Every other role is privileged or administrative:
+
+| Role | Hello | CrazyRays |
+|---|---|---|
+| Admin | 1 | 0 |
+| Manager | 1 | 1 |
+| Dispatcher | 1 | 1 |
+| Accountant / Onsite / HR Executive / Support Agent | 0 | 7 |
+
+**Rule:** delete only `role = 2` accounts of the other brand. All 12 non-Order-Taker accounts are
+kept on both sides, and user id 1 is never deleted under any condition. Keeping twelve accounts costs
+nothing; deleting the wrong one locks people out of a live portal.
+
+### What the split actually removes
+
+| Side | Removed | Kept |
+|---|---|---|
+| CrazyRays copy | 52 Hello Order Takers | Super Admin, Reference Dispatcher, Hello Manager + all 95 CrazyRays |
+| Hello (Phase 5) | 86 CrazyRays Order Takers | all 12 privileged accounts + its own 52 OTs |
 
 ---
 
@@ -120,20 +161,27 @@ Copy every table in batches of 1,000 rows, source → target, in primary-key ord
 On the **target (CrazyRays) copy only**:
 
 ```sql
-DELETE FROM `user` WHERE is_crazyrays = 0;    -- Hello's 55 accounts
+-- Only Order Takers. Admin, managers and every other privileged account stay (§2a).
+DELETE FROM `user`
+WHERE is_crazyrays = 0
+  AND role = 2            -- Order Taker
+  AND id <> 1;            -- Super Admin, belt and braces
 ```
+
+*Removes 52 of Hello's 55; keeps Super Admin, the Reference Dispatcher and the Hello Manager.*
 
 `cr_applications` and `cr_campaigns` stay as copied — they are already CrazyRays'.
 
 Later, on the **Hello side** (Phase 5, after CrazyRays is verified live):
 
 ```sql
-DELETE FROM `user` WHERE is_crazyrays = 1;    -- CrazyRays' 95 accounts
-DELETE FROM cr_applications;                  -- CrazyRays-only
+DELETE FROM `user` WHERE is_crazyrays = 1 AND role = 2 AND id <> 1;   -- 86 CrazyRays OTs
+DELETE FROM cr_applications;                                          -- CrazyRays-only
 DELETE FROM cr_campaigns;
 ```
 
-*Expected result:* CrazyRays holds 95 users, Hello 55. All other tables identical on both sides.
+*Expected result:* CrazyRays holds 98 accounts (its own 95 + 3 kept Hello privileged); Hello holds 64
+(its own 55 + the 9 kept CrazyRays privileged). All other tables identical on both sides.
 
 > **Optional — only if §3 is unwanted.** To give each portal only its own history, additionally run
 > the Class-A prune from `TABLE-CLASSIFICATION.md` *before* deleting the users. User-keyed tables
@@ -154,7 +202,8 @@ DELETE FROM cr_campaigns;
 
 ### Phase 4 — Verify
 - Target table count = 257; row counts equal to source on all 254 copied tables
-- Target `user` = 95 rows, **zero** with `is_crazyrays = 0`
+- Target `user` = 98 rows; **at least one `role = 1` admin present** and both managers intact
+- Zero Hello **Order Takers** remain (`is_crazyrays = 0 AND role = 2`)
 - `cr_applications` = 111, `cr_campaigns` = 9
 - Spot-check: a known CrazyRays agent still has their orders, HR record, attendance and documents
 
@@ -189,6 +238,7 @@ CrazyRays is pointed back at the old database and nothing is lost.
 | Auto-increment collisions later | Both sides keep the original IDs; they diverge only after cutover |
 | Bridge keys reused, portals cross-talk | New key pair per brand, verified by deliberately calling the wrong portal and confirming rejection |
 | Hello pruned too early | Phase 5 is deliberately last, after a week of CrazyRays running clean |
+| A portal left with no admin | Only role 2 is ever deleted; the script aborts if no `role = 1` account is present, and previews before it deletes |
 | Each portal showing the other brand's history | Expected under the current rule — see §3; reversible with the optional Phase 3 prune |
 
 ---
