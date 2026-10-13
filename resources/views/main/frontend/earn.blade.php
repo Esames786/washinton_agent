@@ -41,7 +41,10 @@
                 </div>
                 <div class="col-lg-5">
                     <div class="about-us-image">
-                        <img src="{{ asset('frontend/newtheme-assets/img/about/1.png') }}" alt="Agent Program">
+                        <img src="{{ asset('frontend/newtheme-assets/img/agents-program-overview.png') }}"
+                             alt="Hello Transport Agent Program"
+                             loading="lazy"
+                             style="width:100%;height:auto;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.25);">
                     </div>
                 </div>
             </div>
