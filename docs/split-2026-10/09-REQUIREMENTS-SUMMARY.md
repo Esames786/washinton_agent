@@ -23,7 +23,7 @@ Campaign Leads folder (email 1). Build the pipeline's intake and the website's f
 
 ## 2. Email 2 (12 Oct) — the website
 
-**5 of 7 done.** Live on hellotransport.com.
+**All 7 done** (14 Oct), plus the site-wide theme change the client asked for afterwards.
 
 | # | Change | Status |
 |---|---|---|
@@ -32,12 +32,11 @@ Campaign Leads folder (email 1). Build the pipeline's intake and the website's f
 | 3 | "Apply for an Opportunity" form, short field set, country-linked phone + timezone | ✅ `7431141` |
 | 4 | Application Submitted screen, client wording verbatim | ✅ `b4059ba` |
 | 5 | Login page wording (a–d) | ✅ `ee5f758` |
-| 6 | Blog section | ⛔ **blocked** — who authors? admin screen needed? |
-| 7a | Per-service quote forms | ⚠️ **partial** — all 15 services route correctly and **Boat** is built to the ShipA1 field list; **RV, freight and RoRo** still use the generic dimensional form |
+| 6 | Blog section — admin screen (Blog Posts, roles 1/9) + public /blog, SEO fields, 10 starter posts | ✅ `28903d4` `010bf46` |
+| 7a | Per-service quote forms — heavy, boat, RV, RoRo and freight match ShipA1; details reach the order | ✅ `5d9c41a` `8074667` `f778e1a` |
 | 7b | Remove Vehicle Price from car quote forms | ✅ `5d9c41a` |
 
-**To finish 7a** I need the same field list for RV, freight and RoRo that was supplied for boat —
-a screenshot of each ShipA1 form would do it.
+| — | Theme: navy + gold on every customer-facing page, register and login rebuilt | ✅ `f19ab21` `2a91321` `013cfc5` |
 
 ## 3. Email 1 (8 Oct) — the pipeline
 
@@ -155,15 +154,15 @@ screen locking · deferring CRM creation.
 
 ---
 
-## 6. Build status — 13 October 2026
+## 6. Build status — 14 October 2026
 
 ### Email 1 — the pipeline
 
-Everything is built **except the questionnaire**. The chain runs end to end:
+Everything is built **except device restriction**. The chain runs end to end:
 
 ```
 apply -> Campaign Leads -> shortlist -> set-password email -> HR login
-      -> NDA -> [QUESTIONNAIRE] -> screens locked -> documents -> verification
+      -> NDA -> questionnaire -> screens locked -> documents -> verification
       -> management approval -> contract -> CRM account created + link emailed
 ```
 
@@ -181,28 +180,24 @@ apply -> Campaign Leads -> shortlist -> set-password email -> HR login
 | Items 5-9 (labels, columns, renames) | ✅ |
 | Item 4 — own/rent optional | ✅ |
 | Item 12 — IP capture at 4 points | ✅ |
-| **Questionnaire** | ⛔ **needs the questions** |
-| **Item 10 — Earning & Payouts** | ⛔ **needs the revenue source** |
-| Item 11 — device restriction | ⛔ needs a rule |
+| Questionnaire — admin-authored (Settings → Onboarding Questionnaire) | ✅ built · ⚠️ **0 questions entered yet** |
+| Item 10 — Earning & Payouts — revenue entered by admin (orders carry no reliable paid amount) | ✅ |
+| **Item 11 — device restriction** | ⛔ **awaiting yes on the proposed rule** (Off / One device / Approved list, default Off) |
 
 ### Email 2 — the website
 
-5 of 7, as in §2. Blog and the RV / freight / RoRo quote forms remain.
+All 7 done, as in §2.
 
 ---
 
 ## 7. What the client still needs to answer
 
-Only five things are outstanding, and every one of them is blocked on an answer rather
-than on work.
+Two things remain, and both wait on people rather than code.
 
 | # | Question | Blocks |
 |---|---|---|
-| 1 | **The questionnaire questions** | the last hole in the pipeline |
-| 2 | **Where does "Revenue Generated" come from** — orders booked by that agent, or entered by an admin? | Earning & Payouts; it decides whether that screen is a report or a data-entry form |
-| 3 | **Device restriction** — one device, or an approved list? What happens when an agent changes laptop? | item 11 |
-| 4 | **ShipA1 field lists** for RV, freight and RoRo quote forms | finishing website point 7 |
-| 5 | **Blog** — who writes the posts, and is an admin screen needed? | website point 6 |
+| 1 | **Questionnaire questions** — an admin enters them in Settings → Onboarding Questionnaire (0 today) | shortlisted agents stop at Questionnaire Pending until there are some |
+| 2 | **Device restriction** — confirm the proposed rule (Off / One device / Approved list; new device needs admin approval) | item 11 |
 
 ### Two suggestions while they are being asked
 
