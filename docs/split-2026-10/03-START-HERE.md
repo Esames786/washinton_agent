@@ -55,7 +55,7 @@ explained.
 
 ## Step 2 — Build `crazyrays_db` (1 day)
 
-Copy the full database, then prune each side with the rule in `01 §3A`. Reconcile against the
+Copy the full database, then split `user` only, per `04 §2`. Reconcile against the
 pre-split counts. Nothing is dropped; the original stays untouched.
 
 **Done when:** `hello_db` + `crazyrays_db` row counts reconcile exactly to the original, table by table.

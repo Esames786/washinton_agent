@@ -10,8 +10,9 @@ Requirements and plan, 12 October 2026. **Documentation only — no code or data
 
 ## The short version
 
-The split is **feasible and clean**: every user-keyed table partitions on `user.is_crazyrays` with
-**zero orphan rows**. It is a data partition, not a data untangling.
+The split is **feasible and simple**. Per the client rule of 13 Oct 2026, **all data is copied to
+both sides**; only `user` is split (on `is_crazyrays`), and `cr_applications` / `cr_campaigns` go to
+CrazyRays. See [`04-DATA-MIGRATION.md §2`](04-DATA-MIGRATION.md).
 
 Split the systems **before** building the website changes, or every website item has to be built
 twice.

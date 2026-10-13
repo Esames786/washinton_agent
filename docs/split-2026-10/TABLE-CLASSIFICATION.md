@@ -3,6 +3,11 @@
 **Generated:** 13 October 2026 from read-only queries on live `hellotransport_databases`.
 **Companion to** [`04-DATA-MIGRATION.md`](04-DATA-MIGRATION.md).
 
+> **Not the migration plan.** Under the client rule of 13 Oct 2026 (`04 §2`) **all data is copied to
+> both sides** and only `user`, `cr_applications` and `cr_campaigns` are placed. This file is the
+> key map for the **optional** per-brand prune in `04 §4` Phase 3 — useful if either portal should
+> later show only its own history.
+
 > **Regenerate this file at migration time.** A table's class is decided by whether its user
 > key actually resolves to this portal's `user` table (threshold: 50%), not by its column name.
 > An earlier draft of this file classified `shipper_details_fetch` and friends as Class A;

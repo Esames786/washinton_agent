@@ -56,7 +56,12 @@ Measured on live data:
 
 ---
 
-## 3. Three classes of data
+> **Superseded 13 Oct 2026.** The client set a simpler rule: **copy all data to both sides**, split
+> only `user`, and give `cr_applications` / `cr_campaigns` to CrazyRays.
+> [`04-DATA-MIGRATION.md §2`](04-DATA-MIGRATION.md) is the plan to migrate from. The three-class
+> analysis below is kept because it is still what the *optional* per-brand prune would use.
+
+## 3. Three classes of data (superseded — see note above)
 
 Every one of the 257 tables falls into exactly one bucket. This classification is the whole migration.
 
@@ -155,7 +160,7 @@ Nothing here is destructive until step 6.
 
 1. **Freeze schema changes** on the shared database for the duration.
 2. **Create `crazyrays_db`** as a full copy of `hellotransport_databases`.
-3. **Prune each side** using the class-A rule above. Hello keeps `is_crazyrays = 0`; CrazyRays keeps `is_crazyrays = 1`.
+3. **Split `user`** only — CrazyRays keeps `is_crazyrays = 1`, Hello keeps `0`; `cr_applications` and `cr_campaigns` go to CrazyRays. Everything else stays copied on both sides (`04 §2`).
 4. **Verify row counts** against the pre-split numbers in §2. Totals must reconcile exactly.
 5. **Fork the repos**, point each `.env` at its own database, issue new bridge keys.
 6. **Cut over** one brand at a time — CrazyRays first, because it is the larger and better-isolated side, and because Hello is the one being actively rebuilt (see `02-WEBSITE-CHANGES.md`).
@@ -179,7 +184,7 @@ These cannot be inferred from the data, and getting them wrong is expensive to u
 
 | Risk | Mitigation |
 |---|---|
-| A table is missed in the class-A list and keeps the other brand's rows | Generate the list from `information_schema` at migration time, not from this document |
+| Each portal shows the other brand's history | Expected under the client rule — see `04 §3`; reversible later with the optional prune |
 | Bridge keys reused, portals cross-talk | New key pair per brand, verified by deliberately calling the wrong portal and confirming rejection |
 | Cherry-pick drift between the two forks | Keep the shared-file list; review it monthly |
 | Cutover loses in-flight data | Old database kept read-only for one week; no `DROP` until sign-off |
