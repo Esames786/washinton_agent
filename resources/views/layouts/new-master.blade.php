@@ -8,6 +8,9 @@
         $nt = $nt ? $nt . ' | ' . $bn : $bn;
     @endphp
     <title>{{ $nt }}</title>
+    {{-- Per-page SEO (meta description, canonical, Open Graph, JSON-LD). Empty unless a
+         page pushes to it — the blog is the first that does. --}}
+    @stack('meta')
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="google-site-verification" content="dwlNH_KoCtphxr8_X75_OXA-nxdZWfmnrCrJssvnPO4" />

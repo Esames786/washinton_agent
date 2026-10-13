@@ -657,6 +657,42 @@ class FrontendController extends Controller
         return view('main.frontend.earn');
     }
 
+    /** Website point 6 — the blog listing, modelled on ShipA1's. */
+    public function blog(Request $request)
+    {
+        $category = $request->query('category');
+
+        $posts = \App\Blog::published()
+            ->when($category, fn ($q) => $q->where('category', $category))
+            ->orderByRaw('COALESCE(scheduled_at, created_at) DESC')
+            ->paginate(9)
+            ->withQueryString();
+
+        // Only categories that actually have something live, so no filter leads nowhere.
+        $categories = \App\Blog::published()
+            ->whereNotNull('category')
+            ->distinct()
+            ->orderBy('category')
+            ->pluck('category');
+
+        return view('main.frontend.blog.index', compact('posts', 'categories', 'category'));
+    }
+
+    /** A single post. Drafts and future-scheduled posts are not reachable by URL. */
+    public function blogShow(string $slug)
+    {
+        $post = \App\Blog::published()->where('slug_name', $slug)->firstOrFail();
+
+        $related = \App\Blog::published()
+            ->where('id', '!=', $post->id)
+            ->when($post->category, fn ($q) => $q->where('category', $post->category))
+            ->orderByRaw('COALESCE(scheduled_at, created_at) DESC')
+            ->limit(3)
+            ->get();
+
+        return view('main.frontend.blog.show', compact('post', 'related'));
+    }
+
     public function serviceShow($slug)
     {
         $cats = config('hello_services.categories', []);

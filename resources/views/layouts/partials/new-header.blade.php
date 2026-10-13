@@ -106,6 +106,13 @@
                                     About Us
                                 </a>
                             </li>
+                            {{-- Website point 6 --}}
+                            <li class="nav-item">
+                                <a href="{{ route('Frontend.blog') }}"
+                                   class="nav-link {{ request()->routeIs('Frontend.blog*') ? 'active' : '' }}">
+                                    Blog
+                                </a>
+                            </li>
 
                             @php($cats = config('hello_services.categories'))
 

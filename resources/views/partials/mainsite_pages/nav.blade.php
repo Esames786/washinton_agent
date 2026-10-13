@@ -1163,6 +1163,13 @@ if (!function_exists('get_user_name123')) {
                                     <div class="">Guides</div>
                                 </a>
                             @endif
+                            {{-- Website point 6: blog authoring — admins and managers, as for guides. --}}
+                            @if(in_array((int) Auth::user()->role, [1, 9], true))
+                                <a class="dropdown-item d-flex" href="{{ route('blog-admin.index') }}">
+                                    <i class="fa fa-newspaper-o pr-2 mt-1 ml-1"></i>
+                                    <div class="">Blog Posts</div>
+                                </a>
+                            @endif
                             @if(Auth::user()->role < 6 || Auth::user()->role > 7)
                                 <a class="dropdown-item d-flex" href="{{url('/auction-instructions')}}">
                                     <i class="fa fa-file-text-o pr-2 mt-1 ml-1"></i>

@@ -88,6 +88,9 @@ Route::get('/autocomplete', 'FrontendController@autocomplete')->name('autocomple
 Route::get('/Quote-Request/confirmation', 'FrontendController@quoteConfirmation')->name('Frontend.qoute.confirmation');
 // W-02: the agent programme page. Replaces the header Login/Signup links as the way in.
 Route::get('/earn-with-hello-transport', 'FrontendController@earn')->name('Frontend.earn');
+// Website point 6 — the blog, modelled on ShipA1's.
+Route::get('/blog', 'FrontendController@blog')->name('Frontend.blog');
+Route::get('/blog/{slug}', 'FrontendController@blogShow')->where('slug', '[A-Za-z0-9\-]+')->name('Frontend.blog.show');
 Route::get('/Is-It-For-Me', 'FrontendController@isItForMe')->name('Frontend.is.me');
 // Additional frontend routes referenced in the layout
 Route::get('/Carriers', 'FrontendController@carriers')->name('Frontend.Carrier');
@@ -493,6 +496,15 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/check_phone', 'phone_quote\NewQuote@check_phone');
         Route::get('/getvin', 'phone_quote\NewQuote@getvin');
         Route::get('/guides', 'phone_quote\management\ManagementController@guides');
+
+        // Website point 6 — the public blog's posts are written here. Admins and managers
+        // only; BlogAdminController checks the role itself.
+        Route::get('/blog-posts', [\App\Http\Controllers\BlogAdminController::class, 'index'])->name('blog-admin.index');
+        Route::get('/blog-posts/create', [\App\Http\Controllers\BlogAdminController::class, 'create'])->name('blog-admin.create');
+        Route::post('/blog-posts', [\App\Http\Controllers\BlogAdminController::class, 'store'])->name('blog-admin.store');
+        Route::get('/blog-posts/{id}/edit', [\App\Http\Controllers\BlogAdminController::class, 'edit'])->name('blog-admin.edit');
+        Route::put('/blog-posts/{id}', [\App\Http\Controllers\BlogAdminController::class, 'update'])->name('blog-admin.update');
+        Route::delete('/blog-posts/{id}', [\App\Http\Controllers\BlogAdminController::class, 'destroy'])->name('blog-admin.destroy');
         Route::get('/add_guide', 'phone_quote\management\ManagementController@add_guide');
         Route::get('/delete_guide/{id}', 'phone_quote\management\ManagementController@del_guide')->name('del_guide');
         Route::get('/add_guide_list', 'phone_quote\management\ManagementController@add_guide_list');
