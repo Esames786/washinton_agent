@@ -11,14 +11,36 @@ class CrApplication extends Model
     public const EMPLOYMENT_WFH      = 'work_from_home';
     public const EMPLOYMENT_IN_HOUSE = 'in_house';
 
+    /** This table serves both careers flows; `brand` says which one a row came from. */
+    public const BRAND_HELLO     = 'hello';
+    public const BRAND_CRAZYRAYS = 'crazyrays';
+
     protected $fillable = [
+        'brand',
         'full_name', 'father_name', 'national_id', 'dob', 'gender', 'marital_status',
-        'email', 'phone', 'country', 'city', 'state', 'address',
+        'email', 'phone', 'country', 'city', 'state', 'address', 'time_zone',
         'campaign', 'employment_type', 'campaign_id', 'shift_type', 'pay_type',
-        'additional_info', 'campaign_experience',
-        'resume_path', 'documents', 'contract_accepted_at', 'password',
+        'additional_info', 'campaign_experience', 'us_experience', 'us_hours',
+        'resume_path', 'linkedin_url', 'documents', 'contract_accepted_at', 'password',
         'status', 'rejection_note', 'agent_id', 'ip_address',
     ];
+
+    /** Rows from the Hello "Apply for an Opportunity" form (W-03). */
+    public function scopeHello($q)
+    {
+        return $q->where('brand', self::BRAND_HELLO);
+    }
+
+    /**
+     * CrazyRays rows. Treats a missing brand as CrazyRays so anything written before
+     * the brand column existed still appears in the CrazyRays lists.
+     */
+    public function scopeCrazyrays($q)
+    {
+        return $q->where(function ($w) {
+            $w->where('brand', self::BRAND_CRAZYRAYS)->orWhereNull('brand');
+        });
+    }
 
     protected $casts = [
         'documents'           => 'array',
