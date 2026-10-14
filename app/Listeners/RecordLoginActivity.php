@@ -24,6 +24,15 @@ class RecordLoginActivity
 
         $request = request();
 
+        // Scope ("view as") switches accounts with Auth::loginUsingId(), which fires this event.
+        // It is not a login by that user: recording it would log the manager's IP against the
+        // agent, and the session flag below would hand the agent's single session to the
+        // manager's browser, logging the agent out. ScopeController re-claims the manager's own
+        // session itself when they leave scope.
+        if ($request && $request->hasSession() && $request->session()->has('scope_original_id')) {
+            return;
+        }
+
         // Source: crazy logins arrive via the /bridge/* SSO routes or carry the cr_origin session tag.
         $path   = (string) ($request ? $request->path() : '');
         $source = (str_contains($path, 'bridge') || str_contains($path, 'sso') || session('cr_origin'))
