@@ -49,6 +49,11 @@ class ScopeController extends Controller
         Auth::loginUsingId($originalId);
         session()->forget('scope_original_id');
 
+        // loginUsingId() gave this browser a new session id. The login listener skips scope
+        // switches, so flag it here: EnforceUserSecurity records it as the admin's single active
+        // session on the next request instead of treating it as a stale one and logging out.
+        session()->put('b6_fresh_login', true);
+
         // Refresh admin login timestamps so inactivity checks don't fire
         $admin = User::find($originalId);
         if ($admin) {

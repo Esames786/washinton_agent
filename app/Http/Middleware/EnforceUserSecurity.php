@@ -20,7 +20,14 @@ class EnforceUserSecurity
     {
         try {
             $user = Auth::user();
-            if ($user) {
+
+            // Scope ("view as"): an admin or manager is acting as this user from their own
+            // browser. That is not the user signing in somewhere else, so it must neither take
+            // over nor kick the user's own session. It used to do both, and the manager and the
+            // agent kicked each other out in a loop (reported 15 Oct 2026, florida).
+            $scoped = $request->hasSession() && $request->session()->has('scope_original_id');
+
+            if ($user && !$scoped) {
                 $sessionId = $request->hasSession() ? $request->session()->getId() : null;
 
                 // Just logged in (flag set by RecordLoginActivity, survives session regeneration):
