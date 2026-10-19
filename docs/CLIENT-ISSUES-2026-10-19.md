@@ -6,6 +6,29 @@ Nothing has been changed yet.
 
 **Status:** 🔴 blocks testing · 🟠 bug · 🟡 change request · ⚪ needs a decision
 
+## Progress, 19 Oct 2026
+
+| Item | State | Commit |
+|---|---|---|
+| A1 HR sign-in for pipeline statuses | ✅ fixed | hr `a12625c` |
+| A2 CRM password = HR password | ✅ fixed; existing agents need the one-time sync below | hr `a12625c`, crm `8165676` |
+| A3 Check-in after the NDA | ✅ resolved by A1 (it came from setting the status to Active early) | — |
+| A4 Remove "Forgot Password?" | ✅ | hr `a12625c` |
+| B1 CV 404 | ✅ | hr `a12625c` |
+| B2 Questionnaire answers for admins | ✅ new card on the subcontractor profile | hr `81919a6` |
+| C1 Daily Activities search | ✅ | hr `a12625c` |
+| C2 Working Days note | ✅ | hr `a12625c` |
+| C3 NDA "State ID" → "ID", closing line | ✅ (closing line uses "I have read all the clauses…", to be confirmed by the client) | hr `81919a6` |
+| C4 Questionnaire page crash | ✅ | hr `a12625c` |
+| D1 Applicant confirmation email | ✅ new "Application received" email | crm `fc13fa2` |
+| E1 Blog Posts 500 | ✅ | crm `8165676` |
+| E2 Campaign Users and documents icons | ✅ removed on Hello, kept on CrazyRays; "normal view employee" still to be confirmed | crm `fc13fa2` |
+| E3 Verification page theme | ✅ | crm `fc13fa2` |
+| E4 Delete previous data | ⚪ waiting for the scope | — |
+| F1 CrazyRays chat blinking | ✅ cause: the mark-read address rejected the window's GET calls (405) | crm `e6ec68c`, crazyrays `c169506` |
+| G Screenshot upload crash | ✅ wrong sign-in guard | hr `24f6a7c` |
+| H "Washington version update" | ⚪ waiting for details | — |
+
 ---
 
 ## A. Agent sign-in and statuses (fix first: these block the client's testing)
