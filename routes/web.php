@@ -1398,7 +1398,9 @@ Route::prefix('bridge')->group(function () {
 Route::get('/chat-widget', 'WashingtonChatController@indexIframe')->name('chat.widget');
 Route::post('/chat/send', 'WashingtonChatController@chat')->name('chat.send');
 Route::get('/chat/history', 'WashingtonChatController@chatHistory')->name('chat.history');
-Route::post('/chat/update-read', 'WashingtonChatController@chatUpdateRead')->name('chat.update.read');
+// The chat window calls this with GET; as POST-only every call was rejected (405), so no
+// message was ever marked read and the staff tab kept blinking "unread" (CrazyRays, 15 Oct 2026).
+Route::match(['get', 'post'], '/chat/update-read', 'WashingtonChatController@chatUpdateRead')->name('chat.update.read');
 
 // Admin only — chat management
 Route::middleware(['auth'])->group(function () {
