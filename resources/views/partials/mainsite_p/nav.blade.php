@@ -284,7 +284,10 @@ if (!function_exists('get_user_name123')) {
                     </li>
                 @endif
 
-                @if (in_array("20", $phoneaccess))
+                {{-- Hello: leads and agent documents are managed in the HR portal now (client, 16 Oct 2026), so
+                     these two icons show only on the CrazyRays portal (is_agent_portal). --}}
+                @php $__showDocsIcon = config('app.is_agent_portal') && in_array("20", $phoneaccess); @endphp
+                @if ($__showDocsIcon)
                     {{-- #2: dropdown panel that NAMES the subcontractors who submitted documents awaiting
                          verification, so it's clear WHICH agent to review (not just a count). --}}
                     <li class="nav-item dropdown sc-docs-dd" style="position:relative;">
@@ -302,7 +305,8 @@ if (!function_exists('get_user_name123')) {
                     </li>
                 @endif
 
-                @if (Auth::user()->role == 1 || in_array('166', $phoneaccess))
+                @php $__showCampaignIcon = config('app.is_agent_portal') && (Auth::user()->role == 1 || in_array('166', $phoneaccess)); @endphp
+                @if ($__showCampaignIcon)
                     {{-- #2: badge with count of NEW (pending) applications (polled every 60s) --}}
                     @php $crNewCount = \App\CrApplication::where('status', 'pending')->count(); @endphp
                     <li class="nav-item" data-placement="top" data-toggle="tooltip" title="Campaign Users" style="position:relative;">
@@ -1121,6 +1125,9 @@ if (!function_exists('get_user_name123')) {
                 }
                 _cuaPrev = cua;
 
+                // Only where the documents icon exists (CrazyRays). On Hello the HR portal
+                // handles documents and new applicants, so no badge, sound or pop-up here.
+                if ($('#subcontractorDocsToggle').length) {
                 // #3/A: Subcontractors who submitted documents — live badge + a notification that
                 // NAMES the specific agent who just submitted (so the admin knows who to review).
                 var docsList = d.subcontractor_docs_list || [];
@@ -1207,6 +1214,7 @@ if (!function_exists('get_user_name123')) {
                     });
                 }
                 _helloPrevIds = helloList.map(function (a) { return a.id; });
+                }
             });
         }
         setInterval(fetchNavCounts, 20000); // #1/#2: poll every 20s so badges feel real-time

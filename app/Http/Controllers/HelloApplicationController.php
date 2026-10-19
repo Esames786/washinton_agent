@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\CrApplication;
-use App\Mail\WelcomeEmail;
+use App\Mail\HelloApplicationReceivedEmail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -136,10 +136,10 @@ class HelloApplicationController extends Controller
             return response()->json(['message' => 'We could not submit your application. Please try again.'], 500);
         }
 
-        // Trigger 1 of the six pipeline emails. Retimed from account-creation to
-        // application-submitted — same mailable, same template, new moment.
+        // Trigger 1 of the six pipeline emails: "application received". Its own email, not the
+        // old WelcomeEmail, which promised an account and a login button (client, 16 Oct 2026).
         try {
-            Mail::to($application->email)->send(new WelcomeEmail($application->full_name, $application->email));
+            Mail::to($application->email)->send(new HelloApplicationReceivedEmail((string) $application->full_name));
         } catch (\Throwable $e) {
             // An email failure must never lose the application.
             Log::warning('HelloApplicationController: confirmation email failed', [
