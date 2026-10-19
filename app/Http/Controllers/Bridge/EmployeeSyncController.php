@@ -68,6 +68,8 @@ class EmployeeSyncController extends Controller
             'phone'       => ['nullable', 'string', 'max:20'],
             'role_id'     => ['required', 'integer'],
             'role_name'   => ['required', 'string', 'max:50'],
+            // bcrypt hash of the agent's HR password (recruitment-pipeline hires only)
+            'password_hash' => ['nullable', 'string', 'regex:/^\$2[aby]\$\d{2}\$[.\/A-Za-z0-9]{53}$/'],
         ]);
 
         if ($validator->fails()) {
@@ -109,6 +111,7 @@ class EmployeeSyncController extends Controller
                     'email'          => $email,
                     'phone'          => $request->input('phone', ''),
                     'city'           => $request->input('city', ''), // B6: for city-based panel assignment
+                    'password_hash'  => $request->input('password_hash'),
                 ],
                 $roleId
             );
@@ -210,6 +213,8 @@ class EmployeeSyncController extends Controller
         $user = User::where('email', $data['email'])->first();
 
         if ($user) {
+            $linkedEmployeeId = (int) $user->hr_employee_id;   // before the update below re-links it
+
             // Update existing user
             $user->update([
                 'name'           => $data['first_name'] . ' ' . $data['last_name'],
@@ -217,6 +222,14 @@ class EmployeeSyncController extends Controller
                 'role'           => $roleId,
                 'hr_employee_id' => $data['hr_employee_id'],
             ]);
+
+            // HR is the source of a pipeline hire's password. Only for the account already
+            // linked to this same HR employee, so a sync can never overwrite someone else's.
+            if (!empty($data['password_hash'])
+                && $linkedEmployeeId === (int) $data['hr_employee_id']) {
+                $user->password = $data['password_hash'];
+                $user->save();
+            }
 
             Log::info('EmployeeSyncController: Existing user updated', [
                 'user_id'        => $user->id,
@@ -229,7 +242,8 @@ class EmployeeSyncController extends Controller
 
         // Create new user
         try {
-            // Generate a random password and unique slug
+            // A pipeline hire opens with their HR password (sent as a bcrypt hash), as the
+            // "CRM account ready" email promises. Anyone else gets a random password, as before.
             $password = Str::random(12);
             $slug = $this->generateUniqueSlug($data['email']);
 
@@ -238,7 +252,7 @@ class EmployeeSyncController extends Controller
             $user->last_name      = $data['last_name'];
             $user->slug           = $slug;
             $user->email          = $data['email'];
-            $user->password       = Hash::make($password);
+            $user->password       = !empty($data['password_hash']) ? $data['password_hash'] : Hash::make($password);
             $user->phone          = $data['phone'] ?? '';
             $user->address        = '';
             $user->role           = $roleId;

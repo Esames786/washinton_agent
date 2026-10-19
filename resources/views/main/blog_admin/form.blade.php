@@ -1,4 +1,5 @@
 @extends('layouts.innerpages')
+@include('partials.mainsite_pages.return_function')
 
 @section('template_title')
     {{ $post->exists ? 'Edit Post' : 'New Post' }}

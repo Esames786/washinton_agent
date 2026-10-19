@@ -1,4 +1,7 @@
 @extends('layouts.innerpages')
+{{-- innerpages does not load the sidebar helpers (check_panel() etc.): every page must
+     include them itself, or the page 500s. --}}
+@include('partials.mainsite_pages.return_function')
 
 @section('template_title')
     Blog Posts
