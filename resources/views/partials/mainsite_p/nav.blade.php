@@ -305,6 +305,16 @@ if (!function_exists('get_user_name123')) {
                     </li>
                 @endif
 
+                {{-- Hello: plain link to View Subcontractors for admin / manager (client, 16 Oct 2026:
+                     "show normal view employee"). On CrazyRays the documents dropdown above links there. --}}
+                @php $__showViewSubcontractors = !config('app.is_agent_portal') && (Auth::user()->role == 1 || Auth::user()->role == 9 || in_array("20", $phoneaccess)); @endphp
+                @if ($__showViewSubcontractors)
+                    <li class="nav-item" data-placement="top" data-toggle="tooltip" title="View Subcontractors">
+                        <a class="icon" href="{{ url('view_subcontractor') }}">
+                            <i class="fa fa-street-view header-icons"></i>
+                        </a>
+                    </li>
+                @endif
                 @php $__showCampaignIcon = config('app.is_agent_portal') && (Auth::user()->role == 1 || in_array('166', $phoneaccess)); @endphp
                 @if ($__showCampaignIcon)
                     {{-- #2: badge with count of NEW (pending) applications (polled every 60s) --}}
