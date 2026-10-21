@@ -1505,6 +1505,10 @@ if (!function_exists('get_user_name123')) {
                     });
                 }
                 _helloPrevIds = helloList.map(function (a) { return a.id; });
+            }).fail(function (x) {
+                // Device restriction: this device was revoked or is no longer approved. Go to the
+                // waiting page now rather than on the agent's next click.
+                if (x && x.status === 423) { window.location.href = "{{ route('device.pending') }}"; }
             });
         }
         setInterval(fetchNavCounts, 20000); // #1/#2: poll every 20s so badges feel real-time

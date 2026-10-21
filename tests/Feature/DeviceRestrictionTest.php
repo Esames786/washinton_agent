@@ -21,6 +21,8 @@ class DeviceRestrictionTest extends TestCase
     {
         parent::setUp();
         Route::middleware(['web', 'auth'])->get('/_device_probe', fn () => 'ok');
+        // JSON calls (getJson) leave cookies out unless asked; a browser's XHR sends them.
+        $this->withCredentials();
     }
 
     protected function tearDown(): void
@@ -138,6 +140,9 @@ class DeviceRestrictionTest extends TestCase
         $this->device($agent, $t)->forceFill(['status' => UserDevice::REVOKED])->save();
 
         $this->probe($agent, $t)->assertRedirect('/device-pending');
+        // the open page's nav poll gets a 423, which sends it to the waiting page
+        $this->actingAs($agent)->withUnencryptedCookie(DeviceGate::COOKIE, $t)
+            ->getJson('/nav-counts', ['X-Requested-With' => 'XMLHttpRequest'])->assertStatus(423);
     }
 
     public function test_admins_and_view_as_are_never_checked(): void
