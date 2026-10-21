@@ -7,6 +7,7 @@ use App\EmailFolder;
 use App\EmailMessage;
 use App\EmailInlineUpload;
 use App\EmailMessageAttachment;
+use App\Support\MailboxSent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -176,6 +177,11 @@ class MailboxSendController extends Controller
             ->from(sprintf('%s <%s>', $fromName, $fromEmail))
             ->subject($request->subject);
 
+        // One Message-ID for the sent mail, the server's Sent copy and the CRM's row, so the sync
+        // can recognise the server copy as this mail (App\Support\MailboxSent).
+        $messageId = MailboxSent::newMessageId($fromEmail);
+        $symfonyEmail->getHeaders()->addIdHeader('Message-ID', $messageId);
+
         foreach ($to  as $e) $symfonyEmail->addTo($e);
         foreach ($cc  as $e) $symfonyEmail->addCc($e);
         foreach ($bcc as $e) $symfonyEmail->addBcc($e);
@@ -197,7 +203,7 @@ class MailboxSendController extends Controller
         try {
             Mail::mailer('mailbox_smtp')->getSymfonyTransport()->send($symfonyEmail);
             $this->appendToSentBestEffort($acc, $symfonyEmail);
-            $this->cacheSentMessageInstantly($acc, $request->subject, $fromEmail, $fromName, $to[0] ?? null, $browserPreviewHtml, count($attachmentFiles) > 0, $attachmentFiles);
+            $this->cacheSentMessageInstantly($acc, $request->subject, $fromEmail, $fromName, $to[0] ?? null, $browserPreviewHtml, count($attachmentFiles) > 0, $attachmentFiles, $messageId);
             return back()->with('success', 'Email sent successfully!');
         } catch (\Throwable $e) {
             Log::error('MAILBOX SEND FAILED: ' . $e->getMessage());
@@ -207,21 +213,30 @@ class MailboxSendController extends Controller
         }
     }
 
+    /**
+     * Save a copy in the server's Sent folder, so webmail and phones show it too. getFolder()
+     * returns null for a missing folder (it does not throw), and failures are logged: they used to
+     * vanish silently, so nobody could tell the copy was missing.
+     */
     private function appendToSentBestEffort(EmailAccount $acc, Email $email): void
     {
         try {
             $client = $this->imapClient($acc);
-            $map    = ['Sent' => ['Sent', 'Sent Items', 'INBOX.Sent', 'INBOX.Sent Items']];
-            $sentName = 'Sent';
-            foreach (($map['Sent']) as $name) {
-                try { $client->getFolder($name); $sentName = $name; break; } catch (\Throwable $e) {}
+            $sentFolder = null;
+            foreach (['Sent', 'Sent Items', 'INBOX.Sent', 'INBOX.Sent Items'] as $name) {
+                if ($sentFolder = $client->getFolder($name)) break;
             }
-            $sentFolder = $client->getFolder($sentName);
-            $sentFolder->appendMessage($email->toString(), ['Seen']);
-        } catch (\Throwable $e) {}
+            if (!$sentFolder) {
+                Log::warning("MAILBOX: no Sent folder on the server for {$acc->email}; copy not saved.");
+                return;
+            }
+            $sentFolder->appendMessage($email->toString(), ['\\Seen']);
+        } catch (\Throwable $e) {
+            Log::warning("MAILBOX: could not save a Sent copy for {$acc->email}: " . $e->getMessage());
+        }
     }
 
-    private function cacheSentMessageInstantly(EmailAccount $acc, string $subject, ?string $fromEmail, ?string $fromName, ?string $toEmail, ?string $body, bool $hasAttachments, array $attachmentFiles): void
+    private function cacheSentMessageInstantly(EmailAccount $acc, string $subject, ?string $fromEmail, ?string $fromName, ?string $toEmail, ?string $body, bool $hasAttachments, array $attachmentFiles, ?string $messageId = null): void
     {
         try {
             $folder = EmailFolder::firstOrCreate(
@@ -232,8 +247,8 @@ class MailboxSendController extends Controller
             $message = EmailMessage::create([
                 'email_account_id' => $acc->id,
                 'email_folder_id'  => $folder->id,
-                'uid'              => time(),
-                'message_id'       => null,
+                'uid'              => MailboxSent::localUid(),
+                'message_id'       => $messageId,
                 'from_email'       => $fromEmail,
                 'from_name'        => $fromName,
                 'to_email'         => $toEmail,

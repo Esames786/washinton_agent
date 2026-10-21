@@ -6,6 +6,7 @@ use App\EmailAccount;
 use App\EmailFolder;
 use App\EmailMessage;
 use App\EmailMessageAttachment;
+use App\Support\MailboxSent;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -38,7 +39,9 @@ class SyncMailboxFolderJob implements ShouldQueue
         $folder->imap_name = $imapName;
 
         $f       = $client->getFolder($imapName);
-        $lastUid = (int) EmailMessage::where('email_folder_id', $folder->id)->max('uid');
+        // Only UIDs the sync imported count: the CRM's own Sent rows used to set this to ~1.7
+        // billion and block every later import (App\Support\MailboxSent).
+        $lastUid = MailboxSent::lastImportedUid($folder->id);
 
         $msgs = $f->messages()->all()->setFetchBody(true)->setFetchFlags(true)->get()
             ->sortByDesc(fn($m) => (int) $m->getUid())
@@ -63,6 +66,9 @@ class SyncMailboxFolderJob implements ShouldQueue
 
             $messageId = null;
             try { $messageId = (string) ($m->getMessageId() ?? null); } catch (\Throwable $e) {}
+
+            // The server's copy of a mail sent from the CRM takes over the CRM's row (no duplicate).
+            MailboxSent::adoptCrmCopy($folder->id, $uid, $messageId, $subject, $toEmail, $dateAt);
 
             $emailMessage = EmailMessage::updateOrCreate(
                 ['email_folder_id' => $folder->id, 'uid' => $uid],
