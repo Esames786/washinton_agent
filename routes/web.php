@@ -204,6 +204,14 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/scope/enter/{userId}', 'ScopeController@enter')->name('scope.enter');
     Route::get('/scope/exit', 'ScopeController@exit')->name('scope.exit');
 
+    // Device restriction (App\Support\DeviceGate): the agent's waiting page + the admin's actions.
+    Route::get('/device-pending', 'DeviceController@pending')->name('device.pending');
+    Route::get('/device-status', 'DeviceController@status')->name('device.status');
+    Route::get('/device-approvals', 'DeviceController@approvals')->name('device.approvals');
+    Route::post('/devices/{device}/approve', 'DeviceController@approve')->name('device.approve');
+    Route::post('/devices/{device}/reject', 'DeviceController@reject')->name('device.reject');
+    Route::post('/devices/{device}/revoke', 'DeviceController@revoke')->name('device.revoke');
+
     // Commission screen
     Route::get('/commission', 'CommissionController@index')->name('commission.index');
     Route::get('/commission/{userId}', 'CommissionController@show')->name('commission.show');
@@ -1453,7 +1461,19 @@ Route::middleware(['auth'])->group(function () {
             ->limit(50)
             ->get(['id', 'name', 'last_name']);
 
+        // Device restriction: devices waiting for approval, for the people who approve them.
+        $__devicePending = (\App\Support\DeviceGate::ready() && in_array((int) auth()->user()->role, [1, 9], true))
+            ? \App\UserDevice::with('user:id,name,last_name')->where('status', \App\UserDevice::PENDING)
+                ->whereHas('user', fn ($q) => $q->where('deleted', 0))->orderByDesc('id')->limit(50)->get()
+            : collect();
+
         return response()->json([
+            'device_pending'      => $__devicePending->count(),
+            'device_pending_list' => $__devicePending->map(fn ($d) => [
+                'id'   => (int) $d->id,
+                'name' => trim(($d->user->name ?? '') . ' ' . ($d->user->last_name ?? '')) ?: ('Agent #' . $d->user_id),
+                'code' => $d->code(),
+            ])->values(),
             'cr_pending'      => \App\CrApplication::where('status', 'pending')->count(),
             // Hello signups never create a cr_applications row — they become an agent directly and
             // sit Inactive until approved, so nothing ever alerted anyone about them. Count those

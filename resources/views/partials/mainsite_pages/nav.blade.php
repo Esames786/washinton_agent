@@ -310,6 +310,16 @@ if (!function_exists('get_user_name123')) {
                     </li>
                 @endif
 
+                {{-- Device restriction: devices waiting for approval (count kept live by the nav-counts poll). --}}
+                @php $__showDeviceApprovals = \App\Support\DeviceGate::ready() && in_array((int) Auth::user()->role, [1, 9], true); @endphp
+                @if ($__showDeviceApprovals)
+                    <li class="nav-item" data-placement="top" data-toggle="tooltip" title="Device approvals">
+                        <a class="icon position-relative" href="{{ route('device.approvals') }}">
+                            <i class="fa fa-laptop header-icons"></i>
+                            <span id="device_pending_count" class="badge badge-danger side-badge" style="display:none;">0</span>
+                        </a>
+                    </li>
+                @endif
                 @if (Auth::user()->role == 1 || in_array('166', $phoneaccess))
                     {{-- #9: badge with count of NEW (pending) campaign/job applications --}}
                     @php $crNewCount = \App\CrApplication::where('status', 'pending')->count(); @endphp
@@ -1368,6 +1378,7 @@ if (!function_exists('get_user_name123')) {
         fetchNotifications();
 
         // #2/#12: poll live badge counts (CR applications + admin payments) every 60s.
+        var _devPrevIds = null; // device restriction: device ids already waiting at the previous poll
         var _cuaPrev = null; // #1: previous Carrier Update Approval count (to detect new arrivals)
         var _docsPrevIds = null;
         var _helloPrevIds = null; // Hello agents awaiting approval // #3/A: previous set of pending-document agent ids (to name new submitters)
@@ -1392,6 +1403,27 @@ if (!function_exists('get_user_name123')) {
                     } catch (e) {}
                 }
                 _cuaPrev = cua;
+
+                // Device restriction: devices waiting for approval — badge + a named notification for
+                // each new one (admins and managers get the list; everyone else gets an empty one).
+                var devList = d.device_pending_list || [];
+                $('#device_pending_count').text(devList.length > 99 ? '99+' : devList.length).toggle(devList.length > 0);
+                if (_devPrevIds !== null) {
+                    devList.forEach(function (x) {
+                        if (_devPrevIds.indexOf(x.id) !== -1) { return; }
+                        var nm = $('<span>').text(x.name || 'An agent').html();
+                        var code = $('<span>').text(x.code || '').html();
+                        try { var a3 = document.getElementById('noti'); if (a3) { a3.play(); } } catch (e) {}
+                        try {
+                            if (typeof notif === 'function') {
+                                notif({ msg: "<b>Device approval:</b> " + nm + " is waiting on a new device (code " + code + "). <a href='{{ route('device.approvals') }}'>Review</a>", type: "warning", position: "right", multiline: true });
+                            } else if ($.growl) {
+                                $.growl.warning({ title: "Device approval", message: nm + " is waiting on a new device (code " + code + ")." });
+                            }
+                        } catch (e) {}
+                    });
+                }
+                _devPrevIds = devList.map(function (x) { return x.id; });
 
                 // #3/A: Subcontractors who submitted documents — live badge + a notification that
                 // NAMES the specific agent who just submitted (so the admin knows who to review).
