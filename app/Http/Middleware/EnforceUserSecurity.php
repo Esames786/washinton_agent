@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\DeviceGate;
 use App\Support\IpRestriction;
 use Closure;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +28,29 @@ class EnforceUserSecurity
             // agent kicked each other out in a loop (reported 15 Oct 2026, florida).
             $scoped = $request->hasSession() && $request->session()->has('scope_original_id');
 
-            if ($user && !$scoped) {
+            // Device restriction (DeviceGate): checked before the single-session claim below. A
+            // device waiting for approval is held on its waiting page and must not take over the
+            // session, or anyone with the password on a new PC would kick the agent's approved one.
+            $deviceHeld = false;
+            if ($user && !$scoped && DeviceGate::applies($user) && !DeviceGate::skips($request)) {
+                try {
+                    $device = DeviceGate::resolve($user, $request);
+                    if (!DeviceGate::allows($user, $device)) {
+                        if (!DeviceGate::isHoldingPath($request)) {
+                            return DeviceGate::hold($request, $device);
+                        }
+                        $deviceHeld = true;
+                    }
+                } catch (\Throwable $e) {
+                    // Unlike the rest of this middleware, an agent under a device policy is not
+                    // let through when the check itself fails.
+                    if (DeviceGate::policy($user) !== 'off') {
+                        return $this->kick($request, 'This device could not be verified. Please sign in again.');
+                    }
+                }
+            }
+
+            if ($user && !$scoped && !$deviceHeld) {
                 $sessionId = $request->hasSession() ? $request->session()->getId() : null;
 
                 // Just logged in (flag set by RecordLoginActivity, survives session regeneration):

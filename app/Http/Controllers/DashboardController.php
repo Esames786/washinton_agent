@@ -1046,11 +1046,23 @@ class DashboardController extends Controller
         // #12: per-user IP restriction (available for any role)
         $emp->ip_check_enabled = $request->has('ip_check_enabled') ? 1 : 0;
         $emp->allowed_ips      = $request->allowed_ips;
+        // Device restriction (App\Support\DeviceGate): only Admins/Managers see the field, and it
+        // is only saved once the migration has run.
+        $__devicePolicyChanged = false;
+        if ($request->filled('device_policy') && \App\Support\DeviceGate::ready()
+            && in_array((int) Auth::user()->role, [1, 9], true)
+            && array_key_exists($request->device_policy, \App\Support\DeviceGate::POLICIES)) {
+            $__devicePolicyChanged = \App\Support\DeviceGate::policy($emp) !== $request->device_policy;
+            $emp->device_policy = $request->device_policy;
+        }
         if ($emp->role == 3) {
             $emp->auto_assign = $request->auto_assign ?? 0;
             $emp->shipment_status_quote_assign = $request->shipment_status_quote_assign ?? 0;
         }
         $emp->save();
+        if ($__devicePolicyChanged) {
+            \App\Support\DeviceGate::policyChanged($emp, Auth::user());
+        }
 
         // B6: save NEW dynamic-panel (7+) permissions into user_panel_access.
         // (Panels 1-6 stay in their legacy columns above; only 7+ go to the link table.)

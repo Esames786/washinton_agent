@@ -306,6 +306,30 @@
                                 </div>
                             </div>
 
+                            {{-- Device restriction (App\Support\DeviceGate). The devices themselves are listed
+                                 below the form, with approve / reject / revoke. --}}
+                            @php
+                                $__devPolicyEditable = \App\Support\DeviceGate::ready()
+                                    && in_array((int) Auth::user()->role, [1, 9], true) && (int) $data2->role !== 1;
+                            @endphp
+                            @if ($__devPolicyEditable)
+                            <div class="col-md-12 mt-2">
+                                <div class="form-group border rounded p-3" style="background:#f8fafc;">
+                                    <label class="form-label font-weight-bold mb-1" for="device_policy">💻 Device restriction</label>
+                                    <select name="device_policy" id="device_policy" class="form-control" style="max-width:340px;">
+                                        @foreach (\App\Support\DeviceGate::POLICIES as $__pk => $__pl)
+                                            <option value="{{ $__pk }}" {{ \App\Support\DeviceGate::policy($data2) === $__pk ? 'selected' : '' }}>{{ $__pl }}</option>
+                                        @endforeach
+                                    </select>
+                                    <small class="text-muted d-block mt-1">
+                                        <strong>One device:</strong> the first device is approved automatically; any other waits for approval.
+                                        <strong>Approved devices only:</strong> every new device waits for approval.
+                                        Switching to <em>One device</em> keeps the most recently used approved device and revokes the rest.
+                                    </small>
+                                </div>
+                            </div>
+                            @endif
+
                             @php
                                 //panel type access
                                 $emp_panel_access = $data2->emp_panel_access;
@@ -2092,6 +2116,10 @@
         </div>
         <!-- End Row-->
     </form>
+
+    {{-- Device restriction: this user's devices, with approve / reject / revoke (own forms, so
+         they sit outside the main form above). --}}
+    @include('main.device._user_devices', ['deviceUser' => $data2])
 
     {{-- ── CrazyRays Application Section ─────────────────────────────────── --}}
     @php $crApp = \App\CrApplication::where('agent_id', $data2->id)->latest()->first(); @endphp
