@@ -16,8 +16,17 @@ class ScopeController extends Controller
             return back()->with('err', 'You are already in your own account.');
         }
 
-        // Store original admin id
-        session(['scope_original_id' => Auth::id()]);
+        // View-as is for Admins and Managers only, and only an Admin may view an Admin. It used to
+        // be open to every signed-in user, so an agent could open /scope/enter/1 and be the admin.
+        // Judged on the real person (the original account while already viewing as someone).
+        $actor = User::find(session('scope_original_id', Auth::id()));
+        if (! $actor || ! in_array((int) $actor->role, [1, 9], true)
+            || ((int) $target->role === 1 && (int) $actor->role !== 1)) {
+            abort(403);
+        }
+
+        // Store original admin id (kept if already viewing as someone, so Exit returns to them)
+        session(['scope_original_id' => $actor->id]);
 
         // Mark target as logged in — mirrors what WelcomeController::codeVerify does
         $target->is_login = 1;
