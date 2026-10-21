@@ -236,6 +236,22 @@
                                 </ul>
                             </li>
 
+                            {{-- Mobile menu only. On desktop "Earn With Us" / "Dashboard" is the button in
+                                 .others-option below, but responsive.css hides .others-option at <=991px, so
+                                 the copy meanmenu makes of it never showed. d-lg-none keeps the desktop bar as it is. --}}
+                            @if (Route::has('Frontend.earn'))
+                            <li class="nav-item d-lg-none">
+                                @if (!Auth::check())
+                                    <a href="{{ route('Frontend.earn') }}"
+                                       class="nav-link {{ request()->routeIs('Frontend.earn') ? 'active' : '' }}">
+                                        Earn With Us
+                                    </a>
+                                @else
+                                    <a href="{{ url('/dashboard') }}" class="nav-link">Dashboard</a>
+                                @endif
+                            </li>
+                            @endif
+
                         </ul>
                         @else
                         {{-- keep the flex spacing so the auth buttons stay right-aligned --}}

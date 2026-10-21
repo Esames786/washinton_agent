@@ -231,6 +231,9 @@ a:hover { color: var(--ht-accent-text); }
 }
 .mean-container .mean-nav ul li a:hover { color: var(--ht-accent-text) !important; }
 .mean-container .mean-nav .dropdown-menu { box-shadow: none !important; border: 0 !important; }
+/* responsive.css fixes the list at 306px, which clips a sixth item ("Earn With Us"); grow to
+   fit and only scroll when the screen is too short. */
+.mobile-nav .mobile-menu.mean-container .navbar-nav { height: auto; max-height: calc(100vh - 140px); overflow-y: auto; }
 /* Mega-menu headings carry .text-white for the old dark menu. */
 .mean-container .ul-child-custom-heading,
 .mean-container .ul-child-custom-heading.text-white {
