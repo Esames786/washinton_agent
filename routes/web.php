@@ -111,7 +111,6 @@ Route::match(['get', 'post'], '/r/webhook', 'RingCentralWebhookController@handle
 
 // Keep login accessible at /loginn
 Route::get('/loginn', 'WelcomeController@loginn');
-Route::get('/login_mohsin', 'WelcomeController@login_mohsin');
 Route::post('/getlogin2', 'WelcomeController@getlogin2')->name('getlogin2');
 Route::get('verify/{id}/{id2}/{id3}', 'WelcomeController@getVerification');
 Route::post('/code_verify', 'WelcomeController@codeVerify')->name('code_verify');

@@ -100,12 +100,15 @@
                                         {{-- Admin opens the employee in the HR ADMIN panel (admin-view SSO),
                                              not the agent-login SSO which logged the admin's browser in AS the
                                              employee and bounced straight back to this screen. --}}
+                                        @php $__canOpenHrAdmin = in_array((int) Auth::user()->role, [1, 9, 26], true); @endphp
+                                        @if ($__canOpenHrAdmin)
                                         <a href="{{ url('/hr-portal/admin/employee/' . $data2->id) }}"
                                            target="_blank"
                                            class="btn btn-sm btn-success"
                                            style="white-space:nowrap;">
                                             🔗 Open HR Portal
                                         </a>
+                                        @endif
                                     </div>
                                 </div>
 

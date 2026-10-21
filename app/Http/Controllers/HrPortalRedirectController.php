@@ -20,6 +20,10 @@ class HrPortalRedirectController extends Controller
      */
     public function adminRedirect(Request $request, int $userId): RedirectResponse
     {
+        // The HR portal signs this person in as its admin, so only CRM Admins, Managers and HR
+        // Executives may ask for the link (it was open to every signed-in user).
+        abort_unless(in_array((int) Auth::user()->role, [1, 9, 26], true), 403);
+
         $hrEmployee = \Illuminate\Support\Facades\DB::table('hr_employees')
             ->where('agent_id', $userId)
             ->first();
@@ -58,6 +62,10 @@ class HrPortalRedirectController extends Controller
     {
         $userId     = (is_numeric($userId)) ? (int) $userId : Auth::id();
         $redirectTo = $request->query('to', 'dashboard');
+
+        // Signs the browser into the HR portal as $userId: anyone may open their own, only Admins
+        // and Managers someone else's (any agent could open another agent's HR account by id).
+        abort_unless($userId === (int) Auth::id() || in_array((int) Auth::user()->role, [1, 9], true), 403);
 
         // Check if this user is linked to an HR employee record
         $hrEmployee = \Illuminate\Support\Facades\DB::table('hr_employees')

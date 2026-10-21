@@ -186,17 +186,24 @@
                                                             $hrEmp = $hrEmployees[$val->id] ?? null;
                                                             $hrStatusColors = [1=>'success',2=>'secondary',3=>'danger',4=>'warning',5=>'info',6=>'primary',7=>'warning',8=>'secondary',9=>'info',10=>'primary'];
                                                             $hrColor = $hrEmp ? ($hrStatusColors[$hrEmp->hr_status_id] ?? 'secondary') : 'light';
+                                                            // Same rules as HrPortalRedirectController::adminRedirect and ScopeController::enter.
+                                                            $__myRole = (int) Auth::user()->role;
+                                                            $__canHrProfile = in_array($__myRole, [1, 9, 26], true);
+                                                            $__canScope = $val->id !== Auth::id() && in_array($__myRole, [1, 9], true)
+                                                                && ((int) $val->role !== 1 || $__myRole === 1);
                                                         @endphp
                                                         <td>
                                                             @if($hrEmp)
                                                                 <span class="badge badge-{{ $hrColor }} text-light d-block mb-1">{{ $hrEmp->hr_status }}</span>
+                                                                @if ($__canHrProfile)
                                                                 <a href="{{ route('hr.admin.employee', $val->id) }}" target="_blank" class="btn btn-xs btn-primary d-block mb-1" style="font-size:11px;padding:2px 6px;">
                                                                     <i class="fe fe-user mr-1"></i>HR Profile
                                                                 </a>
+                                                                @endif
                                                             @else
                                                                 <span class="badge badge-light text-muted d-block mb-1">Not Linked</span>
                                                             @endif
-                                                            @if($val->id !== Auth::id())
+                                                            @if ($__canScope)
                                                                 <a href="{{ route('scope.enter', $val->id) }}" class="btn btn-xs btn-warning text-dark font-weight-bold d-block" style="font-size:11px;padding:2px 6px;">
                                                                     <i class="fe fe-eye mr-1"></i>Scope
                                                                 </a>
@@ -943,8 +950,8 @@
                 $('#rev_work_today').text(work.today_human || '0m');
                 $('#rev_work_total').text(work.total_human || '0m');
 
-                // HR Profile button
-                if (hr) {
+                // HR Profile button (Admins, Managers and HR Executives only, as on the server)
+                if (hr && {{ in_array((int) Auth::user()->role, [1, 9, 26], true) ? 'true' : 'false' }}) {
                     var hrProfileUrl = '{{ route("hr.admin.employee", "__ID__") }}'.replace('__ID__', agent.id);
                     $('#rev_hr_profile_btn').attr('href', hrProfileUrl).css('display', 'inline-block');
                     $('#rev_hr_profile_btn_footer').attr('href', hrProfileUrl).css('display', 'inline-block');
