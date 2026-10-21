@@ -206,6 +206,11 @@ class MailboxController extends Controller
         $folderRow = EmailFolder::where('email_account_id', $acc->id)->where('key', $folder)->first();
         if (!$folderRow) return response()->json(['ok' => false, 'message' => 'Folder not found.'], 404);
 
+        // A CRM-only row (sent from here, not yet matched to the server copy): nothing to fetch.
+        if (\App\Support\MailboxSent::isLocal($uid)) {
+            return $this->cachedMessageResponse($folderRow, $uid, $folder);
+        }
+
         try {
             $client     = $this->imapClient($acc);
             $realFolder = $this->resolveFolderName($client, $folder, $folderRow->imap_name);
