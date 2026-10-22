@@ -1410,6 +1410,8 @@ Route::prefix('bridge')->group(function () {
 // ============================================================
 Route::prefix('bridge')->group(function () {
     Route::post('/employee/sync', 'Bridge\EmployeeSyncController@syncEmployee');
+    // W-9 filed in the HR portal during onboarding (stored + encrypted here, like the CRM's own).
+    Route::post('/w9/submit', 'Bridge\W9BridgeController@submit')->middleware('throttle:30,1');
 });
 
 // ============================================================

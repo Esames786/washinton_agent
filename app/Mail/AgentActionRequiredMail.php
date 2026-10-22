@@ -12,13 +12,15 @@ class AgentActionRequiredMail extends Mailable
 
     public $userName;
     public $brand;
-    public $type;   // 'contract' | 'nda'
+    public $type;   // 'contract' | 'nda' | 'w9'
 
     public function __construct($userName, array $brand, string $type)
     {
         $this->userName = $userName;
         $this->brand    = $brand;
-        $this->type     = $type === 'nda' ? 'nda' : 'contract';
+        // 'w9' used to be folded into 'contract', so the W-9 request went out as "Review your
+        // Contract".
+        $this->type     = in_array($type, ['nda', 'w9'], true) ? $type : 'contract';
     }
 
     public function build()

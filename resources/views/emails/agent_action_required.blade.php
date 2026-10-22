@@ -3,13 +3,18 @@
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 @php
-    $isNda     = ($type ?? 'contract') === 'nda';
+    $type      = in_array($type ?? null, ['nda', 'w9'], true) ? $type : 'contract';
     $brandName = $brand['name'] ?? 'Hello Transport';
     $loginUrl  = $brand['login_url'] ?? 'https://hellotransport.com/loginn';
-    $title     = $isNda ? 'Please Sign Your NDA' : 'Please Review Your Contract';
-    $intro     = $isNda
-        ? 'A Non-Disclosure Agreement (NDA) has been assigned to your account and is awaiting your signature.'
-        : 'Your employment contract has been prepared and is awaiting your review and acceptance.';
+    $copy = [
+        'nda'      => ['Please Sign Your NDA', 'A Non-Disclosure Agreement (NDA) has been assigned to your account and is awaiting your signature.',
+                       'read and sign it', 'Sign NDA', 'After logging in, the NDA will be shown automatically. You won\'t be able to proceed until it is signed.'],
+        'w9'       => ['Please Complete Your W-9', 'An IRS Form W-9 has been assigned to you for US tax reporting.',
+                       'fill in and sign it', 'Complete W-9', 'It takes a few minutes; your tax number is encrypted before it is stored.'],
+        'contract' => ['Please Review Your Contract', 'Your employment contract has been prepared and is awaiting your review and acceptance.',
+                       'review and accept it', 'Review Contract', 'After logging in, the contract will be shown automatically. You won\'t be able to proceed until it is accepted.'],
+    ];
+    [$title, $intro, $action, $button, $after] = $copy[$type];
 @endphp
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f9;padding:32px 0;">
   <tr><td align="center">
@@ -29,18 +34,18 @@
         <td style="padding:34px 40px;">
           <h2 style="margin:0 0 10px;color:#062e39;font-size:19px;font-weight:700;">Hi {{ $userName }},</h2>
           <p style="margin:0 0 18px;color:#555;font-size:14px;line-height:1.7;">
-            {{ $intro }} Please log in to your portal to {{ $isNda ? 'read and sign it' : 'review and accept it' }} so you can continue working.
+            {{ $intro }} Please log in to your portal to {{ $action }} so you can continue working.
           </p>
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr><td align="center">
               <a href="{{ $loginUrl }}"
                  style="display:inline-block;background:#8fc445;color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:13px 40px;border-radius:8px;letter-spacing:.5px;text-transform:uppercase;">
-                Log In &amp; {{ $isNda ? 'Sign NDA' : 'Review Contract' }} →
+                Log In &amp; {{ $button }} →
               </a>
             </td></tr>
           </table>
           <p style="margin:22px 0 0;color:#888;font-size:12.5px;line-height:1.6;">
-            After logging in, the {{ $isNda ? 'NDA' : 'contract' }} will be shown automatically. You won't be able to proceed until it is {{ $isNda ? 'signed' : 'accepted' }}.
+            {{ $after }}
           </p>
         </td>
       </tr>
