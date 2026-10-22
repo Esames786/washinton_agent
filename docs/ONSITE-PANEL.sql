@@ -13,7 +13,16 @@
 -- =====================================================================================
 
 
--- ======================== A. HELLO DATABASE ==========================================
+-- ======================== A. HELLO (or FLORIDA) DATABASE =============================
+-- Florida (crazyrayssolutio_crazzy) started as a full copy of Hello's database, so the same
+-- statements apply there. Run A0 first on florida:
+--   max_id 641416 -> same cut-off as Hello in section B;
+--   another max_id -> use that number instead of 641416 in B1/B2;
+--   0 rows        -> export ShipA1's WHOLE table in B2 (drop the --where).
+
+-- A0. Check first.
+SELECT COUNT(*) AS total, MAX(id) AS max_id, SUM(user_id <> 0) AS owned FROM used_new_car_dealers;
+SELECT id, name FROM panel_types ORDER BY id;
 
 -- A1. The Onsite panel (same as Panel Types > Add in the admin menu).
 INSERT INTO panel_types (name, is_system, is_default, sort, status, created_at, updated_at)
