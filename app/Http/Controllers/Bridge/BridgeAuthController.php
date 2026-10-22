@@ -244,8 +244,8 @@ class BridgeAuthController extends Controller
             ], 422);
         }
 
-        // Only CrazyRays-registered users may log in via this bridge
-        $isCrUser = \App\CrApplication::where('email', $email)->exists();
+        // Only CrazyRays-registered users may log in via this bridge (not Hello's own applications)
+        $isCrUser = \App\CrApplication::crazyrays()->where('email', $email)->exists();
         if (!$isCrUser) {
             return response()->json([
                 'message' => 'This account is not registered through CrazyRays Solutions. Please log in directly at hellotransport.com.',

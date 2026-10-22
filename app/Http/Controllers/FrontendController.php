@@ -36,7 +36,7 @@ class FrontendController extends Controller
         if (Auth::check()) {
             $isCrUser = (int) (Auth::user()->is_crazyrays ?? 0) === 1
                 || $request->session()->get('cr_origin') === 'crazyrays'
-                || \App\CrApplication::where('email', Auth::user()->email)->exists();
+                || \App\CrApplication::crazyrays()->where('email', Auth::user()->email)->exists();   // not Hello's own applications
             if ($isCrUser) {
                 $crBase = rtrim(config('bridge.crazyrays.base_url', 'https://crazyrayssolutions.com.pk'), '/');
                 return redirect()->away($crBase ?: 'https://crazyrayssolutions.com.pk');
