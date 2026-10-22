@@ -36,10 +36,10 @@
         div:has(> input#emp_access_ship28),
         div:has(> input#emp_access_ship29),
         div:has(> input#emp_access_ship33) { display: none !important; }
-        /* E (rest). Assign Daily Quotes field, CSRs & Seller Agents block, "All Quotes" radio */
+        /* E (rest). Assign Daily Quotes field, CSRs & Seller Agents block. ("All Quotes" radio shown
+           again for the Onsite panel, client 23 Oct 2026.) */
         #assign_daily_qoute,
-        #all_ot,
-        .col-sm-4:has(#all_qoute) { display: none !important; }
+        #all_ot { display: none !important; }
         /* ========================================================== */
 
         .lg3-div {
@@ -657,11 +657,12 @@
                             // #9 SOFT-HIDE (Batch 5): permission IDs hidden (display:none) in ALL panel-type
                             // access modals per the client's screenshot pointers. Kept in the DOM so any
                             // already-granted permission still functions — just not shown/editable.
-                            // See SOFT_HIDE_MANIFEST.md sections A + B.
+                            // See SOFT_HIDE_MANIFEST.md sections A + B. 94/145/146 (Auto Approach access,
+                            // assign, filter) shown again for the Onsite panel (client, 23 Oct 2026).
                             $hiddenPermIds = [
                                 15,21,22,24,25,26,31,32,33,35,37,38,44,46,47,48,49,50,52,53,55,57,68,69,70,
-                                72,73,74,75,76,79,85,86,87,89,90,91,93,94,104,105,106,107,111,112,123,127,
-                                128,129,130,131,133,135,136,137,138,139,140,141,142,143,144,145,146,152,153,
+                                72,73,74,75,76,79,85,86,87,89,90,91,93,104,105,106,107,111,112,123,127,
+                                128,129,130,131,133,135,136,137,138,139,140,141,142,143,144,152,153,
                                 156,157,158,159,161,
                             ];
 

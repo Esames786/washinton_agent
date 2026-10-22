@@ -87,6 +87,30 @@ class OnsitePanelTest extends TestCase
             ->assertSee('<option value="' . $agent->id . '">', false);
     }
 
+    public function test_the_edit_screen_offers_all_quotes_and_the_auto_approach_permissions(): void
+    {
+        $agent = $this->onsiteAgent('1,2,3');
+        DB::table('user')->where('id', 1)->update(['current_session_id' => null]);
+
+        $html = $this->actingAs(User::findOrFail(1))->get('/edit_subcontractor/' . $agent->id)->assertOk()->getContent();
+
+        $this->assertStringContainsString('id="all_qoute"', $html);
+        $this->assertStringNotContainsString(':has(#all_qoute)', $html);
+
+        // Wrapper of a permission checkbox in this agent's Onsite modal: hidden or not?
+        $hidden = function (int $code) use ($html): bool {
+            $name = 'panel_access_' . $this->panel;
+            $this->assertMatchesRegularExpression('/id="' . $name . '_' . $code . '"/', $html);
+            preg_match('/<div class="col-sm-6 soft-hidden-perm"([^>]*)>\s*<input type="checkbox"\s+name="' . $name . '\[\]"\s+id="' . $name . '_' . $code . '"/', $html, $m);
+
+            return str_contains($m[1] ?? 'missing', 'display:none');
+        };
+        $this->assertFalse($hidden(94));
+        $this->assertFalse($hidden(145));
+        $this->assertFalse($hidden(146));
+        $this->assertTrue($hidden(93));   // still hidden (control)
+    }
+
     public function test_the_folder_stays_hidden_without_94_or_on_another_panel(): void
     {
         $without = $this->onsiteAgent('1,2,3');
