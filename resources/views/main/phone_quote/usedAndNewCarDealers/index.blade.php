@@ -156,7 +156,9 @@
                                     $datas = \App\UsedAndNewCarDealers::select('state', \DB::raw('MIN(id) as id'), \DB::raw('COUNT(CASE WHEN user_id = 0 THEN 1 ELSE NULL END) as total_with_user_id_0'), \DB::raw('COUNT(*) as total'), \DB::raw('COUNT(CASE WHEN user_id = 0 THEN 1 ELSE NULL END) as remaining'))->where('state', '!=', '-')->groupBy('state')->orderBy('state', 'asc')->get();
                                     // dd($Auto, $Automotive, $New, $Used);
 
-                                    $user = \App\User::where('deleted', 0)->where('role', 2)->get();
+                                    // Order Takers, plus agents on the "Onsite" job type (Onsite panel, 22 Oct 2026).
+                                    $__onsiteRole = \Illuminate\Support\Facades\DB::table('roles')->where('name', 'Onsite')->value('id');
+                                    $user = \App\User::where('deleted', 0)->whereIn('role', array_filter([2, $__onsiteRole]))->get();
 
                                     ?>
                                     <form method="post" action="{{ route('store.autos.approach') }}">
