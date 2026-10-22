@@ -837,7 +837,9 @@
                     </li>
                 @endif
                 {{-- @if (Auth::user()->id === 1) --}}
-                @if (false) {{-- Autos Approach hidden per request (#7) --}}
+                {{-- Autos Approach: permission 94 on the panel the agent is in. Hidden for everyone in
+                     July (#7); back for the Onsite panel (client, 22 Oct 2026). --}}
+                @if (in_array('94', $phoneaccess))
                     <li>
                         <a style="background: #2dd1ba8c" class="side-menu__item"
                             href="{{ route('autos.approach') }}">
