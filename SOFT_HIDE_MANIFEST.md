@@ -17,7 +17,11 @@ loop — so the marked items are hidden in **all** panel modals at once, kept in
 already-granted permission still functions.
 
 **Hidden permission IDs** (Sections A + B combined):
-`15,21,22,24,25,26,31,32,33,35,37,38,44,46,47,48,49,50,52,53,55,57,68,69,70,72,73,74,75,76,79,85,86,87,89,90,91,93,94,104,105,106,107,111,112,123,127,128,129,130,131,133,135,136,137,138,139,140,141,142,143,144,145,146,152,153,156,157,158,159,161`
+`15,21,22,24,25,26,31,32,33,35,37,38,44,46,47,48,49,50,52,53,55,57,68,69,70,72,73,74,75,76,79,85,86,87,89,90,91,93,104,105,106,107,111,112,123,127,128,129,130,131,133,135,136,137,138,139,140,141,142,143,144,152,153,156,157,158,159,161`
+
+**Shown again 23 Oct 2026 (Onsite panel):** 94 Access Auto Approach, 145 Auto Approach Assign,
+146 Auto Approach Filter (removed from `$hiddenPermIds`); the Autos Approach sidebar folder is
+gated by 94 on the current panel again (was `@if (false)`).
 
 Names hidden (⏳ list retained for reference):
 Transfer Quotes, Coupons, Feedbacks, Storage, Dispatch Report, Performance Report,
@@ -64,8 +68,8 @@ Hidden ids: action 11 (Carrier Record), 12 (Storage Record), 13 (Move to Storage
 File: `edit_employee.blade.php`
 ✅ DONE — tabs **Show Data** (`#exampleModal3`), **Profile Access** (`#exampleModal5`),
 **Employee Report** (`#exampleModal7`) hidden via `button[data-target]` CSS.
-✅ DONE (rest) — **Assign Daily Quotes** (`#assign_daily_qoute`), **Quotes Assign → All Quotes**
-(`.col-sm-4:has(#all_qoute)`), **CSRs And Seller Agents** (`#all_ot`) hidden via CSS; the
+✅ DONE (rest) — **Assign Daily Quotes** (`#assign_daily_qoute`), ~~**Quotes Assign → All Quotes**~~
+(shown again 23 Oct 2026 for the Onsite panel), **CSRs And Seller Agents** (`#all_ot`) hidden via CSS; the
 `penalytype` panel radios **Panel 2/Testing/Website/Panel 5/6** wrapped in a `display:none` span
 (Panel 1 kept). All in `edit_employee.blade.php`.
 
