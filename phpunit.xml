@@ -39,5 +39,6 @@
         <env name="DB_USERNAME" value="root" force="true"/>
         <env name="DB_PASSWORD" value="" force="true"/>
         <env name="BROADCAST_DRIVER" value="log" force="true"/>
+        <env name="HELLOTRANSPORT_BRIDGE_KEY" value="test-bridge-key" force="true"/>
     </php>
 </phpunit>

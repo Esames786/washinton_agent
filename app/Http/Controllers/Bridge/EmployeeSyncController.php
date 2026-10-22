@@ -121,6 +121,13 @@ class EmployeeSyncController extends Controller
                 ], 500);
             }
 
+            // A W-9 the agent filed in the HR portal before this account existed now belongs to it.
+            if (\Illuminate\Support\Facades\Schema::hasTable('w9_forms')) {
+                \App\W9Form::whereNull('user_id')
+                    ->where('hr_employee_id', $request->input('employee_id'))
+                    ->update(['user_id' => $user->id]);
+            }
+
             DB::commit();
 
             Log::info('EmployeeSyncController: Employee synced successfully', [

@@ -22,6 +22,7 @@ class VerifyCsrfToken extends Middleware
         'bridge/washington/agent/commission',
         'bridge/washington/agent/status',
         'bridge/employee/sync',  // HR employee sync endpoint
+        'bridge/w9/submit',      // W-9 filed in the HR portal (X-Bridge-Key)
         // Chat widget endpoints (called from iframe)
         'chat/send',
         'chat/history',

@@ -25,11 +25,12 @@
             ->first();
 
         if ($hrEmployee) {
-            // Pending while in "Document Verification" (status 7) or account still inactive,
-            // or an NDA signature / W-9 submission is still outstanding.
+            // Pending while in "Document Verification" (status 7) or account still inactive, or an
+            // NDA signature is still outstanding. A W-9 no longer locks the portal: it is part of
+            // the HR onboarding now and only a reminder here (client, 23 Oct 2026).
             $isDocVerification = (int) $hrEmployee->employee_status_id === 7;
             $isInactive        = (int) auth()->user()->status === 0;
-            $gateActive        = $isDocVerification || $isInactive || $ndaRequired || $w9Required;
+            $gateActive        = $isDocVerification || $isInactive || $ndaRequired;
 
             if ($gateActive) {
                 $docCount = \Illuminate\Support\Facades\DB::table('hr_employee_documents')
@@ -197,5 +198,19 @@
 <script>
     document.body.classList.add('acct-gate-active');
 </script>
+@elseif($w9Required)
+{{-- W-9 still owed: a reminder the agent can work around, not a lock. --}}
+<div id="w9Reminder" style="position:fixed;left:16px;right:16px;bottom:16px;z-index:9990;max-width:560px;margin:0 auto;
+     background:#fff;border:1px solid #f0c36d;border-left:5px solid #f0ad4e;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.18);
+     padding:12px 14px;display:flex;align-items:center;gap:12px;font-family:'Segoe UI',Arial,sans-serif;">
+    <span style="font-size:22px;">🧾</span>
+    <div style="flex:1;font-size:13px;color:#374151;line-height:1.5;">
+        <strong>Please complete your W-9.</strong> IRS Form W-9 is needed for US tax reporting; it takes a minute.
+    </div>
+    <button type="button" onclick="window.openW9Form && window.openW9Form();"
+            style="background:#1a73e8;color:#fff;border:none;border-radius:7px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer;">Fill W-9</button>
+    <button type="button" onclick="document.getElementById('w9Reminder').remove();" aria-label="Later"
+            style="background:none;border:none;color:#9ca3af;font-size:20px;line-height:1;cursor:pointer;">&times;</button>
+</div>
 @endif
 @endauth
