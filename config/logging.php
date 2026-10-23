@@ -60,6 +60,23 @@ return [
             'days' => 14,
         ],
 
+        // R-Dialer token refreshes and webhooks (RingCentralApiController). Also undefined, so
+        // every token refresh wrote a full EMERGENCY stack trace into laravel.log and buried the
+        // real errors (florida, 23 Oct 2026).
+        'ringcentral_token' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/ringcentral_token.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
+        'ringcentral_webhook' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/ringcentral_webhook.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),

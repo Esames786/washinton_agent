@@ -118,6 +118,8 @@ Route::post('/register', 'PublicSignupController@store')->name('register.store')
 // DASHBOARD
 Route::get('/dashboard', 'DashboardController@getDashboard')->name('dashboard');
 Route::get('/logout', 'WelcomeController@logout');
+// One-time sign-in links from `php artisan login:link` (signed, expiring, single use).
+Route::get('/login-link/{nonce}', 'LoginLinkController')->middleware(['signed', 'throttle:20,1'])->name('login.link');
 Route::get('/logoutAllAccounts', 'WelcomeController@logoutAllAccounts');
 
 
