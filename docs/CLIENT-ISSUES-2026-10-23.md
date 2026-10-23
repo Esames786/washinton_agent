@@ -13,7 +13,8 @@ below is done.**
 | H2 | Two contract e-mails | Status → Pending Contract e-mails even with no contract; Save Contract e-mails again | ✅ HR `d0dd025` |
 | H3 | CRM account created before Onboarding | A name/e-mail/phone/role edit synced to the CRM at any status | ✅ HR `d0dd025` |
 | H4 | W-9 locks the CRM; belongs in HR, optional | The W-9 flag and form lived only in the CRM, and the gate treated it as a lock | ✅ CRM `edfe614` + HR `5e62e8c` |
-| H5 | Revoked device → Sign out lands on the CrazyRays site | Logout treated every job applicant as CrazyRays, including Hello's own (`brand = hello`) | ✅ CRM `84cfca2` |
+| H5 | Revoked device → Sign out lands on the CrazyRays site | Logout treated every job applicant as CrazyRays, including Hello's own (`brand = hello`) | ✅ CRM `84cfca2` (Hello only) |
+| M | Florida: both managers must edit/update accounts | Dashboard nav hid the subcontractor list from managers without permission 20 | ✅ crazyrays `ae0e81f` + SQL below |
 
 ---
 
@@ -142,7 +143,10 @@ confirm the end of that sentence.**
   `brand = hello`). Any Hello agent who applied through the website had this on every logout, not
   only on the device page.
 - **Fix:** logout, the home-page redirect and the CrazyRays bridge login count only CrazyRays
-  applications (`CrApplication::crazyrays()`). On both `main` and `crazyrays`.
+  applications (`CrApplication::crazyrays()`). **Hello (`main`) only**: florida has only CrazyRays
+  applications and no `brand` column, so its original check is right. The cherry-pick to
+  `crazyrays` was reverted (`5dc3843`) before any deploy: that scope doesn't exist there and every
+  florida logout would have failed.
 
 ---
 
