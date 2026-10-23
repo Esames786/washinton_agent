@@ -135,9 +135,7 @@ class WelcomeController extends Controller
         if (isset(Auth::user()->id)) {
             $isCrUser = (int) (Auth::user()->is_crazyrays ?? 0) === 1
                 || $request->session()->get('cr_origin') === 'crazyrays'
-                // Only CrazyRays applications: Hello's own signup writes to the same table
-                // (brand = hello), and those agents were being sent to the CrazyRays site.
-                || \App\CrApplication::crazyrays()->where('email', Auth::user()->email)->exists();
+                || \App\CrApplication::where('email', Auth::user()->email)->exists();
 
             $attendance = attendance::where('user_id', '=', Auth::user()->id)
                 ->where('attendance_date', 'like', '%' . date('Y-m-d') . '%')
