@@ -1036,7 +1036,10 @@ class DashboardController extends Controller
         $emp->assign_daily_qoute = $request->assign_daily_qoute ?? 0;
         $emp->private_OT = $request->private_OT ?? 0;
         $emp->sheet_access = $total_sheet_access;
-        $emp->emp_panel_access = $total_emp_panel_access;
+        // No panel ticked: keep the panels the account already has. This variable was never set
+        // then, so every such save died with "Undefined variable" and the page showed nothing
+        // (florida, 23 Oct 2026). Taking access away is what the "No Access" panel is for.
+        $emp->emp_panel_access = $total_emp_panel_access ?? $emp->emp_panel_access;
         $emp->emp_access_guide = $total_emp_access_guide;
         // #5: persist per-agent guide-video assignment on EDIT too (save_employee already did
         // this for create; update_employee was missing it, so edits silently dropped the picks).
