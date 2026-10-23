@@ -284,7 +284,10 @@ if (!function_exists('get_user_name123')) {
                     </li>
                 @endif
 
-                @if (in_array("20", $phoneaccess))
+                {{-- #13: managers (role 9) can view subcontractors too, as on the inner pages' nav. On
+                     florida this dropdown is the way into the subcontractor list (client, 23 Oct 2026). --}}
+                @php $__showSubcontractorDocs = Auth::user()->role == 1 || Auth::user()->role == 9 || in_array("20", $phoneaccess); @endphp
+                @if ($__showSubcontractorDocs)
                     {{-- #2: dropdown panel that NAMES the subcontractors who submitted documents awaiting
                          verification, so it's clear WHICH agent to review (not just a count). --}}
                     <li class="nav-item dropdown sc-docs-dd" style="position:relative;">
