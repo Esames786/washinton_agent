@@ -78,13 +78,21 @@
                     ];
                 @endphp
 
+                <style>
+                    .ht-benefit-link { display:block; color:inherit; text-decoration:none; }
+                    .ht-benefit-link .single-services-box { cursor:pointer; transition:transform .15s, box-shadow .15s; }
+                    .ht-benefit-link:hover .single-services-box { transform:translateY(-3px); box-shadow:0 10px 24px rgba(6,46,57,.15); }
+                </style>
+                {{-- Each card leads to the signup page, like "Apply to Join the Network" below (client, 24 Oct 2026). --}}
                 @foreach($benefits as $b)
                     <div class="col-lg-4 col-sm-6">
-                        <div class="single-services-box">
-                            <i class="{{ $b['icon'] }}"></i>
-                            <h3>{!! $b['title'] !!}</h3>
-                            <p>{!! $b['text'] !!}</p>
-                        </div>
+                        <a href="{{ url('/register') }}" class="ht-benefit-link" aria-label="{{ strip_tags(html_entity_decode($b['title'])) }} — apply to join">
+                            <div class="single-services-box">
+                                <i class="{{ $b['icon'] }}"></i>
+                                <h3>{!! $b['title'] !!}</h3>
+                                <p>{!! $b['text'] !!}</p>
+                            </div>
+                        </a>
                     </div>
                 @endforeach
             </div>
