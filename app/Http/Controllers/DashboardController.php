@@ -726,8 +726,44 @@ class DashboardController extends Controller
         }
     }
 
+    /**
+     * The employee forms send each checkbox group as one "<name>__csv" field (see compactFormData()
+     * in register/edit_employee and register/index): one field per box made a fully-permissioned
+     * manager's form 1,100+ fields, PHP's max_input_vars (1000) silently dropped the rest, and the
+     * save wiped Action Access, Address and more (florida, 25 Oct 2026). Turn them back into the
+     * lists the code below expects. Nothing ticked = nothing sent, exactly as before.
+     */
+    private function expandCsvFields(Request $request): void
+    {
+        foreach ($request->request->all() as $key => $value) {
+            if (is_string($key) && str_ends_with($key, '__csv') && is_string($value) && $value !== '') {
+                $request->merge([substr($key, 0, -5) => explode(',', $value)]);
+            }
+        }
+    }
+
+    /**
+     * True when PHP cut the form off: it stops reading at max_input_vars, so a request holding
+     * exactly that many values is incomplete, and saving it would blank everything that was cut.
+     */
+    private function formLooksTruncated(Request $request): bool
+    {
+        $limit = (int) ini_get('max_input_vars');
+        if ($limit <= 0) {
+            return false;
+        }
+        $count = 0;
+        $values = $request->request->all();   // by reference below, so it needs a variable
+        array_walk_recursive($values, function () use (&$count) { $count++; });
+
+        return $count >= $limit;
+    }
     public function save_employee(Request $request)
     {
+        if ($this->formLooksTruncated($request)) {
+            return 'NOT SAVED: the form reached the server incomplete (too many fields). Please reload the page and save again.';
+        }
+        $this->expandCsvFields($request);
         // echo "<pre>";print_r($request->all());exit();
         $total_emp_access_phone = "";
         $total_emp_access_web = "";
@@ -921,6 +957,10 @@ class DashboardController extends Controller
     }
     public function update_employee(Request $request)
     {
+        if ($this->formLooksTruncated($request)) {
+            return 'NOT SAVED: the form reached the server incomplete (too many fields). Please reload the page and save again.';
+        }
+        $this->expandCsvFields($request);
         // dd($request->toArray());
         $total_emp_access_phone = "";
         $total_emp_access_web = "";
