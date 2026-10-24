@@ -1444,13 +1444,31 @@
 
 @section('extraScript')
     <script>
+        // One field per checkbox group instead of one per box. A manager with every permission on
+        // every panel posted 1,100+ fields; PHP (max_input_vars = 1000) silently dropped the rest of
+        // the form and the save wiped Action Access, Address and more (florida, 25 Oct 2026).
+        // DashboardController::expandCsvFields() turns "<name>__csv" back into the list.
+        function compactFormData(form) {
+            var fd = new FormData(form), groups = {};
+            $(form).find('input[type="checkbox"][name$="[]"]').each(function () {
+                groups[this.name] = groups[this.name] || [];
+                if (this.checked && !this.disabled) groups[this.name].push(this.value);
+            });
+            Object.keys(groups).forEach(function (name) {
+                fd.delete(name);
+                // Nothing ticked: send nothing, exactly as before.
+                if (groups[name].length) fd.append(name.slice(0, -2) + '__csv', groups[name].join(','));
+            });
+            return fd;
+        }
+
         $(document).ready(function(e) {
             $("#form").on('submit', (function(e) {
                 e.preventDefault();
                 $.ajax({
                     url: "/save_employee",
                     type: "POST",
-                    data: new FormData(this),
+                    data: compactFormData(this),
                     contentType: false,
                     cache: false,
                     processData: false,
