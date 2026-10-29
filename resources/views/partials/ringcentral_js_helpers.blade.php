@@ -3,7 +3,16 @@
 // R-Dialer Helper Functions (Shared across all views)
 // ═══════════════════════════════════════════════════════════════
 
-var phoneaccessArray = <?php echo isset($phoneaccessJson) ? $phoneaccessJson : '[]'; ?>;
+<?php
+// Only the order folders and the query table pass $phoneaccessJson. Every other page with call buttons
+// (Autos Approach, dashboard, customers, search, payments…) passed nothing, so for everyone but admins
+// the R-Dialer check below failed there and calls fell back to the desktop-app links: "the call goes to
+// the old app when I change page" (florida, 29 Oct 2026). Work it out from the agent's current panel.
+$__rcAccessJson = $phoneaccessJson ?? json_encode(explode(',', (string) Auth::user()->accessForPanel(
+    (int) (\App\user_setting::where('user_id', Auth::id())->value('penal_type') ?: 1)
+)));
+?>
+var phoneaccessArray = <?php echo $__rcAccessJson; ?>;
 // R-Dialer is permission 169 — the code the "R-Dialer (RingCentral Phone)" checkbox writes, and the
 // one RingCentralAccess middleware, the nav entry and the mainsite RC stream all check.
 // This line checked 161, which is "Commission Report": an unrelated feature. An agent granted
