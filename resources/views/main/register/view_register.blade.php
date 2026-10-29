@@ -120,10 +120,10 @@
                                 <?php
                                 $user = \App\User::where('role', null)->where('deleted', 0)->get();
                                 ?>
-                                {{-- B6: No Roles + Deleted tabs hidden --}}
+                                {{-- B6: No Roles tab hidden. Deleted shown again (client, 29 Oct 2026). --}}
                                 <button class="tablinks" style="display:none;" onclick="openCity(event, 'No_Roles')">No Roles
                                     ({{ count($user) }})</button>
-                                <button class="tablinks" style="display:none;" onclick="openCity(event, 'Deleted')">Deleted
+                                <button class="tablinks" onclick="openCity(event, 'Deleted')">Deleted
                                     ({{ count($deleted) }})</button>
                             </div>
 

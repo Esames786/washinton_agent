@@ -461,6 +461,12 @@ class User extends Authenticatable
         return $this->hasOne(ShipperDetailsAssignCarrier::class, 'orderTaker', 'id');
     }
 
+    /** Dealer Master: which dealers this agent is allowed to work. */
+    public function assignedDataNewDealerMaster()
+    {
+        return $this->hasOne(DealerMasterAssign::class, 'orderTaker', 'id');
+    }
+
     public function callCountUserNewApproachCarrier()
     {
         return $this->hasMany(ShipperDetailsPhoneCarrier::class, 'userId')->where('type',1);

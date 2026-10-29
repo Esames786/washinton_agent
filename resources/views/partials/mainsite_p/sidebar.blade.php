@@ -864,6 +864,18 @@
                             </a>
                         </li>
                     @endif
+                    {{-- Dealer Master (from Washington, client 29 Oct 2026): 181 on the agent's panel;
+                         admins and managers always, as DealerMasterController allows them. --}}
+                    @if (in_array((int) Auth::user()->role, [1, 9], true) || in_array('181', $phoneaccess))
+                        <li>
+                            <a style="background: #8fc4458c" class="side-menu__item"
+                               href="{{ route('dealer.master') }}">
+                                <span class="js-search-result-thumbnail responsive-img img_border fa fa-car"></span>
+                                <span class="side-menu__label">Dealer Master</span>
+                                <span class="badge badge-warning side-badge" style="font-size: 15px"></span>
+                            </a>
+                        </li>
+                    @endif
                     {{-- Hidden per request: DayDispatch (Shipper/Carrier/Broker), Dealer & Carrier Approaching
                     @if (Auth::user()->userRole->name == 'Admin' || in_array('137', $phoneaccess))
                         <li>

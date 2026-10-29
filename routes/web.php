@@ -727,7 +727,19 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/get/call/history', 'phone_quote\neworder\NewOrder@getHistory')->name('get.call.history');
         Route::get('/edit/allowed-states', 'phone_quote\neworder\NewOrder@editAllowedStates')->name('edit.allowed.states');
         Route::get('/filter/allowed-states', 'phone_quote\neworder\NewOrder@filterUsedAndNew')->name('filter.usedAndNew.data');
-        Route::get('/double_booking', 'phone_quote\neworder\NewOrder@double_booking');
+
+        // Dealer Master (DealerRater list, from Washington) - own tables, own permissions 181/182/183.
+        Route::get('/dealer-master', 'phone_quote\DealerMasterController@index')->name('dealer.master');
+        Route::get('/dealer-master/search', 'phone_quote\DealerMasterController@search')->name('dealer.master.search');
+        Route::get('/dealer-master/all', 'phone_quote\DealerMasterController@all')->name('dealer.master.all');
+        Route::post('/dealer-master/assign', 'phone_quote\DealerMasterController@storeAssign')->name('dealer.master.assign');
+        Route::get('/dealer-master/history', 'phone_quote\DealerMasterController@history')->name('dealer.master.history');
+        Route::post('/dealer-master/history', 'phone_quote\DealerMasterController@storeHistory')->name('dealer.master.history.store');
+        Route::post('/dealer-master/phone-count', 'phone_quote\DealerMasterController@phoneCount')->name('dealer.master.phone.count');
+        Route::post('/dealer-master/save-field', 'phone_quote\DealerMasterController@saveField')->name('dealer.master.save.field');
+        Route::get('/dealer-master/report', 'phone_quote\DealerMasterController@assignedReport')->name('dealer.master.report');
+
+        Route::get('/double_booking','phone_quote\neworder\NewOrder@double_booking');
         Route::get('/double_booking_load', 'phone_quote\neworder\NewOrder@double_booking_load');
         Route::get('/double_booking_load_data', 'phone_quote\neworder\NewOrder@double_booking_load_data');
 
