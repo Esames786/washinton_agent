@@ -6,7 +6,7 @@
 <p>Welcome to Hello Transport. These Terms and Conditions govern your use of our website, vehicle shipping services, and transportation arrangements. By accessing our website or booking a service, you agree to these terms. If you do not agree, please refrain from using our services.</p>
 
 <h2 class="ht-section-title-2">2. Vehicle Shipping Arrangements</h2>
-<p>Hello Transport arranges vehicle transportation through third-party carriers. Pickup and delivery dates are estimates based on carrier availability and scheduling, not guaranteed appointments. Transportation may be delayed by operational issues or circumstances outside our control.</p>
+<p>Hello Transport is registered with the Federal Motor Carrier Safety Administration (FMCSA) under USDOT No. 4572171 and MC No. 1818817. Hello Transport arranges vehicle transportation through third-party carriers. Pickup and delivery dates are estimates based on carrier availability and scheduling, not guaranteed appointments. Transportation may be delayed by operational issues or circumstances outside our control.</p>
 
 <h2 class="ht-section-title-2">3. Booking Confirmation and Repeat Orders</h2>
 <p>New customers may be required to complete and sign a booking form outlining their shipment details and agreed terms. We may retain this form for reference. For repeat bookings, we may use the information already on file, subject to confirmation of the new shipment details. Any previous agreement will apply to future orders only where its terms validly cover those orders and the customer has agreed to them.</p>

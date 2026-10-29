@@ -5,7 +5,21 @@
         @if (!config('app.is_agent_portal'))
         <div class="row">
 
-            <!-- ===== LOGO + ABOUT ===== -->
+            <!-- ===== LOGO + ABOUT + CONTACT ===== -->
+            @php
+                // Profile links (client is sending them). An empty link shows its icon/logo without a link.
+                $htSocial = [
+                    ['bxl-facebook', 'Facebook', ''],
+                    ['bxl-instagram', 'Instagram', ''],
+                    ['bxl-linkedin-square', 'LinkedIn', ''],
+                    ['bxl-twitter', 'Twitter', ''],
+                ];
+                $htBadges = [
+                    ['bbb.webp', 'BBB', '', 48, 48],
+                    ['google-reviews.webp', 'Google Reviews', '', 80, 42],
+                    ['trustpilot.webp', 'Trustpilot', '', 80, 42],
+                ];
+            @endphp
             <div class="col-lg-3 col-md-6">
                 <div class="single-footer-widget">
                     <a href="{{ route('Frontend.index') }}" class="logo">
@@ -17,20 +31,37 @@
                         and vehicles safely across the United States.
                     </p>
 
+                    <p class="ht-footer-follow">Follow Us on Social Media</p>
                     <ul class="social-icon">
+                        @foreach ($htSocial as [$icon, $label, $url])
+                            <li>
+                                <a @if ($url) href="{{ $url }}" target="_blank" rel="noopener noreferrer" @endif aria-label="{{ $label }}" title="{{ $label }}"><i class="bx {{ $icon }}"></i></a>
+                            </li>
+                        @endforeach
+                    </ul>
+
+                    <ul class="ht-footer-contact">
                         <li>
-                            <a href="#" target="_blank"><i class="bx bxl-facebook"></i></a>
+                            <i class="bx bx-map"></i>
+                            <a href="https://www.google.com/maps/search/?api=1&amp;query=6340+Security+Blvd+Ste+100+Baltimore+MD+21207" target="_blank" rel="noopener noreferrer">6340 Security Blvd Ste 100, Baltimore, MD 21207</a>
                         </li>
                         <li>
-                            <a href="#" target="_blank"><i class="bx bxl-instagram"></i></a>
+                            <i class="bx bx-envelope"></i>
+                            <a href="mailto:info@hellotransport.com">info@hellotransport.com</a>
                         </li>
                         <li>
-                            <a href="#" target="_blank"><i class="bx bxl-linkedin-square"></i></a>
-                        </li>
-                        <li>
-                            <a href="#" target="_blank"><i class="bx bxl-twitter"></i></a>
+                            <i class="bx bxs-truck"></i>
+                            <span>USDOT No. 4572171 | MC No. 1818817</span>
                         </li>
                     </ul>
+
+                    <div class="ht-footer-badges">
+                        @foreach ($htBadges as [$file, $label, $url, $w, $h])
+                            <a @if ($url) href="{{ $url }}" target="_blank" rel="noopener noreferrer" @endif title="{{ $label }}">
+                                <img src="{{ asset('frontend/img/badges/' . $file) }}" alt="{{ $label }}" width="{{ $w }}" height="{{ $h }}" loading="lazy">
+                            </a>
+                        @endforeach
+                    </div>
                 </div>
             </div>
 

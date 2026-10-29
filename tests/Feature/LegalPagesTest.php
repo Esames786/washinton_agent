@@ -19,7 +19,8 @@ class LegalPagesTest extends TestCase
             $html = $this->get($path)->assertOk()->getContent();
 
             foreach (['1. Agreement to These Terms', '17. Order Cancellation and Refunds', '28. Ownership and Required Vehicle Documents',
-                '$99 cancellation fee', '$199 cancellation fee', 'Baltimore County, Maryland', 'We do not sell or rent your personal information'] as $text) {
+                '$99 cancellation fee', '$199 cancellation fee', 'Baltimore County, Maryland', 'We do not sell or rent your personal information',
+                'USDOT No. 4572171 and MC No. 1818817'] as $text) {
                 $this->assertStringContainsString(e($text), $html, "$path is missing: $text");
             }
             foreach (self::DRAFT_NOTES as $note) {
