@@ -180,7 +180,7 @@ class DealerMasterController extends Controller
 
         $data    = DealerMaster::with('user')->orderBy('id', 'DESC')->paginate(20);
         $agents  = User::where('deleted', 0)->where('role', '!=', 1)
-            ->orderBy('name')->get(['id', 'name', 'last_name', 'slug']);
+            ->orderBy('name')->get(['id', 'name', 'last_name', 'slug', 'status']);
         $states  = $this->stateList();
         $assigns = DealerMasterAssign::with('orderTakerUser')->get();
 
@@ -188,10 +188,11 @@ class DealerMasterController extends Controller
     }
 
     /**
-     * Hand a batch of dealers to an agent.
+     * Set an agent's dealer queue.
      *
-     * Only ever picks up UNASSIGNED rows (`user_id = 0`), so re-running this can never take a
-     * dealer away from the agent already working it.
+     * "Records" is the agent's whole queue from the chosen states, and a re-save replaces it (see
+     * LeadQueue): it used to be a number per state and to add on top, so "50" left agents holding
+     * 93 or 100 (florida, 31 Oct 2026). New dealers only ever come from the unassigned pool.
      */
     public function storeAssign(Request $request)
     {
@@ -220,16 +221,13 @@ class DealerMasterController extends Controller
             ]
         );
 
-        $assigned = 0;
-        foreach ($request->state as $st) {
-            $assigned += DealerMaster::where('user_id', 0)
-                ->where('states', $st)
-                ->where('has_phone', (int) $request->w_phone2)
-                ->limit((int) $request->recordsAllowed)
-                ->update(['user_id' => (int) $request->orderTaker]);
-        }
+        $states = $request->state;
+        $withPhone = (int) $request->w_phone2;
+        $queue = \App\Support\LeadQueue::set(DealerMaster::class, (int) $request->orderTaker, (int) $request->recordsAllowed,
+            fn ($q) => $q->whereIn('states', $states)->where('has_phone', $withPhone));
 
-        return back()->with('success', $assigned . ' dealer(s) assigned.');
+        return back()->with('success', "The agent now has {$queue['holding']} dealer(s)"
+            . " ({$queue['added']} added, {$queue['released']} returned to the pool).");
     }
 
     // ── Call history ─────────────────────────────────────────────────────────

@@ -99,4 +99,29 @@ class DealerMasterTest extends TestCase
         $this->assertSame((int) $agent->id, (int) DB::table('dealer_masters')->where('id', $this->dealers[0])->value('user_id'));
         $this->assertSame(0, (int) DB::table('dealer_masters')->where('id', $this->dealers[1])->value('user_id'));
     }
+
+    /** Florida, 31 Oct: "50" left agents with 93 / 100 because every Save added another batch per state. */
+    public function test_records_is_the_whole_list_and_a_resave_replaces_it(): void
+    {
+        foreach (['ZZ', 'ZZ', 'ZZ', 'ZY', 'ZY'] as $i => $st) {
+            $this->dealers[] = DB::table('dealer_masters')->insertGetId(['name' => "Queue $i", 'states' => $st, 'phone' => '1',
+                'has_phone' => 1, 'user_id' => 0, 'type' => 6, 'created_at' => now(), 'updated_at' => now()]);
+        }
+        $manager = $this->user(9, 1, '1');
+        $agent = $this->user(2, 1, '1,181');
+        $held = fn (string $st = null) => DB::table('dealer_masters')->where('user_id', $agent->id)
+            ->when($st, fn ($q) => $q->where('states', $st))->count();
+        $assign = fn (array $states, int $n) => $this->actingAs($manager)->post('/dealer-master/assign',
+            ['orderTaker' => $agent->id, 'state' => $states, 'recordsAllowed' => $n, 'w_phone2' => 1]);
+
+        $assign(['ZZ', 'ZY'], 2)->assertSessionHas('success');
+        $this->assertSame(2, $held());                     // 2 in all, not 2 per state
+
+        $assign(['ZZ', 'ZY'], 2);
+        $this->assertSame(2, $held());                     // saving again does not add 2 more
+
+        $assign(['ZY'], 2);
+        $this->assertSame(0, $held('ZZ'));                 // the old state went back to the pool
+        $this->assertSame(2, $held('ZY'));
+    }
 }

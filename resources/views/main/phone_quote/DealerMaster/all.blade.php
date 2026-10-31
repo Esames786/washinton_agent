@@ -23,8 +23,9 @@
         <div class="card-header"><strong>Hand records to an agent</strong></div>
         <div class="card-body">
             <p class="text-muted">
-                Only <strong>unassigned</strong> dealers are handed out, so running this again can never
-                take a dealer away from the agent already working it. An agent keeps a record until they
+                <strong>Records</strong> is the agent's whole list from the chosen states. Assigning again
+                replaces the list: dealers outside the new choice go back to the pool, and the list is
+                topped up with <strong>unassigned</strong> dealers. An agent keeps a record until they
                 save a history note against it, at which point it returns to the pool.
             </p>
 
@@ -36,7 +37,8 @@
                     <select name="orderTaker" class="form-control" required>
                         <option value="">Select agent…</option>
                         @foreach ($agents as $a)
-                            <option value="{{ $a->id }}">{{ $a->slug ?: trim($a->name . ' ' . $a->last_name) }}</option>
+                            {{-- An inactive agent cannot sign in to see what is assigned to them. --}}
+                            <option value="{{ $a->id }}">{{ $a->slug ?: trim($a->name . ' ' . $a->last_name) }}{{ (int) $a->status === 1 ? '' : ' (inactive)' }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -56,7 +58,7 @@
                 </div>
 
                 <div class="form-group col-md-2">
-                    <label class="form-label">Records per state <span class="text-danger">*</span></label>
+                    <label class="form-label">Records <span class="text-danger">*</span></label>
                     <input type="number" name="recordsAllowed" class="form-control" min="1" max="100000"
                            value="50" required>
                 </div>

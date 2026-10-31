@@ -1392,17 +1392,17 @@ class NewOrder extends Controller
                 $data->save();
             }
 
-            foreach ($request->state as $state) {
-                foreach ($request->category_assign as $category) {
-                    UsedAndNewCarDealers::where('user_id', 0)
-                        ->where('state', 'LIKE', '%' . $state . '%')
-                        ->where('category', 'LIKE', '%' . $category . '%')
-                        ->take($request->recordsAllowed)
-                        ->update(['user_id' => $request->orderTaker]);
-                }
-            }
+            // "Allow No. of Records" is the agent's whole queue, not a number per state x category
+            // (50 with 10 categories handed out 500), and a re-save replaces the queue instead of
+            // adding to it. Exact matches: LIKE put "AT NE" leads under NE and "New And Used Car
+            // Dealers" under Used Car Dealer, which the counts in the dropdown never included.
+            $states = array_values(array_filter((array) $request->state, 'strlen'));
+            $categories = array_values(array_filter((array) $request->category_assign, 'strlen'));
+            $queue = \App\Support\LeadQueue::set(UsedAndNewCarDealers::class, (int) $request->orderTaker, (int) $request->recordsAllowed,
+                fn ($q) => $q->whereIn('state', $states)->whereIn('category', $categories));
 
-            return back();
+            return back()->with('flash_message', "The agent now has {$queue['holding']} leads"
+                . " ({$queue['added']} added, {$queue['released']} returned to the pool).");
         } else {
             return redirect('/loginn/');
         }
