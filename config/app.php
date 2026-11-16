@@ -37,6 +37,11 @@ return [
 
     'env' => env('APP_ENV', 'production'),
 
+    // Old manual "Check Price" button on the quote screens: a "Check Price" account types the
+    // price in by hand. Off since batch 5; switched on temporarily while Central Dispatch
+    // pricing is down (16 Nov 2026). See partials/old_check_price_switch.blade.php.
+    'old_check_price' => (bool) env('OLD_CHECK_PRICE', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode

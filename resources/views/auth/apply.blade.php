@@ -462,12 +462,40 @@
         return (opt && opt.getAttribute('data-dial')) || '+1';
     }
 
+    // How many digits the local part may have for the chosen dial code. +1 (US/Canada)
+    // numbers are exactly 10; elsewhere the whole number may not pass 15 digits (E.164).
+    // Must match HelloApplicationController::phoneLengthFor().
+    function phoneLimits() {
+        var dial = currentDial();
+        if (dial === '+1') return { min: 10, max: 10 };
+        return { min: 7, max: Math.max(7, 15 - dial.replace(/\D/g, '').length) };
+    }
+
     function syncPhone() {
         if (!phoneLocal || !phoneFull) return;
-        var digits = phoneLocal.value.replace(/\D/g, '').slice(0, 15);
+        var lim = phoneLimits();
+        var digits = phoneLocal.value.replace(/\D/g, '').slice(0, lim.max);
         phoneLocal.value = digits;
+        phoneLocal.setAttribute('maxlength', lim.max);
         phoneFull.value  = digits ? currentDial() + ' ' + digits : '';
     }
+
+    // Names and city take letters only (plus space . ' -), as the server requires.
+    // Anything else is dropped as it is typed or pasted (client, 15 Nov 2026).
+    var LETTERS_ONLY = /^[A-Za-z][A-Za-z\s.'\-]*$/;
+    ['name', 'last_name', 'city'].forEach(function (n) {
+        var input = form.querySelector('[name="' + n + '"]');
+        if (!input) return;
+        input.addEventListener('input', function () {
+            var cleaned = input.value.replace(/[^A-Za-z\s.'\-]/g, '').replace(/^[\s.'\-]+/, '');
+            if (cleaned !== input.value) {
+                input.value = cleaned;
+                showError(n, 'Letters only — numbers and symbols are not allowed.');
+            } else {
+                clearError(n);
+            }
+        });
+    });
 
     function applyCountry(initial) {
         if (!country) return;
@@ -555,11 +583,21 @@
             ok = false;
         }
 
-        // Worldwide: length varies by country, so only a sane range is enforced here.
+        [['name', 'First name'], ['last_name', 'Last name'], ['city', 'City']].forEach(function (f) {
+            var v = val(f[0]);
+            if (v && !LETTERS_ONLY.test(v)) {
+                showError(f[0], f[1] + ' can contain letters only.');
+                ok = false;
+            }
+        });
+
         var digits = (phoneLocal ? phoneLocal.value : '').replace(/\D/g, '');
+        var lim = phoneLimits();
         if (!digits) { showError('phone', 'Phone number is required.'); ok = false; }
-        else if (digits.length < 6 || digits.length > 15) {
-            showError('phone', 'Enter a valid phone number.');
+        else if (digits.length < lim.min || digits.length > lim.max) {
+            showError('phone', lim.min === lim.max
+                ? 'Enter a ' + lim.min + '-digit phone number for ' + currentDial() + '.'
+                : 'Enter a valid phone number (' + lim.min + '–' + lim.max + ' digits).');
             ok = false;
         }
 

@@ -11,7 +11,7 @@
 <style>
     /* #9: hide the legacy price/record buttons in the edit form too, matching add_new
        (only the "(New)" price buttons stay visible). */
-    #checkPrice, #previousCheckPrice, #previousRecord, #showOldCustomerNature, #historyBtn { display:none !important; }
+    #previousRecord, #showOldCustomerNature, #historyBtn { display:none !important; }
 
     /* #8: Vehicle Price removed from the quote form (input kept in DOM for submit logic). */
     .form-group:has(> input.vehicle_price) { display: none !important; }
@@ -2552,10 +2552,10 @@
 
                                 <div>
                                     <div>
+                                        @include('partials.old_check_price_switch')
+                                        {{-- Client 15 Nov 2026: Check Price is for open transport only. --}}
                                         <select id="checkPriceMode" class="form-control mb-1" style="width:auto;max-width:210px;display:inline-block;vertical-align:middle;margin-right:6px;">
-                                    <option value="">-- Transport Type * --</option>
-                                    <option value="open">Open Transport</option>
-                                    <option value="enclosed">Enclosed Transport</option>
+                                    <option value="open" selected>Open Transport</option>
                                 </select>
                                 <button href="javascript:void(0)" id="checkPriceNew" class="btn btn-success">
                                             Check Price (New)

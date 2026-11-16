@@ -6496,15 +6496,14 @@ class NewQuote extends Controller
             if ($price_checker->isEmpty()) {
                 $price_checker = User::where('role', 23)->where('deleted', 0)->orderBy('updated_at', 'desc')->get();
                 if ($price_checker->isEmpty()) {
-                    return response()->json(['message' => 'No price checker available'], 400);
+                    return response()->json(['message' => 'No Check Price account is set up yet. Ask an admin to create one.'], 400);
                 }
             }
 
-            // --- Fetch dispatchers ---
-            $dispatcher = User::where('role', 3)->where('is_login', 1)->where('deleted', 0)->get();
-            if ($dispatcher->isEmpty()) {
-                return response()->json(['message' => 'No dispatcher available'], 400);
-            }
+            // No logged-in dispatcher is needed. This used to refuse the request without one,
+            // although the dispatcher it picked was never saved; Hello has no dispatchers, so
+            // the button could never work there. The Check Price account answers the request,
+            // and a dispatcher can still pick it up from the pending list.
 
             // --- Round robin assignment ---
             $lastAssignedUserId = PriceCheckerPrice::whereIn('price_giver_id', $price_checker->pluck('id'))
@@ -6512,12 +6511,6 @@ class NewQuote extends Controller
                 ->value('price_giver_id');
 
             $nextUser = $this->getNextInRoundRobin($price_checker, $lastAssignedUserId);
-
-            $lastAssignedDispatcherId = PriceCheckerPrice::whereIn('dispatcher_id', $dispatcher->pluck('id'))
-                ->latest('created_at')
-                ->value('dispatcher_id');
-
-            $nextDispatcher = $this->getNextInRoundRobin($dispatcher, $lastAssignedDispatcherId);
 
             // --- Save record ---
             $data = new PriceCheckerPrice;

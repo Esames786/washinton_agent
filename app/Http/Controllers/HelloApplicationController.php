@@ -37,6 +37,20 @@ class HelloApplicationController extends Controller
         return view('auth.apply');
     }
 
+    /**
+     * Allowed digit count of the local part for a dial code (without the "+").
+     * +1 (US/Canada) is always 10 digits; elsewhere the full number may not pass
+     * 15 digits (E.164). The form applies the same rule (phoneLimits() in apply.blade).
+     */
+    public static function phoneLengthFor(string $dialDigits): array
+    {
+        if ($dialDigits === '1') {
+            return [10, 10];
+        }
+
+        return [7, max(7, 15 - strlen($dialDigits))];
+    }
+
     public function store(Request $request): JsonResponse
     {
         // W-03: only what is needed to decide whether to talk to someone. ID number, date of
@@ -49,7 +63,19 @@ class HelloApplicationController extends Controller
 
             // Agents are worldwide, so the number is validated by shape, not a US pattern.
             // The form submits it as "<dial> <digits>", e.g. "+92 3001234567".
-            'phone'          => ['required', 'string', 'max:25', 'regex:/^\+\d{1,4}\s?\d{6,15}$/'],
+            'phone'          => ['required', 'string', 'max:25', 'regex:/^\+\d{1,4}\s?\d{6,15}$/',
+                function ($attribute, $value, $fail) {
+                    if (! preg_match('/^\+(\d{1,4})\s?(\d+)$/', (string) $value, $m)) {
+                        return; // the regex rule reports the shape error
+                    }
+                    [$min, $max] = self::phoneLengthFor($m[1]);
+                    $n = strlen($m[2]);
+                    if ($n < $min || $n > $max) {
+                        $fail($min === $max
+                            ? "Enter a {$min}-digit phone number for +{$m[1]}."
+                            : "Enter a valid phone number ({$min}-{$max} digits).");
+                    }
+                }],
 
             'country'        => 'required|string|max:100',
             'city'           => ['required', 'string', 'max:100', 'regex:/^[A-Za-z][A-Za-z\s.\'\-]*$/'],
@@ -65,9 +91,11 @@ class HelloApplicationController extends Controller
             'terms_accepted' => 'accepted',
         ], [
             'name.required'           => 'First name is required.',
+            'name.regex'              => 'First name can contain letters only.',
             'last_name.required'      => 'Last name is required.',
+            'last_name.regex'         => 'Last name can contain letters only.',
             'phone.regex'             => 'Enter a valid phone number for the country you selected.',
-            'city.regex'              => 'Enter a valid city name.',
+            'city.regex'              => 'City can contain letters only.',
             'timezone.required'       => 'Please choose your timezone.',
             'timezone.timezone'       => 'Please choose a valid timezone.',
             'us_experience.required'  => 'Please tell us whether you have worked with U.S. customers.',

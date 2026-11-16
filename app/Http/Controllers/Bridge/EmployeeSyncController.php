@@ -112,6 +112,9 @@ class EmployeeSyncController extends Controller
                     'phone'          => $request->input('phone', ''),
                     'city'           => $request->input('city', ''), // B6: for city-based panel assignment
                     'password_hash'  => $request->input('password_hash'),
+                    // The agent's own timezone from HR. Without it the CRM account kept the
+                    // Asia/Karachi default and showed PKT to US agents (client, 15 Nov 2026).
+                    'timezone'       => $this->validTimezone($request->input('timezone')),
                 ],
                 $roleId
             );
@@ -238,6 +241,11 @@ class EmployeeSyncController extends Controller
                 $user->save();
             }
 
+            if ($data['timezone'] && $user->timezone !== $data['timezone']) {
+                $user->timezone = $data['timezone'];
+                $user->save();
+            }
+
             Log::info('EmployeeSyncController: Existing user updated', [
                 'user_id'        => $user->id,
                 'email'          => $user->email,
@@ -266,6 +274,9 @@ class EmployeeSyncController extends Controller
             $user->hr_employee_id = $data['hr_employee_id'];
             $user->verify         = 1;
             $user->status         = 1;
+            if ($data['timezone']) {
+                $user->timezone = $data['timezone'];
+            }
 
             // B6: permission/access columns from signup_defaults (fallback = reference user).
             $referenceUser = User::find(self::AGENT_REFERENCE_USER_ID);
@@ -334,6 +345,16 @@ class EmployeeSyncController extends Controller
      * @param string $email
      * @return string
      */
+    /** A real timezone identifier, or null when HR sent nothing usable (older HR, bad value). */
+    private function validTimezone($tz): ?string
+    {
+        if (!is_string($tz) || $tz === '' || !in_array($tz, \DateTimeZone::listIdentifiers(), true)) {
+            return null;
+        }
+
+        return \Illuminate\Support\Facades\Schema::hasColumn('user', 'timezone') ? $tz : null;
+    }
+
     private function generateUniqueSlug(string $email): string
     {
         $baseSlug = Str::slug(explode('@', $email)[0]);

@@ -157,13 +157,19 @@
 <body>
     <div class="email-container">
         <!-- Header -->
-        <div class="header">
-            <div class="logo-section">
-                <img src="{{ url(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" alt="Hello Transport" style="height:55px;max-width:220px;">
-            </div>
-            <h1>Quote Submission {{ $recipientType === 'customer' ? 'Confirmed' : 'Received' }}</h1>
-            <div class="header-tagline">Professional Auto Transportation Services</div>
-        </div>
+        {{-- A table with bgcolor: Outlook ignores the CSS gradient, so the old <div> header showed
+             white text on white (client, 15 Nov 2026). Colours are inline so no client can drop them. --}}
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#1a1a1a" style="background-color:#1a1a1a;">
+            <tr>
+                <td align="center" bgcolor="#1a1a1a" style="background-color:#1a1a1a;padding:30px;text-align:center;color:#ffffff;">
+                    <div class="logo-section">
+                        <img src="{{ url(($brand['logo'] ?? 'frontend/img/logo/hello_transport.svg')) }}" alt="Hello Transport" style="height:55px;max-width:220px;">
+                    </div>
+                    <h1 style="margin:0;font-size:28px;font-weight:bold;color:#ffffff;">Quote Submission {{ $recipientType === 'customer' ? 'Confirmed' : 'Received' }}</h1>
+                    <div style="font-size:14px;margin-top:5px;color:#e8d9a8;">Professional Auto Transportation Services</div>
+                </td>
+            </tr>
+        </table>
 
         <!-- Content -->
         <div class="content">
