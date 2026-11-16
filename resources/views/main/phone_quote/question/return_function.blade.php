@@ -1,5 +1,5 @@
 <?php
-date_default_timezone_set("Asia/Karachi");
+date_default_timezone_set(config('app.timezone'));
 
 function check_user_setting($user_id)
 {

@@ -84,7 +84,15 @@ return [
     |
     */
 
-    'timezone' => 'Asia/Karachi',
+    // Florida portal time: every date the CRM saves and shows (quotes, orders, "today" lists,
+    // daily limits, the dashboard clock). US Eastern, like Washington (client, 16 Nov 2026;
+    // was Asia/Karachi until then, so older records carry Pakistan time).
+    // APP_TIMEZONE=Asia/Karachi in .env switches it back.
+    'timezone' => env('APP_TIMEZONE', 'America/New_York'),
+
+    // The STAFF's own timezone: CrazyRays agents work from Pakistan, so HR attendance,
+    // check-in and new sign-ups stay on Asia/Karachi when the portal moves to US time.
+    'staff_timezone' => env('STAFF_TIMEZONE', 'Asia/Karachi'),
 
     /*
     |--------------------------------------------------------------------------

@@ -17,7 +17,7 @@
                 // anything before 6 AM belongs to the previous day's overnight shift. A naive
                 // date('Y-m-d') queried a different day than HR check-in wrote, so on a night
                 // shift after midnight this gate never cleared. (fix)
-                $__gateTz = $__hrEmp->timezone ?: (Auth::user()->tz() ?? config('app.timezone', 'Asia/Karachi'));
+                $__gateTz = $__hrEmp->timezone ?: (Auth::user()->tz() ?? config('app.staff_timezone', 'Asia/Karachi'));
                 $__now   = \Carbon\Carbon::now($__gateTz);
                 $__today = $__now->hour < 6 ? $__now->copy()->subDay()->toDateString() : $__now->toDateString();
                 $__att = \Illuminate\Support\Facades\DB::table('hr_employee_attendances')

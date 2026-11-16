@@ -150,7 +150,7 @@ class PublicSignupController extends Controller
             // Per-person timezone (drives their attendance/check-in and displayed times).
             // Falls back to the app default so behaviour is unchanged when not supplied.
             if (\Illuminate\Support\Facades\Schema::hasColumn('user', 'timezone')) {
-                $user->timezone = $request->input('timezone') ?: config('app.timezone', 'Asia/Karachi');
+                $user->timezone = $request->input('timezone') ?: config('app.staff_timezone', 'Asia/Karachi');
             }
 
             // ── OLD panel logic (kept for record; replaced by #4 no-access default) ──
@@ -239,7 +239,7 @@ class PublicSignupController extends Controller
                 'state'           => $request->state,
                 'zip'             => $request->zip,
                 'country'         => $request->country,
-                'timezone'        => $request->input('timezone') ?: config('app.timezone', 'Asia/Karachi'),
+                'timezone'        => $request->input('timezone') ?: config('app.staff_timezone', 'Asia/Karachi'),
                 // Parity with the CrazyRays approve flow: recording acceptance here stops the
                 // blocking contract modal from greeting the agent on their very first login.
                 'contract_accepted_at' => $request->input('terms_accepted') ? now()->toDateTimeString() : null,

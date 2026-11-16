@@ -191,11 +191,10 @@
             </span>
         </div>
         @php
-            // Clock follows the AGENT'S own timezone — Asia/Karachi for CrazyRays agents, so their
-            // dashboard is unchanged; a US-based Hello agent sees their own local time instead.
-            $__dashTz = (Auth::check() && method_exists(Auth::user(), 'tz'))
-                ? Auth::user()->tz()
-                : config('app.timezone', 'Asia/Karachi');
+            // Florida: the clock shows PORTAL time (US Eastern), the same time every quote and order
+            // is saved in (client, 16 Nov 2026). It used to follow the agent's own timezone, which
+            // is Asia/Karachi for every CrazyRays agent.
+            $__dashTz = config('app.timezone', 'America/New_York');
         @endphp
         <script>
         (function () {

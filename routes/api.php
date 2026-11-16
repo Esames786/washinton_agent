@@ -1,5 +1,5 @@
 <?php
-date_default_timezone_set('Asia/Karachi');
+date_default_timezone_set(config('app.timezone'));
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\InstantQuoteApiController;

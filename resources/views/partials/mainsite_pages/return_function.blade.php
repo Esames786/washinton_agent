@@ -1,5 +1,5 @@
 <?php
-date_default_timezone_set('Asia/Karachi');
+date_default_timezone_set(config('app.timezone'));
 //  $setting = 	App\general_setting::first();
 ///  ->where('created_at','>=',\Carbon\Carbon::today()->subDays($setting->no_days))
 ///  25 feb 2020 > show

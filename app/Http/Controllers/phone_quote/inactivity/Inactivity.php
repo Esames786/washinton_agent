@@ -23,7 +23,7 @@ class Inactivity extends Controller
 {
     public function count_activity(Request $request){
 
-        date_default_timezone_set('Asia/Karachi');
+        date_default_timezone_set(config('app.timezone'));
         $user_id  =  Auth::user()->id;
         $url_name = $request->url;
         $date = Carbon::today()->format('Y-m-d');
