@@ -114,7 +114,8 @@
                                         {{-- <optgroup label="Select Job Type"> --}}
                                         <option value="" selected="" disabled="">Select Job Type</option>
                                         {{-- B6: only whitelisted roles selectable --}}
-                                        @php $roleWhitelist = ['Admin','Order Taker','Dispatcher','Manager','QA','Onsite']; @endphp
+                                        {{-- Check Price: the account that types in manual prices (16 Nov 2026). --}}
+                                        @php $roleWhitelist = ['Admin','Order Taker','Dispatcher','Manager','QA','Onsite','Check Price']; @endphp
                                         @foreach ($data as $val)
                                             @if (!in_array($val->name, $roleWhitelist, true)) @continue @endif
                                             <option value="{{ $val->id }}">{{ $val->name }}</option>

@@ -243,7 +243,7 @@
                                         @php
                                             // #16: Onsite selectable by admin & manager.
                                             $roleWhitelist = (int) Auth::user()->role === 1
-                                                ? ['Admin','Order Taker','Dispatcher','Manager','QA','Onsite']
+                                                ? ['Admin','Order Taker','Dispatcher','Manager','QA','Onsite','Check Price']
                                                 : ['Order Taker','Dispatcher','Onsite'];
                                         @endphp
                                         @foreach ($data as $val)
