@@ -1553,59 +1553,72 @@ class NewOrder extends Controller
                 //             ->whereDate('created_at', '<=', $endDate);
                 //     });
                 // }
-                $data = UsedAndNewCarDealers::with([
-                    'user',
-                    'callCount',
-                    'history.user',
-                    'history' => function ($query) {
-                        // Order by history's created_at if needed
-                        $query->orderBy('created_at', 'desc');
-                    }
-                ])
-                    ->has('history');
-
-                if (
-                    $request->has('orderTaker') && $request->orderTaker !== null
-                ) {
-                    $historyUser = $request->orderTaker;
-
-                    $data->whereHas('history', function ($q) use ($historyUser) {
-                        $q->where('user_id', $historyUser);
-                    });
-                    // $data->where('user_id', $request->orderTaker);
-                }
-
-                if ($request->has('state') && $request->state !== null) {
-                    $data->where('state', $request->state);
-                }
-
-                if (
-                    $request->has('startDate') && $request->startDate !== null &&
-                    $request->has('endDate') && $request->endDate !== null
-                ) {
-
-                    $startDate = $request->startDate;
-                    $endDate = $request->endDate;
-
-                    // $data->whereHas('history', function ($q) use ($startDate, $endDate) {
-                    //     $q->whereBetween('created_at', [$startDate, $endDate]);
-                    // });
-                    $data->whereHas(
-                        'history',
-                        function ($q) use ($startDate, $endDate) {
-                            $q->whereDate('created_at', '>=', $startDate)
-                                ->whereDate('created_at', '<=', $endDate);
-                        }
-                    );
-                }
+                return $this->autosApproachCallList(UsedAndNewCarDealers::class, $request, 'state', 'user_id');
             }
-
-            // dd('okk', $request->toArray(), $data->get()->toArray());
 
             return $data->get();
         } else {
             return redirect('/loginn/');
         }
+    }
+
+    /**
+     * Autos Approach call lists (Autos Approach and its Shipper/Dealer/Carrier copies).
+     * Order taker and dates filter the SAME call: "calls by X between A and B". They used to be
+     * two separate conditions (a call by X on any day + a call by anyone in the range), and every
+     * row showed the company's all-time latest caller and call count, so filtering one agent
+     * listed another agent's work. Now each row's caller, count and "last call" come from the
+     * matching calls only, newest first.
+     */
+    private function autosApproachCallList(string $model, Request $request, string $stateColumn, string $callUserColumn)
+    {
+        $orderTaker = $request->filled('orderTaker') ? (int) $request->orderTaker : null;
+        $from = $request->filled('startDate') && $request->filled('endDate') ? $request->startDate : null;
+        $to = $from ? $request->endDate : null;
+        $inRange = function ($q) use ($from, $to) {
+            if ($from) {
+                $q->whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to);
+            }
+        };
+        $matchingHistory = function ($q) use ($orderTaker, $inRange) {
+            if ($orderTaker) {
+                $q->where('user_id', $orderTaker);
+            }
+            $inRange($q);
+        };
+        $matchingCalls = function ($q) use ($orderTaker, $inRange, $callUserColumn) {
+            if ($orderTaker) {
+                $q->where($callUserColumn, $orderTaker);
+            }
+            $inRange($q);
+        };
+
+        $data = $model::with([
+            'user',
+            'callCount' => $matchingCalls,
+            'history' => function ($q) use ($matchingHistory) {
+                $matchingHistory($q);
+                $q->orderBy('created_at', 'desc')->orderBy('id', 'desc');
+            },
+            // Name only: full user rows (every permission list) made a month's list ~10 MB.
+            'history.user:id,name,last_name',
+        ])->whereHas('history', $matchingHistory);
+
+        if ($request->filled('state')) {
+            $data->where($stateColumn, $request->state);
+        }
+
+        $tz = config('app.timezone');
+
+        return $data->get()
+            ->sortByDesc(fn ($d) => optional($d->history->first())->created_at)
+            ->values()
+            ->map(function ($d) use ($tz) {
+                $last = optional($d->history->first())->created_at;
+                $d->setAttribute('last_call_at', $last ? $last->copy()->timezone($tz)->format('m/d/Y h:i A') : null);
+
+                return $d;
+            });
     }
 
     public function storeHistory(Request $request)
@@ -7910,52 +7923,7 @@ class NewOrder extends Controller
                     });
                 }
             } else {
-
-                $data = ShipperDetails::with([
-                    'user',
-                    'callCount',
-                    'history.user',
-                    'history' => function ($query) {
-                        // Order by history's created_at if needed
-                        $query->orderBy('created_at', 'desc');
-                    }
-                ])
-                    ->has('history');
-
-                if (
-                    $request->has('orderTaker') && $request->orderTaker !== null
-                ) {
-                    $historyUser = $request->orderTaker;
-
-                    $data->whereHas('history', function ($q) use ($historyUser) {
-                        $q->where('user_id', $historyUser);
-                    });
-                    // $data->where('user_id', $request->orderTaker);
-                }
-
-                if ($request->has('state') && $request->state !== null) {
-                    $data->where('states', $request->state);
-                }
-
-                if (
-                    $request->has('startDate') && $request->startDate !== null &&
-                    $request->has('endDate') && $request->endDate !== null
-                ) {
-
-                    $startDate = $request->startDate;
-                    $endDate = $request->endDate;
-
-                    // $data->whereHas('history', function ($q) use ($startDate, $endDate) {
-                    //     $q->whereBetween('created_at', [$startDate, $endDate]);
-                    // });
-                    $data->whereHas(
-                        'history',
-                        function ($q) use ($startDate, $endDate) {
-                            $q->whereDate('created_at', '>=', $startDate)
-                                ->whereDate('created_at', '<=', $endDate);
-                        }
-                    );
-                }
+                return $this->autosApproachCallList(ShipperDetails::class, $request, 'states', 'userId');
             }
 
             // dd('okk', $request->toArray(), $data->get()->toArray());
@@ -8428,52 +8396,7 @@ class NewOrder extends Controller
                     });
                 }
             } else {
-
-                $data = ShipperDetailsDealer::with([
-                    'user',
-                    'callCount',
-                    'history.user',
-                    'history' => function ($query) {
-                        // Order by history's created_at if needed
-                        $query->orderBy('created_at', 'desc');
-                    }
-                ])
-                    ->has('history');
-
-                if (
-                    $request->has('orderTaker') && $request->orderTaker !== null
-                ) {
-                    $historyUser = $request->orderTaker;
-
-                    $data->whereHas('history', function ($q) use ($historyUser) {
-                        $q->where('user_id', $historyUser);
-                    });
-                    // $data->where('user_id', $request->orderTaker);
-                }
-
-                if ($request->has('state') && $request->state !== null) {
-                    $data->where('states', $request->state);
-                }
-
-                if (
-                    $request->has('startDate') && $request->startDate !== null &&
-                    $request->has('endDate') && $request->endDate !== null
-                ) {
-
-                    $startDate = $request->startDate;
-                    $endDate = $request->endDate;
-
-                    // $data->whereHas('history', function ($q) use ($startDate, $endDate) {
-                    //     $q->whereBetween('created_at', [$startDate, $endDate]);
-                    // });
-                    $data->whereHas(
-                        'history',
-                        function ($q) use ($startDate, $endDate) {
-                            $q->whereDate('created_at', '>=', $startDate)
-                                ->whereDate('created_at', '<=', $endDate);
-                        }
-                    );
-                }
+                return $this->autosApproachCallList(ShipperDetailsDealer::class, $request, 'states', 'userId');
             }
 
             // dd('okk', $request->toArray(), $data->get()->toArray());
@@ -9357,52 +9280,7 @@ class NewOrder extends Controller
                     });
                 }
             } else {
-
-                $data = ShipperDetailsCarrier::with([
-                    'user',
-                    'callCount',
-                    'history.user',
-                    'history' => function ($query) {
-                        // Order by history's created_at if needed
-                        $query->orderBy('created_at', 'desc');
-                    }
-                ])
-                    ->has('history');
-
-                if (
-                    $request->has('orderTaker') && $request->orderTaker !== null
-                ) {
-                    $historyUser = $request->orderTaker;
-
-                    $data->whereHas('history', function ($q) use ($historyUser) {
-                        $q->where('user_id', $historyUser);
-                    });
-                    // $data->where('user_id', $request->orderTaker);
-                }
-
-                if ($request->has('state') && $request->state !== null) {
-                    $data->where('states', $request->state);
-                }
-
-                if (
-                    $request->has('startDate') && $request->startDate !== null &&
-                    $request->has('endDate') && $request->endDate !== null
-                ) {
-
-                    $startDate = $request->startDate;
-                    $endDate = $request->endDate;
-
-                    // $data->whereHas('history', function ($q) use ($startDate, $endDate) {
-                    //     $q->whereBetween('created_at', [$startDate, $endDate]);
-                    // });
-                    $data->whereHas(
-                        'history',
-                        function ($q) use ($startDate, $endDate) {
-                            $q->whereDate('created_at', '>=', $startDate)
-                                ->whereDate('created_at', '<=', $endDate);
-                        }
-                    );
-                }
+                return $this->autosApproachCallList(ShipperDetailsCarrier::class, $request, 'states', 'userId');
             }
 
             // dd('okk', $request->toArray(), $data->get()->toArray());

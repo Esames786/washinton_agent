@@ -1,6 +1,6 @@
 @include('partials.mainsite_pages.return_function')
 <?php
-$emp_report = explode(',', Auth::user()->emp_access_report);
+$emp_report = Auth::user()->reportAccess();
 ?>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <h1>

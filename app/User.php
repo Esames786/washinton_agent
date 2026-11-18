@@ -152,6 +152,22 @@ class User extends Authenticatable
         return (string) $this->emp_access_phone;
     }
 
+    /**
+     * Status boxes this user may see on the Daily Report and Subcontractor Report. Admins and
+     * managers see every box; others see what was ticked for them (emp_access_report). The
+     * "Subcontractor Report" access button in Edit Employee is hidden since July, so managers
+     * added after that were left with an empty list and blank reports.
+     */
+    public function reportAccess(): array
+    {
+        $roleName = optional($this->userRole)->name;
+        if ((int) $this->role === 1 || in_array($roleName, ['Admin', 'Manager'], true)) {
+            return array_map('strval', range(0, 60));
+        }
+
+        return array_values(array_filter(explode(',', (string) $this->emp_access_report), 'strlen'));
+    }
+
     /** Set access for a new panel (7+) directly in the link table. */
     public function setPanelAccess(int $panelId, ?string $accessIds): void
     {
