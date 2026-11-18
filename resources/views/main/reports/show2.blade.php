@@ -1,6 +1,6 @@
 @include('partials.mainsite_pages.return_function')
 <?php 
-    $emp_report = explode(',',Auth::user()->emp_access_report);
+    $emp_report = Auth::user()->reportAccess();
 ?>
 <div class="row" id="allData">
     @if(in_array("0",$emp_report))

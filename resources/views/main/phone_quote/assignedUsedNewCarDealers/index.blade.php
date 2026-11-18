@@ -312,7 +312,17 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <!--</script>-->
     <script>
-        let startDate, endDate;
+        // The first load now sends the range the box shows (this month); it used to send none
+        // and list all-time calls under a "this month" date box.
+        let startDate = moment().startOf('month').format('YYYY-MM-DD');
+        let endDate = moment().endOf('month').format('YYYY-MM-DD');
+        let filterSeq = 0, filterXhr = null;
+
+        function escHtml(v) {
+            return String(v == null ? '' : v).replace(/[&<>"']/g, function(c) {
+                return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c];
+            });
+        }
 
         jQuery(document).ready(function($) {
             var date = new Date();
@@ -340,6 +350,7 @@
             });
 
             // Initial filter on page load
+            $('#date_range').val(startDate + ' - ' + endDate);
             filterData();
 
             // Change event for other filters
@@ -353,7 +364,15 @@
 
                 var url = "{{ route('filter.assigned.autosApproach') }}";
 
-                $.ajax({
+                // Only the latest request may draw the table: switching agent while an older
+                // request is still running used to leave the previous agent's rows on screen.
+                var seq = ++filterSeq;
+                if (filterXhr) {
+                    filterXhr.abort();
+                }
+                $("#updateTable").html("<p class='text-center text-muted my-4'>Loading…</p>");
+
+                filterXhr = $.ajax({
                     type: "GET",
                     url: url,
                     data: {
@@ -364,6 +383,9 @@
                     },
                     dataType: "json",
                     success: function(data) {
+                        if (seq !== filterSeq) {
+                            return;
+                        }
                         $("#updateTable").html("");
                         var html = "";
 
@@ -376,37 +398,31 @@
                         html += "<th>Company</th>";
                         html += "<th>State</th>";
                         html += "<th>Call Count</th>";
-                        html += "<th>Created At</th>";
+                        html += "<th>Last Call</th>";
                         html += "<th>Last History</th>";
                         html += "<th>Action</th>";
                         html += "</tr>";
                         html += "</thead>";
                         html += "<tbody>";
 
+                        // Every column describes the calls that match the filters: who made the
+                        // latest of them, how many there were, and when.
                         $.each(data, function(index, val) {
+                            var last = (val['history'] && val['history'].length) ? val['history'][0] : null;
+                            var calls = (val['call_count'] || []).length;
                             html += "<tr class='parent1'>";
                             html += "<td>" + (index + 1) + "</td>";
-                            html += "<td>" + (val['history'][0]['user']['name'] || "No User") +
-                                "</td>";
-                            html += "<td>" + (val['name'] || "") + "</td>";
-                            html += "<td>" + (val['state'] || "") + "</td>";
-
-                            // Call Count column
-                            if (val['call_count'] && val['call_count'].length) {
-                                html += "<td>" + val['call_count'].length + "</td>";
-                                html += "<td>" + (val['call_count'][0]['updated_at'] ||
-                                    "No updated_at") + "</td>";
-                            } else {
-                                html += "<td>No callCount</td><td>No updated_at</td>";
-                            }
+                            html += "<td>" + escHtml(last && last['user'] ? last['user']['name'] : "No User") + "</td>";
+                            html += "<td>" + escHtml(val['name']) + "</td>";
+                            html += "<td>" + escHtml(val['state']) + "</td>";
+                            html += "<td>" + calls + "</td>";
+                            html += "<td>" + escHtml(val['last_call_at'] || "") + "</td>";
 
                             // Last History column
                             html += "<td>";
-                            if (val['history'].length) {
-                                html += "<span class='text-danger'>" + val['history'][0][
-                                    'connectStatus'
-                                ] + "</span> <br>";
-                                html += val['history'][0]['comment'];
+                            if (last) {
+                                html += "<span class='text-danger'>" + escHtml(last['connectStatus']) + "</span> <br>";
+                                html += escHtml(last['comment']);
                             } else {
                                 html += "No History";
                             }
@@ -435,8 +451,12 @@
                         $("#updateTable").html(html);
                         $('#example').dataTable(); // Initialize DataTable
                     },
-                    error: function(error) {
-                        console.error("Error:", error);
+                    error: function(xhr) {
+                        if (seq !== filterSeq || xhr.statusText === 'abort') {
+                            return;
+                        }
+                        $("#updateTable").html("<p class='text-center text-danger my-4'>Could not load the list (" +
+                            escHtml(xhr.status || 'network') + "). Please try again.</p>");
                     }
                 });
             }
