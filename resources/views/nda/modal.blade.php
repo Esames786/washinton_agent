@@ -16,6 +16,10 @@
     }
     // Always re-branded for THIS agent — a Hello agent must never be shown CrazyRays wording.
     $__ndaContent = $__ndaContent ? \App\Support\Brand::applyTokens($__ndaContent, $__brand) : '';
+    // Their own details and today's date (= the signing date) in the copy they read.
+    $__ndaContent = \App\Support\Brand::fillNdaDetails($__ndaContent, $__brand,
+        $__hrEmp ?: ['full_name' => auth()->user()->name ?? '', 'email' => auth()->user()->email ?? ''],
+        now()->format('d M Y'), true);
 
     // #6: Hello agents use a US State ID, not a CNIC — labels + document type follow the brand.
     $__isHello  = (($__brand['key'] ?? '') !== 'crazyrays');

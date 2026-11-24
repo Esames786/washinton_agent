@@ -35,6 +35,7 @@ return [
         'hellotransport' => [
             'name'      => 'Hello Transport',
             'legal'     => 'Hello Transport LLC',
+            'address'   => '6340 Security Blvd Ste 100, Baltimore, MD 21207', // NDA [COMPANY ADDRESS]; site footer
             'site'      => 'https://www.hellotransport.com',
             'login_url' => 'https://hellotransport.com/loginn',
             'hr_login_url'  => 'https://hr.hellotransport.com/subcontractor/login',

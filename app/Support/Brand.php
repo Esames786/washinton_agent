@@ -223,4 +223,47 @@ class Brand
         // preg_* returns null on failure (e.g. backtrack limit) — never destroy the content.
         return $replaced ?? $html;
     }
+
+    /**
+     * Fill the applicant details in the NDA (client's template, 23 Nov 2026):
+     * [FULL LEGAL NAME], [COUNTRY], [EMAIL], [DATE] and [COMPANY ADDRESS].
+     *
+     * $person: full_name / country / email (an Employee, a DB row or an array). $date: null keeps
+     * [DATE] for the signing date. $final: the copy the applicant reads or signs, where an unknown
+     * value shows as a dash; otherwise (the HR editor) it stays as the placeholder for HR to type.
+     * Kept identical in both apps.
+     */
+    public static function fillNdaDetails(string $html, array $brand, $person = null, ?string $date = null, bool $final = false): string
+    {
+        $get = static function (string $key) use ($person): string {
+            $v = is_array($person) ? ($person[$key] ?? null) : ($person->{$key} ?? null);
+
+            return trim((string) $v);
+        };
+
+        $values = [
+            'FULL LEGAL NAME' => $get('full_name'),
+            'COUNTRY'         => $get('country'),
+            'EMAIL'           => $get('email'),
+            'DATE'            => (string) $date,
+            'COMPANY ADDRESS' => trim((string) ($brand['address'] ?? '')),
+        ];
+
+        $replaced = preg_replace_callback(
+            '/\[\s*(FULL\s+LEGAL\s+NAME|COUNTRY|EMAIL|DATE|COMPANY\s+ADDRESS)\s*\]/i',
+            static function ($m) use ($values, $final) {
+                $key = strtoupper(preg_replace('/\s+/', ' ', $m[1]));
+                $val = $values[$key] ?? '';
+                if ($val !== '') {
+                    return e($val);
+                }
+
+                return $final ? '—' : $m[0];
+            },
+            $html
+        );
+
+        return $replaced ?? $html;
+    }
 }
+

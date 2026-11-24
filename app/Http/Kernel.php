@@ -69,5 +69,6 @@ class Kernel extends HttpKernel
         'password.confirm' => \App\Http\Middleware\EnsurePasswordIsConfirmed::class,
         'crazyrays.cors'   => \App\Http\Middleware\CrazyRaysCors::class,
         'ringcentral.access' => \App\Http\Middleware\RingCentralAccess::class,
+        'signup.country'   => \App\Http\Middleware\BlockSignupCountries::class,
     ];
 }

@@ -455,6 +455,14 @@ class EmployeeReviewController extends Controller
         $viewed  = $request->filled('user_id') ? User::find($request->input('user_id')) : null;
         $brand   = \App\Support\Brand::for($viewed);
         $content = $tpl ? \App\Support\Brand::applyTokens($tpl->content, $brand) : '';
+        // Agent's name / country / e-mail filled in for the admin to check; [DATE] stays for the signing date.
+        if ($content !== '' && $viewed) {
+            $hr      = \Illuminate\Support\Facades\DB::table('hr_employees')->where('agent_id', $viewed->id)->first();
+            $content = \App\Support\Brand::fillNdaDetails($content, $brand,
+                $hr ?: ['full_name' => $viewed->name ?? '', 'email' => $viewed->email ?? '']);
+        } elseif ($content !== '') {
+            $content = \App\Support\Brand::fillNdaDetails($content, $brand);
+        }
 
         return response()->json([
             'title'   => $tpl ? $tpl->title : 'Non-Disclosure Agreement',

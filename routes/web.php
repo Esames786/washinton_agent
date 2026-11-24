@@ -120,8 +120,9 @@ Route::post('/resend_verify', 'WelcomeController@resend_verify')->name('resend_v
 // W-03/W-04: Hello signup records an APPLICATION, not a CRM account. The account is
 // created at the end of HR onboarding. PublicSignupController is kept, unrouted, until
 // this flow is proven in production.
-Route::get('/register', 'HelloApplicationController@showForm')->name('register');
-Route::post('/register', 'HelloApplicationController@store')->name('register.store');
+// Client, 23 Nov 2026: no applications from Pakistan IPs (config/signup.php).
+Route::get('/register', 'HelloApplicationController@showForm')->name('register')->middleware('signup.country');
+Route::post('/register', 'HelloApplicationController@store')->name('register.store')->middleware('signup.country');
 
 // DASHBOARD
 Route::get('/dashboard', 'DashboardController@getDashboard')->name('dashboard');

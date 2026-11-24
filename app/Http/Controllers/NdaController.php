@@ -65,6 +65,12 @@ class NdaController extends Controller
             $ndaContent = $tpl ? $tpl->content : '';
         }
         $ndaContent = $ndaContent ? \App\Support\Brand::applyTokens($ndaContent, $agentBrand) : '';
+        // Placeholders still in the copy ([FULL LEGAL NAME], [DATE] …) are filled for good here.
+        $ndaContent = \App\Support\Brand::fillNdaDetails($ndaContent, $agentBrand, [
+            'full_name' => $request->employee_name ?: ($hrEmp->full_name ?? ($user->name ?? '')),
+            'country'   => $hrEmp->country ?? '',
+            'email'     => $hrEmp->email ?? ($user->email ?? ''),
+        ], $signedAt->format('d M Y'), true);
 
         // Store CNIC front/back if provided (public/Uploads so both apps serve it without a symlink).
         $cnicFrontPath = $this->storeUpload($request, 'cnic_front', $user->id, $signedAt);
