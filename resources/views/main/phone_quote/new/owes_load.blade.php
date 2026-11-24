@@ -370,7 +370,7 @@ $phoneaccess = explode(',', (string) Auth::user()->accessForPanel($check_panel))
             var num1 = atob(num);
             var check_call = '{{ check_call() }}';
             if (check_call == 134 || check_call == 135) {
-                window.location.href = 'rcapp://r/sms?type=new&number=' + num1;
+                window.location.href = crmSmsUrl(num1);
             }
         }
     }

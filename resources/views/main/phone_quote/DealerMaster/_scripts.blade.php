@@ -109,7 +109,7 @@
             launchRingCentralMessage(num);
             return;
         }
-        window.location.href = 'rcapp://r/sms?type=new&number=' + n;
+        window.location.href = crmSmsUrl(n);
     };
 })();
 </script>

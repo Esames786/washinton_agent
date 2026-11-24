@@ -49,6 +49,11 @@ return [
         'secret_key' => env('RECAPTCHA_SECRET_KEY', ''),
     ],
 
+    // Message buttons: 'zoom' (zoomphonesms://) or 'ringcentral' (rcapp://). Client, 23 Nov 2026.
+    'click_to_text' => [
+        'app' => env('CLICK_TO_TEXT_APP', 'zoom'),
+    ],
+
     'ringcentral' => [
         'client_id'                        => env('RINGCENTRAL_CLIENT_ID'),
         'client_secret'                    => env('RINGCENTRAL_CLIENT_SECRET'),

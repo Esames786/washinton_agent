@@ -385,5 +385,4 @@
         }
         @keyframes pcn-stroke{ to{ stroke-dashoffset:0; } }
     </style>
-
-
+@include('partials.sms_link')

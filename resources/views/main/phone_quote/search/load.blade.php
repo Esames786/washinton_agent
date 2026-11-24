@@ -148,7 +148,7 @@
         } else {
             var num = atob(encodedNum);
             if (_searchCheckCall == 134 || _searchCheckCall == 135) {
-                window.location.href = 'rcapp://r/sms?type=new&number=' + num;
+                window.location.href = crmSmsUrl(num);
             }
         }
     }

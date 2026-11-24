@@ -414,7 +414,7 @@
                                     </a>
 
                                     <!-- SMS Button -->
-                                    <a href="sms:{{ $data->found_on_referral_phone }}" class="btn btn-info mt-2">
+                                    <a href="sms:{{ $data->found_on_referral_phone }}" onclick="if (window.crmSmsUrl) { window.location.href = crmSmsUrl('{{ $data->found_on_referral_phone }}'); return false; }" class="btn btn-info mt-2">
                                         ✉️ SMS
                                     </a>
                                 </div>
